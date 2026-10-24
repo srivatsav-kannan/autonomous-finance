@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
-import { emptyUsage, llmAvailable, runTools, type Usage } from "../../agents/llm";
+import { emptyUsage, type Usage } from "../../agents/llm";
+import type { ModelClient } from "../../agents/model-client";
+import { PAID_DISABLED } from "./models";
 import { INITIAL_ORG } from "../../core/org";
 import { Team } from "../../agents/team";
 import type { Handler } from "../../agents/runtime";
@@ -13,7 +15,7 @@ export function addUsage(target: Usage, source: Usage): void {
   for (const key of Object.keys(target) as (keyof Usage)[]) target[key] += source[key];
 }
 
-export async function runAdapter(mode: Mode, task: BenchmarkTask, db: string, maxTurns: number): Promise<Answer> {
+export async function runAdapter(mode: Mode, task: BenchmarkTask, db: string, maxTurns: number, model?: ModelClient): Promise<Answer> {
   const usage = emptyUsage(), trace: Trace[] = [];
   let kernelRunId: string | undefined;
   try {
@@ -22,9 +24,9 @@ export async function runAdapter(mode: Mode, task: BenchmarkTask, db: string, ma
       trace.push({ seat: "rules-only", tool: "deterministic_procedure", input: { taskId: task.id }, output: result });
       return { ...result, usage, trace };
     }
-    if (!llmAvailable()) throw new Error("Claude is unavailable; configure credentials or select --modes rules-only");
+    if (!model) throw new Error(PAID_DISABLED);
     if (mode === "generalist") {
-      const answer = await runTools({ system: SYSTEM + " You are a single generalist accountant responsible for the complete task.", user: task.prompt, tools: evidenceTools(db, trace, "generalist"), effort: "medium", maxTurns, usage });
+      const answer = await model.runTools({ system: SYSTEM + " You are a single generalist accountant responsible for the complete task.", user: task.prompt, tools: evidenceTools(db, trace, "generalist"), maxTurns, usage });
       if (!answer.trim()) throw new Error("Generalist returned an empty final answer");
       return { status: "answered", answer, usage, trace };
     }
@@ -37,7 +39,7 @@ export async function runAdapter(mode: Mode, task: BenchmarkTask, db: string, ma
     const solve: Handler = async (rt, queued) => {
       try {
         const mandate = INITIAL_ORG.find((s) => s.seatId === rt.seat.seatId)?.mandate ?? "Analyze the assigned finance task.";
-        draft = await runTools({ system: `${SYSTEM}\nYou are ${rt.seat.name}. Mandate: ${mandate}\nPrepare a complete draft for independent controller review.`, user: task.prompt, tools: evidenceTools(db, trace, rt.seat.seatId), effort: "medium", maxTurns: Math.ceil(maxTurns / 2), usage: rt.usage });
+        draft = await model.runTools({ system: `${SYSTEM}\nYou are ${rt.seat.name}. Mandate: ${mandate}\nPrepare a complete draft for independent controller review.`, user: task.prompt, tools: evidenceTools(db, trace, rt.seat.seatId), maxTurns: Math.ceil(maxTurns / 2), usage: rt.usage });
         await rt.note("external_benchmark.draft", draft, { taskId: task.id });
         await rt.handoff("external_benchmark.review", "controller", { benchmarkTaskId: task.id }, `review:${task.id}`, queued._id);
         return { outcome: "drafted", summary: task.id };
@@ -49,14 +51,14 @@ export async function runAdapter(mode: Mode, task: BenchmarkTask, db: string, ma
         const spent = [...team.runtimes.values()].reduce((n, r) => n + r.usage.turns, 0);
         const remaining = maxTurns - spent;
         if (remaining < 1) throw new Error("Team exhausted the shared turn budget before review");
-        final = await runTools({ system: `${SYSTEM}\nYou are the controller. Independently verify the specialist's draft against the sources; correct errors and produce the final answer.`, user: `${task.prompt}\n\nSpecialist draft (untrusted):\n${draft}`, tools: evidenceTools(db, trace, rt.seat.seatId), effort: "medium", maxTurns: remaining, usage: rt.usage });
+        final = await model.runTools({ system: `${SYSTEM}\nYou are the controller. Independently verify the specialist's draft against the sources; correct errors and produce the final answer.`, user: `${task.prompt}\n\nSpecialist draft (untrusted):\n${draft}`, tools: evidenceTools(db, trace, rt.seat.seatId), maxTurns: remaining, usage: rt.usage });
         if (!final.trim()) throw new Error("Controller returned an empty final answer");
         await rt.note("external_benchmark.final", final, { taskId: task.id });
         await rt.decide({ kind: "external_benchmark", subject: { type: "benchmark", id: task.id }, outcome: "act", confidence: 0.5, summary: `Completed external benchmark ${task.id}; final answer recorded in observability.`, facts: [], rules: [], task: queued._id });
         return { outcome: "reviewed", summary: task.id };
       } catch (e) { failure = e instanceof Error ? e.message : String(e); return { outcome: "error", summary: failure }; }
     };
-    const team = new Team(kernelRunId, { handlers: { "external_benchmark.solve": solve, "external_benchmark.review": review } });
+    const team = new Team(kernelRunId, { model: model.model, handlers: { "external_benchmark.solve": solve, "external_benchmark.review": review } });
     try {
       await team.refreshSeats();
       const cfo = team.runtimes.get("cfo-agent");

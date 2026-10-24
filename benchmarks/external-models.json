@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "approval": null,
+  "agent": {
+    "provider": "openai",
+    "model": null,
+    "effort": "medium",
+    "maxInputTokens": 100000,
+    "maxOutputTokens": 4096,
+    "prices": null
+  },
+  "judge": {
+    "provider": "openai",
+    "model": null,
+    "effort": "low",
+    "maxInputTokens": 100000,
+    "maxOutputTokens": 4096,
+    "prices": null
+  }
+}

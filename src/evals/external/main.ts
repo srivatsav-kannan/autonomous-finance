@@ -5,10 +5,11 @@ import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { parseArgs } from "node:util";
 import { z } from "zod";
-import { llmAvailable, MODEL } from "../../agents/llm";
+import { emptyUsage } from "../../agents/llm";
+import { DEFAULT_MODEL_POLICY, loadModelPolicy, assertPaidPolicy, PaidBudget, createModels } from "./models";
 import { DEFAULT_DATA, evidencePath, python, sha256 } from "./evidence";
 import { runAdapter } from "./adapters";
-import { gradeAnswer } from "./score";
+import { gradeAnswer, createRubricJudge } from "./score";
 import { formatComparison, summarize } from "./report";
 import { MODES, type BenchmarkTask, type Gold, type Mode, type Result } from "./types";
 
@@ -43,10 +44,11 @@ async function main() {
   const { values } = parseArgs({ args: process.argv.slice(3), strict: true, options: {
     data: { type: "string", default: DEFAULT_DATA }, modes: { type: "string", default: MODES.join(",") },
     tasks: { type: "string" }, repeats: { type: "string", default: "3" }, "max-turns": { type: "string", default: "12" },
+    "model-policy": { type: "string", default: DEFAULT_MODEL_POLICY },
     judge: { type: "string", default: "llm" }, run: { type: "string" }, "dry-run": { type: "boolean", default: false },
   } });
   if (command === "help") {
-    console.log("Commands: prepare | list | run | score\nOptions: --data PATH --modes full-team,generalist,rules-only --tasks apex-13,dabstep-1273 --repeats 3 --max-turns 12 --judge llm|off --dry-run\nscore requires --run PATH (an existing result directory). See docs/EXTERNAL_EVALS.md.");
+    console.log("Commands: prepare | list | run | score\nOptions: --data PATH --modes full-team,generalist,rules-only --tasks apex-13,dabstep-1273 --repeats 3 --max-turns 12 --judge llm|off --model-policy PATH --dry-run\nscore requires --run PATH (an existing result directory). See docs/EXTERNAL_EVALS.md.");
     return;
   }
   if (!["prepare", "list", "run", "score"].includes(command)) throw new Error(`Unknown command: ${command}`);
@@ -63,6 +65,7 @@ async function main() {
     return;
   }
   if (!["llm", "off"].includes(values.judge)) throw new Error("--judge must be llm or off");
+  const policy = loadModelPolicy(values["model-policy"]);
   const gold = JSON.parse(fs.readFileSync(path.join(root, "private", "gold.json"), "utf8")) as Record<string, Gold>;
   if (command === "score") {
     if (!values.run) throw new Error("score requires --run PATH");
@@ -70,14 +73,25 @@ async function main() {
     const config = JSON.parse(fs.readFileSync(path.join(dir, "config.json"), "utf8"));
     if (config.provenanceSha256 !== sha256(path.join(root, "provenance.json"))) throw new Error("Scoring data does not match the run's pinned provenance");
     const results = JSON.parse(fs.readFileSync(path.join(dir, "results.json"), "utf8")) as Result[];
-    if (values.judge === "llm" && results.some((r) => r.benchmark === "apex" && r.status === "answered") && !llmAvailable()) throw new Error("APEX judging needs Claude credentials. Configure .env.local or use --judge off.");
+    const needsJudge = values.judge === "llm" && results.some((r) => r.benchmark === "apex" && r.status === "answered");
+    if (values["dry-run"]) { console.log(JSON.stringify({ command, needsJudge, modelPolicy: policy, paidExecution: policy.approval ? "approval-present" : "disabled" }, null, 2)); return; }
+    if (needsJudge) assertPaidPolicy(policy, ["judge"]);
+    const budget = needsJudge ? new PaidBudget(policy, values["model-policy"], dir) : undefined;
+    const judgeModel = budget ? createModels(policy, budget, ["judge"]).judge : undefined;
+    const rubricJudge = judgeModel ? createRubricJudge(judgeModel) : undefined;
+    writeJson(path.join(dir, "rescoring.json"), { at: new Date().toISOString(), judge: values.judge, modelPolicy: policy, budgetLedger: budget?.ledgerPath, status: "started" });
+    // A failed/interrupted rescore must not leave old grades mixed with new ones.
+    for (const result of results) result.grade = { status: "ungraded", score: null, passed: null, method: "pending-rescore", judgeUsage: emptyUsage() };
+    saveReport(dir, results, config.expectedRuns);
     for (const result of results) {
       const task = tasks.find((t) => t.id === result.taskId);
       if (!task || !gold[task.id]) throw new Error(`Unknown case ${result.taskId}`);
-      result.grade = await gradeAnswer(task, result, gold[task.id]!, values.judge === "llm");
+      result.grade = await gradeAnswer(task, result, gold[task.id]!, values.judge === "llm", rubricJudge);
       saveReport(dir, results, config.expectedRuns);
+      if (budget?.stopped || result.grade.status === "error") { budget?.stop(); throw new Error("Rescoring stopped; inspect saved grades and budget ledger"); }
     }
-    writeJson(path.join(dir, "rescoring.json"), { at: new Date().toISOString(), judge: values.judge, judgeModel: process.env.EXTERNAL_JUDGE_MODEL ?? MODEL });
+    budget?.complete();
+    writeJson(path.join(dir, "rescoring.json"), { at: new Date().toISOString(), judge: values.judge, modelPolicy: policy, budgetLedger: budget?.ledgerPath, status: "complete" });
     console.log(path.join(dir, "comparison.md"));
     if (results.some((r) => r.grade.status === "error")) process.exitCode = 1;
     return;
@@ -91,15 +105,21 @@ async function main() {
   if (!Number.isSafeInteger(repeats) || repeats < 1 || repeats > 100) throw new Error("--repeats must be an integer from 1 to 100");
   if (!Number.isSafeInteger(maxTurns) || maxTurns < 4 || maxTurns > 100) throw new Error("--max-turns must be an integer from 4 to 100");
   const evidence = new Map(selected.map((t) => [t.id, evidencePath(root, t)]));
-  const config = { batch: "finance-eight-v1", tasks: ids, modes, repeats, maxTurns, model: MODEL, modelFallbacksEnabled: process.env.AGENT_FALLBACKS !== "0", judge: values.judge, judgeModel: process.env.EXTERNAL_JUDGE_MODEL ?? MODEL, provenanceSha256: sha256(path.join(root, "provenance.json")), evidence: Object.fromEntries(selected.map((t) => [t.id, t.evidenceSha256])), expectedRuns: selected.length*modes.length*repeats, startedAt: new Date().toISOString() };
+  const roles: ("agent" | "judge")[] = [];
+  if (modes.some((mode) => mode !== "rules-only")) roles.push("agent");
+  if (values.judge === "llm" && selected.some((task) => task.benchmark === "apex")) roles.push("judge");
+  const config = { batch: "finance-eight-v1", tasks: ids, modes, repeats, maxTurns, modelPolicy: policy, modelFallbacksEnabled: false, judge: values.judge, paidExecution: policy.approval ? "approval-present" : "disabled", provenanceSha256: sha256(path.join(root, "provenance.json")), evidence: Object.fromEntries(selected.map((t) => [t.id, t.evidenceSha256])), expectedRuns: selected.length*modes.length*repeats, startedAt: new Date().toISOString() };
   console.log(`${selected.length} cases × ${modes.length} modes × ${repeats} repeats = ${config.expectedRuns} runs; ${maxTurns} total model turns per case/mode; judge ${values.judge}`);
   if (values["dry-run"]) { console.log(JSON.stringify(config, null, 2)); return; }
-  if (!llmAvailable() && (modes.some((m) => m !== "rules-only") || (values.judge === "llm" && selected.some((t) => t.benchmark === "apex")))) throw new Error("Claude is unavailable. Configure credentials in .env.local; for a free smoke run use --modes rules-only --judge off.");
+  if (roles.length) assertPaidPolicy(policy, roles, maxTurns);
   const dir = values.run ? path.resolve(values.run) : path.resolve("var/evals/external", `${Date.now()}-${randomUUID().slice(0,8)}`);
   fs.mkdirSync(path.dirname(dir), { recursive: true });
   fs.mkdirSync(dir); // Exclusive: never silently overwrite previous results.
   fs.mkdirSync(path.join(dir, "traces"));
-  writeJson(path.join(dir, "config.json"), config);
+  const budget = roles.length ? new PaidBudget(policy, values["model-policy"], dir) : undefined;
+  const models = budget ? createModels(policy, budget, roles) : {};
+  const rubricJudge = models.judge ? createRubricJudge(models.judge) : undefined;
+  writeJson(path.join(dir, "config.json"), { ...config, budgetLedger: budget?.ledgerPath });
   const results: Result[] = [];
   for (let repeat = 1; repeat <= repeats; repeat++) for (const task of selected) {
     // Rotate execution order between repeats without changing task inputs.
@@ -107,16 +127,18 @@ async function main() {
     for (const mode of order) {
       if (!gold[task.id]) throw new Error(`No grading key for ${task.id}`);
       const started = Date.now();
-      const answer = await runAdapter(mode, task, evidence.get(task.id)!, maxTurns);
+      const answer = await runAdapter(mode, task, evidence.get(task.id)!, maxTurns, models.agent);
       const wallSeconds = (Date.now()-started)/1000;
-      const grade = await gradeAnswer(task, answer, gold[task.id]!, values.judge === "llm");
+      const grade = await gradeAnswer(task, answer, gold[task.id]!, values.judge === "llm", rubricJudge);
       const result: Result = { ...answer, taskId: task.id, benchmark: task.benchmark, mode, repeat, wallSeconds, grade };
       results.push(result);
       writeJson(path.join(dir, "traces", `${task.id}-${mode}-${repeat}.json`), result);
       saveReport(dir, results, config.expectedRuns);
       console.log(`${task.id} / ${mode} / ${repeat}: ${answer.status}; ${grade.score === null ? grade.status : (grade.score*100).toFixed(1)+"%"}${answer.reason ? ` (${answer.reason})` : ""}`);
+      if (budget && (budget.stopped || answer.status === "error" || grade.status === "error")) { budget.stop(); throw new Error("Paid evaluation stopped; partial results and budget ledger retained"); }
     }
   }
+  budget?.complete();
   writeJson(path.join(dir, "complete.json"), { completedAt: new Date().toISOString(), expectedRuns: config.expectedRuns, actualRuns: results.length });
   console.log(`Report: ${path.join(dir, "comparison.md")}`);
   if (results.some((r) => r.status === "error" || r.grade.status === "error")) process.exitCode = 1;
