@@ -1,0 +1,224 @@
+{
+  "pending": {
+    "account_id": "account_demo",
+    "account_number": "987654321",
+    "acknowledgement": null,
+    "addenda": null,
+    "amount": 2500,
+    "approval": null,
+    "cancellation": null,
+    "company_descriptive_date": null,
+    "company_discretionary_data": null,
+    "company_entry_description": null,
+    "company_id": "1234987601",
+    "company_name": "National Phonograph Company",
+    "created_at": "2020-01-31T14:00:00Z",
+    "created_by": {
+      "category": "user",
+      "user": {
+        "email": "user@example.com"
+      }
+    },
+    "currency": "USD",
+    "destination_account_holder": "business",
+    "external_account_id": "external_account_vendor",
+    "funding": "checking",
+    "id": "ach_transfer_demo",
+    "idempotency_key": "ap-demo-key-1",
+    "inbound_funds_hold": null,
+    "individual_id": null,
+    "individual_name": "Ian Crease",
+    "network": "ach",
+    "notifications_of_change": [],
+    "pending_transaction_id": "pending_transaction_demo",
+    "preferred_effective_date": {
+      "date": null,
+      "settlement_schedule": "same_day"
+    },
+    "return": null,
+    "routing_number": "101050001",
+    "settlement": null,
+    "standard_entry_class_code": "corporate_credit_or_debit",
+    "statement_descriptor": "cmd_demo",
+    "status": "pending_submission",
+    "submission": null,
+    "transaction_id": null,
+    "type": "ach_transfer"
+  },
+  "settled": {
+    "account_id": "account_demo",
+    "account_number": "987654321",
+    "acknowledgement": null,
+    "addenda": null,
+    "amount": 2500,
+    "approval": null,
+    "cancellation": null,
+    "company_descriptive_date": null,
+    "company_discretionary_data": null,
+    "company_entry_description": null,
+    "company_id": "1234987601",
+    "company_name": "National Phonograph Company",
+    "created_at": "2020-01-31T14:00:00Z",
+    "created_by": {
+      "category": "user",
+      "user": {
+        "email": "user@example.com"
+      }
+    },
+    "currency": "USD",
+    "destination_account_holder": "business",
+    "external_account_id": "external_account_vendor",
+    "funding": "checking",
+    "id": "ach_transfer_demo",
+    "idempotency_key": "ap-demo-key-1",
+    "inbound_funds_hold": null,
+    "individual_id": null,
+    "individual_name": "Ian Crease",
+    "network": "ach",
+    "notifications_of_change": [],
+    "pending_transaction_id": null,
+    "preferred_effective_date": {
+      "date": null,
+      "settlement_schedule": "same_day"
+    },
+    "return": null,
+    "routing_number": "101050001",
+    "settlement": {
+      "settled_at": "2026-10-23T12:00:00Z"
+    },
+    "standard_entry_class_code": "corporate_credit_or_debit",
+    "statement_descriptor": "cmd_demo",
+    "status": "submitted",
+    "submission": null,
+    "transaction_id": "transaction_debit",
+    "type": "ach_transfer"
+  },
+  "returned": {
+    "account_id": "account_demo",
+    "account_number": "987654321",
+    "acknowledgement": null,
+    "addenda": null,
+    "amount": 2500,
+    "approval": null,
+    "cancellation": null,
+    "company_descriptive_date": null,
+    "company_discretionary_data": null,
+    "company_entry_description": null,
+    "company_id": "1234987601",
+    "company_name": "National Phonograph Company",
+    "created_at": "2020-01-31T14:00:00Z",
+    "created_by": {
+      "category": "user",
+      "user": {
+        "email": "user@example.com"
+      }
+    },
+    "currency": "USD",
+    "destination_account_holder": "business",
+    "external_account_id": "external_account_vendor",
+    "funding": "checking",
+    "id": "ach_transfer_demo",
+    "idempotency_key": "ap-demo-key-1",
+    "inbound_funds_hold": null,
+    "individual_id": null,
+    "individual_name": "Ian Crease",
+    "network": "ach",
+    "notifications_of_change": [],
+    "pending_transaction_id": null,
+    "preferred_effective_date": {
+      "date": null,
+      "settlement_schedule": "same_day"
+    },
+    "return": {
+      "addenda_information": null,
+      "created_at": "2026-10-24T12:00:00Z",
+      "raw_return_reason_code": "R23",
+      "return_reason_code": "credit_entry_refused_by_receiver",
+      "trace_number": "111122223292834",
+      "transaction_id": "transaction_return",
+      "transfer_id": "ach_transfer_demo"
+    },
+    "routing_number": "101050001",
+    "settlement": {
+      "settled_at": "2026-10-23T12:00:00Z"
+    },
+    "standard_entry_class_code": "corporate_credit_or_debit",
+    "statement_descriptor": "cmd_demo",
+    "status": "returned",
+    "submission": null,
+    "transaction_id": "transaction_debit",
+    "type": "ach_transfer"
+  },
+  "debit": {
+    "account_id": "account_demo",
+    "amount": -2500,
+    "created_at": "2026-10-23T12:00:00Z",
+    "currency": "USD",
+    "description": "INVOICE 2468",
+    "id": "transaction_debit",
+    "route_id": "account_number_v18nkfqm6afpsrvy82b2",
+    "route_type": "account_number",
+    "source": {
+      "category": "ach_transfer_intention",
+      "ach_transfer_intention": {
+        "account_number": "987654321",
+        "amount": -2500,
+        "routing_number": "101050001",
+        "statement_descriptor": "cmd_demo",
+        "transfer_id": "ach_transfer_demo"
+      }
+    },
+    "type": "transaction"
+  },
+  "credit": {
+    "account_id": "account_demo",
+    "amount": 2500,
+    "created_at": "2026-10-24T12:00:00Z",
+    "currency": "USD",
+    "description": "INVOICE 2468",
+    "id": "transaction_return",
+    "route_id": "account_number_v18nkfqm6afpsrvy82b2",
+    "route_type": "account_number",
+    "source": {
+      "category": "ach_transfer_return",
+      "ach_transfer_return": {
+        "addenda_information": null,
+        "created_at": "2026-10-24T12:00:00Z",
+        "raw_return_reason_code": "R23",
+        "return_reason_code": "credit_entry_refused_by_receiver",
+        "trace_number": "111122223292834",
+        "transaction_id": "transaction_return",
+        "transfer_id": "ach_transfer_demo"
+      }
+    },
+    "type": "transaction"
+  },
+  "unknown": {
+    "account_id": "account_demo",
+    "amount": -100,
+    "created_at": "2026-10-23T12:00:00Z",
+    "currency": "USD",
+    "description": "INVOICE 2468",
+    "id": "transaction_unmatched",
+    "route_id": "account_number_v18nkfqm6afpsrvy82b2",
+    "route_type": "account_number",
+    "source": {
+      "category": "other"
+    },
+    "type": "transaction"
+  },
+  "event": {
+    "associated_object_id": "ach_transfer_demo",
+    "associated_object_type": "ach_transfer",
+    "category": "ach_transfer.updated",
+    "created_at": "2020-01-31T23:59:59Z",
+    "id": "event_demo",
+    "type": "event"
+  },
+  "error": {
+    "status": 429,
+    "type": "rate_limited_error",
+    "title": "Rate limit exceeded",
+    "detail": null
+  }
+}

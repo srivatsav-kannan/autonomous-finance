@@ -19,7 +19,7 @@ Built at Cal Hacks 13.0 for the Hyphenate track, *The Hyphenated Enterprise: Aut
   - Humans sit at the top as overseers.
 - **Built for agent pace.**
   - Agents talk to typed APIs and events, not spreadsheets.
-  - Fourteen simulated days run in under 20 seconds, with books that match economic truth to the cent.
+  - A seeded world emits invoices and company events; evaluation compares the resulting books with independent simulator truth.
 - **The kernel enforces the rules** (`convex/`). Every money fact goes through serializable transactions:
   - double entry in integer cents
   - exactly-once operations (idempotency keys)
@@ -44,34 +44,67 @@ Built at Cal Hacks 13.0 for the Hyphenate track, *The Hyphenated Enterprise: Aut
 
 ## Run it
 
-Requires Node 22+.
+Requires **Node 24.18.0 or later**, including for the pinned Prism contract tests. Use the committed dependency lockfile.
 
 ```bash
-npm install
+node --version
+npm ci
 npm run backend                       # local Convex (no account needed); keep it running
 ```
 
-In a second terminal, set the admin secret once. Put the same value in `.env.local`:
+On a fresh local deployment, the first function deployment can report missing auth configuration while the backend remains running. Once it has created `.env.local`, set these local simulator placeholders from a second terminal in the same checkout:
 
 ```bash
-npx convex env set KERNEL_ADMIN_SECRET "$(openssl rand -hex 24)"
+npx convex env set AP_HUMAN_AUTH_ISSUER https://ap-demo.invalid
+npx convex env set AP_HUMAN_AUTH_AUDIENCE ap-demo
+```
+
+Use the deployment selected by this checkout's `.env.local`; the anonymous local bootstrap does not accept `--deployment local`. Wait for successful function deployment after the environment update, restarting `npm run backend` if needed. These placeholders do not issue real JWTs.
+
+Run the recoverable AP flow:
+
+```bash
+npm run demo:local
+```
+
+The [AP demo guide](docs/ap-demo.md) documents immutable human approval, a lost bank response, a killed/restarted dispatcher, missing webhook recovery, journal posting and reconciliation. The local run uses an explicitly simulated human identity. Real JWT approval, Increase sandbox credentials and live webhook delivery are separate checks; missing credentials report `NOT_RUN`.
+
+For the broader legacy profile, choose an admin secret, set it interactively, and put the same value in the uncommitted `.env.local`:
+
+```bash
+npx convex env set KERNEL_ADMIN_SECRET
 ```
 
 Add `ANTHROPIC_API_KEY=...` to `.env.local` to turn on Claude. Without it, the team runs its deterministic paths only.
 
 ```bash
-npm run smoke                          # 42 invariant checks on the kernel and memory
-npm run eval -- --stores 3 --days 14   # full scored run; add --chaos 0.3 to re-deliver 30% of events
+npm run smoke                          # kernel and memory invariant checks
+npm run eval -- --stores 3 --days 14   # legacy scored run; payments are request-only
 npm run gateway                        # human gateway on :8787 (holds the human CFO seat token)
 npm run console                        # overseer console on http://127.0.0.1:5173
 ```
 
-Live demo with the world playing in real time:
+The legacy world and agent profile can run in real time. Its team/runtime have no bank submission capability, and the evaluator cannot execute payments; use the dedicated AP demo for money movement:
 
 ```bash
 npm run world -- --run demo --stores 3 --days 14 --pace 3000
 npm run agents -- --run demo
 ```
+
+Check the implementation independently of a running backend:
+
+```bash
+npm run typecheck
+npm run typecheck:backend
+npm run typecheck:tests
+npm test
+npm run test:bank
+npm run test:payments
+npm run test:contracts
+npx vite build --config console/vite.config.ts
+```
+
+The AP guide maps these suites to authorization, concurrent dispatch, response loss, worker restart, reconciliation and return scenarios. Simulator and Prism results do not establish live sandbox success.
 
 ### Simulation dates
 
@@ -94,7 +127,8 @@ of the month is simulated; it does not prorate bills.
 | `src/memory/` | Git-first memory store, schemas, day-zero seed |
 | `src/agents/` | Runtime, Claude tool loop, seat handlers, staffing |
 | `src/world/` | World simulator, planted errors, answer key, simulated bank, callback oracle |
-| `src/integrations/` | Invoice parsers (built-in + sandboxed agent-written) |
+| `src/integrations/` | Invoice parsers, persistent FakeBank and Increase sandbox adapter |
+| `src/payments/` | Scoped AP agent handles, durable dispatcher and verified evidence worker |
 | `src/evals/` | Scorer and end-to-end eval runner |
 | `src/human/` | Human gateway for the console |
 | `console/` | Overseer console (React + Convex live queries + WebMCP tools) |
