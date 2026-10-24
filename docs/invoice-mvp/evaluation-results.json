@@ -1,0 +1,17 @@
+{
+  "protocolCommit": "357866ec73dd8a643408e4a3b1ca4db6654e99b7",
+  "upstreamCommit": "b8cb58ff9747486e86c623e867b76fad5d8d075f",
+  "reportStatus": "FREE_PREPARATION_COMPLETE_ACCEPTANCE_PENDING",
+  "preparation": {"originalFiles":148,"originalBytes":100094614,"pdfFiles":112,"pdfTextChars":2686974,"largestSourceJsonBytes":1218637,"python":"3.12.12","pypdf":"6.21.2"},
+  "checks": {"adapterAndMockHttpTests":10,"originalScorerSyntheticSemanticsTests":3,"totalPassed":13,"totalFailed":0},
+  "originalApplication": {"status":"NOT RUN","officialAccuracy":null,"costUsd":null,"reason":"Integrated runtime pending; original source storage and runtime attestation being implemented"},
+  "heldoutApplication": {"status":"NOT RUN","checksPassed":null,"reason":"First scored run deferred until integrated endpoint ready"},
+  "restartAcceptance": {"status":"NOT RUN"},
+  "humanReplayAndStaleApprovalEvaluation": {"status":"NOT RUN"},
+  "liveBaselineA": {"status":"NOT RUN","costUsd":null,"reason":"No authorized spend or credential; new pre-request capped transport required"},
+  "liveApplication": {"status":"NOT RUN","costUsd":null,"reason":"No authorized spend or credential; live adapter intentionally disabled"},
+  "reviewerComparison": {"status":"NOT APPLICABLE","reason":"No reviewer implemented"},
+  "newModelApiCalls":0,
+  "newModelApiSpendUsd":0,
+  "contamination":"Original fixture previously seen; private held-out scenarios and expected answers not exposed to implementation workers"
+}
