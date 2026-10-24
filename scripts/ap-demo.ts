@@ -3,6 +3,7 @@ import path from "node:path";
 import { randomBytes, createHash } from "node:crypto";
 import { spawnSync, spawn } from "node:child_process";
 import assert from "node:assert/strict";
+import { z } from "zod";
 import { ConvexHttpClient } from "convex/browser";
 import "../src/core/env";
 import { api } from "../convex/_generated/api";
@@ -14,12 +15,12 @@ import { EvidenceWorker } from "../src/payments/evidence";
 import { DemoAPAgent, DemoPaymentsAgent } from "../src/payments/agents";
 import { demoInvoice } from "../src/payments/demo-invoice";
 import increaseProvenance from "../src/integrations/fixtures/increase/provenance.json";
-import type { BankScope } from "../src/integrations/contracts";
+import type { BankScope, BankTransaction } from "../src/integrations/contracts";
 
 const profile = process.argv[2] ?? "local";
 if (!["local", "sandbox"].includes(profile)) throw new Error("Usage: npm run demo:local | npm run demo:sandbox");
 const sandbox = sandboxConfiguration();
-const required = ["CONVEX_URL", "KERNEL_ADMIN_SECRET", "AP_DISPATCH_SECRET", "AP_EVIDENCE_SECRET", "AP_HUMAN_JWT", "AP_HUMAN_SUBJECT", "AP_RUN_ID", "AP_ORGANIZATION_ID"];
+const required = ["CONVEX_URL", "KERNEL_ADMIN_SECRET", "AP_DISPATCH_SECRET", "AP_EVIDENCE_SECRET", "AP_HUMAN_JWT", "AP_HUMAN_SUBJECT", "AP_RUN_ID", "AP_ORGANIZATION_ID", "AP_SANDBOX_FUNDING"];
 if (profile === "sandbox") {
   const missing = [...(sandbox.status === "not_run" ? sandbox.missing : []), ...required.filter(k => !process.env[k])];
   if (missing.length) { console.log(JSON.stringify({ profile, status: "not_run", missing, reason: "Live Increase and authenticated human approval prerequisites are required; simulator tests do not count." }, null, 2)); process.exit(2); }
@@ -54,15 +55,39 @@ if (localAdminKey) (human as unknown as { setAdminAuth(key: string, identity: {i
 else human.setAuth(process.env.AP_HUMAN_JWT!);
 const source = demoInvoice(7, "2026-01-05");
 const today = profile === "sandbox" ? new Date().toISOString().slice(0, 10) : source.invoice.invoiceDate;
+const evidenceAuth = {scope,token:secrets.evidence};
+const sandboxProvider = profile === "sandbox" && sandbox.status === "ready"
+  ? new IncreaseSandboxBank({scope,apiKey:sandbox.configuration.apiKey,signingSecret:sandbox.configuration.signingSecret,resolveCommand:key=>client.query(api.demoEvidence.resolveCommand,{...evidenceAuth,idempotencyKey:key})})
+  : undefined;
+const fundingTransactions: BankTransaction[] = [];
+if (sandboxProvider) {
+  // Operator-selected transaction IDs and amounts are an explicit classification, not a filter
+  // that hides other account activity. Every other statement transaction remains a close blocker.
+  const approvals = z.array(z.object({ transactionId: z.string().regex(/^transaction_[a-zA-Z0-9]+$/), amountCents: z.number().int().positive() }).strict()).min(1).parse(JSON.parse(process.env.AP_SANDBOX_FUNDING!));
+  if (new Set(approvals.map(a=>a.transactionId)).size !== approvals.length) throw new Error("Funding transaction IDs must be distinct");
+  for (const approval of approvals) {
+    const transaction = await sandboxProvider.getTransaction(scope, approval.transactionId);
+    if (transaction.sourceCategory !== "inbound_wire_transfer" || transaction.purpose !== "other" || transaction.commandId || transaction.transferId || transaction.amountCents !== approval.amountCents) throw new Error("Selected sandbox funding differs from the reviewed wire and amount");
+    fundingTransactions.push(transaction);
+  }
+}
+const periods = [...new Set([source.invoice.invoiceDate.slice(0,7),today.slice(0,7),...fundingTransactions.map(t=>t.postedAt!.slice(0,7))])];
 const tokens = { ap: random(), payments: random(), controller: random() };
 const seats = [
   ...Object.entries(tokens).map(([seatId, token]) => ({ seatId, role: seatId === "ap" ? "ap_clerk" : seatId, kind: "agent" as const, name: seatId, tokenHash: createHash("sha256").update(token).digest("hex") })),
   { seatId: "human", role: "human_cfo", kind: "human" as const, name: "Human CFO", tokenHash: createHash("sha256").update(random()).digest("hex") },
 ];
-const created = await client.mutation(api.admin.createRun, { secret: secrets.admin, runId, label: `AP ${profile} recovery demo`, company: "AP Demo", simDate: today, seats, periods: [...new Set([source.invoice.invoiceDate.slice(0, 7), today.slice(0, 7)])] });
+const created = await client.mutation(api.admin.createRun, { secret: secrets.admin, runId, label: `AP ${profile} recovery demo`, company: "AP Demo", simDate: today, seats, periods });
 if (!created.ok) throw new Error(created.error);
 const externalAccountId = profile === "sandbox" && sandbox.status === "ready" ? sandbox.configuration.externalAccountId : "external-vendor";
 await client.mutation(api.demoPayments.configure, { scope, secret: secrets.admin, beneficiary: {vendor: source.vendor, externalAccountId, version: "beneficiary-v1"}, policyVersion: "ap-demo-v1", controllerLimitCents: 5_000_000, humanSubjects: [{subject: humanSubject, seatId: "human"}] });
+if (fundingTransactions.length) {
+  await client.mutation(api.demoEvidence.importPage, { ...evidenceAuth, expectedCursor: null, cursor: null, transactions: fundingTransactions });
+  for (const transaction of fundingTransactions) await human.mutation(api.demoEvidence.approveSandboxFunding, {
+    scope, transactionId: transaction.id, expectedAmountCents: transaction.amountCents,
+    reason: "Operator-selected AP_SANDBOX_FUNDING wire contributed as sandbox demo capital",
+  });
+}
 const ap = new DemoAPAgent(client, {scope,seatId:"ap",token:tokens.ap});
 const payments = new DemoPaymentsAgent(client, {scope,seatId:"payments",token:tokens.payments});
 fs.writeFileSync(path.join(artifactDir,"invoice.json"), JSON.stringify(source.event,null,2));
@@ -70,7 +95,6 @@ const {billId} = await ap.recordInvoice({vendor:source.vendor,invoiceNumber:sour
 await client.mutation(api.demoPayments.acceptBill, {scope,seatId:"controller",token:tokens.controller,billId,approvedCents:source.invoice.totalCents});
 const requested = await payments.requestPayment([billId], `invoice:${source.event.externalId}`);
 const approved = await human.mutation(api.demoPayments.approveAndQueue, {scope,...requested});
-const evidenceAuth = {scope,token:secrets.evidence};
 let bankEvidence: unknown;
 if (profile === "local") {
   const bankPath = path.join(artifactDir,"bank.sqlite");
@@ -96,8 +120,8 @@ if (profile === "local") {
   const state=bank.harness.inspect();assert.equal(state.transfers.length,1);assert.equal(state.transactions.filter(t=>t.status==="posted"&&t.purpose==="debit").length,1);
   bankEvidence={transfers:state.transfers,transactions:state.transactions,calls:state.calls};
   } finally { bank.close(); fs.unlinkSync(workerConfig); } // Credential artifact is not part of the evidence report.
-} else if (sandbox.status === "ready") {
-  const provider=new IncreaseSandboxBank({scope,apiKey:sandbox.configuration.apiKey,signingSecret:sandbox.configuration.signingSecret,resolveCommand:key=>client.query(api.demoEvidence.resolveCommand,{...evidenceAuth,idempotencyKey:key})});
+} else if (sandbox.status === "ready" && sandboxProvider) {
+  const provider=sandboxProvider;
   const dispatched=await new PaymentDispatcher(client,scope,secrets.dispatcher,provider,"sandbox-dispatcher").tick();
   if (!dispatched.providerTransferId) throw new Error(`Sandbox dispatch incomplete: ${JSON.stringify(dispatched)}`);
   const harness=new IncreaseSandboxHarness({scope,apiKey:sandbox.configuration.apiKey});
@@ -111,7 +135,15 @@ if (profile === "local") {
 }
 const review=await human.query(api.demoPayments.humanReview,{scope});
 const evidence=await human.query(api.demoEvidence.humanView,{scope});
-assert.equal(review.commands.length,1);assert.equal(review.commands[0]?.execution,"settled");assert.equal(review.commands[0]?.posting,"posted");assert.equal(review.commands[0]?.reconciliation,"matched");assert.equal(evidence.transactions.length,1);assert.equal(evidence.blockers.length,0);
+const paymentEvidence=evidence.transactions.filter(t=>t.transaction.commandId===requested.versionId&&t.transaction.purpose==="debit");
+assert.equal(review.commands.length,1);assert.equal(review.commands[0]?.execution,"settled");assert.equal(review.commands[0]?.posting,"posted");assert.equal(review.commands[0]?.reconciliation,"matched");assert.equal(paymentEvidence.length,1);assert.equal(evidence.blockers.length,0);
+assert.ok(fundingTransactions.every(tx=>evidence.transactions.some(t=>t.transaction.id===tx.id&&t.fundingApproval&&t.entryId)));
+const closeResults=[];
+for (const period of periods) {
+  assert.equal((await client.mutation(api.demoEvidence.signClose,{scope,period,seatId:"controller",token:tokens.controller})).status,"open");
+  const closed=await human.mutation(api.demoEvidence.signClose,{scope,period});
+  assert.equal(closed.status,"closed");closeResults.push({period,...closed});
+}
 const providerContract=profile==="sandbox"?{provider:"increase",environment:"sandbox",specVersion:increaseProvenance.upstreamInfoVersion,specSha256:increaseProvenance.upstreamSha256,pinnedSubsetSha256:increaseProvenance.subsetSha256,fixtureSha256:increaseProvenance.fixtureSha256}:{provider:"fake",environment:"local",contractVersion:1,storage:"sqlite"};
-const report={profile,status:"passed",identityMode,commit:spawnSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).stdout.trim(),scope,providerContract,seed:7,fixtureHash:createHash("sha256").update(JSON.stringify(source.event)).digest("hex"),faultSchedule:profile==="local"?["accept_then_lost_response","worker_exit","missing_webhook"]:[],versionId:requested.versionId,commandId:approved.commandId,bankEvidence,review,evidence};
-const reportPath=path.join(artifactDir,"report.json");fs.writeFileSync(reportPath,JSON.stringify(report,null,2));console.log(JSON.stringify({profile,status:"passed",identityMode,reportPath,commandId:approved.commandId,transactionId:evidence.transactions[0]?.transaction.id,entryId:evidence.transactions[0]?.entryId},null,2));
+const report={profile,status:"passed",identityMode,commit:spawnSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).stdout.trim(),scope,providerContract,seed:7,fixtureHash:createHash("sha256").update(JSON.stringify(source.event)).digest("hex"),faultSchedule:profile==="local"?["accept_then_lost_response","worker_exit","missing_webhook"]:[],versionId:requested.versionId,commandId:approved.commandId,bankEvidence,review,evidence,closeResults};
+const reportPath=path.join(artifactDir,"report.json");fs.writeFileSync(reportPath,JSON.stringify(report,null,2));console.log(JSON.stringify({profile,status:"passed",identityMode,reportPath,commandId:approved.commandId,transactionId:paymentEvidence[0]?.transaction.id,entryId:paymentEvidence[0]?.entryId,closeResults},null,2));

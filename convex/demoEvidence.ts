@@ -88,6 +88,53 @@ export const ingestNotice = mutation({
   },
 });
 
+/** Evidence service attests ownership of the exact resource referenced by the signed notice. */
+export const ignoreForeignNotice = mutation({
+  args: { ...serviceArgs, eventId: v.string(), resourceType: v.union(v.literal("ach_transfer"), v.literal("transaction")), resourceId: v.string(), accountId: v.string() },
+  handler: async (ctx, args) => {
+    await requireService(ctx, args.scope, args.token, "evidence");
+    const notice = await ctx.db.query("demoInbox").withIndex("by_event", q => q.eq("scope.runId", args.scope.runId).eq("eventId", args.eventId)).unique();
+    if (!notice || !args.accountId.trim() || args.accountId === args.scope.accountId ||
+        (args.resourceType === "ach_transfer" ? notice.transferId !== args.resourceId : notice.transferId !== undefined || notice.transactionId !== args.resourceId)) {
+      throw new Error("Foreign notification requires verified ownership of its direct resource");
+    }
+    if (notice.processed) return { replayed: true };
+    const ignoredResource = { resourceType: args.resourceType, resourceId: args.resourceId, accountId: args.accountId, verifiedAt: Date.now() };
+    await ctx.db.patch(notice._id, { processed: true, error: undefined, ignoredResource });
+    await auditDemo(ctx, args.scope, "evidence-service", "notification_ignored_out_of_scope", { eventId: args.eventId, ...ignoredResource });
+    return { replayed: false };
+  },
+});
+
+/** The human explicitly classifies a verified sandbox wire as contributed demo capital. */
+export const approveSandboxFunding = mutation({
+  args: { scope: scopeValidator, transactionId: v.string(), expectedAmountCents: v.number(), reason: v.string() },
+  handler: async (ctx, args) => {
+    const { subject, seat } = await requireHuman(ctx, args.scope);
+    const evidence = await transactionFor(ctx, args.scope, args.transactionId);
+    const tx = evidence?.transaction;
+    if (args.scope.provider !== "increase" || args.scope.environment !== "sandbox" || !tx ||
+        tx.sourceCategory !== "inbound_wire_transfer" || tx.purpose !== "other" || tx.commandId || tx.transferId || tx.originalTransactionId ||
+        tx.status !== "posted" || tx.amountCents <= 0 || tx.amountCents !== args.expectedAmountCents || !args.reason.trim()) {
+      throw new Error("Review an imported positive sandbox funding wire and its exact amount");
+    }
+    if (evidence.entryId) {
+      if (!evidence.fundingApproval) throw new Error("Transaction already classified differently");
+      return { entryId: evidence.entryId, replayed: true };
+    }
+    const key = `demo:funding:${args.scope.runId}:${tx.id}`;
+    const result = await appendDemoEntry(ctx, {
+      runId: args.scope.runId, seat: accountingSeat(args.scope.runId), date: tx.postedAt!.slice(0, 10),
+      memo: `Human-approved sandbox capital ${tx.id}`, source: { kind: "bank_match", ref: key },
+      lines: [{ account: "1000", debit: tx.amountCents, credit: 0 }, { account: "3000", debit: 0, credit: tx.amountCents }], idempotencyKey: key,
+    });
+    if (!result.ok) throw new Error(`Funding posting blocked: ${result.code}: ${result.error}`);
+    await ctx.db.patch(evidence._id, { entryId: result.entryId, state: "posted", error: undefined, matchedAt: Date.now(), fundingApproval: { subject, reason: args.reason.trim(), at: Date.now() } });
+    await auditDemo(ctx, args.scope, seat.seatId, "sandbox_funding_approved", { transactionId: tx.id, amountCents: tx.amountCents, reason: args.reason.trim(), entryId: result.entryId });
+    return { entryId: result.entryId, replayed: false };
+  },
+});
+
 /** Durable imported records and the polling checkpoint commit together (or roll back together). */
 export const importPage = mutation({
   args: { ...serviceArgs, expectedCursor: v.union(v.string(), v.null()), cursor: v.union(v.string(), v.null()), transactions: v.array(transactionValidator) },
@@ -99,6 +146,18 @@ export const importPage = mutation({
     if (old) await ctx.db.patch(old._id, { cursor: args.cursor, updatedAt: Date.now() });
     else await ctx.db.insert("demoCursors", { scope: args.scope, cursor: args.cursor, updatedAt: Date.now() });
     return { stale: false };
+  },
+});
+
+/** Non-AP transaction notifications still require a verified resource, but no ACH command. */
+export const observeTransactionNotice = mutation({
+  args: { ...serviceArgs, eventId: v.string(), transaction: transactionValidator },
+  handler: async (ctx, args) => {
+    await requireService(ctx, args.scope, args.token, "evidence");
+    const notice = await ctx.db.query("demoInbox").withIndex("by_event", q => q.eq("scope.runId", args.scope.runId).eq("eventId", args.eventId)).unique();
+    if (!notice || notice.transferId || notice.transactionId !== args.transaction.id || args.transaction.commandId) throw new Error("Non-AP transaction notification mismatch");
+    await saveTransaction(ctx, args.scope, args.transaction);
+    await ctx.db.patch(notice._id, { processed: true, error: undefined });
   },
 });
 export const observeTransfer = mutation({

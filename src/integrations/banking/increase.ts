@@ -1,7 +1,7 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import {
-  BankProviderError, buildIncreaseRequestBody, canonicalJson, commandRequestHash, sameBankScope,
+  BankProviderError, BankResourceOutsideScope, buildIncreaseRequestBody, canonicalJson, commandRequestHash, sameBankScope,
   type BankCommand, type BankScope, type BankTransaction, type BankingProvider,
   type BankingEvents, type BankPagination, type BankPage, type BankEvent, type TransferObservation,
 } from "../contracts.js";
@@ -10,7 +10,7 @@ export const INCREASE_SANDBOX_ORIGIN = "https://sandbox.increase.com";
 const id = z.string().min(1);
 const time = z.iso.datetime({ offset: true });
 const transferSchema = z.object({
-  id, type: z.literal("ach_transfer"), account_id: id, amount: z.number().int().positive(),
+  id, type: z.literal("ach_transfer"), account_id: id, amount: z.number().int().refine(amount => amount !== 0),
   currency: z.literal("USD"), external_account_id: id.nullable(), idempotency_key: id.nullable(),
   statement_descriptor: z.string(), status: z.enum(["pending_submission", "pending_reviewing", "pending_approval", "submitted", "returned", "rejected", "canceled", "requires_attention"]),
   created_at: time, pending_transaction_id: id.nullable(), transaction_id: id.nullable(),
@@ -165,12 +165,14 @@ export class IncreaseSandboxBank implements BankingProvider, BankingEvents {
   }
   async #rawTransfer(transferId: string): Promise<Transfer> {
     const transfer = parse(transferSchema, await this.#request(this.#resourcePath("ach_transfers", transferId)));
-    if (transfer.id !== transferId || transfer.account_id !== this.#scope.accountId) throw new BankProviderError("configuration", "Increase transfer scope or identity mismatch");
+    if (transfer.id !== transferId) throw new BankProviderError("configuration", "Increase transfer identity mismatch");
+    if (transfer.account_id !== this.#scope.accountId) throw new BankResourceOutsideScope("ach_transfer", transferId, transfer.account_id);
     return transfer;
   }
   async #rawTransaction(transactionId: string): Promise<Transaction> {
     const transaction = parse(transactionSchema, await this.#request(this.#resourcePath("transactions", transactionId)));
-    if (transaction.id !== transactionId || transaction.account_id !== this.#scope.accountId) throw new BankProviderError("configuration", "Increase transaction scope or identity mismatch");
+    if (transaction.id !== transactionId) throw new BankProviderError("configuration", "Increase transaction identity mismatch");
+    if (transaction.account_id !== this.#scope.accountId) throw new BankResourceOutsideScope("transaction", transactionId, transaction.account_id);
     return transaction;
   }
   async #command(transfer: Transfer, supplied?: BankCommand): Promise<BankCommand | null> {
@@ -251,7 +253,8 @@ export class IncreaseSandboxBank implements BankingProvider, BankingEvents {
     }
     // Do not filter unrelated account activity: an empty command identity becomes a close blocker.
     return { id: transaction.id, scope: { ...this.#scope }, transferId: link?.transferId ?? "", commandId,
-      amountCents: transaction.amount, currency: "USD", status: "posted", purpose: link?.purpose ?? (transaction.amount > 0 ? "return" : "debit"),
+      amountCents: transaction.amount, currency: "USD", status: "posted", purpose: commandId && link ? link.purpose : "other",
+      sourceCategory: transaction.source.category,
       createdAt: transaction.created_at, postedAt: transaction.created_at, ...(originalTransactionId ? { originalTransactionId } : {}) };
   }
   async getTransaction(scope: BankScope, transactionId: string): Promise<BankTransaction> {

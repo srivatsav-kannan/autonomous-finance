@@ -72,10 +72,30 @@ The coordinator then performs the headline failure scenario:
 4. Start another dispatcher process. It reuses the saved command/key and receives the existing transfer.
 5. Settle the bank transfer, drop its notifications, and recover the posted debit by polling.
 6. Post one cash journal effect, link the bank transaction to it, and rerun reconciliation to assert no duplicate.
+7. Collect the controller and simulated-human signatures and verify that each demo period closes.
 
 The command exits unsuccessfully when an invariant fails. A successful run prints the path to `var/ap-demo/<run-id>/report.json` and the command, provider transaction and journal IDs. The report contains the Git commit, seed, fixture hash, provider contract/specification pin, fault schedule, identity mode and linked evidence. Its independent bank state is retained at `var/ap-demo/<run-id>/bank.sqlite`. The bank and report are runtime artifacts ignored by Git. A second ordinary invocation creates a fresh run; an explicit reused `AP_RUN_ID` is rejected rather than replaying historical financial rows.
 
 Detailed provider storage and fault controls are documented in [fake-bank.md](ap-demo/fake-bank.md).
+
+### Browser approval with a local OIDC test identity
+
+In an isolated local checkout with `npm run backend` running, start
+`npx tsx scripts/testing/ap-browser-fixture.ts` and `npm run console` in separate
+terminals. The fixture binds a temporary OIDC issuer to loopback, configures this
+local deployment, rejects wrong-audience and expired tokens, and prints a path to
+an ignored `browser-session.json`. Open `/ap-demo`, enter that file's scope and
+test JWT, review the $100 payment, and approve it. The fixture then dispatches to
+FakeBank, drops notifications, polls and posts once, and verifies both close
+signatures. Refresh the UI to see `settled / posted / matched` and zero blockers.
+The issuer remains running for this final refresh; stop it afterward to remove
+the test token file. It changes the isolated deployment's demo service/auth
+configuration, so do not share that deployment with other work. Restore your
+issuer/audience before testing a different identity provider.
+
+This exercises the browser and the backend's real JWT signature/claim validation
+with a synthetic `local_oidc_test_identity`. It does not establish a production
+identity, call Increase or demonstrate an external provider login.
 
 ## Increase sandbox prerequisites and execution
 
@@ -96,9 +116,33 @@ Set these values in the trusted coordinator environment or an uncommitted enviro
 | `INCREASE_SANDBOX_EXTERNAL_ACCOUNT_ID` | The one activated beneficiary reference |
 | `INCREASE_SANDBOX_WEBHOOK_SECRET` | Required when verifying live signed webhook requests; polling can run without it |
 | `AP_ORGANIZATION_ID`, `AP_RUN_ID` | Required explicit organization/new-run identity for the sandbox profile |
+| `AP_SANDBOX_FUNDING` | JSON array of explicitly reviewed sandbox capital wires, each with `transactionId` and positive `amountCents` |
 | `AP_BANK_SCOPE` | JSON scope binding shared by the Convex deployment and service workers, matching those identities, `increase`/`sandbox` and the authorized account |
 
 For a fresh sandbox-backed deployment, configure real `AP_HUMAN_AUTH_ISSUER` and `AP_HUMAN_AUTH_AUDIENCE` values on the Convex deployment before its function deployment can succeed, then deploy `convex/auth.config.ts`. Replace any local simulator placeholders before using a real human JWT. The issuer must support the normal Convex JWT verification flow. Setup binds `AP_HUMAN_SUBJECT` to the active human CFO seat. Agent seat tokens, bank credentials and the dispatcher/evidence service secrets cannot substitute for that identity.
+
+Fund the dedicated account using inbound wire simulations and review their posted
+transaction IDs and amounts. For example, `AP_SANDBOX_FUNDING='[{"transactionId":"transaction_example","amountCents":100000}]'`
+selects a $1,000 contribution of sandbox demo capital. The runner fetches each
+exact transaction from the configured bank account and rejects a different amount
+or source. The human JWT then approves its classification as cash / stockholders'
+equity through `demoEvidence.approveSandboxFunding`. Each wire has its own journal
+entry and audit record; it is not hidden from the statement. This helper is only
+for reviewed sandbox capital contributions, not arbitrary income or loan receipts.
+
+The full statement is still imported. Unselected wires, unrelated collections
+and other unexplained activity remain close blockers. The completion assertion
+requires one debit for the approved payable, all selected funding accounted for,
+zero blockers and both close signatures, rather than one transaction in the entire
+account. The runner opens the selected funding periods as well as the invoice and
+payment periods. Use a fresh run after deploying these pre-merge schema/identity
+changes; historical records are not silently relabeled.
+
+Signed notifications whose direct resource is verified to belong to another
+account receive an audited terminal disposition. Failed fetches, wrong resource
+identities and contradictory nested links remain unresolved. Valid unrelated ACH
+collections are retained as `other` evidence without preventing the payable on
+the same statement page from being posted.
 
 Configure the same three distinct service/setup secrets on the selected isolated Convex deployment. The CLI accepts secret values through stdin or an interactive prompt, avoiding a literal secret in shell history:
 
