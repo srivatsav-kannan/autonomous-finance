@@ -71,6 +71,7 @@ export default defineSchema({
     period: v.string(), // YYYY-MM
     status: v.union(v.literal("open"), v.literal("closed")),
     closedBy: v.optional(v.array(v.string())),
+    closeSnapshotHash: v.optional(v.string()), // Scoped AP signatures apply only to this reviewed state.
     closedAt: v.optional(v.number()),
     ledgerHead: v.optional(v.string()),
     memoryTag: v.optional(v.string()),
