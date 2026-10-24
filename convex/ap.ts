@@ -25,7 +25,7 @@ const billLine = v.object({
 
 /** "INV-000123", "inv 123" and "123" are the same invoice for duplicate detection. */
 export function normalizeInvoiceNumber(n: string): string {
-  return n.toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/^(INV|INVOICE|NO)/, "").replace(/^0+/, "");
+  return n.toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/^(INVOICE|INV|NO)/, "").replace(/^0+/, "");
 }
 
 /**
