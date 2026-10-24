@@ -10,8 +10,8 @@ const injected = { scope: { ...scope, accountId: "other-account" }, token: "call
 function transport() {
   const calls: { name: string; args: Record<string, unknown> }[] = [];
   const client: KernelTransport = {
-    mutation: async (reference, args) => { calls.push({ name: getFunctionName(reference), args }); return null as never; },
-    query: async (reference, args) => { calls.push({ name: getFunctionName(reference), args }); return null as never; },
+    mutation: async (reference, args) => { calls.push({ name: getFunctionName(reference), args: args ?? {} }); return null as never; },
+    query: async (reference, args) => { calls.push({ name: getFunctionName(reference), args: args ?? {} }); return null as never; },
   };
   return { client, calls };
 }
