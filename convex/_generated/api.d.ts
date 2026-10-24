@@ -16,6 +16,7 @@ import type * as demoEvidence from "../demoEvidence.js";
 import type * as demoEvidenceSchema from "../demoEvidenceSchema.js";
 import type * as demoPayments from "../demoPayments.js";
 import type * as demoSchema from "../demoSchema.js";
+import type * as invoiceCases from "../invoiceCases.js";
 import type * as ledger from "../ledger.js";
 import type * as lib_demoAuth from "../lib/demoAuth.js";
 import type * as lib_demoEffects from "../lib/demoEffects.js";
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   demoEvidenceSchema: typeof demoEvidenceSchema;
   demoPayments: typeof demoPayments;
   demoSchema: typeof demoSchema;
+  invoiceCases: typeof invoiceCases;
   ledger: typeof ledger;
   "lib/demoAuth": typeof lib_demoAuth;
   "lib/demoEffects": typeof lib_demoEffects;
