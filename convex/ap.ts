@@ -68,6 +68,10 @@ export const recordBill = mutation({
     if ("conflict" in idem) return await recordViolation(ctx, args.runId, args.seatId, op, idem.conflict);
     if (idem.hit) return { ...(idem.result as { ok: true; billId: Id<"bills">; entryId: Id<"journalEntries"> | null }), replayed: true };
 
+    if (!Number.isSafeInteger(args.totalCents)) {
+      return await recordViolation(ctx, args.runId, args.seatId, op, fail("invalid_bill", "total must be safe integer cents"));
+    }
+    let lineTotal = 0;
     for (const [i, l] of args.lines.entries()) {
       if (![l.unitCents, l.amountCents].every(Number.isSafeInteger)) {
         return await recordViolation(ctx, args.runId, args.seatId, op, fail("invalid_bill", `line ${i}: cents must be integers`));
@@ -76,8 +80,11 @@ export const recordBill = mutation({
         return await recordViolation(ctx, args.runId, args.seatId, op,
           fail("invalid_bill", `line ${i}: ${l.quantity} x ${l.unitCents} != ${l.amountCents}`));
       }
+      lineTotal += l.amountCents;
+      if (!Number.isSafeInteger(lineTotal)) {
+        return await recordViolation(ctx, args.runId, args.seatId, op, fail("invalid_bill", "line sum must be safe integer cents"));
+      }
     }
-    const lineTotal = args.lines.reduce((s, l) => s + l.amountCents, 0);
     if (lineTotal !== args.totalCents) {
       return await recordViolation(ctx, args.runId, args.seatId, op,
         fail("invalid_bill", `lines sum to ${lineTotal} but total is ${args.totalCents}`));

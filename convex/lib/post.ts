@@ -48,12 +48,15 @@ export function validateLines(seat: Seat, source: { kind: string }, lines: LineI
     }
     debits += line.debit;
     credits += line.credit;
+    if (!Number.isSafeInteger(debits) || !Number.isSafeInteger(credits)) {
+      return "entry totals must be safe integer cents";
+    }
   }
   if (debits !== credits) return `entry does not balance: debits ${debits} != credits ${credits}`;
   return null;
 }
 
-/** Append one balanced, hash-chained entry. Callers own idempotency. */
+/** Append one balanced, hash-chained entry. Returned failures never write; callers own idempotency. */
 export async function appendEntry(
   ctx: MutationCtx,
   input: PostInput,
@@ -69,6 +72,31 @@ export async function appendEntry(
     .unique();
   if (!periodDoc) return fail("period_not_open", `period ${period} has not been opened`);
   if (periodDoc.status === "closed") return fail("period_closed", `period ${period} is closed; post a correction in an open period`);
+
+  // Preflight every resulting balance before writing any journal or ledger state.
+  // Group repeated accounts so several individually safe lines cannot overflow a balance.
+  const changes = new Map<string, { debits: number; credits: number }>();
+  for (const line of input.lines) {
+    const change = changes.get(line.account) ?? { debits: 0, credits: 0 };
+    change.debits += line.debit;
+    change.credits += line.credit;
+    changes.set(line.account, change);
+  }
+  const balances: { id?: Id<"balances">; account: string; debits: number; credits: number }[] = [];
+  for (const [accountCode, change] of changes) {
+    const bal = await ctx.db
+      .query("balances")
+      .withIndex("by_run_account_period", (q) =>
+        q.eq("runId", input.runId).eq("account", accountCode).eq("period", period),
+      )
+      .unique();
+    const debits = (bal?.debits ?? 0) + change.debits;
+    const credits = (bal?.credits ?? 0) + change.credits;
+    if (!Number.isSafeInteger(debits) || !Number.isSafeInteger(credits)) {
+      return fail("invalid_entry", `balance for account ${accountCode} would exceed safe integer cents`);
+    }
+    balances.push({ id: bal?._id, account: accountCode, debits, credits });
+  }
 
   const head = await ctx.db
     .query("ledgerHeads")
@@ -114,22 +142,16 @@ export async function appendEntry(
   if (head) await ctx.db.patch(head._id, { hash, sequence });
   else await ctx.db.insert("ledgerHeads", { runId: input.runId, hash, sequence });
 
-  for (const line of input.lines) {
-    const bal = await ctx.db
-      .query("balances")
-      .withIndex("by_run_account_period", (q) =>
-        q.eq("runId", input.runId).eq("account", line.account).eq("period", period),
-      )
-      .unique();
-    if (bal) {
-      await ctx.db.patch(bal._id, { debits: bal.debits + line.debit, credits: bal.credits + line.credit });
+  for (const bal of balances) {
+    if (bal.id) {
+      await ctx.db.patch(bal.id, { debits: bal.debits, credits: bal.credits });
     } else {
       await ctx.db.insert("balances", {
         runId: input.runId,
-        account: line.account,
+        account: bal.account,
         period,
-        debits: line.debit,
-        credits: line.credit,
+        debits: bal.debits,
+        credits: bal.credits,
       });
     }
   }
