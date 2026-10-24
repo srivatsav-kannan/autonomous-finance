@@ -13,16 +13,26 @@ export type ToolName = "inspect_source" | "related_documents" | "related_custome
 export type ToolAction = { name: ToolName; input: Record<string, unknown> };
 export type Observation = { tool: ToolName; input: Record<string, unknown>; result: unknown; error?: boolean };
 export type ModelUsage = { inputTokens: number; outputTokens: number; costMicros: number; durationMs: number };
+export type ModelResponseUsage = Omit<ModelUsage, "costMicros"> & { costMicros: number | null };
 export type ModelRequest = { caseId: string; evidenceVersion: number; observations: Observation[]; decisionSummaries: string[] };
+export type ModelProvider = Readonly<{ baseURL: "https://api.anthropic.com"; authentication: "explicit_api_key"; pricing: Readonly<{ inputMicros: number; outputMicros: number }>; servedModelValidated: true; cacheUsageValidated: true }>;
 export interface InvestigatorModel {
   mode: "mock_model" | "live_model";
   model: string;
   reservation(request: ModelRequest): ModelUsage;
   next(request: ModelRequest): Promise<{ action: ToolAction; usage: ModelUsage }>;
   budget?: ResourceBudget;
+  readonly provider?: ModelProvider;
 }
 export type ResourceBudget = { maxCalls: number; maxInputTokens: number; maxOutputTokens: number; maxCostMicros: number };
 export const ZERO_USAGE: ModelUsage = { inputTokens: 0, outputTokens: 0, costMicros: 0, durationMs: 0 };
+
+/** A billed response can be unusable. Retain its usage without retaining model prose. */
+export class ModelResponseError extends InvoiceError {
+  constructor(message: string, readonly usage: ModelResponseUsage) {
+    super("model_output_invalid", message);
+  }
+}
 
 export const TOOL_SCHEMAS = [
   { name: "inspect_source", description: "Read a page of original extracted text with provenance and exact evidence reference. Omit documentId for this case; follow nextOffset to read the rest.", input_schema: { type: "object" as const, properties: { documentId: { type: "string" }, offset: { type: "integer", minimum: 0 }, limit: { type: "integer", minimum: 1, maximum: 80000 } }, additionalProperties: false } },
@@ -42,13 +52,18 @@ export const TOOL_SCHEMAS = [
 export class AnthropicInvestigator implements InvestigatorModel {
   readonly mode = "live_model" as const;
   readonly model = MODEL;
+  readonly provider: ModelProvider;
   private readonly client: Anthropic;
-  constructor(readonly budget: ResourceBudget, private readonly prices: { inputMicros: number; outputMicros: number }, readonly maxOutputTokens = 1200, explicitOptIn = false) {
+  private readonly prices: Readonly<{ inputMicros: number; outputMicros: number }>;
+  constructor(readonly budget: ResourceBudget, prices: { inputMicros: number; outputMicros: number }, readonly maxOutputTokens = 1200, explicitOptIn = false) {
     if (!explicitOptIn) throw new InvoiceError("live_opt_in_required", "Live inference requires explicit opt-in and a capped resource budget.");
-    if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN && !process.env.ANTHROPIC_PROFILE) throw new InvoiceError("model_unconfigured", "Anthropic credentials are not configured.");
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey?.trim()) throw new InvoiceError("model_unconfigured", "An explicit ANTHROPIC_API_KEY is required for the first-party invoice investigator.");
     for (const n of [...Object.values(budget), maxOutputTokens]) if (!Number.isSafeInteger(n) || n <= 0) throw new InvoiceError("invalid_budget", "Positive safe-integer resource limits are required.");
     for (const n of Object.values(prices)) if (!Number.isFinite(n) || n <= 0) throw new InvoiceError("invalid_budget", "Explicit positive maximum token prices are required.");
-    this.client = new Anthropic({ maxRetries: 0, timeout: 30_000 });
+    this.prices = Object.freeze({ ...prices });
+    this.provider = Object.freeze({ baseURL: "https://api.anthropic.com", authentication: "explicit_api_key", pricing: this.prices, servedModelValidated: true, cacheUsageValidated: true });
+    this.client = new Anthropic({ baseURL: this.provider.baseURL, apiKey, authToken: null, maxRetries: 0, timeout: 30_000 });
   }
   reservation(request: ModelRequest): ModelUsage {
     // UTF-8 bytes upper-bound normal BPE tokenization; extra 4096 covers protocol wrappers.
@@ -59,15 +74,29 @@ export class AnthropicInvestigator implements InvestigatorModel {
     const started = Date.now();
     const result = await this.client.messages.create({
       model: this.model, max_tokens: this.maxOutputTokens, system: INVESTIGATOR_POLICY,
-      tools: TOOL_SCHEMAS, tool_choice: { type: "any", disable_parallel_tool_use: true },
+      // Opus 5.5 rejects forced tool selection. Auto may return no tool; fail boundedly below.
+      tools: TOOL_SCHEMAS, tool_choice: { type: "auto", disable_parallel_tool_use: true },
       messages: [{ role: "user", content: JSON.stringify(request) }],
     });
-    const calls = result.content.filter((b) => b.type === "tool_use");
-    if (calls.length !== 1 || result.stop_reason === "max_tokens") throw new InvoiceError("model_output_invalid", "Expected one complete tool action from the investigator.");
-    const call = calls[0]!;
-    return { action: { name: call.name as ToolName, input: call.input as Record<string, unknown> }, usage: {
+    const usage: ModelUsage = {
       inputTokens: result.usage.input_tokens, outputTokens: result.usage.output_tokens,
       costMicros: Math.ceil(result.usage.input_tokens * this.prices.inputMicros + result.usage.output_tokens * this.prices.outputMicros), durationMs: Date.now() - started,
-    } };
+    };
+    // Compute usage before inspecting output; a refusal/truncation/text response can be billed.
+    if ((result.usage.cache_creation_input_tokens ?? 0) !== 0 || (result.usage.cache_read_input_tokens ?? 0) !== 0) {
+      throw new ModelResponseError("Provider reported unexpected cache usage; actual response cost is unavailable with the configured input/output rates.", { ...usage, costMicros: null });
+    }
+    if (result.model !== this.model) {
+      throw new ModelResponseError("Provider model identity did not match the configured investigator; actual response cost is unavailable and no action was executed.", { ...usage, costMicros: null });
+    }
+    if (result.stop_reason === "max_tokens") throw new ModelResponseError("Investigator response was truncated; no action was executed.", usage);
+    const calls = Array.isArray(result.content) ? result.content.filter((b) => b && typeof b === "object" && b.type === "tool_use") : [];
+    if (calls.length === 0) throw new ModelResponseError("Investigator returned no tool action; the bounded investigation stopped.", usage);
+    if (calls.length !== 1) throw new ModelResponseError("Investigator returned multiple tool actions; none was executed.", usage);
+    const call = calls[0]!;
+    if (result.stop_reason !== "tool_use" || !TOOL_SCHEMAS.some((tool) => tool.name === call.name) || !call.input || typeof call.input !== "object" || Array.isArray(call.input)) {
+      throw new ModelResponseError("Investigator returned an incomplete or unsupported tool action; none was executed.", usage);
+    }
+    return { action: { name: call.name as ToolName, input: call.input as Record<string, unknown> }, usage };
   }
 }

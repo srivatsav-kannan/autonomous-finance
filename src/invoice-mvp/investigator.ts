@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { CaseDetail, Conclusion, EvidenceRef, RuntimeMode, ToolCallInput } from "./contracts";
 import { InvoiceError, type InvoiceBackend } from "./backend";
 import { parseSupportedSource } from "./parser";
-import { INVESTIGATOR_POLICY, ZERO_USAGE, type InvestigatorModel, type ModelRequest, type ModelUsage, type Observation, type ToolAction } from "./model";
+import { INVESTIGATOR_POLICY, ModelResponseError, ZERO_USAGE, type InvestigatorModel, type ModelRequest, type ModelResponseUsage, type ModelUsage, type Observation, type ToolAction } from "./model";
 
 export const idempotency = (scope: string, value: unknown) => `${scope}:${createHash("sha256").update(JSON.stringify(value)).digest("hex")}`;
 const refFor = (d: CaseDetail): EvidenceRef => ({ documentId: d.source.documentId, version: d.source.version, contentHash: d.source.contentHash });
@@ -16,7 +16,7 @@ const conclusionSchema = z.object({
   category: z.string().max(100).optional(), supersedesDocumentId: z.string().min(1).optional(),
 }).strict();
 
-export interface InvestigationResult { caseId: string; mode: RuntimeMode; outcome: string; toolCalls: number; modelCalls: number; usage: ModelUsage }
+export interface InvestigationResult { caseId: string; mode: RuntimeMode; outcome: string; toolCalls: number; modelCalls: number; usage: ModelResponseUsage }
 export type RelatedFact = { caseId: string; status: string; source: EvidenceRef; conclusion: Conclusion };
 
 /** Bounded single investigator. Tool results contain facts, never a chain-of-thought transcript. */
@@ -26,6 +26,7 @@ export async function investigate(backend: InvoiceBackend, initial: CaseDetail, 
   const evidence = [refFor(initial)];
   let toolCalls = 0, modelCalls = 0;
   const usage = { ...ZERO_USAGE };
+  let usageCostUnavailable = false;
   const observations: Observation[] = [];
   const observedSources = new Map<string, CaseDetail>([[c.documentId, initial]]);
   const availableSources = new Set<string>([c.documentId]);
@@ -174,7 +175,18 @@ export async function investigate(backend: InvoiceBackend, initial: CaseDetail, 
         await runTool(result.action);
       } catch (e) {
         if (e instanceof InvoiceError && /stale|conflict|forbidden|unauthorized/.test(e.code)) throw e;
-        await audit("model_failure", "Model request failed or produced an invalid tool action; case remains unresolved.", {}, `failure-${turn}`);
+        if (e instanceof ModelResponseError) {
+          usage.inputTokens += e.usage.inputTokens; usage.outputTokens += e.usage.outputTokens; usage.durationMs += e.usage.durationMs;
+          if (e.usage.costMicros === null) {
+            usageCostUnavailable = true;
+            const { costMicros: _unknown, ...knownUsage } = e.usage;
+            await audit("model_usage_unavailable", `Known provider token usage for ${requestIdentity}; actual cost unavailable. The full reservation remains charged.`, knownUsage, `usage-${requestIdentity}`);
+          } else {
+            usage.costMicros += e.usage.costMicros;
+            await audit("model_usage", `Actual provider-reported usage for unusable response ${requestIdentity}.`, { ...e.usage, costMicros: e.usage.costMicros }, `usage-${requestIdentity}`);
+          }
+        }
+        await audit("model_failure", e instanceof ModelResponseError ? `${e.code}: ${e.message}` : "Model request failed or produced an invalid tool action; case remains unresolved.", {}, `failure-${turn}`);
         break;
       }
       if (conclusion) break;
@@ -182,5 +194,5 @@ export async function investigate(backend: InvoiceBackend, initial: CaseDetail, 
     conclusion ??= { treatment: "needs_evidence", reason: "Bounded investigator stopped without a supported conclusion.", evidence, contradictions: parsed.conclusion.contradictions, missingEvidence: ["A supported final invoice or credit memo and a resolved accounting treatment"], question: `Please provide the final issued billing document for “${initial.source.name}”, or exclude this source if it is only supporting evidence.` };
   }
   const result = await backend.submitProposal({ caseId: c.caseId, evidenceVersion: c.evidenceVersion, conclusion, mode, ...(model ? { model: model.model } : {}), idempotencyKey: idempotency("proposal", [c.caseId, c.evidenceVersion, mode, conclusion]) });
-  return { caseId: c.caseId, mode, outcome: result.case.status, toolCalls, modelCalls, usage };
+  return { caseId: c.caseId, mode, outcome: result.case.status, toolCalls, modelCalls, usage: { ...usage, costMicros: usageCostUnavailable ? null : usage.costMicros } };
 }
