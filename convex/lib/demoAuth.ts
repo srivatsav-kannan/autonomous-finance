@@ -3,6 +3,7 @@ import type { Doc } from "../_generated/dataModel";
 import { authSeat, canonical, type Seat } from "./kernel";
 import { ROLE_CAPABILITIES } from "../../src/core/roles";
 import { sameBankScope, type BankScope } from "../../src/integrations/contracts";
+import { assertPaymentExecutor } from "../../src/payments/domain/rules";
 export { scopeValidator } from "../demoSchema";
 
 export async function demoConfigForRun(ctx: QueryCtx, runId: string) {
@@ -12,6 +13,11 @@ export async function getDemoConfig(ctx: QueryCtx, scope: BankScope) {
   const config = await demoConfigForRun(ctx, scope.runId);
   if (!config || !sameBankScope(config.scope, scope)) throw new Error("Forbidden: demo organization/run/provider/environment/account mismatch");
   return config;
+}
+export async function getPaymentConfig(ctx: QueryCtx, scope: BankScope) {
+  const config = await getDemoConfig(ctx, scope);
+  assertPaymentExecutor(config.paymentExecutorVersion);
+  return { ...config, paymentExecutorVersion: config.paymentExecutorVersion };
 }
 export async function assertLegacyRun(ctx: QueryCtx, runId: string) {
   if (await demoConfigForRun(ctx, runId)) throw new Error("Demo runs require scoped demo APIs");
@@ -25,7 +31,13 @@ export async function requireService(ctx: QueryCtx, scope: BankScope, token: str
   try { boundScope = JSON.parse(process.env.AP_BANK_SCOPE ?? ""); }
   catch { throw new Error("AP_BANK_SCOPE deployment binding required"); }
   if (!boundScope || !sameBankScope(boundScope, scope)) throw new Error("Forbidden: service account scope mismatch");
-  return getDemoConfig(ctx, scope);
+  return getPaymentConfig(ctx, scope);
+}
+/** Old dispatchers cannot silently run newly configured payment effects. */
+export async function requirePaymentDispatcher(ctx: QueryCtx, args: { scope: BankScope; token: string; paymentExecutorVersion?: string }) {
+  const config = await requireService(ctx, args.scope, args.token, "dispatcher");
+  assertPaymentExecutor(args.paymentExecutorVersion);
+  return config;
 }
 export async function requireDemoSeat(ctx: QueryCtx, args: { scope: BankScope; seatId: string; token: string }, roles: string[]) {
   const config = await getDemoConfig(ctx, args.scope);
@@ -42,6 +54,14 @@ export async function requireHuman(ctx: QueryCtx, scope: BankScope) {
   const seat = await ctx.db.query("seats").withIndex("by_run_seat", q => q.eq("runId", scope.runId).eq("seatId", binding.seatId)).unique();
   if (!seat || seat.kind !== "human" || seat.role !== "human_cfo" || seat.status !== "active") throw new Error("Forbidden: active human CFO binding required");
   return { config, seat, subject: binding.subject };
+}
+export async function requirePaymentHuman(ctx: QueryCtx, scope: BankScope) {
+  const human = await requireHuman(ctx, scope);
+  return { ...human, config: await getPaymentConfig(ctx, scope) };
+}
+export async function requirePaymentSeat(ctx: QueryCtx, args: { scope: BankScope; seatId: string; token: string }, roles: string[]) {
+  const agent = await requireDemoSeat(ctx, args, roles);
+  return { ...agent, config: await getPaymentConfig(ctx, args.scope) };
 }
 /** Internal accounting authority; never accepted as a public request argument. */
 export function accountingSeat(runId: string): Seat {
