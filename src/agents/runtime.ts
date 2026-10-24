@@ -21,6 +21,7 @@ export class SeatRuntime {
   readonly kernel: SeatClient;
   readonly usage: Usage = emptyUsage();
   private parsers: Parser[] | null = null;
+  private parsersSha: string | null = null;
   private vendorCache: Map<string, { vendor: Vendor; sha: string }> | null = null;
 
   constructor(
@@ -53,7 +54,11 @@ export class SeatRuntime {
   }
 
   async parsersNow(refresh = false): Promise<Parser[]> {
-    if (!this.parsers || refresh) this.parsers = [...BUILTIN_PARSERS, ...(await loadMemoryParsers(this.mem))];
+    const head = await this.mem.head();
+    if (!this.parsers || refresh || this.parsersSha !== head) {
+      this.parsers = [...BUILTIN_PARSERS, ...(await loadMemoryParsers(this.mem, head))];
+      this.parsersSha = head;
+    }
     return this.parsers;
   }
 
