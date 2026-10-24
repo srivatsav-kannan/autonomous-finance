@@ -17,9 +17,10 @@ const conclusionSchema = z.object({
 }).strict();
 
 export interface InvestigationResult { caseId: string; mode: RuntimeMode; outcome: string; toolCalls: number; modelCalls: number; usage: ModelUsage }
+export type RelatedFact = { caseId: string; status: string; source: EvidenceRef; conclusion: Conclusion };
 
 /** Bounded single investigator. Tool results contain facts, never a chain-of-thought transcript. */
-export async function investigate(backend: InvoiceBackend, initial: CaseDetail, model?: InvestigatorModel, maxTurns = 10): Promise<InvestigationResult> {
+export async function investigate(backend: InvoiceBackend, initial: CaseDetail, model?: InvestigatorModel, maxTurns = 10, relatedFacts: RelatedFact[] = []): Promise<InvestigationResult> {
   const mode = model?.mode ?? "deterministic";
   const c = initial.case;
   const evidence = [refFor(initial)];
@@ -27,6 +28,7 @@ export async function investigate(backend: InvoiceBackend, initial: CaseDetail, 
   const usage = { ...ZERO_USAGE };
   const observations: Observation[] = [];
   const observedSources = new Map<string, CaseDetail>([[c.documentId, initial]]);
+  const availableSources = new Set<string>([c.documentId]);
   const inspectedSources = new Set<string>();
   const checkedTools = new Set<string>();
   let conclusion: Conclusion | undefined;
@@ -36,33 +38,46 @@ export async function investigate(backend: InvoiceBackend, initial: CaseDetail, 
   };
   const snapshot = await backend.workspace();
   const parsed = parseSupportedSource(initial.source, refFor(initial));
-  const related = async (customerId?: string, documentNumber?: string) => {
+  const related = async (customerId?: string, documentNumber?: string, offset = 0, limit = 25) => {
     const candidates = snapshot.cases.filter((s) => s.caseId !== c.caseId && !["superseded", "duplicate"].includes(s.status) && (!customerId || !s.customerId || s.customerId === customerId));
-    const results = [];
-    for (const s of candidates.slice(0, 100)) {
-      const d = await backend.caseDetail(s.caseId);
-      const p = parseSupportedSource(d.source, refFor(d));
-      const candidate = d.acceptedProposal?.conclusion ?? d.currentProposal?.conclusion ?? p.conclusion;
-      if (customerId && candidate.customerId !== customerId || documentNumber && candidate.documentNumber !== documentNumber) continue;
-      observedSources.set(d.source.documentId, d);
-      results.push({ caseId: s.caseId, status: s.status, source: { name: d.source.name, ...refFor(d) }, conclusion: candidate });
+    const results: RelatedFact[] = [];
+    for (const fact of relatedFacts) {
+      if (fact.caseId === c.caseId || ["superseded", "duplicate"].includes(fact.status)) continue;
+      if (customerId && fact.conclusion.customerId !== customerId || documentNumber && fact.conclusion.documentNumber !== documentNumber) continue;
+      if (!fact.conclusion.treatment.startsWith("include_")) continue;
+      results.push(fact);
     }
-    return { documents: results, truncated: candidates.length > 100 };
+    for (const total of snapshot.customerTotals) for (const contribution of total.contributions) {
+      if (contribution.caseId === c.caseId || results.some((r) => r.caseId === contribution.caseId) || customerId && contribution.customerId !== customerId || documentNumber && contribution.documentNumber !== documentNumber) continue;
+      const summary = snapshot.cases.find((s) => s.caseId === contribution.caseId);
+      if (summary) results.push({ caseId: summary.caseId, status: summary.status, source: { documentId: summary.documentId, version: summary.version, contentHash: summary.contentHash }, conclusion: { treatment: contribution.kind === "invoice" ? "include_invoice" : "include_credit", customerId: contribution.customerId, customerName: total.legalName, documentNumber: contribution.documentNumber, amountCents: contribution.amountCents, reason: "Persisted accepted contribution", evidence: contribution.evidence, contradictions: [], missingEvidence: [] } });
+    }
+    // Search returns lightweight candidates. Full originals are fetched only when selected.
+    const page = candidates.slice(offset, offset + limit);
+    for (const s of page) availableSources.add(s.documentId);
+    return { documents: results.slice(offset, offset + limit), candidates: page.map((s) => ({ ...s, source: { documentId: s.documentId, version: s.version, contentHash: s.contentHash } })), nextOffset: offset + limit < candidates.length ? offset + limit : null, totalCandidates: candidates.length, unknownSourcesRequireInspection: true };
   };
   const execute = async (action: ToolAction): Promise<unknown> => {
     const input = action.input;
     switch (action.name) {
       case "inspect_source": {
         const args = z.object({ documentId: z.string().optional(), offset: z.number().int().min(0).optional(), limit: z.number().int().min(1).max(80_000).optional() }).strict().parse(input);
-        const d = observedSources.get(args.documentId ?? c.documentId);
-        if (!d) throw new InvoiceError("unobserved_source", "Retrieve related documents before inspecting their source.");
+        const documentId = args.documentId ?? c.documentId;
+        if (!availableSources.has(documentId)) throw new InvoiceError("unobserved_source", "Retrieve related documents before inspecting their source.");
+        let d = observedSources.get(documentId);
+        if (!d) {
+          const summary = snapshot.cases.find((s) => s.documentId === documentId);
+          if (!summary) throw new InvoiceError("unobserved_source", "Source is not in this workspace.");
+          d = await backend.caseDetail(summary.caseId);
+          observedSources.set(documentId, d);
+        }
         inspectedSources.add(d.source.documentId);
         const offset = args.offset ?? 0, end = Math.min(d.source.text.length, offset + (args.limit ?? 20_000));
         return { ...refFor(d), name: d.source.name, mimeType: d.source.mimeType, text: d.source.text.slice(offset, end), offset, nextOffset: end < d.source.text.length ? end : null, totalCharacters: d.source.text.length, originalBytesPreserved: d.source.contentBase64 !== undefined, status: d.case.status };
       }
       case "related_documents": {
-        const args = z.object({ customerId: z.string().optional(), documentNumber: z.string().optional() }).strict().parse(input);
-        return related(args.customerId, args.documentNumber);
+        const args = z.object({ customerId: z.string().optional(), documentNumber: z.string().optional(), offset: z.number().int().min(0).optional(), limit: z.number().int().min(1).max(50).optional() }).strict().parse(input);
+        return related(args.customerId, args.documentNumber, args.offset, args.limit);
       }
       case "related_customers": {
         const args = z.object({ query: z.string().optional() }).strict().parse(input);
@@ -126,29 +141,36 @@ export async function investigate(backend: InvoiceBackend, initial: CaseDetail, 
     for (let turn = 0; turn < Math.min(20, Math.max(1, maxTurns)); turn++) {
       const request: ModelRequest = { caseId: c.caseId, evidenceVersion: c.evidenceVersion, observations, decisionSummaries: initial.decisions.map((d) => `${d.action} on proposal ${d.proposalId}: ${d.note ?? "No note"}`) };
       const reservation = model.reservation(request);
+      let requestIdentity = `mock-${turn}`;
       if (mode === "live_model") {
-        if (!model.budget) throw new InvoiceError("invalid_budget", "Live requests require a resource cap.");
-        // All reservations count even if the process crashed or the provider failed. No refunds.
-        const reserved = { calls: 0, ...ZERO_USAGE };
-        for (const summary of (await backend.workspace()).cases) {
-          for (const entry of (await backend.caseDetail(summary.caseId)).audit) {
-            if (entry.toolCall?.tool !== "model_reservation") continue;
-            reserved.calls++; reserved.inputTokens += entry.toolCall.inputTokens ?? 0; reserved.outputTokens += entry.toolCall.outputTokens ?? 0; reserved.costMicros += entry.toolCall.costMicros ?? 0;
-          }
-        }
+        if (!model.budget || !backend.reserveModelRequest) throw new InvoiceError("invalid_budget", "Live requests require atomic backend budget reservation.");
         const budget = model.budget;
-        if (reserved.calls + 1 > budget.maxCalls || reserved.inputTokens + reservation.inputTokens > budget.maxInputTokens || reserved.outputTokens + reservation.outputTokens > budget.maxOutputTokens || reserved.costMicros + reservation.costMicros > budget.maxCostMicros) {
+        // Token ceilings bound this request; backend atomically bounds run-wide cost and calls.
+        // Reservations survive crashes and are never refunded. No need to re-download audit originals.
+        if (reservation.inputTokens > budget.maxInputTokens || reservation.outputTokens > budget.maxOutputTokens || reservation.costMicros > budget.maxCostMicros) {
           conclusion = { treatment: "needs_evidence", reason: "Investigation stopped before a model request because its reserved resource cap was exhausted.", evidence, contradictions: parsed.conclusion.contradictions, missingEvidence: ["Further evidence or an explicitly authorized evaluation budget"], question: "Please supply the final invoice evidence or review this case manually; no further model request was made." };
           await audit("resource_limit", conclusion.reason, {}, `limit-${turn}`);
           break;
         }
-        await audit("model_reservation", `Reserved one ${model.model} request; max output ${reservation.outputTokens}; no retries or fallback.`, reservation, `reservation-${c.currentProposalId ?? "initial"}-${turn}-${reserved.calls}`);
+        try {
+          const reservedRequest = await backend.reserveModelRequest({ caseId: c.caseId, evidenceVersion: c.evidenceVersion, model: model.model, maxCostMicros: reservation.costMicros,
+            budget: { maxRequests: budget.maxCalls, maxCostMicros: budget.maxCostMicros }, idempotencyKey: idempotency("model-request", [c.caseId, c.evidenceVersion, c.currentProposalId, turn, request]),
+          });
+          if (reservedRequest.replayed) throw new InvoiceError("reservation_replayed", "Prior request reservation cannot authorize another provider call after restart.");
+          requestIdentity = reservedRequest.reservationId;
+          await audit("model_reservation", `Reserved one ${model.model} request (${requestIdentity}); max output ${reservation.outputTokens}; no retries or fallback.`, reservation, requestIdentity);
+        } catch (e) {
+          if (!(e instanceof InvoiceError) || !["budget_exhausted", "budget_conflict", "reservation_replayed"].includes(e.code)) throw e;
+          conclusion = { treatment: "needs_evidence", reason: e.message, evidence, contradictions: [], missingEvidence: ["A safely authorized investigation or direct source evidence"], question: "Please review this case manually or supply final source evidence; no further provider call is authorized by the existing budget/reservation." };
+          await audit("resource_limit", conclusion.reason, {}, `limit-${turn}`);
+          break;
+        }
       }
       try {
-        const result = await model.next(request);
         modelCalls++;
+        const result = await model.next(request);
         for (const k of Object.keys(usage) as (keyof ModelUsage)[]) usage[k] += result.usage[k];
-        await audit("model_usage", "Actual provider-reported usage for one completed investigator request.", result.usage, `usage-${turn}-${modelCalls}`);
+        await audit("model_usage", `Actual provider-reported usage for completed request ${requestIdentity}.`, result.usage, `usage-${requestIdentity}`);
         await runTool(result.action);
       } catch (e) {
         if (e instanceof InvoiceError && /stale|conflict|forbidden|unauthorized/.test(e.code)) throw e;

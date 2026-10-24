@@ -3,7 +3,7 @@ import { api } from "../../convex/_generated/api";
 import type {
   BackendResult, CaseDetail, CaseSummary, DecisionInput, DecisionResult, IngestBatchInput,
   IngestBatchResult, RegisterCustomerInput, SeatAuth, SubmitProposalInput, SubmitProposalResult,
-  ToolCallInput, WorkspaceSnapshot,
+  ToolCallInput, WorkspaceSnapshot, ModelBudget, ModelReservationResult, ReserveModelRequestInput,
 } from "./contracts";
 
 export class InvoiceError extends Error {
@@ -33,6 +33,8 @@ export interface InvoiceBackend {
   decide(input: DecisionInput): Promise<DecisionResult>;
   registerCustomer(input: RegisterCustomerInput): Promise<{ customerId: string }>;
   recordToolCall(caseId: string, evidenceVersion: number, call: ToolCallInput, idempotencyKey: string): Promise<{ auditId: string }>;
+  reserveModelRequest?(input: ReserveModelRequestInput): Promise<ModelReservationResult & { replayed: boolean }>;
+  modelBudget?(): Promise<ModelBudget | null>;
 }
 
 export class ConvexInvoiceBackend implements InvoiceBackend {
@@ -50,4 +52,9 @@ export class ConvexInvoiceBackend implements InvoiceBackend {
   async recordToolCall(caseId: string, evidenceVersion: number, call: ToolCallInput, idempotencyKey: string) {
     return unwrap(await this.client.mutation(api.invoiceCases.recordToolCall, { caseId, evidenceVersion, call, idempotencyKey, ...this.investigator }));
   }
+  async reserveModelRequest(input: ReserveModelRequestInput) {
+    const result = await this.client.mutation(api.invoiceCases.reserveModelRequest, { ...input, ...this.investigator });
+    return { ...unwrap(result), replayed: result.ok && result.replayed === true };
+  }
+  async modelBudget() { return unwrap(await this.client.query(api.invoiceCases.modelBudget, this.investigator)); }
 }
