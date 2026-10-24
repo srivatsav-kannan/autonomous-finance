@@ -93,6 +93,9 @@ export function APDemo() {
   const resume = (commandId: Id<"demoCommands">, reason: string) => action(active => commands(active).resume({
     commandId: crypto.randomUUID(), command: { type: "ResumePayment", commandId, reason },
   }), "Recovery resumed using the original saved request and idempotency key.");
+  const cancel = (versionId: Id<"demoVersions">) => action(active => commands(active).cancel({
+    commandId: crypto.randomUUID(), command: { type: "CancelPayment", versionId },
+  }), "The unsent payment was cancelled and its reservations released. Request a new payment for fresh approval.");
   const operator = review && "operator" in review && review.operator && typeof review.operator === "object" && "name" in review.operator
     ? String(review.operator.name) : "Human CFO assigned to this account";
 
@@ -118,6 +121,9 @@ export function APDemo() {
         <div className="ap-row"><h2>{scope.runId}</h2><button disabled={busy} onClick={() => action(async () => undefined, "Review refreshed.")}>{busy ? "Working…" : "Refresh"}</button></div>
         <p>{scope.organizationId} · {scope.provider} / {scope.environment} · USD account <code>{scope.accountId}</code></p>
         <p className="muted">Responsible operator: {operator}. Last refreshed: {when(updatedAt)}.</p>
+        {review && !review.executionConfig.eligible && <p className="ap-error" role="status">
+          Payment execution is paused for review. {review.executionConfig.reason} Approval and recovery are unavailable for this account configuration.
+        </p>}
       </section>
       {review && <section className="ap-panel">
         <h2>Payment versions</h2>
@@ -127,7 +133,7 @@ export function APDemo() {
       {review && <section className="ap-panel">
         <h2>Dispatch and recovery</h2>
         {!review.commands.length && <p>No approved commands have been queued.</p>}
-        {review.commands.map(command => <CommandReview key={command._id} command={command} busy={busy} resume={resume} operator={operator} />)}
+        {review.commands.map(command => <CommandReview key={command._id} command={command} busy={busy} eligible={review.executionConfig.eligible} resume={resume} cancel={cancel} operator={operator} />)}
       </section>}
       {evidence && <section className="ap-panel">
         <h2>Close blockers · {evidence.blockers.length}</h2>
@@ -165,14 +171,19 @@ function VersionReview({ version, review, busy, approve }: { version: Snapshot; 
     <details><summary>Exact immutable payment details</summary><pre>{JSON.stringify(snapshot, null, 2)}</pre></details>
     <p className="muted">Approvals: {version.approvals.length ? version.approvals.map(approval => `${approval.seatId} (${approval.kind})`).join(", ") : "Awaiting independent approval"}</p>
     {version.status === "awaiting_approval" && <div className="ap-approval">
-      <label><input type="checkbox" checked={checked} onChange={event => setChecked(event.target.checked)} /> I approve the displayed USD amount, invoice and credit allocations, beneficiary version and policy.</label>
-      <button className="primary" disabled={busy || !checked} onClick={() => void approve(version)}>Approve this version and queue payment</button>
+      <label><input type="checkbox" checked={checked} disabled={!review.executionConfig.eligible} onChange={event => setChecked(event.target.checked)} /> I approve the displayed USD amount, invoice and credit allocations, beneficiary version and policy.</label>
+      <button className="primary" disabled={busy || !checked || !review.executionConfig.eligible} onClick={() => void approve(version)}>Approve this version and queue payment</button>
     </div>}
   </article>;
 }
 
-function CommandReview({ command, busy, resume, operator }: { command: Command; busy: boolean; resume: (id: Id<"demoCommands">, reason: string) => Promise<void>; operator: string }) {
+function CommandReview({ command, busy, eligible, resume, cancel, operator }: {
+  command: Command; busy: boolean; eligible: boolean;
+  resume: (id: Id<"demoCommands">, reason: string) => Promise<void>;
+  cancel: (id: Id<"demoVersions">) => Promise<void>; operator: string;
+}) {
   const [reason, setReason] = useState("");
+  const neverAttempted = command.attemptCount === 0 && command.generation === 0 && command.firstAttemptAt === undefined && !command.providerTransferId;
   const step = command.execution === "exception" ? "Dispatch requires operator review"
     : command.execution === "unknown" ? "Resolve unknown bank outcome"
     : command.execution === "queued" ? "Waiting for the dispatcher"
@@ -195,11 +206,18 @@ function CommandReview({ command, busy, resume, operator }: { command: Command; 
       <div><dt>Saved request hash</dt><dd><code>{command.command.requestHash}</code></dd></div>
     </dl>
     {command.lastError && <p className="ap-error">{command.lastError}</p>}
-    {command.execution === "exception" && <form className="ap-resume" onSubmit={event => { event.preventDefault(); if (reason.trim()) void resume(command._id, reason.trim()); }}>
+    {command.execution === "exception" && neverAttempted && <div className="ap-resume">
+      <p>No bank dispatch was attempted. Cancel this payment, then request a new payment for review against the current policy and beneficiary.</p>
+      <button disabled={busy || !eligible} onClick={() => void cancel(command.versionId)}>Cancel unsent payment</button>
+    </div>}
+    {command.execution === "exception" && !neverAttempted && command.firstAttemptAt === undefined && <p className="ap-error">
+      The original dispatch time is missing. An operator must review the bank outcome before this payment can proceed.
+    </p>}
+    {command.execution === "exception" && !neverAttempted && command.firstAttemptAt !== undefined && <form className="ap-resume" onSubmit={event => { event.preventDefault(); if (eligible && reason.trim()) void resume(command._id, reason.trim()); }}>
       <label htmlFor={`reason-${command._id}`}>Resolution and reason for resuming</label>
-      <textarea id={`reason-${command._id}`} required rows={2} value={reason} onChange={event => setReason(event.target.value)} />
+      <textarea id={`reason-${command._id}`} disabled={!eligible} required rows={2} value={reason} onChange={event => setReason(event.target.value)} />
       <p className="muted">Resuming retains the original request, key, provider and reservations. The reason is recorded in the audit log.</p>
-      <button disabled={busy || !reason.trim()}>Resume original command</button>
+      <button disabled={busy || !reason.trim() || !eligible}>Resume original command</button>
     </form>}
   </article>;
 }
