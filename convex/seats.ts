@@ -58,8 +58,10 @@ export const retireSeat = mutation({
     if (!auth.seat.caps.seatsManage) return await recordViolation(ctx, args.runId, args.seatId, op, fail("forbidden", "seat may not manage staffing"));
     const target = await loadSeat(ctx, args.runId, args.targetSeatId);
     if (!target) return fail("not_found", "seat not found");
-    if (auth.seat.kind === "agent" && !target.spawnedBy) {
-      return await recordViolation(ctx, args.runId, args.seatId, op, fail("forbidden", "agents may only retire seats they spawned"));
+    if (auth.seat.kind === "agent" &&
+        (target.spawnedBy !== args.seatId || target.kind !== "agent" || !AGENT_STAFFABLE.has(target.role))) {
+      return await recordViolation(ctx, args.runId, args.seatId, op,
+        fail("forbidden", "agents may only retire their own spawned seats in permitted non-control roles"));
     }
     await ctx.db.patch(target._id, { status: "retired", retiredAt: Date.now() });
     await logActivity(ctx, args.runId, args.seatId, "retired", `Retired ${target.name}: ${args.reason}`, { seatId: target.seatId });

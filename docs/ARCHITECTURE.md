@@ -96,7 +96,7 @@ The only way money facts change. Every mutation is a serializable transaction.
 
 **The bus:**
 - `events` is append-only: world facts arrive here, deduplicated by external ID.
-- `tasks` is a leased work queue. A claim sets a lease; an expired lease is reclaimed. Handlers are idempotent, so a crash mid-task never double-posts.
+- `tasks` is a leased work queue. A claim sets a 120-second lease; an expired lease is reclaimed. Every completion, failure, wait, or heartbeat must include `leaseAttempt: task.attempts` from that claim and match its active seat, role, and unexpired lease. Each reclaim increments `attempts`, fencing delayed messages even when the same seat reclaims. The team renews every 30 seconds while a handler runs, stops renewal before its final transition, and reports rejected transitions as `lease_lost`. Handlers remain responsible for idempotent effects; renewal does not cancel an already-running handler if its lease is lost.
 
 **Scenarios:** every row carries a `runId`, so each eval run and each demo reset is isolated and old evidence stays.
 

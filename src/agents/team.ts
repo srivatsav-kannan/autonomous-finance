@@ -7,6 +7,7 @@ import { WorldBank } from "../world/bank";
 import { memoryDir, runDir } from "../world/scenario";
 import { LlmRefused, LlmUnavailable, MODEL } from "./llm";
 import { SeatRuntime, type Handler, type Task } from "./runtime";
+import { TaskLeaseLost, withTaskLease } from "./task-lease";
 import { processDocument } from "./handlers/ap";
 import { approvePayment, reviewHeld, reviewProposal } from "./handlers/controller";
 import { paymentRun, remitChange, secondApproval } from "./handlers/payments";
@@ -83,27 +84,37 @@ export class Team {
     const task = claim.task as Task | null;
     if (!task) return false;
     const handler = HANDLERS[task.type];
+    const lease = { ...rt.kernel.auth, taskId: task._id, leaseAttempt: task.attempts };
     const before = { ...rt.usage };
     const started = Date.now();
     let outcome = "error";
     let summary: string | undefined;
     try {
       if (!handler) throw new Error(`no handler for ${task.type}`);
-      const res = await handler(rt, task);
+      const res = await withTaskLease(
+        () => rt.kernel.client.mutation(api.tasks.heartbeatTask, lease),
+        () => handler(rt, task),
+      );
       outcome = res.outcome;
       summary = res.summary;
-      if (res.waiting) {
-        await rt.kernel.client.mutation(api.tasks.waitTask, { ...rt.kernel.auth, taskId: task._id, reason: res.summary ?? "waiting" });
-      } else if (res.outcome === "retry") {
-        await rt.kernel.client.mutation(api.tasks.failTask, { ...rt.kernel.auth, taskId: task._id, error: res.summary ?? "retry", retryInMs: 500 });
-      } else {
-        await rt.kernel.client.mutation(api.tasks.completeTask, { ...rt.kernel.auth, taskId: task._id, result: { outcome, summary } });
-      }
+      const transition = res.waiting
+        ? await rt.kernel.client.mutation(api.tasks.waitTask, { ...lease, reason: res.summary ?? "waiting" })
+        : res.outcome === "retry"
+          ? await rt.kernel.client.mutation(api.tasks.failTask, { ...lease, error: res.summary ?? "retry", retryInMs: 500 })
+          : await rt.kernel.client.mutation(api.tasks.completeTask, { ...lease, result: { outcome, summary } });
+      if (!transition.ok) throw new TaskLeaseLost(`${transition.code}: ${transition.error}`);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       summary = msg.slice(0, 300);
-      const retry = !(e instanceof LlmUnavailable || e instanceof LlmRefused);
-      await rt.kernel.client.mutation(api.tasks.failTask, { ...rt.kernel.auth, taskId: task._id, error: summary, retryInMs: retry ? 1000 : undefined });
+      outcome = e instanceof TaskLeaseLost ? "lease_lost" : "error";
+      if (!(e instanceof TaskLeaseLost)) {
+        const retry = !(e instanceof LlmUnavailable || e instanceof LlmRefused);
+        const failure = await rt.kernel.client.mutation(api.tasks.failTask, { ...lease, error: summary, retryInMs: retry ? 1000 : undefined });
+        if (!failure.ok) {
+          outcome = "lease_lost";
+          summary = `${summary}; ${failure.code}: ${failure.error}`.slice(0, 300);
+        }
+      }
       this.log(`! ${rt.seat.seatId} ${task.type}: ${summary}`);
     }
     const llmTurns = rt.usage.turns - before.turns;

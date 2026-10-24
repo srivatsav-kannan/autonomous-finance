@@ -27,6 +27,10 @@ export const createAsk = mutation({
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "asks.createAsk", auth);
     if (!auth.seat.caps.asks) return await recordViolation(ctx, args.runId, args.seatId, "asks.createAsk", fail("forbidden", "seat may not ask"));
     if (args.taskId) {
+      const task = await ctx.db.get(args.taskId);
+      if (!task || task.runId !== args.runId) {
+        return await recordViolation(ctx, args.runId, args.seatId, "asks.createAsk", fail("invalid_task", "task not found in this run"));
+      }
       const existing = await ctx.db
         .query("asks")
         .withIndex("by_run_status", (q) => q.eq("runId", args.runId).eq("status", "open"))
@@ -57,15 +61,17 @@ export const answerAsk = mutation({
       return await recordViolation(ctx, args.runId, args.seatId, "asks.answerAsk", fail("sod", "a seat cannot answer its own ask"));
     }
     if (!ask.options.some((o) => o.id === args.optionId)) return fail("invalid_option", `no option ${args.optionId}`);
+    // Revalidate old asks too: stored references may predate creation-time checks.
+    const task = ask.taskId ? await ctx.db.get(ask.taskId) : null;
+    if (ask.taskId && (!task || task.runId !== args.runId)) {
+      return await recordViolation(ctx, args.runId, args.seatId, "asks.answerAsk", fail("invalid_task", "task not found in this run"));
+    }
     await ctx.db.patch(ask._id, {
       status: "answered",
       answer: { optionId: args.optionId, note: args.note, by: args.seatId, at: Date.now() },
     });
-    if (ask.taskId) {
-      const task = await ctx.db.get(ask.taskId);
-      if (task && task.status === "waiting") {
-        await ctx.db.patch(task._id, { status: "queued", notBefore: undefined, updatedAt: Date.now() });
-      }
+    if (task && task.status === "waiting") {
+      await ctx.db.patch(task._id, { status: "queued", notBefore: undefined, updatedAt: Date.now() });
     }
     const label = ask.options.find((o) => o.id === args.optionId)?.label ?? args.optionId;
     await logActivity(ctx, args.runId, args.seatId, "answered", `Answered "${ask.title}": ${label}${args.note ? ` (${args.note})` : ""}`, { askId: ask._id });
