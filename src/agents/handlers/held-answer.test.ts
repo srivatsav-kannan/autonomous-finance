@@ -11,7 +11,7 @@ function fixture(answer?: "pay" | "reject") {
   const rt = {
     runId: "run", seat: { seatId: "controller" }, kernel: { auth: {}, client: { query, mutation } },
     ask: vi.fn(async () => ({ ok: true })), decide: vi.fn(async (_decision: unknown) => ({ path: "decisions/d.yaml", memorySha: "sha" })),
-    vendor: vi.fn(async () => undefined), commit: vi.fn(),
+    vendor: vi.fn(async () => ({ vendor: { id: "vendor", expenseAccount: "5000", credits: [{ id: "CM-1", amountCents: 2000 }], notes: [] } })), commit: vi.fn(), updateVendor: vi.fn(),
   };
   const task = { _id: "task", payload: { billId: "bill", recommendedCents: 8000, exceptions: [{ code: "no_receiving_record", detail: "missing receipt", deltaCents: 0 }, { code: "open_credit", detail: "credit", deltaCents: -2000, ref: "CM-1" }] } };
   return { rt, task, asks, bill, run: () => reviewHeld(rt as unknown as SeatRuntime, task as unknown as Task) };
@@ -29,6 +29,7 @@ describe("held bill human answers", () => {
     expect(result.outcome).toBe(answer === "pay" ? "approved" : "rejected");
     expect(f.rt.decide.mock.calls[0]?.[0]).toMatchObject({ facts: expect.arrayContaining([expect.objectContaining({ key: "human_answer" })]) });
     expect(f.rt.commit).not.toHaveBeenCalled();
+    expect(f.rt.updateVendor).not.toHaveBeenCalled();
   });
   it("waits for a valid human answer", async () => {
     const f = fixture();
