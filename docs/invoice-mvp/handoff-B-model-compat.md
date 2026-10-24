@@ -38,3 +38,9 @@ npm run typecheck
 **41 tests passed across three files; typecheck passed.** The new model suite contains 22 mocked-SDK tests. It checks first-party/key pinning under hostile ambient configuration, no auth-token/profile-only fallback, unchanged model, `auto` selection, no retries, no implicit requests, exact served-model validation, cache rejection, immutable price attestation, malformed/no-tool usage preservation, single usage audit before failure, unavailable-cost semantics and absence of provider prose/thinking in persisted errors.
 
 **No live calls, no API spend, no deployment. Live-model validation remains NOT RUN.** The SDK class was replaced with an in-process mock for every new transport test. Runtime code has no uncommitted follow-up changes; an untracked `node_modules` dependency symlink remains local and is not part of the commit.
+
+## Network-failure usage correction
+
+Root's final review requested unknown aggregate cost for a request that throws without response usage. A new native goal was activated for this correction and completed after commit. The investigator now emits one `model_usage_unavailable` event with no token/cost/duration metrics, keeps the full reservation charged, and returns `usage.costMicros: null`. The failure summary does not include the raw network exception. If a response already supplied usage before a later tool/storage error, that known usage is retained. Deterministic processing still reports true zero cost and zero model calls.
+
+Verification: `npx vitest run src/invoice-mvp/model.test.ts src/invoice-mvp/investigator.test.ts` passed **34 tests**; `npm run typecheck` passed. Two added regressions cover a mocked network throw with exactly one attempt/no fabricated audit metrics, and unchanged deterministic zero cost. No live requests or spending. The exact correction commit is recorded in root's handoff message and the commit immediately preceding this addendum.
