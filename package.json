@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "An agent-native finance department: agents run the finance function, humans oversee.",
+  "description": "Auditable customer net invoiced totals with durable evidence review and human decisions.",
   "scripts": {
     "backend": "CONVEX_AGENT_MODE=anonymous convex dev",
     "console": "vite --config console/vite.config.ts",
