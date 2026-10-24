@@ -1,6 +1,6 @@
 # Worker B: OpenAI Responses preparation
 
-Prepared on 2026-10-24 for issue 66. Historical PR 63 and its evaluation claims are unchanged. This is a free implementation and mocked-verification handoff; account/model access and live-provider behavior remain **NOT RUN / unverified**. Root owns integration, approval recording and any later capped execution. No provider requests, key inspection, deployment, paid action, or remote publication occurred in this worker task.
+Prepared on 2026-10-24 for issue 66. Historical PR 63 and its evaluation claims are unchanged. This is a free implementation and mocked-verification handoff; live-provider validation is **NOT RUN by this worker**. Root owns integration, approval recording and any capped execution, including its separate baseline run. No provider requests, key inspection, deployment, paid action, or remote publication occurred in this worker task.
 
 - Branch: `codex/invoice-mvp-openai`.
 - Exact base: `9a1e5ee886d1ffa13f57f0033d0efc0d42f7939b`.
@@ -10,11 +10,11 @@ Prepared on 2026-10-24 for issue 66. Historical PR 63 and its evaluation claims 
 
 ## Implementation
 
-`src/invoice-mvp/openai-model.ts` adds a fetch-based Responses adapter with no new dependency. The model is fixed to `gpt-6.1-sol`, independent of `AGENT_MODEL`. Requests use only an explicit `OPENAI_API_KEY` and the pinned `https://api.openai.com/v1/responses` endpoint. Ambient endpoint, organization, project, profile and other-provider settings do not select alternate authentication. Redirects fail; timeout is 60 seconds; there are no retries or fallbacks.
+`src/invoice-mvp/openai-model.ts` adds a fetch-based Responses adapter with no new dependency. The model is fixed to `gpt-6.1-sol`, independent of `AGENT_MODEL`. Requests use only an explicit `OPENAI_API_KEY` and the pinned `https://api.openai.com/v1/responses` endpoint. Ambient endpoint, organization, project, profile and other-provider settings do not select alternate authentication. Redirects fail; product timeout is 30 seconds; there are no retries or fallbacks.
 
 The factory selects OpenAI only when both the existing live mode and `INVOICE_MVP_PROVIDER=openai` are explicitly configured. Default mode stays deterministic; default live provider stays Anthropic. Construction, attestation, imports and decisions do not issue model requests. Existing per-batch live opt-in and atomic backend reservation requirements still apply. Root approved this minimal `service.ts` wiring; no Convex or accounting contract files changed.
 
-Each request sets `reasoning.effort=high`, `service_tier=default`, `store=false`, `include=["reasoning.encrypted_content"]`, `tool_choice=auto`, `parallel_tool_calls=false`, and `prompt_cache_options={mode:"explicit"}` without breakpoints. The Responses function schemas use `strict:false` to preserve existing optional arguments; application validation and evidence checks remain authoritative.
+Each request sets `reasoning.effort=high`, `reasoning.context=all_turns`, `service_tier=default`, `store=false`, `include=["reasoning.encrypted_content"]`, `tool_choice=auto`, `parallel_tool_calls=false`, and `prompt_cache_options={mode:"explicit"}` without breakpoints. The Responses function schemas use `strict:false` to preserve existing optional arguments; application validation and evidence checks remain authoritative.
 
 Operator pricing and caps remain required through the existing `INVOICE_MVP_*` variables. OpenAI additionally rejects configured input limits above 100,000 or output limits above 4,096. Actual output per request defaults to 4,096 and must not exceed the configured output ceiling. Requests exceeding reservation bounds stop before dispatch. Reservations cover the full serialized request body, all earlier reported output tokens for opaque replay, and 4,096 protocol-overhead tokens. Persistent run-wide call/cost reservations remain held on failure; a replayed reservation cannot dispatch another request after restart.
 
@@ -30,7 +30,7 @@ Model-origin proposals still require human review. The model cannot approve a pr
 
 ## Runtime contract
 
-`outputTokensPerCall` and `perRequest.maxOutputTokens` expose the actual request limit. Top-level `effort` is `high`; `toolsHash` hashes the actual Responses tool schema. With operator-supplied illustrative rates 2/10 microdollars per input/output token, `modelProvider` is:
+`outputTokensPerCall` and `perRequest.maxOutputTokens` expose the actual request limit. Top-level `effort` is `high` and `reasoningContext` is `all_turns`; `toolsHash` hashes the actual Responses tool schema. Anthropic and deterministic runtimes retain `effort=provider_default` and expose `reasoningContext=null`. With operator-supplied illustrative rates 2/10 microdollars per input/output token, `modelProvider` is:
 
 ```json
 {
@@ -58,3 +58,9 @@ The [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) d
 `npm run typecheck`, `npm run invoice-mvp:test`, and `git diff --check` passed for the implementation above. The invoice suite contains **106 tests across six files**, including **52 OpenAI tests** using injected/mock fetch and synthetic credentials only. Coverage includes the transport settings and auth guard, factory defaults, immutable attestation, full continuation replay, isolation/cleanup, pairing and mutation checks, reservation bounds, usage and cache validation, safe failure audit, persistent reservations, and human-review authority.
 
 The local untracked `node_modules` dependency symlink is intentionally preserved and excluded from commits. Root must integrate this implementation plus handoff and D's evaluation changes, then rerun combined verification. No live result or spend approval is implied by this handoff.
+
+## Root review follow-up
+
+A new native goal was activated for these pre-live corrections. The product timeout is now 30,000 ms, matching the agreed per-turn contract; D's separate baseline timeout is unchanged. The wire explicitly requests `reasoning.context=all_turns` and runtime attestation exposes the matching model property. The [official reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) confirms GPT-6.1 Sol supports this mode with complete stateless history. The [Responses reasoning-item schema](https://developers.openai.com/api/reference/typescript/resources/responses) was also checked: accepted reasoning items require a nonempty ID, nonempty encrypted content for stateless replay, correctly typed summary/optional content arrays, and an omitted or completed status. Fields remain opaque and are replayed unchanged; no values enter errors or audit.
+
+Only `reasoning`, `message` and `function_call` output items are accepted. Other types or malformed reasoning stop as a billed unusable response, preserving known usage and clearing continuation. The usage audit prefix, IDs and fixed numeric suffix are unchanged; D owns the corresponding suffix parser update. New checks cover the 30-second AbortSignal, all-turns wire/attestation, Anthropic/default null context, unsupported types and structured reasoning acceptance/rejection. Follow-up verification: **116 invoice tests across six files, including 62 OpenAI tests; typecheck and diff whitespace checks passed.** No provider call or key inspection was made for this follow-up.
