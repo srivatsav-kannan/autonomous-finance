@@ -28,9 +28,9 @@ Required extensions: explicit executor version per configured run; frozen execut
 | Lane | Exclusive files | Status |
 |---|---|---|
 | A contracts | `src/payments/contracts.ts`, `src/payments/domain/`, `src/payments/ports/`, contract docs and rule tests | integrated; 35 pure tests and three typechecks passed on lane revision |
-| B kernel | `convex/demoPayments.ts`, `convex/demoEvidence.ts`, `convex/demoSchema.ts`, `convex/lib/demoAuth.ts`, `convex/lib/demoEffects.ts`, `convex/lib/payments/`, generated API, backend integration tests | active after A freeze |
-| C application | `src/payments/application/`, `src/payments/adapters/`, dispatcher/evidence/agents compatibility modules, banking adapters, `scripts/ap-worker.ts`, existing dispatcher child/test, relevant human/agent entry points | active after A freeze |
-| D independent verification | `tests/payments/` except rules, `scripts/testing/payment-*`, recovery/migration documentation | active after A freeze |
+| B kernel | `convex/demoPayments.ts`, `convex/demoEvidence.ts`, `convex/demoSchema.ts`, `convex/lib/demoAuth.ts`, `convex/lib/demoEffects.ts`, `convex/lib/payments/`, generated API, backend integration tests | integrated |
+| C application | `src/payments/application/`, `src/payments/adapters/`, dispatcher/evidence/agents compatibility modules, banking adapters, `scripts/ap-worker.ts`, existing dispatcher child/test, relevant human/agent entry points | integrated |
+| D independent verification | `tests/payments/` except rules, `scripts/testing/payment-*`, recovery/migration documentation | integrated, including follow-up command and adapter authority tests |
 | Coordinator | manifest, integration, package scripts if needed, final evidence, PR | active |
 
 Existing chats notified: invoice MVP `01a16fb4-0204-7780-9d59-1a5d60c4791c`, runtime SRE `01a16fb4-e7c2-79c0-ab1f-9f097cf088e0`, lease fix `01a16fb4-f69d-7991-b067-a71b06afcb32`, AP CI `01a16fb5-050c-7eb0-91d8-1f5721870d1e`. Their checkouts and ownership remain separate.
@@ -38,9 +38,9 @@ Existing chats notified: invoice MVP `01a16fb4-0204-7780-9d59-1a5d60c4791c`, run
 | Lane | Chat | Branch | Handoff |
 |---|---|---|---|
 | A | `01a16fc0-6763-7df2-bc9b-1801c668e1aa` | `codex/payment-contracts-59` | `4d8827c` contracts → `6e22066`; `f57031b` rules → `ae39320` |
-| B | `01a16fc4-b0a7-7173-8639-b752cf2871d5` | `codex/payment-kernel-extraction` | pending |
-| C | `01a16fc6-03d4-72a0-90c3-cb8baf500c0a` | isolated `41f4` worktree | pending |
-| D | `01a16fc0-6765-70f0-ba17-069db9a8de00` | `codex/payment-independent-verification` | fixture preparation `7b85cfe`, `66c4803`; final tests pending |
+| B | `01a16fc4-b0a7-7173-8639-b752cf2871d5` | `codex/payment-kernel-extraction` | `c167d70`, `0d9e033`, `62ad28d` → `d90f910`, `a703c52`, `24b8846` |
+| C | `01a16fc6-03d4-72a0-90c3-cb8baf500c0a` | `codex/payment-application` | `20d7aad`, `1255df3`, `8568fd0` → `ab3d0fb`, `2188a7e`, `f9a9f85` |
+| D | `01a16fc0-6765-70f0-ba17-069db9a8de00` | `codex/payment-independent-verification` | `7b85cfe`, `66c4803`, `00e2f58`, `c3a6e91` → `8de62bf`, `e362d12`, `a7a0906`, `5bd79f7`; follow-up `ecc319a`, `5c4b68f`, `1a840e6` → `1be4c6a`, `c8fbddc`, `41b1a9e` |
 
 A finished before C started, keeping at most three implementation workers active.
 B also owns existing `tests/demo-fixture.ts`, `demo-backend.test.ts`, `demo-reconciliation.test.ts`, and `demo-final-review.test.ts` for explicit executor arguments and earlier reservation behavior. C owns `tests/demo-dispatcher.test.ts`. Coordinator owns CI evidence assertions and fixture updates.
@@ -59,9 +59,9 @@ The follow-up human turn in the source chat explicitly requested parallel CI tes
 
 | Testing lane | Chat / branch | Exclusive ownership | Status |
 |---|---|---|---|
-| Unit/contract and migration | D `01a16fc0-6765-70f0-ba17-069db9a8de00` / `codex/payment-independent-verification` | Existing `tests/payments/` and independent coverage inventory | 43 independent cases integrated; auditing added CI requirements |
-| Recovery and CI | Existing AP CI owner `01a16fb5-050c-7eb0-91d8-1f5721870d1e` / `codex/payment-ci-gates` | Persistent runner, CI evidence helper/tests, real dispatcher child, narrow local demo interruption, `docs/ci.md` | active from `794a10e`; #58 branch preserved |
-| Playwright smoke | `01a16fce-3324-7561-b05b-d30c14cd6259` | `tests/browser/`, payment Playwright config, `scripts/testing/payment-browser-*`, `docs/payment-refactor/BROWSER.md` | local fixture/suite active; staging prerequisites absent |
+| Unit/contract and migration | D `01a16fc0-6765-70f0-ba17-069db9a8de00` / `codex/payment-independent-verification` | Existing `tests/payments/` and independent coverage inventory | integrated; 43 initial independent cases plus 5 command/adapter-authority cases |
+| Recovery and CI | Existing AP CI owner `01a16fb5-050c-7eb0-91d8-1f5721870d1e` / `codex/payment-ci-gates` | Persistent runner, CI evidence helper/tests, real dispatcher child, narrow local demo interruption, `docs/ci.md` | `45bd7c2` → `992afee`; #58 branch preserved; lane passed actual SIGKILL and failure/cancellation diagnostics |
+| Playwright smoke | `01a16fce-3324-7561-b05b-d30c14cd6259` / `codex/payment-browser-smoke` | `tests/browser/`, payment Playwright config, `scripts/testing/payment-browser-*`, `docs/payment-refactor/BROWSER.md` | `5b07376` → `f7bd51a`; lane passed 3 local tests; staging prerequisites absent |
 | Shared CI wiring | Coordinator | `.github/workflows/`, `package.json`, `package-lock.json`, combined evidence | single writer; worker proposals integrated here |
 
 The core integrated revision `794a10e` passed 387 tests, all three TypeScript checks, the console build and persistent local recovery. Convex rejected hyphenated helper filenames during actual deployment; the coordinator changed them to camelCase before this passing run. Its sanitized evidence is recorded separately from the additional CI/browser work.

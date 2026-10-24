@@ -99,7 +99,8 @@ export async function runBrowser(mode) {
     if (!['linux', 'darwin'].includes(process.platform)) throw new Error('POSIX process groups required');
     let config;
     if (mode === 'staging') {
-      if (process.env.PAYMENT_BROWSER_ALLOW_STAGING !== 'isolated-fake-only' || !process.env.PAYMENT_BROWSER_STAGING_FIXTURE) {
+      if (process.env.PAYMENT_BROWSER_ALLOW_STAGING !== 'isolated-fake-only' || !process.env.PAYMENT_BROWSER_STAGING_FIXTURE ||
+          !fs.existsSync(process.env.PAYMENT_BROWSER_STAGING_FIXTURE)) {
         report.status = 'NOT_RUN'; report.stage = 'missing-staging-opt-in-or-fixture'; process.exitCode = 2;
         return;
       }
