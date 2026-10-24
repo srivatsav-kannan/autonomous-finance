@@ -1,5 +1,19 @@
 # Integrated acceptance evidence
 
+## Current OpenAI integration — 2026-10-24
+
+Application source: `d08165c1ad38bb20817ace294c55ed1c50b8c243`, clean at startup and after an actual backend/gateway restart. The optional OpenAI transport and evaluator fixes are integrated. The browser remains the focused invoice UI; the newer broad simulation UI on :5180 is separate.
+
+Fresh `invoice-openai-acceptance-20261024`, reached through `http://localhost:5181/`, repeated the complete browser workflow: import eight synthetic sources, view initial Acorn $875/Birch $400 totals, inspect the disputed invoice and useful missing-evidence question, record a human evidence request, import a late version, accept the new exact proposal, replay that decision, and refresh. Final totals are Acorn $1,075 and Birch $450, with four contributions, two human decisions, one duplicate, one superseded version and one unresolved unfamiliar source. Every contribution has source evidence. The fresh deployed-backend smoke independently rejected stale approval and verified replay/version recovery.
+
+Root stopped the real Convex backend and all three new gateways, verified their ports unbound, and restarted them with preserved files and credentials. The browser displayed a real HTTP 502 outage, recovered through Retry, and retained identical persisted state. Before/after stable-state SHA-256: `2d8d1e7229513d5589403464bb1c2a7ed21cbff0a03a4c927ac698a21b616e6e`. See [verification JSON](verification-d08165c.json), [recovered browser](screenshots/openai-source-browser-restarted.png), and [outage](screenshots/openai-source-browser-outage.png).
+
+The user approved one OpenAI batch capped at $7.50 ($3 baseline, $3 app original, $1.50 app held-out), replacing the Claude proposal. All three runs are terminal, with 59 calls and $1.201842 total reported usage estimates. The baseline is unscored because it stopped before submission. The app original result is 0/18, with 148/148 originals retained and all cases unresolved. Both app runs exhausted conservative reservation capacity. The independent [live evaluation report](evaluation-openai-results.md) records exact scores, source identities, resource stops, usage, restart evidence and comparison differences.
+
+The functional demo and real provider connection are verified. **Reliable unfamiliar-document interpretation and production readiness remain unproven.** No reviewer or measured multiple-agent benefit is claimed. A discovered local limitation is that simultaneous invoice gateways on one browser hostname share a cookie name and can reject writes; isolated hostnames/profiles avoid the collision. The evaluator uses separate cookie jars.
+
+## Historical deterministic checkpoint
+
 Application source: `926e4e8899a054c6cc1f2548f84a4ba18469797c`, clean when all runtime processes started. Later report/screenshot commits do not change application code. Verification date: 2026-10-24. Runtime: Node 24.22.0, real local Convex on :3230, loopback invoice gateway on :8790, browser console on :5173. No model API calls or payment actions occurred.
 
 The deterministic/manual workflow passes the functional checks below. **The MVP is not fully validated: live-model evaluation and a current live baseline comparison are NOT RUN.** The original benchmark scores 0/18 with models disabled, and the held-out suite passes 4/9. Infrastructure correctness does not establish unfamiliar-document interpretation.
