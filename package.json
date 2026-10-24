@@ -15,7 +15,7 @@
     "gateway": "tsx src/human/gateway.ts",
     "smoke": "tsx scripts/smoke-kernel.ts && tsx scripts/smoke-memory.ts",
     "test:bank": "vitest run src/integrations/banking/fake.test.ts",
-    "test:payments": "vitest run tests/demo-*.test.ts",
+    "test:payments": "vitest run tests/demo-*.test.ts tests/payments tests/payment-kernel.test.ts",
     "test:contracts": "vitest run src/integrations/banking/increase.test.ts src/integrations/banking/increase-prism.test.ts",
     "demo:local": "tsx scripts/ap-demo.ts local",
     "demo:sandbox": "tsx scripts/ap-demo.ts sandbox",

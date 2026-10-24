@@ -55,8 +55,10 @@ the 30-second lease, and starts a new dispatcher. It drops notifications, polls
 posted bank evidence, and asserts a second reconciliation pass posts nothing.
 The CI runner then independently checks the report and fresh backend journal:
 
-- One command, two attempts and two bank create calls, with the saved command,
-  request hash and idempotency key matching the single resulting transfer.
+- One command and two leased attempts, with one bank create call and at least one
+  persisted operation-key lookup after restart. The saved command, request hash
+  and idempotency key match the single resulting transfer; recovery finds the
+  accepted transfer without submitting again.
 - One posted debit and one linked cash journal entry for the approved amount.
 - Settled/posted/matched state, no close blockers and no ingested webhook rows.
 
