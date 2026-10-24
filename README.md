@@ -73,6 +73,10 @@ npm run world -- --run demo --stores 3 --days 14 --pace 3000
 npm run agents -- --run demo
 ```
 
+`npm run world` and `npm run eval` create and seed company memory automatically
+for each new scenario in `var/memory/<run-id>.git`. No separate memory initialization
+command is needed; the obsolete `memory:init` script has been removed.
+
 ## Layout
 
 | Path | What |
