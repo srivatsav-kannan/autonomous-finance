@@ -59,6 +59,10 @@ export const recordBill = mutation({
     const op = "ap.recordBill";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
+    if (!auth.seat.caps.billsRecord) {
+      return await recordViolation(ctx, args.runId, args.seatId, op,
+        fail("forbidden", `${auth.seat.role} may not record vendor bills`));
+    }
     const { token: _t, ...payload } = args;
     const idem = await checkIdempotency(ctx, args.runId, args.idempotencyKey, op, payload);
     if ("conflict" in idem) return await recordViolation(ctx, args.runId, args.seatId, op, idem.conflict);
@@ -139,7 +143,12 @@ export const recordBill = mutation({
         decisionPath: args.decisionPath,
         memorySha: args.memorySha,
       });
-      if (!posted.ok) return await recordViolation(ctx, args.runId, args.seatId, op, posted);
+      if (!posted.ok) {
+        // A returned failure commits the transaction so the violation survives.
+        // Remove the provisional bill as well: it must never outlive a failed accrual.
+        await ctx.db.delete(billId);
+        return await recordViolation(ctx, args.runId, args.seatId, op, posted);
+      }
       entryId = posted.entryId;
       await ctx.db.patch(billId, { entryId });
     } else {
