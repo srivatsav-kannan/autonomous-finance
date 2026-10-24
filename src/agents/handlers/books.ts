@@ -32,46 +32,74 @@ export const postDailyRevenue: Handler = async (rt, task) => {
 
 /**
  * Payroll: every person on the register must be active on the HR roster as of pay date.
- * Terminated people are held out and escalated; everyone else is accrued.
+ * Unknown, mismatched, and inactive people are held out and escalated.
  */
 export const processPayroll: Handler = async (rt, task) => {
   const e = await rt.event(task.payload.eventId);
   const reg = e.payload as { registerId: string; store: string; payDate: string; employees: { id: string; name: string; grossCents: number }[] };
-  const terminations = (await rt.eventsOfType("hr.roster_change", undefined, reg.payDate))
-    .map((x) => x.payload as { employeeId: string; change: string; effective: string; name: string })
-    .filter((x) => x.change === "terminated" && x.effective <= reg.payDate);
-  const held = reg.employees.filter((emp) => terminations.some((t) => t.employeeId === emp.id && t.effective < reg.payDate));
-  const ok = reg.employees.filter((emp) => !held.includes(emp));
+  const [rosterEvents, changeEvents] = await Promise.all([
+    rt.eventsOfType("hr.roster", undefined, reg.payDate),
+    rt.eventsOfType("hr.roster_change", undefined, reg.payDate),
+  ]);
+  type RosterEmployee = { id: string; store: string; status: string; terminatedOn?: string };
+  // HR rosters are full snapshots. A newer snapshot supersedes older snapshots
+  // and earlier changes, so a corrected/re-hired employee can become active again.
+  const roster = rosterEvents
+    .map((event) => ({ event, payload: event.payload as { asOf: string; employees: RosterEmployee[] } }))
+    .filter((r) => typeof r.payload.asOf === "string" && r.payload.asOf <= reg.payDate)
+    .sort((a, b) => b.payload.asOf.localeCompare(a.payload.asOf) || b.event._creationTime - a.event._creationTime)[0];
+  const terminations = changeEvents
+    .map((event) => ({ event, payload: event.payload as { employeeId: string; change: string; effective: string } }))
+    .filter(({ payload: t }) => t.change === "terminated" && t.effective <= reg.payDate && (!roster || t.effective >= roster.payload.asOf));
+  const checked = reg.employees.map((emp) => {
+    let reason: string | undefined;
+    const matches = roster?.payload.employees.filter((person) => person.id === emp.id) ?? [];
+    const person = matches[0];
+    const terminated = terminations.find(({ payload: t }) => t.employeeId === emp.id);
+    if (!roster) reason = `no HR roster effective by ${reg.payDate}`;
+    else if (!person) reason = "not on the HR roster";
+    else if (matches.length > 1) reason = "multiple HR roster records for this employee";
+    else if (person.store !== reg.store) reason = `HR store ${person.store} does not match register store ${reg.store}`;
+    else if (person.status !== "active") reason = `HR status is ${person.status}`;
+    else if (person.terminatedOn && person.terminatedOn <= reg.payDate) reason = `terminated ${person.terminatedOn}`;
+    else if (terminated) reason = `terminated ${terminated.payload.effective}`;
+    return { ...emp, reason };
+  });
+  const held = checked.filter((emp) => emp.reason !== undefined);
+  const ok = checked.filter((emp) => emp.reason === undefined);
   const gross = ok.reduce((s, x) => s + x.grossCents, 0);
   const d = await rt.decide({
     kind: "payroll", subject: { type: "payroll", id: reg.registerId }, outcome: held.length ? "hold" : "act", confidence: 0.97, task: task._id,
     amountCents: held.reduce((s, x) => s + x.grossCents, 0),
     summary: held.length
-      ? `Accrued ${formatMoney(gross)} for ${ok.length} people; held ${held.map((h) => `${h.name} (${formatMoney(h.grossCents)})`).join(", ")}: terminated before the pay date`
+      ? `Accrued ${formatMoney(gross)} for ${ok.length} people; held ${held.map((h) => `${h.name} (${formatMoney(h.grossCents)}): ${h.reason}`).join("; ")}`
       : `Accrued ${formatMoney(gross)} for ${ok.length} people; roster matches`,
     facts: [
       { key: "register", value: reg.registerId, source: { kind: "event", ref: e.externalId } },
-      ...terminations.map((t) => ({ key: `terminated.${t.employeeId}`, value: t.effective, source: { kind: "event" as const, ref: `roster-change-${t.employeeId}` } })),
+      ...(roster ? [{ key: "roster", value: roster.payload.asOf, source: { kind: "event" as const, ref: roster.event.externalId } }] : []),
+      ...terminations.map(({ event, payload: t }) => ({ key: `terminated.${t.employeeId}`, value: t.effective, source: { kind: "event" as const, ref: event.externalId } })),
     ],
     rules: [{ path: "playbooks/payroll_accountant.yaml", key: "roster-check" }],
   });
-  const r = await rt.kernel.client.mutation(api.ledger.postEntry, {
-    ...rt.kernel.auth, idempotencyKey: `payroll:${reg.registerId}`, date: reg.payDate, memo: `Payroll ${reg.store} ${reg.payDate}`,
-    source: { kind: "payroll", ref: reg.registerId }, taskId: task._id, decisionPath: d.path, memorySha: d.memorySha,
-    lines: [
-      { account: "5100", debit: gross, credit: 0, dims: { store: reg.store } },
-      { account: "2100", debit: 0, credit: gross, dims: { store: reg.store } },
-    ],
-  });
-  if (!r.ok) throw new Error(`payroll post: ${r.code} ${r.error}`);
+  if (gross !== 0) {
+    const r = await rt.kernel.client.mutation(api.ledger.postEntry, {
+      ...rt.kernel.auth, idempotencyKey: `payroll:${reg.registerId}`, date: reg.payDate, memo: `Payroll ${reg.store} ${reg.payDate}`,
+      source: { kind: "payroll", ref: reg.registerId }, taskId: task._id, decisionPath: d.path, memorySha: d.memorySha,
+      lines: [
+        { account: "5100", debit: gross, credit: 0, dims: { store: reg.store } },
+        { account: "2100", debit: 0, credit: gross, dims: { store: reg.store } },
+      ],
+    });
+    if (!r.ok) throw new Error(`payroll post: ${r.code} ${r.error}`);
+  }
   if (held.length) {
     await rt.ask({
-      to: "human_cfo", severity: "decision", title: `Payroll includes ${held.length} terminated employee(s) at ${reg.store}`,
-      body: held.map((h) => `${h.name}: ${formatMoney(h.grossCents)}, terminated ${terminations.find((t) => t.employeeId === h.id)?.effective}`).join("\n") + "\n\nTheir pay was held out of the run. Release (e.g. final wages owed) or keep blocked?",
-      options: [{ id: "block", label: "Keep blocked" }, { id: "release", label: "Release as final pay" }], evidence: [{ label: "decision", ref: d.path }], taskId: task._id,
+      to: "human_cfo", severity: "decision", title: `Payroll includes ${held.length} employee(s) with HR exceptions at ${reg.store}`,
+      body: held.map((h) => `${h.name} (${h.id}): ${formatMoney(h.grossCents)}, ${h.reason}`).join("\n") + "\n\nTheir pay was held out of the run. Verify their HR record and eligibility before releasing pay, or keep blocked.",
+      options: [{ id: "block", label: "Keep blocked" }, { id: "release", label: "Release after HR review" }], evidence: [{ label: "decision", ref: d.path }], taskId: task._id,
     });
   }
-  return { outcome: held.length ? "held_partial" : "posted", summary: `${reg.registerId}: ${formatMoney(gross)}` };
+  return { outcome: held.length ? (ok.length ? "held_partial" : "held") : "posted", summary: `${reg.registerId}: ${formatMoney(gross)}` };
 };
 
 /** Rent statements: base rent per lease, CAM capped per lease; overages are short-paid and disputed. */
