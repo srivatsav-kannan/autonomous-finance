@@ -118,7 +118,7 @@ export class MemoryStore {
   }
 
   async list(prefix = "", ref = "main"): Promise<string[]> {
-    const out = await this.git(["ls-tree", "-r", "--name-only", `refs/heads/${ref}`, "--", prefix || "."]);
+    const out = await this.git(["ls-tree", "-r", "--name-only", ref.match(/^[0-9a-f]{40}$/) ? ref : `refs/heads/${ref}`, "--", prefix || "."]);
     return out.split("\n").filter(Boolean);
   }
 

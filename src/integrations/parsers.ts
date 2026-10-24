@@ -109,11 +109,12 @@ export function compileParser(rec: ParserRecord): Parser {
   };
 }
 
-export async function loadMemoryParsers(mem: MemoryStore): Promise<Parser[]> {
-  const files = await mem.list("integrations/parsers/");
+export async function loadMemoryParsers(mem: MemoryStore, sha?: string): Promise<Parser[]> {
+  const snapshot = sha ?? (await mem.head());
+  const files = await mem.list("integrations/parsers/", snapshot);
   const parsers: Parser[] = [];
   for (const f of files) {
-    const rec = await mem.read<ParserRecord>(f);
+    const rec = await mem.read<ParserRecord>(f, snapshot);
     if (!rec) continue;
     try {
       parsers.push(compileParser(rec));
