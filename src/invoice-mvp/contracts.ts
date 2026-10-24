@@ -68,3 +68,11 @@ export type DecisionResult = { decisionId: string; case: CaseSummary };
 export type RegisterCustomerInput = { customerId: string; legalName: string; aliases: string[]; evidence: EvidenceRef[]; idempotencyKey: string };
 /** HTTP errors use this shape; gateway maps backend codes to 400/401/403/409. */
 export type ApiError = { error: { code: string; message: string } };
+
+/** Reservations are charged before a provider call and never refunded automatically. */
+export type ModelBudget = { maxRequests: number; maxCostMicros: number; requestsReserved: number; costReservedMicros: number };
+export type ReserveModelRequestInput = {
+  caseId: string; evidenceVersion: number; idempotencyKey: string; model: string;
+  maxCostMicros: number; budget: { maxRequests: number; maxCostMicros: number };
+};
+export type ModelReservationResult = ModelBudget & { reservationId: string };
