@@ -2,7 +2,7 @@
 import copy,csv,json,os,subprocess,sys,tempfile,threading,unittest
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from pathlib import Path
-from core import audit_state,export_submission,prepare_workspace,seal,strict_customer_metrics,verify_seal
+from core import audit_source_preservation,digest,audit_state,export_submission,prepare_workspace,seal,strict_customer_metrics,verify_seal
 from http_app import AppClient,ApiFailure,chunks,require_free_runtime
 
 class CoreTests(unittest.TestCase):
@@ -38,6 +38,20 @@ class CoreTests(unittest.TestCase):
             root=Path(t); header='customer_id,valid_invoice_count,gross_invoice_spend_usd,credit_memo_total_usd,net_spend_usd\n'
             (root/'expected.csv').write_text(header+'X,1,100,0,100\n');(root/'actual.csv').write_text(header+'X,1,100,0,100\nX,2,101,1,100\nEXTRA,0,0,0,0\n')
             result=strict_customer_metrics(root/'actual.csv',root/'expected.csv');self.assertEqual(result['duplicateCustomerRows'],1);self.assertEqual(result['unexpectedCustomers'],['EXTRA']);self.assertEqual(result['allFourFieldsExactCents'],0);self.assertFalse(result['strictPass'])
+    def test_retention_requires_original_bytes_and_unchanged_text(self):
+        original={'externalId':'doc','text':'extracted','contentBase64':'Ynl0ZXM='}
+        stored={**original,'documentId':'id','version':1,'contentHash':digest(b'bytes')}
+        self.assertTrue(audit_source_preservation([original],[{'sourceVersions':[stored]}])['pass'])
+        changed={**stored,'text':'different'}
+        self.assertFalse(audit_source_preservation([original],[{'sourceVersions':[changed]}])['pass'])
+        missing=dict(stored);del missing['contentBase64']
+        errors=audit_source_preservation([original],[{'sourceVersions':[missing]}])['detail']
+        self.assertIn('original_bytes_missing',[e['error'] for e in errors])
+    def test_retention_counts_old_and_new_versions_once(self):
+        old={'externalId':'doc','text':'old'};new={'externalId':'doc','text':'new'}
+        versions=[{**d,'documentId':'id'+str(i),'version':i+1,'contentHash':digest(d['text'].encode())} for i,d in enumerate([old,new])]
+        result=audit_source_preservation([old,new],[{'sourceVersions':versions},{'sourceVersions':versions}])
+        self.assertTrue(result['pass']);self.assertEqual(result['observedSourceVersions'],2)
     def test_missing_usage_is_not_zero(self):
         result=audit_state({'runtimeMode':'live_model','cases':[],'customerTotals':[]},[],[])
         self.assertIsNone(result['usage']['modelCalls']);self.assertIsNone(result['usage']['costUsd'])

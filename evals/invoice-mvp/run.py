@@ -53,6 +53,7 @@ def execute(args):
             write_json(phase_dir/'snapshot.json',final); write_json(phase_dir/'details.json',detail); write_json(phase_dir/'audit.json',audit_state(final,detail,imported))
             if stop!='settled': break
         detail=app.details(final); write_json(args.out/'final.json',final); write_json(args.out/'details.json',detail)
+        write_json(args.out/'source-preservation.json',audit_source_preservation([d for phase in phases for d in phase['documents']],detail))
         write_json(args.out/'audit.json',audit_state(final,detail,imported)); export_submission(final,args.out/'submission.csv')
         meta.update(status='RECORDED',stopReason=stop,runId=final['runId'],runtimeMode=final['runtimeMode'],submittedSourceIds=sorted(set(imported)))
     except Exception as exc:

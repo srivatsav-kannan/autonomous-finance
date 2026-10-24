@@ -136,3 +136,34 @@ def verify_seal(directory: Path):
     recorded=read_json(directory/'artifact-manifest.json')['files']
     actual={p.relative_to(directory).as_posix():digest(p.read_bytes()) for p in sorted(directory.rglob('*')) if p.is_file() and p.name!='artifact-manifest.json'}
     if actual!=recorded: raise ValueError('Run artifacts changed after recording')
+
+
+def audit_source_preservation(documents, details):
+    """Compare immutable persisted source versions with actual imported bytes/text.
+
+    This is a retention audit, not accounting accuracy or model evaluation.
+    """
+    expected={}
+    for source in documents:
+        raw=base64.b64decode(source['contentBase64'],validate=True) if 'contentBase64' in source else source['text'].encode()
+        expected[(source['externalId'],digest(raw))]={'textSha256':digest(source['text'].encode()),'originalRequired':'contentBase64' in source}
+    observed={}; repeated_versions={}; errors=[]
+    for detail in details:
+        for source in detail['sourceVersions']:
+            identity=(source['documentId'],source['version'])
+            fingerprint=canonical_hash({k:source.get(k) for k in ['externalId','contentHash','text','contentBase64']})
+            if identity in repeated_versions and repeated_versions[identity]!=fingerprint:
+                errors.append({'externalId':source['externalId'],'error':'inconsistent_immutable_version'})
+            repeated_versions[identity]=fingerprint
+            observed[(source['externalId'],source['contentHash'])]=source
+    for key,source in observed.items():
+        target=expected.get(key)
+        if target is None: continue
+        if target['originalRequired'] and 'contentBase64' not in source:
+            errors.append({'externalId':source['externalId'],'error':'original_bytes_missing'})
+        try: raw=base64.b64decode(source['contentBase64'],validate=True) if 'contentBase64' in source else source['text'].encode()
+        except (ValueError,TypeError): errors.append({'externalId':source['externalId'],'error':'invalid_original_encoding'}); continue
+        if digest(raw)!=source['contentHash']: errors.append({'externalId':source['externalId'],'error':'stored_content_hash_mismatch'})
+        if digest(source['text'].encode())!=target['textSha256']: errors.append({'externalId':source['externalId'],'error':'extracted_text_mismatch'})
+    missing=sorted(set(expected)-set(observed)); unexpected=sorted(set(observed)-set(expected))
+    return {'expectedSourceVersions':len(expected),'observedSourceVersions':len(observed),'missingVersions':len(missing),'unexpectedVersions':len(unexpected),'retentionErrors':len(errors),'pass':not missing and not unexpected and not errors,'detail':errors,'missingExternalIds':[x[0] for x in missing],'unexpectedExternalIds':[x[0] for x in unexpected]}

@@ -80,6 +80,7 @@ def score(args):
         result['heldout']=heldout_metrics(args.run,read_json(args.expectations)); result['expectationsSha256']=frozen['expectationsSha256']
     else: raise ValueError('Select original upstream or hidden expectations')
     result['structuralAudit']=read_json(args.run/'audit.json')
+    if (args.run/'source-preservation.json').exists(): result['sourcePreservation']=read_json(args.run/'source-preservation.json')
     write_json(args.out/'score.json',result); seal(args.out)
     summary={'runtimeMode':result['runtimeMode'],'liveModel':result['liveModel'],'official':result.get('official'),'strictCustomerMetrics':result.get('strictCustomerMetrics'),'heldout':{k:v for k,v in result.get('heldout',{}).items() if k!='detail'},'runArtifactSha256':result['runArtifactSha256'],'scoreJsonSha256':digest((args.out/'score.json').read_bytes())}
     write_json(args.out/'aggregate.json',summary); seal(args.out)
