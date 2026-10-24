@@ -153,4 +153,33 @@ describe("Anthropic transport compatibility — mocked SDK, no provider calls", 
     expect(unknownCost[0]!.summary).toContain("full reservation remains charged");
     expect(detail.audit.filter((a) => a.toolCall?.tool === "model_reservation")).toHaveLength(1);
   });
+
+  it("marks network failure cost unavailable without fabricating usage or retrying", async () => {
+    transport.create.mockRejectedValueOnce(new Error("PRIVATE_NETWORK_DETAIL_MUST_NOT_ENTER_AUDIT"));
+    const reserveModelRequest = vi.fn(async () => ({ reservationId: "synthetic-network-reservation", replayed: false, maxRequests: 5, maxCostMicros: 500_000, requestsReserved: 1, costReservedMicros: 100_000 }));
+    const backend = Object.assign(new TestBackend(), { reserveModelRequest });
+    const { caseIds } = await backend.ingestBatch({ label: "Network failure audit", idempotencyKey: "network-fixture", documents: [{ externalId: "unknown", name: "unknown.txt", mimeType: "text/plain", text: "Unknown layout needs evidence" }] });
+    const caseId = caseIds[0]!;
+    await backend.beginInvestigation(caseId);
+    const result = await investigate(backend, await backend.caseDetail(caseId), makeModel());
+    expect(result).toMatchObject({ outcome: "evidence_missing", modelCalls: 1, toolCalls: 0, usage: { costMicros: null } });
+    expect(transport.create).toHaveBeenCalledTimes(1);
+    expect(reserveModelRequest).toHaveBeenCalledTimes(1);
+    const detail = await backend.caseDetail(caseId);
+    expect(detail.audit.filter((a) => a.toolCall?.tool === "model_usage")).toHaveLength(0);
+    const unavailable = detail.audit.filter((a) => a.toolCall?.tool === "model_usage_unavailable");
+    expect(unavailable).toHaveLength(1);
+    for (const field of ["inputTokens", "outputTokens", "costMicros", "durationMs"]) expect(unavailable[0]!.toolCall).not.toHaveProperty(field);
+    expect(unavailable[0]!.summary).toContain("full reservation remains charged");
+    expect(JSON.stringify(detail.audit)).not.toContain("PRIVATE_NETWORK_DETAIL");
+    expect(detail.audit.filter((a) => a.toolCall?.tool === "model_failure")).toHaveLength(1);
+  });
+
+  it("retains honest zero cost when deterministic processing makes no model request", async () => {
+    const backend = new TestBackend();
+    const { caseIds } = await backend.ingestBatch({ label: "Deterministic zero", idempotencyKey: "zero-fixture", documents: [{ externalId: "unknown", name: "unknown.txt", mimeType: "text/plain", text: "Unknown layout needs evidence" }] });
+    const result = await investigate(backend, await backend.caseDetail(caseIds[0]!));
+    expect(result).toMatchObject({ mode: "deterministic", modelCalls: 0, usage: { inputTokens: 0, outputTokens: 0, costMicros: 0 } });
+    expect(transport.create).not.toHaveBeenCalled();
+  });
 });
