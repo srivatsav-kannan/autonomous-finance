@@ -163,6 +163,11 @@ export const DEFAULT_POLICY: Policy = {
   autoApproveCents: 5_000_00,
 };
 
+/** Runs created with a vendor registry pay only registered vendors at registered bank details. */
+export function registryEnforced(run: Doc<"runs">): boolean {
+  return Boolean((run.config as { vendorRegistry?: boolean } | undefined)?.vendorRegistry);
+}
+
 export function runPolicy(run: Doc<"runs">): Policy {
   const p = (run.config as { policy?: Partial<Policy> } | undefined)?.policy ?? {};
   return { ...DEFAULT_POLICY, ...p };

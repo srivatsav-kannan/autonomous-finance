@@ -8,10 +8,20 @@ import {
   getRun,
   logActivity,
   recordViolation,
+  registryEnforced,
   runPolicy,
   storeIdempotency,
 } from "./lib/kernel";
 import { appendEntry } from "./lib/post";
+import type { QueryCtx } from "./_generated/server";
+
+async function registeredPayee(ctx: QueryCtx, runId: string, vendorId: string) {
+  const reg = await ctx.db
+    .query("vendors")
+    .withIndex("by_run_vendor", (q) => q.eq("runId", runId).eq("vendorId", vendorId))
+    .unique();
+  return reg && reg.status === "active" ? reg : null;
+}
 
 const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 const remitTo = v.object({ bank: v.string(), accountLast4: v.string(), memorySha: v.string() });
@@ -71,6 +81,17 @@ export const requestPayment = mutation({
     const run = await getRun(ctx, args.runId);
     if (!run) return fail("not_found", "run not found");
     const policy = runPolicy(run);
+    if (registryEnforced(run)) {
+      // Money goes only to registered vendors, at the bank details a human verified.
+      const reg = await registeredPayee(ctx, args.runId, args.payee);
+      if (!reg) {
+        return await recordViolation(ctx, args.runId, args.seatId, op, fail("unknown_vendor", `${args.payee} is not an active registered vendor`));
+      }
+      if (reg.remitBank !== args.remitTo.bank || reg.remitLast4 !== args.remitTo.accountLast4) {
+        return await recordViolation(ctx, args.runId, args.seatId, op,
+          fail("remit_mismatch", `requested ${args.remitTo.bank} ****${args.remitTo.accountLast4} but the registry has ${reg.remitBank} ****${reg.remitLast4}`));
+      }
+    }
     const requiresHuman = args.amountCents >= policy.humanApprovalCents;
     const requiredApprovals = args.amountCents >= policy.dualApprovalCents ? 2 : 1;
 
@@ -143,7 +164,16 @@ export const executePayment = mutation({
     if (intent.status !== "approved") {
       return await recordViolation(ctx, args.runId, args.seatId, op, fail("not_approved", `payment is ${intent.status}`));
     }
-    if (intent.remitTo.bank !== args.currentRemitTo.bank || intent.remitTo.accountLast4 !== args.currentRemitTo.accountLast4) {
+    const run = await getRun(ctx, args.runId);
+    const reg = run && registryEnforced(run) ? await registeredPayee(ctx, args.runId, intent.payee) : null;
+    // With a registry, the registry is the truth for where money goes; otherwise trust the caller's view of memory.
+    const current = reg ? { bank: reg.remitBank, accountLast4: reg.remitLast4 } : args.currentRemitTo;
+    if (run && registryEnforced(run) && !reg) {
+      await ctx.db.patch(intent._id, { status: "voided", voidReason: "payee no longer registered" });
+      for (const id of intent.billIds) await ctx.db.patch(id, { paymentIntentId: undefined });
+      return await recordViolation(ctx, args.runId, args.seatId, op, fail("unknown_vendor", `${intent.payee} is not an active registered vendor`));
+    }
+    if (intent.remitTo.bank !== current.bank || intent.remitTo.accountLast4 !== current.accountLast4) {
       await ctx.db.patch(intent._id, { status: "voided", voidReason: "remit-to changed after approval" });
       for (const id of intent.billIds) await ctx.db.patch(id, { paymentIntentId: undefined });
       return await recordViolation(ctx, args.runId, args.seatId, op,

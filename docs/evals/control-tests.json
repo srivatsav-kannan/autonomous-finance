@@ -1,0 +1,148 @@
+{
+  "runId": "controls-mvm2ns21",
+  "at": "2026-10-24T07:23:08.354Z",
+  "held": 23,
+  "total": 23,
+  "results": [
+    {
+      "id": "bill-without-document",
+      "control": "bill must reference a received document",
+      "held": true,
+      "detail": "document never-received was never received"
+    },
+    {
+      "id": "one-document-two-bills",
+      "control": "a document backs at most one bill",
+      "held": true,
+      "detail": "second bill refused"
+    },
+    {
+      "id": "cash-without-bank-evidence",
+      "control": "cash entries require a matching bank transaction",
+      "held": true,
+      "detail": "no bank transaction no-such-bank-txn",
+      "issue": "#4"
+    },
+    {
+      "id": "ap-clerk-cash",
+      "control": "AP clerk has no cash posting rights",
+      "held": true,
+      "detail": "no bank transaction x"
+    },
+    {
+      "id": "self-approval",
+      "control": "requester cannot approve own payment",
+      "held": true,
+      "detail": "the requester of a payment cannot approve it"
+    },
+    {
+      "id": "bill-paid-twice",
+      "control": "a bill can be in only one live payment",
+      "held": true,
+      "detail": "bill CTL1 is already in payment kh72phgkqekdf8zg7zqhmgp7dd8gwn60 (pending_approval)"
+    },
+    {
+      "id": "remit-changed-after-approval",
+      "control": "a bank change after approval voids the payment",
+      "held": true,
+      "detail": "remit-to changed since approval (memory 53b3dd3cc7275479579e00b015142f6a7a970ea7 -> 53b3dd3cc7275479579e00b015142f6a7a970ea7); payment voided, re-approval required"
+    },
+    {
+      "id": "human-threshold",
+      "control": "≥ $50k needs a human approval",
+      "held": true,
+      "detail": "status after two agent approvals: pending_approval"
+    },
+    {
+      "id": "agent-staffs-controller",
+      "control": "an agent can't hire a control-role seat",
+      "held": true,
+      "detail": "an agent may not staff controller; ask a human"
+    },
+    {
+      "id": "close-without-human",
+      "control": "period close needs a human signature",
+      "held": true,
+      "detail": "status after controller-only signature: open"
+    },
+    {
+      "id": "ledger-chain",
+      "control": "ledger hash chain verifies",
+      "held": true,
+      "detail": "{\"entries\":2,\"head\":\"94b75c6a0cea757129943a02e75229ff2ffd23188b0d10cb770da083cf0f7660\",\"ok\":true}"
+    },
+    {
+      "id": "memory-direct-bank-change",
+      "control": "bank details can't be changed directly",
+      "held": true,
+      "detail": "vendor remitTo changes require approval; open a proposal instead"
+    },
+    {
+      "id": "memory-self-merge",
+      "control": "proposer can't merge own change",
+      "held": true,
+      "detail": "sod"
+    },
+    {
+      "id": "memory-unauthorized-merge",
+      "control": "only authorized seats merge bank changes",
+      "held": true,
+      "detail": "forbidden"
+    },
+    {
+      "id": "two-seat-unregistered-vendor",
+      "control": "payments only to vendors in the vendor master",
+      "held": true,
+      "detail": "quick-supply-llc is not an active registered vendor; onboarding needs a human"
+    },
+    {
+      "id": "cash-with-evidence",
+      "control": "a real bank transaction can be booked",
+      "held": true,
+      "detail": "booked"
+    },
+    {
+      "id": "bank-txn-booked-twice",
+      "control": "a bank transaction is booked once",
+      "held": true,
+      "detail": "bank transaction ctl-bank-1 is already booked"
+    },
+    {
+      "id": "cash-amount-mismatch",
+      "control": "cash amount must equal the bank transaction",
+      "held": true,
+      "detail": "bank transaction ctl-bank-1 is 123400 cents but the entry moves 999900"
+    },
+    {
+      "id": "cash-correction-by-reversal",
+      "control": "cash entries can be corrected by reversal (#5)",
+      "held": true,
+      "detail": "reversed",
+      "issue": "#5"
+    },
+    {
+      "id": "reserved-source-label",
+      "control": "kernel-only entry labels can't be posted directly",
+      "held": true,
+      "detail": "\"payment_settlement\" entries are created by the kernel, not posted directly"
+    },
+    {
+      "id": "agent-approves-bank-change",
+      "control": "only a human can make bank changes effective",
+      "held": true,
+      "detail": "bank-detail changes need a human approver"
+    },
+    {
+      "id": "human-approves-bank-change",
+      "control": "a human can approve a proposed bank change",
+      "held": true,
+      "detail": "approved"
+    },
+    {
+      "id": "answer-own-ask",
+      "control": "a seat can't answer its own ask",
+      "held": true,
+      "detail": "a seat cannot answer its own ask"
+    }
+  ]
+}

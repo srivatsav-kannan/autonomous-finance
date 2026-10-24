@@ -26,6 +26,7 @@ export const createRun = mutation({
       }),
     ),
     periods: v.array(v.string()),
+    vendors: v.optional(v.array(v.object({ vendorId: v.string(), legalName: v.string(), bank: v.string(), accountLast4: v.string() }))),
   },
   handler: async (ctx, args) => {
     const denied = requireAdmin(args.secret);
@@ -38,7 +39,7 @@ export const createRun = mutation({
       simDate: args.simDate,
       status: "active",
       createdAt: Date.now(),
-      config: { policy: { ...DEFAULT_POLICY, ...(args.policy ?? {}) } },
+      config: { policy: { ...DEFAULT_POLICY, ...(args.policy ?? {}) }, vendorRegistry: Boolean(args.vendors) },
     });
     for (const s of args.seats) {
       await ctx.db.insert("seats", {
@@ -47,6 +48,12 @@ export const createRun = mutation({
         capabilities: {},
         status: "active",
         createdAt: Date.now(),
+      });
+    }
+    for (const vnd of args.vendors ?? []) {
+      await ctx.db.insert("vendors", {
+        runId: args.runId, vendorId: vnd.vendorId, legalName: vnd.legalName, status: "active",
+        remitBank: vnd.bank, remitLast4: vnd.accountLast4, verifiedBy: "onboarding", verifiedAt: Date.now(),
       });
     }
     for (const period of args.periods) {

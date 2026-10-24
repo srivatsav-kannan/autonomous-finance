@@ -5,7 +5,7 @@ import { kernelHarness, mutationHandler } from "./helpers/kernelHarness";
 
 const max = Number.MAX_SAFE_INTEGER;
 const entry = {
-  idempotencyKey: "entry-1", date: "2026-01-02", memo: "arithmetic regression", source: { kind: "bill" },
+  idempotencyKey: "entry-1", date: "2026-01-02", memo: "arithmetic regression", source: { kind: "adjustment" },
   lines: [{ account: "5000", debit: max, credit: 0 }, { account: "2000", debit: 0, credit: max }],
 };
 

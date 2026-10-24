@@ -6,6 +6,7 @@ import { MemoryStore } from "../memory/store";
 import { seedFiles } from "../memory/seed";
 import { generateWorld, type WorldEvent, type WorldOptions } from "./generate";
 import { addDays } from "./rng";
+import { LANDLORDS, VENDORS } from "../../company/sweetgreen/profile";
 
 export interface Scenario {
   runId: string;
@@ -47,6 +48,7 @@ export async function createScenario(runId: string, options: WorldOptions, label
     company: "sweetgreen",
     simDate: options.start,
     periods: [...months],
+    vendors: [...VENDORS, ...LANDLORDS].map((v) => ({ vendorId: v.id, legalName: v.legalName, bank: v.bank, accountLast4: v.accountLast4 })),
     seats: INITIAL_ORG.map((s) => ({
       seatId: s.seatId,
       role: s.role,

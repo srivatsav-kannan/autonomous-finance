@@ -12,6 +12,7 @@ import type * as admin from "../admin.js";
 import type * as ap from "../ap.js";
 import type * as asks from "../asks.js";
 import type * as ledger from "../ledger.js";
+import type * as lib_evidence from "../lib/evidence.js";
 import type * as lib_kernel from "../lib/kernel.js";
 import type * as lib_post from "../lib/post.js";
 import type * as lib_routing from "../lib/routing.js";
@@ -19,6 +20,7 @@ import type * as observe from "../observe.js";
 import type * as payments from "../payments.js";
 import type * as seats from "../seats.js";
 import type * as tasks from "../tasks.js";
+import type * as vendors from "../vendors.js";
 
 import type {
   ApiFromModules,
@@ -31,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   ap: typeof ap;
   asks: typeof asks;
   ledger: typeof ledger;
+  "lib/evidence": typeof lib_evidence;
   "lib/kernel": typeof lib_kernel;
   "lib/post": typeof lib_post;
   "lib/routing": typeof lib_routing;
@@ -38,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   payments: typeof payments;
   seats: typeof seats;
   tasks: typeof tasks;
+  vendors: typeof vendors;
 }>;
 
 /**

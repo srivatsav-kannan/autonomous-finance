@@ -48,6 +48,15 @@ async function answer(runId: string, askId: string, optionId: string, note?: str
       effects.push(r.ok ? `close ${r.status}` : `sign refused: ${r.error}`);
     }
   }
+  if (optionId === "approve_remit") {
+    const vendorId = /for (.+)$/.exec(ask.title)?.[1];
+    const vendors = await convex().query(api.vendors.list, { runId });
+    const target = vendors.find((x) => x.pendingRemit && (x.legalName === vendorId || x.vendorId === vendorId));
+    if (target) {
+      const r = await h.client.mutation(api.vendors.approveRemitChange, { ...h.auth, vendorId: target.vendorId });
+      effects.push(r.ok ? `bank details for ${target.vendorId} updated` : `refused: ${r.error}`);
+    }
+  }
   if (ask.proposalBranch && optionId === "merge") {
     const mem = new MemoryStore(memoryDir(runId));
     const m = await mem.merge({ id: ask.proposalBranch.replace("proposal/", ""), approver: { seatId: "human-cfo", name: "Human CFO" }, caps: ROLE_CAPABILITIES.human_cfo, note: note ?? "approved by human CFO" });

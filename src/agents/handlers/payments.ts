@@ -22,6 +22,9 @@ export const paymentRun: Handler = async (rt, task) => {
     const rec = await rt.vendor(vendorId);
     if (!rec || rec.vendor.status !== "active") continue;
     const blob = (await rt.mem.blobSha(`vendors/${vendorId}.yaml`)) ?? rec.sha;
+    // Pay to the bank details a human verified in the kernel registry (falls back to memory on runs without one).
+    const reg = await rt.kernel.client.query(api.vendors.get, { runId: rt.runId, vendorId });
+    const payTo = reg ? { bank: reg.remitBank, accountLast4: reg.remitLast4 } : { bank: rec.vendor.remitTo.bank, accountLast4: rec.vendor.remitTo.accountLast4 };
     const ids = vb.map((b) => b._id).sort();
     const amount = vb.reduce((s, b) => s + b.totalCents, 0);
     const r = await rt.kernel.client.mutation(api.payments.requestPayment, {
@@ -30,7 +33,7 @@ export const paymentRun: Handler = async (rt, task) => {
       payee: vendorId,
       amountCents: amount,
       method: "ach",
-      remitTo: { bank: rec.vendor.remitTo.bank, accountLast4: rec.vendor.remitTo.accountLast4, memorySha: blob },
+      remitTo: { ...payTo, memorySha: blob },
       billIds: ids,
       dueDate: vb.map((b) => b.dueDate).sort()[0]!,
     });
@@ -47,7 +50,10 @@ export const paymentRun: Handler = async (rt, task) => {
     const rec = await rt.vendor(intent.payee);
     if (!rec) continue;
     const blob = (await rt.mem.blobSha(`vendors/${intent.payee}.yaml`)) ?? rec.sha;
-    const current = { bank: rec.vendor.remitTo.bank, accountLast4: rec.vendor.remitTo.accountLast4, memorySha: blob };
+    const reg = await rt.kernel.client.query(api.vendors.get, { runId: rt.runId, vendorId: intent.payee });
+    const current = reg
+      ? { bank: reg.remitBank, accountLast4: reg.remitLast4, memorySha: blob }
+      : { bank: rec.vendor.remitTo.bank, accountLast4: rec.vendor.remitTo.accountLast4, memorySha: blob };
     const ex = await rt.kernel.client.mutation(api.payments.executePayment, { ...rt.kernel.auth, intentId: intent._id, currentRemitTo: current });
     if (!ex.ok) {
       await rt.note("blocked", `Execution of payment to ${intent.payee} refused: ${ex.error}`);
@@ -128,7 +134,18 @@ export const remitChange: Handler = async (rt, task) => {
   });
   const prop = await rt.propose(proposalId, [{ path: `vendors/${v.id}.yaml`, data: proposed }], `Change ${v.legalName} remit-to to ${cb.newBank} ****${cb.newAccountLast4} (callback verified)`, { "Decision-Id": d.path });
   await rt.handoff("memory.review_proposal", "controller", { proposalId, branch: prop.branch }, `review:${proposalId}`, task._id, 1);
-  return { outcome: "proposed", summary: `${v.id} -> ${cb.newBank} ****${cb.newAccountLast4}` };
+  // Where money goes changes only when a human approves it in the kernel registry.
+  const reg = await rt.kernel.client.mutation(api.vendors.proposeRemitChange, {
+    ...rt.kernel.auth, vendorId: v.id, bank: cb.newBank, accountLast4: cb.newAccountLast4, evidence: d.path,
+  });
+  if (reg.ok) {
+    await rt.ask({
+      to: "human_cfo", severity: "decision", title: `Approve new bank details for ${v.legalName}`,
+      body: `${v.legalName} asked to be paid at ${cb.newBank} ****${cb.newAccountLast4}. We confirmed it by calling ${phoneOnFile}, the number already on file. Payments keep going to the current account until you approve.`,
+      evidence: [{ label: "decision", ref: d.path }], options: [{ id: "approve_remit", label: "Approve new bank details" }, { id: "reject", label: "Keep current account" }],
+    });
+  }
+  return { outcome: "proposed", summary: `${v.id} -> ${cb.newBank} ****${cb.newAccountLast4} (awaiting human)` };
 };
 
 /** Second approval for payments over the dual threshold but under the human threshold. */

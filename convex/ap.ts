@@ -8,10 +8,12 @@ import {
   getRun,
   logActivity,
   recordViolation,
+  registryEnforced,
   runPolicy,
   storeIdempotency,
 } from "./lib/kernel";
 import { appendEntry } from "./lib/post";
+import { billDocument } from "./lib/evidence";
 
 const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 
@@ -104,6 +106,31 @@ export const recordBill = mutation({
     const run = await getRun(ctx, args.runId);
     if (!run) return fail("not_found", "run not found");
     const policy = runPolicy(run);
+
+    // Evidence: a bill must come from a document the company received, and a document backs one bill.
+    const evidence = await billDocument(ctx, args.runId, args.documentEventId);
+    if (!evidence.ok) return await recordViolation(ctx, args.runId, args.seatId, op, evidence);
+    if (args.decision !== "reject") {
+      const sameDoc = await ctx.db
+        .query("bills")
+        .withIndex("by_run_document", (q) => q.eq("runId", args.runId).eq("documentEventId", args.documentEventId))
+        .collect();
+      const liveDoc = sameDoc.find((b) => b.status !== "rejected");
+      if (liveDoc) {
+        return await recordViolation(ctx, args.runId, args.seatId, op,
+          fail("document_already_billed", `document ${args.documentEventId} already backs bill ${liveDoc.invoiceNumber}`));
+      }
+      if (registryEnforced(run)) {
+        const registered = await ctx.db
+          .query("vendors")
+          .withIndex("by_run_vendor", (q) => q.eq("runId", args.runId).eq("vendorId", args.vendor))
+          .unique();
+        if (!registered || registered.status !== "active") {
+          return await recordViolation(ctx, args.runId, args.seatId, op,
+            fail("unknown_vendor", `${args.vendor} is not an active registered vendor; onboarding needs a human`));
+        }
+      }
+    }
     if (args.decision === "approve") {
       if (args.exceptions.length > 0) {
         return await recordViolation(ctx, args.runId, args.seatId, op,

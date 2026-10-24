@@ -183,6 +183,7 @@ export default defineSchema({
     paymentIntentId: v.optional(v.id("paymentIntents")),
   })
     .index("by_run_vendor_invoice", ["runId", "vendor", "invoiceNumber"])
+    .index("by_run_document", ["runId", "documentEventId"])
     .index("by_run_status", ["runId", "status"]),
 
   paymentIntents: defineTable({
@@ -211,6 +212,18 @@ export default defineSchema({
   })
     .index("by_run_status", ["runId", "status"])
     .index("by_run_key", ["runId", "idempotencyKey"]),
+
+  vendors: defineTable({
+    runId: v.string(),
+    vendorId: v.string(),
+    legalName: v.string(),
+    status: v.union(v.literal("active"), v.literal("blocked")),
+    remitBank: v.string(),
+    remitLast4: v.string(),
+    verifiedBy: v.string(),
+    verifiedAt: v.number(),
+    pendingRemit: v.optional(v.object({ bank: v.string(), accountLast4: v.string(), proposedBy: v.string(), evidence: v.string(), at: v.number() })),
+  }).index("by_run_vendor", ["runId", "vendorId"]),
 
   asks: defineTable({
     runId: v.string(),
