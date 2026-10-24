@@ -97,3 +97,10 @@ Bank aggregation tests cover signs, reversals, derived opening balances, malform
 payloads, run isolation, match status, request recipients, and complete history.
 The read model collects a full simulation run; very large production datasets
 would need server-side aggregates and pagination before adopting this pattern.
+
+The new Bank & cash and Finance flow Figma frames are draft references. Browser
+review found black fills on some neutral controls and missing currency formatting;
+the Figma Starter MCP quota blocked the correction. These issues are confined to
+the canvas and do not appear in the verified React app. After quota is available,
+set explicit panel-color fallback paints and format money with grouping and two
+decimals, then inspect both native frames again.

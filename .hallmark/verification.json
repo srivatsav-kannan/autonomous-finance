@@ -37,7 +37,7 @@
       "flow": "Stage selection works by keyboard, persists in URL, and links to Bank, Team, Inbox, Ledger, Memory and Activity. Counts use existing run queries.",
       "designLint": "Static: 0 FAIL, 0 REFLEX, 0 WARN. Rendered: 0 FAIL, 0 WARN; 39b waived for large account and stage selectors containing real records.",
       "independentReview": "Resolved date spacing on the cash chart, wrapping/accessibility of transaction names, and access to journal decision evidence.",
-      "figma": "Native Bank & cash 14:154 and Finance flow 14:255 in existing file; snapshot reference, not automatic synchronization."
+      "figma": "Native Bank & cash 14:154 and Finance flow 14:255 created; browser preview verified real data and layout. Some control surfaces render black and bank currency text lacks formatting. Figma Starter quota rejects both screenshot and write tools, so these canvas-only fixes remain pending. React app is unaffected."
     }
   },
   "baseline": {
@@ -54,7 +54,8 @@
     "Browser tests used local Convex and deterministic simulation, not a deployed environment.",
     "Figma is a native editable reference snapshot, not an automatic two-way sync with React.",
     "The journal query still returns the most recent 60 entries; CSV exports the currently filtered records.",
-    "Bank data is a complete-run simulation read model. It is not a real bank connection and would need aggregation/pagination for large production datasets."
+    "Bank data is a complete-run simulation read model. It is not a real bank connection and would need aggregation/pagination for large production datasets.",
+    "New Figma frames remain draft references: control fill colors and bank currency formatting need correction after the Figma MCP quota permits writes."
   ],
   "screenshots": ".hallmark/shots/ and .hallmark/checks/ (local, ignored)",
   "comparison": ".hallmark/compare.html (local, ignored)",
