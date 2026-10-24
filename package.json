@@ -12,7 +12,9 @@
     "memory:init": "tsx src/memory/init.ts",
     "eval": "tsx src/evals/main.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "gateway": "tsx src/human/gateway.ts",
+    "smoke": "tsx scripts/smoke-kernel.ts && tsx scripts/smoke-memory.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

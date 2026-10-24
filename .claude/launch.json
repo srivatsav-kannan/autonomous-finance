@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "console", "runtimeExecutable": "npm", "runtimeArgs": ["run", "console"], "port": 5173 },
+    { "name": "gateway", "runtimeExecutable": "npm", "runtimeArgs": ["run", "gateway"], "port": 8787 }
+  ]
+}
