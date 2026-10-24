@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.local
+.convex/
+dist/
+# runtime data: memory repos, world outputs and eval runs are generated
+var/
+*.log
+.DS_Store
+var-backend.log

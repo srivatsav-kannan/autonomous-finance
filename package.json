@@ -1,0 +1,35 @@
+{
+  "name": "autonomous-finance",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "An agent-native finance department: agents run the finance function, humans oversee.",
+  "scripts": {
+    "backend": "CONVEX_AGENT_MODE=anonymous convex dev",
+    "console": "vite --config console/vite.config.ts",
+    "agents": "tsx src/agents/main.ts",
+    "world": "tsx src/world/main.ts",
+    "memory:init": "tsx src/memory/init.ts",
+    "eval": "tsx src/evals/main.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0",
+    "convex": "^1.48.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  }
+}
