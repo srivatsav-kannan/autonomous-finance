@@ -1,0 +1,88 @@
+name: Payment staging smoke gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_revision:
+        description: Deployed revision for the isolated FakeBank staging fixture
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      target_revision:
+        required: true
+        type: string
+    secrets:
+      PAYMENT_BROWSER_STAGING_FIXTURE_JSON:
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: payment-staging-${{ inputs.target_revision }}
+  cancel-in-progress: true
+
+# A promotion workflow must depend on this reusable workflow's successful result.
+# This workflow tests an already provisioned isolated staging run; it never deploys.
+jobs:
+  smoke:
+    name: Isolated staging approval and evidence smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.18.0'
+          package-manager-cache: false
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Materialize private fixture without logging credentials
+        env:
+          FIXTURE_JSON: ${{ secrets.PAYMENT_BROWSER_STAGING_FIXTURE_JSON }}
+          TARGET_REVISION: ${{ inputs.target_revision }}
+        run: |
+          umask 077
+          python3 - <<'PY'
+          import json, os, pathlib, re
+          output = pathlib.Path('var/ci/payment-browser-staging')
+          output.mkdir(parents=True, exist_ok=True)
+          try:
+              revision = os.environ['TARGET_REVISION']
+              if not re.fullmatch(r'[a-f0-9]{40}', revision):
+                  raise ValueError()
+              raw = os.environ.get('FIXTURE_JSON', '')
+              if raw:
+                  fixture = json.loads(raw)
+                  if fixture.get('targetRevision') != revision:
+                      raise ValueError()
+                  target = pathlib.Path(os.environ['RUNNER_TEMP']) / 'payment-staging-fixture.json'
+                  target.write_text(raw)
+                  target.chmod(0o600)
+          except Exception:
+              (output / 'summary.json').write_text(json.dumps({'status':'FAILED','stage':'fixture-preflight','reason':'Fixture or target revision is invalid'}))
+              raise SystemExit(1)
+          PY
+      - name: Require the staging gate to run and pass
+        env:
+          PAYMENT_BROWSER_ALLOW_STAGING: isolated-fake-only
+          PAYMENT_BROWSER_STAGING_FIXTURE: ${{ runner.temp }}/payment-staging-fixture.json
+        run: npm run test:browser:staging
+        timeout-minutes: 7
+      - name: Delete the private fixture
+        if: always()
+        run: rm -f "$RUNNER_TEMP/payment-staging-fixture.json"
+      - name: Retain bounded staging results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: payment-browser-staging-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            var/ci/payment-browser-staging/summary.json
+            var/ci/payment-browser-staging/playwright.json
+            var/ci/payment-browser-staging/proof.json
+          if-no-files-found: error
+          retention-days: 14
