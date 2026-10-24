@@ -22,6 +22,16 @@ class LiveTests(unittest.TestCase):
         self.assertEqual(live_usage([{'audit':[reservation,actual]}],self.approved)['costUsd'],0.00024)
         actual['toolCall']['model']='wrong';self.assertEqual(live_usage([{'audit':[reservation,actual]}],self.approved)['coverage'],'incomplete_persisted_usage')
 
+    def test_openai_runtime_requires_exact_provider_api_cache_tier_and_effort(self):
+        approved={**self.approved,'provider':'openai','model':'gpt-6.1-sol','effort':'high','inputMicros':2,'outputMicros':10}
+        runtime={**self.runtime,'model':'gpt-6.1-sol','effort':'high','outputTokensPerCall':approved['maxOutputTokens'],'modelProvider':{**self.runtime['modelProvider'],'baseURL':'https://api.openai.com/v1','api':'responses','serviceTier':'default','promptCacheMode':'explicit_without_breakpoints','pricing':{'inputMicros':2,'outputMicros':10}}}
+        verify_live_runtime(runtime,{'runtimeMode':'live_model'},approved,'exact')
+        for field,bad in [('baseURL','https://example.invalid'),('api','chat_completions'),('serviceTier','fast'),('promptCacheMode','implicit')]:
+            changed={**runtime,'modelProvider':{**runtime['modelProvider'],field:bad}}
+            with self.assertRaises(ValueError):verify_live_runtime(changed,{'runtimeMode':'live_model'},approved,'exact')
+        with self.assertRaises(ValueError):verify_live_runtime({**runtime,'effort':'medium'},{'runtimeMode':'live_model'},approved,'exact')
+        with self.assertRaises(ValueError):verify_live_runtime({**runtime,'outputTokensPerCall':100},{'runtimeMode':'live_model'},approved,'exact')
+
     def test_process_http_timeout_is_explicit_without_changing_read_default(self):
         client=AppClient();timeouts=[]
         def open_without_network(request,timeout):

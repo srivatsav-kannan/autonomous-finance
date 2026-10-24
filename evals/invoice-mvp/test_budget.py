@@ -43,5 +43,13 @@ class BudgetTests(unittest.TestCase):
         self.config['runs']['a']['kind']='application';self.config['pricingProvenance']=json.loads(Path(__file__).with_name('pricing-provenance.json').read_text())
         self.save();self.ledger.claim_application('a','backend-a')
         with self.assertRaises(BudgetExceeded):self.ledger.claim_application('a','backend-b')
+    def test_openai_authorization_is_separate_and_rejects_long_context_or_provider_mix(self):
+        self.config['pricingProvenance']=json.loads(Path(__file__).with_name('pricing-provenance.openai.json').read_text())
+        run=self.config['runs']['a'];run.update(provider='openai',model='gpt-6.1-sol',effort='high')
+        self.save();authorization(self.auth)
+        run['maxInputTokens']=272001;self.save()
+        with self.assertRaises(ValueError):authorization(self.auth)
+        run['maxInputTokens']=500;run['provider']='anthropic';self.save()
+        with self.assertRaises(ValueError):authorization(self.auth)
 
 if __name__=='__main__':unittest.main()

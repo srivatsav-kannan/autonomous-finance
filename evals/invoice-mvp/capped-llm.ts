@@ -5,16 +5,19 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { OpenAIBridge, createOpenAITransport, openAIUsage, type OpenAITransport } from "./openai-responses";
 export type Effort = "low" | "medium" | "high" | "xhigh" | "max";
 export class BudgetExceeded extends Error {}
 export interface CappedConfig { authorization: string; ledger: string; runId: string; python: string; explicitLive: boolean; }
-type Request = { system: string; tools: Anthropic.Beta.BetaToolUnion[]; messages: Anthropic.Beta.BetaMessageParam[]; effort: Effort; maxTokens: number };
+export type Request = { system: string; tools: Anthropic.Beta.BetaToolUnion[]; messages: Anthropic.Beta.BetaMessageParam[]; effort: Effort; maxTokens: number };
 type WireRequest = { model: string; max_tokens: number; system: Anthropic.Beta.BetaTextBlockParam[]; tools: Anthropic.Beta.BetaToolUnion[]; messages: Anthropic.Beta.BetaMessageParam[]; output_config: { effort: Effort } };
 export type Transport = (request: WireRequest) => Promise<Anthropic.Beta.BetaMessage>;
 let config: CappedConfig | undefined, transport: Transport | undefined, started = 0;
-export function configureCappedTransport(value: CappedConfig, injected?: Transport) {
-  if (!value.explicitLive && !injected) throw new Error("Live baseline requires explicit opt-in");
+let openAITransport: OpenAITransport | undefined, openAIBridge = new OpenAIBridge();
+export function configureCappedTransport(value: CappedConfig, injected?: Transport, injectedOpenAI?: OpenAITransport) {
+  if (!value.explicitLive && !injected && !injectedOpenAI) throw new Error("Live baseline requires explicit opt-in");
   config = value; transport = injected; started = Date.now();
+  openAITransport = injectedOpenAI; openAIBridge = new OpenAIBridge();
 }
 function budget(action: string, details: object): Record<string, number> {
   if (!config) throw new Error("Capped transport is not configured");
@@ -36,6 +39,28 @@ export async function agentTurn(params: Request, meta: { runId: string; system: 
   if (Date.now() - started >= approved.timeoutSeconds * 1000) throw new BudgetExceeded("Approved wall-time limit reached");
   if (meta.runCapUsd !== undefined && Math.round(meta.runCapUsd * 1e6) !== approved.maxCostMicros) throw new Error("Agent run cap differs from authorization");
   if (params.maxTokens > approved.maxOutputTokens) throw new BudgetExceeded("Unchanged baseline max_tokens exceeds approved bound");
+  if (approved.provider === "openai") {
+    if (params.effort !== approved.effort) throw new Error("Reasoning effort differs from authorization");
+    const wire = openAIBridge.request(params, approved.model);
+    const inputBound = Buffer.byteLength(JSON.stringify(wire), "utf8") + 4096;
+    budget("reserve", { requestId: meta.purpose, inputTokens: inputBound, outputTokens: params.maxTokens });
+    const begin = Date.now();
+    let send = openAITransport;
+    if (!send) {
+      const apiKey = process.env.OPENAI_API_KEY;
+      if (!config.explicitLive || !apiKey) throw new Error("OPENAI_API_KEY and explicit live opt-in required; reservation retained");
+      const remaining = approved.timeoutSeconds * 1000 - (Date.now() - started);
+      if (remaining <= 0) throw new BudgetExceeded("Approved wall-time limit reached; reservation retained");
+      send = createOpenAITransport(apiKey, Math.min(60000, remaining));
+    }
+    const response = await send(wire);
+    const usage = openAIUsage(response);
+    // Settle even unusable outputs when usage is complete; invalid accounting halts.
+    const settled = budget("settle", { requestId: meta.purpose, usage });
+    const message = openAIBridge.message(response);
+    const entry = { ts: new Date().toISOString(), run_id: meta.runId, system: "A-capped", purpose: meta.purpose, provider: "openai", model_requested: approved.model, models_served: [response.model], fallback_used: false, stop_reason: message.stop_reason, input_tokens: usage.inputTokens!, output_tokens: usage.outputTokens!, reasoning_tokens: usage.reasoningTokens!, cache_read_input_tokens: usage.cacheReadTokens!, cache_creation_input_tokens: usage.cacheWriteTokens!, cost_usd: settled.costMicros! / 1e6, latency_ms: Date.now() - begin, system_sha256: createHash("sha256").update(params.system).digest("hex"), tools_sha256: createHash("sha256").update(JSON.stringify(params.tools)).digest("hex"), wire_sha256: createHash("sha256").update(JSON.stringify(wire)).digest("hex"), input_token_bound: inputBound, max_output_tokens: params.maxTokens, provider_response: response };
+    return { message, entry };
+  }
   const request: WireRequest = { model: approved.model, max_tokens: params.maxTokens, output_config: { effort: params.effort }, system: [{ type: "text", text: params.system }], tools: params.tools, messages: params.messages };
   // Text-only byte bound plus protocol allowance; conservative limits may stop early.
   const inputBound = Buffer.byteLength(JSON.stringify(request), "utf8") + 4096;

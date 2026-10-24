@@ -1,5 +1,7 @@
 # Worker D final free-evaluation handoff
 
+**OpenAI follow-up, 2026-10-24:** The user now reports OpenAI API keys only. New evaluation-owned preparation, separate disabled authorization/provenance and the product integration contract are in [evaluation-openai.md](evaluation-openai.md). No key value was inspected and no API call occurred. Historical measured results and the Claude preparation below remain unchanged. Root/B owns the matching app adapter under issue #66; paid execution remains unapproved.
+
 The authorized free preparation and actual deterministic application evaluation are complete. Live baseline/application comparison remains NOT RUN because model credentials and spending approval are absent. This is not a claim that the MVP is fully validated.
 
 The native goal was created and verified active initially, then marked blocked after three turns awaiting the integrated runtime. Root explicitly resumed the assignment; `get_goal` still returns **blocked**, because the available goal tool cannot reactivate it. D proceeded under that explicit assignment and has not claimed native reactivation or overall live-evaluation completion.
