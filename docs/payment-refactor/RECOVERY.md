@@ -102,7 +102,7 @@ pages may remove that economic history.
 | --- | --- | --- |
 | Local unit/integration | Existing and independent tests against local Convex fixtures and durable FakeBank | **PASSED**; see revision details below |
 | Local worker subprocess | Two real worker exits/restarts; same SQLite bank; in-memory Convex bridge | **PASSED**; one send, one lookup and one cash entry per case |
-| Local persistent process recovery | Fresh isolated Convex backend, exited/restarted dispatcher, bank database, verified journal | **PENDING**; coordinator diagnosing backend-deploy step at D handoff |
+| Local persistent process recovery | Fresh isolated Convex backend, exited/restarted dispatcher, bank database, verified journal | **PASSED** at integrated `794a10e`; see `core-validation.json` |
 | Provider HTTP contract | Pinned Increase fixture and Prism tests | **PASSED** in full repository suite; no live provider call |
 | Live Increase sandbox | Actual provider, authorized credentials and reviewed sandbox setup | **NOT_RUN** |
 | Real human JWT / external webhook delivery | Actual identity and delivery prerequisites | **NOT_RUN** |
@@ -134,6 +134,12 @@ both failed. C `8568fd0` restored retention; B `62ad28d` validates the unmatched
 observation before retaining it. Both tests now pass, while no unmatched
 transaction can create a journal entry.
 
-This record does not claim persistent Convex recovery success. The coordinator
-owns the final integrated `ci:recovery` artifact and final revision verification.
-Live Increase, real human JWT and external webhook delivery remain **NOT_RUN**.
+The D handoff above preceded the coordinator's persistent run. The coordinator
+then fixed unsupported hyphenated Convex helper filenames and independently
+verified integrated `794a10e`: **387/387 tests**, all three TypeScript checks,
+console build, and persistent local Convex/FakeBank recovery passed. The proof
+records two leased attempts, one create call, one lookup, one transfer, one
+posted debit, one linked cash journal entry, and zero close blockers. See
+`core-validation.json` for hashes and runtime. Additional CI/browser gates are
+tracked in `COORDINATION.md`; they are not inferred from this core run.
+Live Increase, real external human JWT and external webhook delivery remain **NOT_RUN**.

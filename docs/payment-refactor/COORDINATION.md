@@ -52,3 +52,16 @@ SRE #60 `1008377` changes only generic Team/task transport/drain; it is not requ
 Independently run all three TypeScript checks, relevant existing/new tests, console build and isolated persistent Convex/FakeBank recovery on integrated code. Report local simulator, provider HTTP contract, and live sandbox separately. Live Increase, real JWT and external webhook delivery remain NOT_RUN without their prerequisites.
 
 Stages and acceptance boxes on #59 are updated only with integrated verification evidence, never on assignment alone.
+
+## Additional CI gates requested by the human
+
+The follow-up human turn in the source chat explicitly requested parallel CI testing and deferred Datadog. No Datadog action, credentials, dependencies or tests are part of this milestone.
+
+| Testing lane | Chat / branch | Exclusive ownership | Status |
+|---|---|---|---|
+| Unit/contract and migration | D `01a16fc0-6765-70f0-ba17-069db9a8de00` / `codex/payment-independent-verification` | Existing `tests/payments/` and independent coverage inventory | 43 independent cases integrated; auditing added CI requirements |
+| Recovery and CI | Existing AP CI owner `01a16fb5-050c-7eb0-91d8-1f5721870d1e` / `codex/payment-ci-gates` | Persistent runner, CI evidence helper/tests, real dispatcher child, narrow local demo interruption, `docs/ci.md` | active from `794a10e`; #58 branch preserved |
+| Playwright smoke | `01a16fce-3324-7561-b05b-d30c14cd6259` | `tests/browser/`, payment Playwright config, `scripts/testing/payment-browser-*`, `docs/payment-refactor/BROWSER.md` | local fixture/suite active; staging prerequisites absent |
+| Shared CI wiring | Coordinator | `.github/workflows/`, `package.json`, `package-lock.json`, combined evidence | single writer; worker proposals integrated here |
+
+The core integrated revision `794a10e` passed 387 tests, all three TypeScript checks, the console build and persistent local recovery. Convex rejected hyphenated helper filenames during actual deployment; the coordinator changed them to camelCase before this passing run. Its sanitized evidence is recorded separately from the additional CI/browser work.
