@@ -9,7 +9,6 @@
     "console": "vite --config console/vite.config.ts",
     "agents": "tsx src/agents/main.ts",
     "world": "tsx src/world/main.ts",
-    "memory:init": "tsx src/memory/init.ts",
     "eval": "tsx src/evals/main.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

@@ -101,4 +101,8 @@ of the month is simulated; it does not prorate bills.
 | `company/sweetgreen/` | Calibration profile from SEC filings |
 | `docs/` | Architecture, team plan |
 
+`npm run world` and `npm run eval` create and seed company memory automatically
+for each new scenario in `var/memory/<run-id>.git`. No separate memory initialization
+command is needed; the obsolete `memory:init` script has been removed.
+
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/TEAM.md](docs/TEAM.md).
