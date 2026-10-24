@@ -1,0 +1,88 @@
+{
+  "status": "LIVE_APPLICATION_RESULTS_PENDING",
+  "asOfDate": "2026-10-24",
+  "scope": "Additive OpenAI live evaluation; earlier deterministic results remain historical evidence",
+  "approval": {
+    "provider": "OpenAI",
+    "model": "gpt-6.1-sol",
+    "replacesClaudeBatch": true,
+    "aggregateCapUsd": 7.5,
+    "runCapsUsd": {
+      "baselineOriginal": 3,
+      "applicationOriginal": 3,
+      "applicationHeldout": 1.5
+    },
+    "oneSharedLedger": true
+  },
+  "protocolCommit": "357866ec73dd8a643408e4a3b1ca4db6654e99b7",
+  "upstreamCommit": "b8cb58ff9747486e86c623e867b76fad5d8d075f",
+  "baselineOriginal": {
+    "executionCommit": "e3a2238efd21adc9ec3b98144cdb5157c5df84f9",
+    "evaluationEquivalentCommit": "30ab79b2678b999de112543d4c4880f25c2e5e5a",
+    "status": "UNSCORED_NO_SUBMISSION",
+    "official": null,
+    "strictCustomerMetrics": null,
+    "submissionPresent": false,
+    "outcome": {
+      "costUsd": 0.601118,
+      "error": "Persistent pre-request budget/authorization check failed; no retry permitted",
+      "status": "budget",
+      "toolCalls": 85,
+      "turns": 9,
+      "wallMs": 42956
+    },
+    "usage": {
+      "completedRequests": 9,
+      "costUsd": 0.601118,
+      "coverage": "complete_provider_usage",
+      "inputTokens": 280549,
+      "modelCalls": 9,
+      "outputTokens": 4002,
+      "reservedRequests": 9
+    },
+    "guard": {
+      "policyAtExecution": "wire_utf8_bytes_plus_4096",
+      "cause": "per_request_input_bound_exceeds_approval",
+      "blockedTurn": 10,
+      "blockedInputBound": 266157,
+      "approvedInputBound": 250000,
+      "actualNextInputTokens": null,
+      "nextRequestDispatched": false,
+      "remainingBaselineCostUsd": 2.398882,
+      "hypotheticalNextReservationUsd": 1.172314,
+      "allNineRecordedWireHashesMatchOfflineReplay": true
+    },
+    "runSealSha256": "fec886169239faf48de4022a075fdc7237761dc45058bcb0a0be90b2b7f8c3c3",
+    "diagnosticSealSha256": "35c8d88e884d78228f11ad749a36ccad3fba5efa871cc144144fb4189b7300b0",
+    "privateRun": "live/openai-20261024/baseline-original",
+    "privateDiagnostic": "diagnostics/openai-20261024-baseline-original"
+  },
+  "applicationOriginal": {
+    "status": "RUNNING_REPORTED_BY_ROOT",
+    "reportedExecutionCommit": "d08165c1ad38bb20817ace294c55ed1c50b8c243",
+    "independentArtifactInspection": "PENDING_TERMINAL_STATUS",
+    "official": null,
+    "strictCustomerMetrics": null,
+    "usage": null,
+    "restart": null
+  },
+  "applicationHeldout": {
+    "status": "NOT_STARTED_REPORTED_BY_ROOT",
+    "reportedExecutionCommit": "d08165c1ad38bb20817ace294c55ed1c50b8c243",
+    "independentArtifactInspection": "PENDING_TERMINAL_STATUS",
+    "heldoutChecks": null,
+    "usage": null,
+    "restart": null
+  },
+  "batchActualCostUsd": null,
+  "knownCompletedBaselineCostUsd": 0.601118,
+  "historicalDeterministicReport": "evaluation-results.json",
+  "reviewerComparison": "NOT APPLICABLE: no reviewer implemented",
+  "interpretation": [
+    "The incomplete baseline has no accuracy score; null is not zero.",
+    "The original baseline guard stopped on its conservative per-request input estimate, not dollar exhaustion; actual next-request tokens are unknown.",
+    "Future-only guard correction adds all prior output tokens; it was not used for the sealed baseline.",
+    "Source/tools, whole-workspace versus per-case orchestration, output budgets, human acceptance and reservation reconciliation differ; no controlled agent-count benefit is established.",
+    "Root alone dispatches paid runs; D scoring/diagnosis use completed artifacts and no provider calls."
+  ]
+}

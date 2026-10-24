@@ -70,7 +70,7 @@ def restart(args):
     attestation=read_json(args.attestation)
     if attestation.get('gatewayRestarted') is not True or attestation.get('backendRestarted') is not True or not all(attestation.get(k) for k in ['operator','restartedAt','command']): raise ValueError('Actual gateway and backend restart attestation required')
     app=AppClient(args.base_url,args.origin); new=app.workspace(); detail=app.details(new)
-    result={'status':'PASS' if stable_state(old,old_detail)==stable_state(new,detail) else 'FAIL','attestation':attestation,'runIdSame':old['runId']==new['runId'],'liveModel':'NOT RUN'}
+    result={'status':'PASS' if stable_state(old,old_detail)==stable_state(new,detail) else 'FAIL','attestation':attestation,'runIdSame':old['runId']==new['runId'],'liveModel':read_json(args.before/'metadata.json').get('liveModel','UNKNOWN'),'comparisonMode':'read_only_persisted_state'}
     write_json(args.out/'restart.json',result); write_json(args.out/'snapshot.json',new); write_json(args.out/'details.json',detail); seal(args.out); print(result['status'])
 
 def parser():
