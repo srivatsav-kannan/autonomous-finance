@@ -11,7 +11,7 @@
 .ap-login form, .ap-resume { display: grid; gap: var(--space-sm); }
 .ap-login form { margin-top: var(--space-lg); }
 .ap-login button, .ap-resume button { justify-self: start; margin-top: var(--space-xs); }
-.ap-console textarea { width: 100%; resize: vertical; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-input); padding: var(--space-sm); }
+.ap-console textarea { width: 100%; resize: vertical; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--field-line); border-radius: var(--radius-input); padding: var(--space-sm); }
 .ap-console textarea#ap-scope { font-family: var(--font-outlier); font-size: var(--text-xs); }
 .ap-console :is(button,input,textarea,summary,a):focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .ap-record { margin-top: var(--space-lg); border-top: 1px solid var(--line); padding-top: var(--space-lg); }
