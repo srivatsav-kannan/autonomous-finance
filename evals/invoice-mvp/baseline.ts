@@ -22,11 +22,13 @@ async function main() {
   const auth = JSON.parse(fs.readFileSync(authorization, "utf8"));
   const approved = auth.runs[runId];
   if (!approved || approved.kind !== "baseline") throw new Error("Approved baseline run required");
-  if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY missing; no model call made");
+  const credential = approved.provider === "openai" ? "OPENAI_API_KEY" : "ANTHROPIC_API_KEY";
+  if (!process.env[credential]) throw new Error(`${credential} missing; no model call made`);
   // Preparation seal remains a separate immutable input record.
   const resultDir = path.join(out, "live-output"); fs.mkdirSync(resultDir);
   configureCappedTransport({ authorization, ledger, runId, python, explicitLive: true });
   const config = { authorizationSha256: createHash("sha256").update(JSON.stringify(auth)).digest("hex"), pricingProvenance: auth.pricingProvenance, system: "A-capped", liveModel: "AUTHORIZED_NOT_STARTED", model: approved.model, maxTurns: approved.maxCalls, effort: "high", maxTokensPerCall: 64000, fallbacks: false, retries: 0, cache: "disabled", authorizationId: auth.approvalReference, runEnvelopeMicros: approved.maxCostMicros, aggregateEnvelopeMicros: auth.aggregateMaxCostMicros, sourceAccess: "unchanged historical A Workspace", deviations: ["persistent pre-request reservations", "no caching, fallbacks or SDK retries", "conservative token bound may stop before historical accrued-spend cap"] };
+  if (approved.provider === "openai") Object.assign(config, { provider: "openai", api: "responses", serviceTier: "default", store: false, reasoningContext: "all_turns", promptCacheMode: "explicit_without_breakpoints", deviations: [...config.deviations, "OpenAI Responses wire translation; native output including encrypted reasoning preserved", "input bound capped at 250000 to exclude long-context rate uplift"] });
   fs.writeFileSync(path.join(resultDir, "configuration.json"), JSON.stringify(config, null, 2));
   let result: unknown;
   try { result = await runSystemA({ runId, ws: new Workspace(workspace, textCache), outDir: resultDir, effort: "high", maxTurns: approved.maxCalls, runCapUsd: approved.maxCostMicros / 1e6 }); }

@@ -14,15 +14,20 @@ def authorization(path):
     if expiry.tzinfo is None or expiry<=datetime.datetime.now(datetime.timezone.utc): raise ValueError('Authorization expired or lacks timezone')
     if not value.get('ledgerPath') or not Path(value['ledgerPath']).is_absolute(): raise ValueError('One absolute shared ledgerPath is required')
     if not positive(value.get('aggregateMaxCostMicros')) or not value.get('runs'): raise ValueError('Positive aggregate budget and planned runs required')
-    provenance=json.loads(Path(__file__).with_name('pricing-provenance.json').read_text())
-    if value.get('pricingProvenance')!=provenance: raise ValueError('Reviewed model/pricing provenance must match committed record')
+    records=[json.loads(Path(__file__).with_name(name).read_text()) for name in ['pricing-provenance.json','pricing-provenance.openai.json']]
+    provenance=value.get('pricingProvenance')
+    if provenance not in records: raise ValueError('Reviewed model/pricing provenance must match committed record')
     verified=datetime.date.fromisoformat(provenance['verifiedDate'])
     if abs((datetime.datetime.now(datetime.timezone.utc).date()-verified).days)>7: raise ValueError('Reverify provider prices before approving this batch')
     for run in value['runs'].values():
         if run.get('kind') not in {'baseline','application'} or not run.get('model'): raise ValueError('Run kind and exact model required')
         if run['model']!=provenance['model'] or run.get('inputMicros',0)<provenance['inputMicrosPerToken'] or run.get('outputMicros',0)<provenance['outputMicrosPerToken']: raise ValueError('Exact verified model and conservative provider prices required')
+        if run.get('provider','anthropic')!=provenance.get('providerId','anthropic'): raise ValueError('Provider must match reviewed provenance')
         for key in ['maxCostMicros','maxCalls','maxInputTokens','maxOutputTokens','inputMicros','outputMicros','timeoutSeconds']:
             if not positive(run.get(key)): raise ValueError('Positive integer '+key+' required')
+        if run.get('provider')=='openai':
+            if run['maxInputTokens']>250000 or run['maxOutputTokens']>128000: raise ValueError('OpenAI short-context/output bounds exceeded')
+            if run.get('effort')!='high': raise ValueError('Reviewed OpenAI comparison requires high reasoning effort')
     if sum(r['maxCostMicros'] for r in value['runs'].values())>value['aggregateMaxCostMicros']: raise BudgetExceeded('Planned run envelopes exceed approved aggregate cap')
     return value
 
@@ -66,6 +71,8 @@ class Ledger:
             config=auth['runs'][run_id];record=state['runs'][run_id]['requests'][request_id]
             if record['status']!='reserved': raise BudgetExceeded('Usage settlement replay refused')
             valid=usage.get('model')==config['model'] and all(type(usage.get(k)) is int and usage[k]>=0 for k in ['inputTokens','outputTokens','cacheReadTokens','cacheWriteTokens']) and usage.get('cacheReadTokens')==0 and usage.get('cacheWriteTokens')==0
+            if config.get('provider')=='openai':
+                valid=valid and usage.get('serviceTier')=='default' and type(usage.get('reasoningTokens')) is int and 0<=usage['reasoningTokens']<=usage['outputTokens']
             cost=(usage.get('inputTokens',0)*config['inputMicros']+usage.get('outputTokens',0)*config['outputMicros']) if valid else record['reservedCostMicros']
             valid=valid and usage['inputTokens']<=record['inputTokensBound'] and usage['outputTokens']<=record['outputTokensBound'] and cost<=record['reservedCostMicros']
             if not valid:

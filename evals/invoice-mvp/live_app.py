@@ -16,7 +16,13 @@ def verify_live_runtime(runtime,snapshot,approved,app_commit):
     if runtime.get('sourceCommit')!=app_commit or runtime.get('dirty') is not False: raise ValueError('Require exact clean application commit')
     if runtime.get('model')!=approved['model'] or runtime.get('fallbacks') is not False or runtime.get('retries')!=0: raise ValueError('Model mismatch, fallback or retry configuration refused')
     provider=runtime.get('modelProvider') or {}
-    if provider.get('baseURL')!='https://api.anthropic.com' or provider.get('authentication')!='explicit_api_key' or provider.get('servedModelValidated') is not True or provider.get('cacheUsageValidated') is not True: raise ValueError('Verified first-party provider/model/cache contract required')
+    is_openai=approved.get('provider')=='openai'
+    expected_url='https://api.openai.com/v1' if is_openai else 'https://api.anthropic.com'
+    if provider.get('baseURL')!=expected_url or provider.get('authentication')!='explicit_api_key' or provider.get('servedModelValidated') is not True or provider.get('cacheUsageValidated') is not True: raise ValueError('Verified first-party provider/model/cache contract required')
+    if is_openai:
+        if runtime.get('effort')!=approved['effort'] or provider.get('api')!='responses' or provider.get('serviceTier')!='default' or provider.get('promptCacheMode')!='explicit_without_breakpoints': raise ValueError('Reviewed OpenAI effort/API/tier/cache contract required')
+        if approved['maxInputTokens']>250000: raise ValueError('OpenAI long-context pricing not approved')
+        if runtime.get('outputTokensPerCall')!=approved['maxOutputTokens']: raise ValueError('OpenAI wire output limit differs from approved comparison')
     if provider.get('pricing')!={'inputMicros':approved['inputMicros'],'outputMicros':approved['outputMicros']}: raise ValueError('Runtime pricing differs from approved provider rates')
     if runtime.get('liveExecution')!='requires_explicit_process_opt_in_and_atomic_reservation': raise ValueError('Atomic product budget enforcement not attested')
     budget=runtime.get('budget') or {}; scope=runtime.get('budgetScope') or {}
