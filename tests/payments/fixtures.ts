@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { demoFixture } from "../demo-fixture";
 import { openFakeBank, type FakeFault } from "../../src/integrations/banking/fake";
 import type { BankCommand, BankingProvider, BankScope } from "../../src/integrations/contracts";
+import type { PaymentRail } from "../../src/payments/ports/payment-rail";
 
 /** Test-only owner of simulator controls; workers receive only the provider. */
 export async function recoveryFixture(faults: FakeFault[] = []) {
@@ -14,7 +15,12 @@ export async function recoveryFixture(faults: FakeFault[] = []) {
   let bank = openFakeBank({ ...options, faults });
   const calls: { operation: string; command?: BankCommand; scope?: BankScope; id?: string }[] = [];
   // Copy at the boundary so later mutation cannot rewrite the test's history.
-  const provider: BankingProvider = {
+  const provider: BankingProvider & PaymentRail = {
+    get recovery() { return bank.provider.recovery; },
+    lookupTransfer: (command, id) => {
+      calls.push({ operation: "lookupTransfer", command: structuredClone(command), id });
+      return bank.provider.lookupTransfer(command, id);
+    },
     createTransfer: command => {
       calls.push({ operation: "createTransfer", command: structuredClone(command) });
       return bank.provider.createTransfer(command);
@@ -42,7 +48,7 @@ export async function recoveryFixture(faults: FakeFault[] = []) {
     heads: await ctx.db.query("ledgerHeads").collect(),
   }));
   return {
-    ...fixture, provider, calls, state,
+    ...fixture, provider, calls, state, directory, bankPath: path, seed: options.seed,
     get bank() { return bank; },
     restartBank() { bank.close(); bank = openFakeBank(options); },
     dispose() { bank.close(); rmSync(directory, { recursive: true, force: true }); },

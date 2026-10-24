@@ -38,6 +38,7 @@ describe("independent executor cutover and immutable execution authority", () =>
     expect(await f.t.run(ctx => ctx.db.get(queued.billId))).toMatchObject({ paidCents: 0, reservedVersionId: queued.versionId });
     expect(await f.t.run(ctx => ctx.db.query("demoAttempts").collect())).toEqual([]);
     const review = await f.human.query(api.demoPayments.humanReview, { scope: f.scope });
+    expect(review.executionConfig).toMatchObject({ eligible: false, reason: expect.stringMatching(/historical.*review/i) });
     expect(review.commands[0]?.command).toEqual(before!.command);
   });
 
