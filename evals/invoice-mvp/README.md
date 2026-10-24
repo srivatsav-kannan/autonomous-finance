@@ -1,5 +1,7 @@
 # Invoice MVP independent evaluation
 
+**Current status (2026-10-24):** the one approved OpenAI batch has completed: baseline unscored, app original 0/18, held-out 4/9; calculated cost $1.201842 across 59 calls; both app restart comparisons pass. See [the independent live report](../../docs/invoice-mvp/evaluation-openai-results.md). The NOT RUN/approval text below is the preserved earlier preparation checkpoint, including the unused Claude plan; it is not the current OpenAI execution status. Do not repeat completed run commands or reset the shared ledger.
+
 Protocol frozen at `357866ec73dd8a643408e4a3b1ca4db6654e99b7` before first scores. See `docs/invoice-mvp/evaluation-protocol.md`. Historical A/B/C and their reports are untouched. `system-mvp.py` is the new actual-product adapter, using only the real HTTP gateway and persisted Convex snapshots.
 
 The default `run.py` path performs **free deterministic evaluation only** and rejects `live_model` and `mock_model` runtime attestation before mutating the product. Separate capped live entrypoints are prepared in [LIVE.md](LIVE.md); they require explicit recorded approval and remain NOT RUN. Mock-server unit tests do not qualify as an application evaluation. Preparation does not produce a benchmark score. Outputs must live outside the product worktree, and run/output directories cannot be reused.

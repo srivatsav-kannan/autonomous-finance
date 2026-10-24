@@ -1,3 +1,19 @@
+# Worker D final independent evaluation handoff
+
+D's evaluation objective is fulfilled by an honest completed batch, including its partial/unscored outcomes. Final evidence is in [evaluation-openai-results.md](evaluation-openai-results.md) and [evaluation-openai-results.json](evaluation-openai-results.json). Root owns integration, publishing and any later scope decision; D has made no provider call, read no key and changed no shared ledger.
+
+- Baseline source `e3a2238` / D `30ab79b`: nine calls, $0.601118, no submission. Original-guard offline replay matched every request hash and confirmed turn 10 exceeded the 250,000 input estimate. Unscored, not zero. Future-only guard correction is separate.
+- Actual app source `d08165c`: original 0/18, held-out 4/9, zero accepted effects/human decisions; 148/148 and 11/11 source versions/bytes/text retained. Resource reservations restricted coverage to five original and three held-out case records with provider usage.
+- One approved OpenAI batch replaced Claude: 59 calls, calculated provider-usage cost $1.201842 within the single $7.50 cap. No paid retry, reallocation, envelope reset or refund.
+- Independent scoring/restart evaluator source `53af871`, clean. Both actual restart state comparisons pass; entire audits, usage and original bytes remain unchanged. Corrected restart output preserves the original run's live-model label.
+- All original/held-out scores and diagnostics are sealed separately from run artifacts. Companion JSON contains full source identities and hashes. Root's deterministic browser/decision/replay/stale-approval evidence remains distinct from primary model evaluation.
+- Verification: D 30 Python + 14 no-network Node tests and evaluation TypeScript pass. Root reports 331 tests in 26 files, all app/Convex/eval typechecks and Vite build pass on measured app code.
+- Limits: no controlled baseline comparison, reviewer or demonstrated multi-agent benefit; unfamiliar-format coverage remains weak; worst-case reservations exhaust below actual cost; same-host local gateways overwrite the session cookie. No product tuning followed the runs.
+
+This final handoff commit is documentation only. The native goal completion transition is recorded separately after committing the handoff. The previous blocked-goal history and earlier free/Claude checkpoint below are retained as historical context, not current status.
+
+## Historical checkpoint (preserved)
+
 # Worker D final free-evaluation handoff
 
 **OpenAI follow-up, 2026-10-24:** The user approved one OpenAI batch under the same $7.50 total, replacing Claude. Root executed the baseline on integrated `e3a2238` (D equivalent `30ab79b`): nine model calls, 85 tools, calculated cost $0.601118, no submission. Independent offline replay matched all nine wire hashes and identified turn 10's input bound 266,157 exceeding the approved 250,000 ceiling; no tenth call was sent. Official/strict scores are null, not zero. [evaluation-openai.md](evaluation-openai.md) records the diagnosis, private artifact seals, app compatibility contract and future-only prior-output reservation correction. D made no provider call, read no key and did not modify the live output/shared ledger. New checks: 30 Python + 14 no-network Node tests and evaluation TypeScript pass. Root/B owns app integration and remaining authorized execution; no baseline rerun or ledger reset. The free deterministic/Claude preparation report below is preserved as historical context.

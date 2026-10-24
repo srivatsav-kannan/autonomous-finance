@@ -1,5 +1,7 @@
 # Capped live comparison: prepared, NOT RUN
 
+**Current status (2026-10-24):** the one approved OpenAI batch has completed: baseline unscored, app original 0/18, held-out 4/9; calculated cost $1.201842 across 59 calls; both app restart comparisons pass. See [the independent live report](../../docs/invoice-mvp/evaluation-openai-results.md). The NOT RUN/approval text below is the preserved earlier preparation checkpoint, including the unused Claude plan; it is not the current OpenAI execution status. Do not repeat completed run commands or reset the shared ledger.
+
 No credential or spending permission is present. This document is a reproducible preparation record, not authorization. `authorization.example.json` deliberately contains `authorized: false`, an unusable expiry, and a placeholder ledger path. Neither runner can execute a paid request with that file. Required credential name only: `ANTHROPIC_API_KEY`.
 
 ## Proposed single approval
