@@ -25,6 +25,7 @@ export interface InvestigatorModel {
   budget?: ResourceBudget;
   readonly provider?: ModelProvider;
   readonly effort?: "high";
+  readonly reasoningContext?: "all_turns";
   readonly maxOutputTokens?: number;
   readonly toolSchemas?: readonly unknown[];
   release?(observations: Observation[]): void;

@@ -4,7 +4,7 @@ import { INVESTIGATOR_POLICY, ModelResponseError, TOOL_SCHEMAS, type Investigato
 export const OPENAI_INVOICE_MODEL = "gpt-6.1-sol";
 export const OPENAI_INPUT_CEILING = 100_000;
 export const OPENAI_OUTPUT_CEILING = 4096;
-export const OPENAI_REQUEST_TIMEOUT_MS = 60_000;
+export const OPENAI_REQUEST_TIMEOUT_MS = 30_000;
 const RESPONSE_URL = "https://api.openai.com/v1/responses";
 
 // Existing tools have optional fields. Opt out of Responses schema normalization;
@@ -19,12 +19,19 @@ type Continuation = { caseId: string; evidenceVersion: number; decisionSummaries
 const object = (value: unknown): Item | undefined => value !== null && typeof value === "object" && !Array.isArray(value) ? value as Item : undefined;
 const count = (value: unknown): value is number => typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 const containsBreakpoint = (value: unknown): boolean => Array.isArray(value) ? value.some(containsBreakpoint) : !!object(value) && Object.entries(value as Item).some(([key, child]) => key === "prompt_cache_breakpoint" || containsBreakpoint(child));
+const textParts = (value: unknown, type: string): boolean => Array.isArray(value) && value.every((part) => object(part)?.type === type && typeof object(part)?.text === "string");
+const replayableReasoning = (item: Item): boolean => typeof item.id === "string" && item.id.length > 0
+  && typeof item.encrypted_content === "string" && item.encrypted_content.length > 0
+  && textParts(item.summary, "summary_text")
+  && (item.content === undefined || textParts(item.content, "reasoning_text"))
+  && (item.status === undefined || item.status === "completed");
 
 /** First-party Responses transport. Only next() can dispatch, and only after explicit setup. */
 export class OpenAIInvestigator implements InvestigatorModel {
   readonly mode = "live_model" as const;
   readonly model = OPENAI_INVOICE_MODEL;
   readonly effort = "high" as const;
+  readonly reasoningContext = "all_turns" as const;
   readonly provider: ModelProvider;
   readonly toolSchemas = OPENAI_TOOL_SCHEMAS;
   readonly budget: ResourceBudget;
@@ -63,7 +70,7 @@ export class OpenAIInvestigator implements InvestigatorModel {
       if (observation.tool !== previous.call.action.name || JSON.stringify(observation.input) !== JSON.stringify(previous.call.action.input)) throw new InvoiceError("continuation_invalid", "Tool result does not match the selected provider call.");
       input = [...previous.history, { type: "function_call_output", call_id: previous.call.id, output: JSON.stringify({ result: observation.result, ...(observation.error ? { error: true } : {}) }) }];
     }
-    return { previous, body: { model: this.model, input, tools: this.toolSchemas, tool_choice: "auto", parallel_tool_calls: false, reasoning: { effort: this.effort }, service_tier: "default", store: false, include: ["reasoning.encrypted_content"], prompt_cache_options: { mode: "explicit" }, max_output_tokens: this.maxOutputTokens } };
+    return { previous, body: { model: this.model, input, tools: this.toolSchemas, tool_choice: "auto", parallel_tool_calls: false, reasoning: { effort: this.effort, context: this.reasoningContext }, service_tier: "default", store: false, include: ["reasoning.encrypted_content"], prompt_cache_options: { mode: "explicit" }, max_output_tokens: this.maxOutputTokens } };
   }
 
   release(observations: Observation[]): void { this.#continuations.delete(observations); }
@@ -120,6 +127,10 @@ export class OpenAIInvestigator implements InvestigatorModel {
     if (result.status !== "completed" || result.error) throw new ModelResponseError("OpenAI response was incomplete or failed; no action was executed.", usage, usageSummary);
     const output = Array.isArray(result.output) ? result.output : [];
     if (output.some((item) => !object(item))) throw new ModelResponseError("OpenAI response contained malformed output items; no action was executed.", usage, usageSummary);
+    if (output.some((item: Item) => !["reasoning", "message", "function_call"].includes(item.type as string))) throw new ModelResponseError("OpenAI response contained unsupported output types; no action or continuation was accepted.", usage, usageSummary);
+    // Stateless replay needs complete encrypted reasoning, not a stored item reference.
+    // Validate only structure; preserve all original fields and never expose their values.
+    if (output.some((item: Item) => item.type === "reasoning" && !replayableReasoning(item))) throw new ModelResponseError("OpenAI response reasoning was not complete for stateless replay; no action or continuation was accepted.", usage, usageSummary);
     if (containsBreakpoint(output)) throw new ModelResponseError("OpenAI output contained unexpected cache configuration; no continuation was accepted.", usage, usageSummary);
     const calls = output.filter((item: Item) => item.type === "function_call") as Item[];
     if (calls.length !== 1) throw new ModelResponseError("OpenAI response did not contain exactly one function call; the bounded investigation stopped.", usage, usageSummary);

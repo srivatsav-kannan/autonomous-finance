@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createHash } from "node:crypto";
-import { OpenAIInvestigator, OPENAI_INVOICE_MODEL, OPENAI_TOOL_SCHEMAS } from "./openai-model";
+import { OpenAIInvestigator, OPENAI_INVOICE_MODEL, OPENAI_REQUEST_TIMEOUT_MS, OPENAI_TOOL_SCHEMAS } from "./openai-model";
 import { AnthropicInvestigator, ModelResponseError, type ModelRequest, type ToolAction } from "./model";
 import { investigate } from "./investigator";
 import { InvoiceService, createServiceFromEnv } from "./service";
@@ -22,7 +22,7 @@ const reply = (value: unknown, status = 200) => transport.mockResolvedValueOnce(
 const bodyAt = (index: number) => JSON.parse(transport.mock.calls[index]![1]!.body as string);
 const observe = (r: ModelRequest, action: ToolAction, result: unknown = { text: "Synthetic invoice evidence" }) => r.observations.push({ tool: action.name, input: action.input, result });
 const opaque = [
-  { type: "reasoning", id: "rs-private", encrypted_content: "OPAQUE_CONTENT_MUST_NOT_ENTER_AUDIT", summary: [] },
+  { type: "reasoning", id: "rs-private", encrypted_content: "OPAQUE_CONTENT_MUST_NOT_ENTER_AUDIT", summary: [], status: "completed" },
   { type: "message", id: "msg-private", role: "assistant", phase: "commentary", status: "completed", content: [{ type: "output_text", text: "PROVIDER_PROSE_MUST_NOT_ENTER_AUDIT", annotations: [] }] },
 ];
 
@@ -42,6 +42,7 @@ describe("OpenAI Responses preparation — mocked transport only", () => {
     vi.stubEnv("OPENAI_PROJECT_ID", "ambient-project");
     vi.stubEnv("AGENT_MODEL", "unrelated-global-model");
     const model = makeModel(), req = request();
+    const timeout = vi.spyOn(AbortSignal, "timeout");
     model.reservation(req);
     expect(transport).not.toHaveBeenCalled();
     reply(response());
@@ -50,7 +51,9 @@ describe("OpenAI Responses preparation — mocked transport only", () => {
     expect(transport.mock.calls[0]![0]).toBe("https://api.openai.com/v1/responses");
     expect(transport.mock.calls[0]![1]).toMatchObject({ method: "POST", redirect: "error", headers: { "Content-Type": "application/json", Authorization: "Bearer synthetic-openai-mock-key" }, signal: expect.any(AbortSignal) });
     expect(Object.keys(transport.mock.calls[0]![1]!.headers!)).toHaveLength(2);
-    expect(bodyAt(0)).toMatchObject({ model: "gpt-6.1-sol", tools: OPENAI_TOOL_SCHEMAS, tool_choice: "auto", parallel_tool_calls: false, reasoning: { effort: "high" }, service_tier: "default", store: false, include: ["reasoning.encrypted_content"], prompt_cache_options: { mode: "explicit" }, max_output_tokens: 4096 });
+    expect(OPENAI_REQUEST_TIMEOUT_MS).toBe(30_000);
+    expect(timeout).toHaveBeenCalledExactlyOnceWith(30_000);
+    expect(bodyAt(0)).toMatchObject({ model: "gpt-6.1-sol", tools: OPENAI_TOOL_SCHEMAS, tool_choice: "auto", parallel_tool_calls: false, reasoning: { effort: "high", context: "all_turns" }, service_tier: "default", store: false, include: ["reasoning.encrypted_content"], prompt_cache_options: { mode: "explicit" }, max_output_tokens: 4096 });
     expect(JSON.stringify(bodyAt(0))).not.toContain("prompt_cache_breakpoint");
     expect(bodyAt(0)).not.toHaveProperty("previous_response_id");
     expect(result).toMatchObject({ action: { name: "inspect_source", input: {} }, usage: { inputTokens: 123, outputTokens: 17, costMicros: 416 }, usageSummary: expect.stringContaining("includes 10 reasoning tokens") });
@@ -82,7 +85,7 @@ describe("OpenAI Responses preparation — mocked transport only", () => {
     const model = new OpenAIInvestigator(mutableBudget, mutablePrices, 2048, true, transport);
     mutablePrices.inputMicros = 0; mutableBudget.maxInputTokens = 999_999;
     const runtime = runtimeAttestation(new InvoiceService(new TestBackend(), model));
-    expect(runtime).toMatchObject({ model: "gpt-6.1-sol", effort: "high", retries: 0, fallbacks: false, outputTokensPerCall: 2048, perRequest: { maxInputTokens: 100_000, maxOutputTokens: 2048 }, budget });
+    expect(runtime).toMatchObject({ model: "gpt-6.1-sol", effort: "high", reasoningContext: "all_turns", retries: 0, fallbacks: false, outputTokensPerCall: 2048, perRequest: { maxInputTokens: 100_000, maxOutputTokens: 2048 }, budget });
     expect(runtime.modelProvider).toEqual({ baseURL: "https://api.openai.com/v1", api: "responses", authentication: "explicit_api_key", pricing: prices, servedModelValidated: true, cacheUsageValidated: true, serviceTier: "default", promptCacheMode: "explicit_without_breakpoints" });
     expect(runtime.toolsHash).toBe(createHash("sha256").update(JSON.stringify(OPENAI_TOOL_SCHEMAS)).digest("hex"));
     expect(Object.isFrozen(model.provider)).toBe(true);
@@ -94,6 +97,18 @@ describe("OpenAI Responses preparation — mocked transport only", () => {
 });
 
 describe("stateless Responses continuation and reservation", () => {
+  it("preserves structured reasoning fields with an omitted optional status", async () => {
+    const model = makeModel(), req = request();
+    const reasoning = { type: "reasoning", id: "rs-structured", encrypted_content: "OPAQUE_CONTENT_MUST_NOT_ENTER_AUDIT", summary: [{ type: "summary_text", text: "SUMMARY_MUST_NOT_ENTER_AUDIT" }], content: [{ type: "reasoning_text", text: "REASONING_MUST_NOT_ENTER_AUDIT" }] };
+    reply(response([reasoning, call()]));
+    const first = await model.next(req);
+    expect(JSON.stringify(first)).not.toContain("MUST_NOT_ENTER_AUDIT");
+    observe(req, first.action);
+    reply(response([call("policy", {}, "call-2")]));
+    await model.next(req);
+    expect(bodyAt(1).input[2]).toEqual(reasoning);
+  });
+
   it("replays every output item unchanged, pairs the result, and reserves full wire plus opaque output", async () => {
     const model = makeModel(), req = request(), firstOutput = [...opaque, call()];
     const initialReservation = model.reservation(req);
@@ -111,6 +126,7 @@ describe("stateless Responses continuation and reservation", () => {
     expect(fullReservation.inputTokens).toBe(Buffer.byteLength(JSON.stringify(bodyAt(1))) + 17 + 4096);
     expect(fullReservation.costMicros).toBe(fullReservation.inputTokens * 2 + 4096 * 10);
     expect(bodyAt(1).input[3].phase).toBe("commentary");
+    expect(bodyAt(1).reasoning.context).toBe("all_turns");
   });
 
   it("isolates identical cases with different observation arrays and discards released state", async () => {
@@ -182,6 +198,15 @@ describe("response validation and cost honesty", () => {
     ["missing call id", response([{ ...call(), call_id: undefined }])],
     ["unfinished call", response([{ ...call(), status: "in_progress" }])],
     ["malformed output", response([null])],
+    ["unsupported output type", response([{ type: "web_search_call", id: "PRIVATE_RAW_CONTENT" }, call()])],
+    ["untyped output", response([{ id: "PRIVATE_RAW_CONTENT" }, call()])],
+    ["reasoning missing encrypted state", response([{ ...opaque[0], encrypted_content: undefined }, call()])],
+    ["reasoning invalid encrypted state", response([{ ...opaque[0], encrypted_content: { value: "PRIVATE_RAW_CONTENT" } }, call()])],
+    ["reasoning empty encrypted state", response([{ ...opaque[0], encrypted_content: "" }, call()])],
+    ["reasoning missing ID", response([{ ...opaque[0], id: undefined }, call()])],
+    ["reasoning malformed summary", response([{ ...opaque[0], summary: [{ type: "output_text", text: "PRIVATE_RAW_CONTENT" }] }, call()])],
+    ["reasoning malformed content", response([{ ...opaque[0], content: "PRIVATE_RAW_CONTENT" }, call()])],
+    ["reasoning incomplete", response([{ ...opaque[0], status: "incomplete" }, call()])],
     ["incomplete", { ...response(), status: "incomplete", incomplete_details: { reason: "max_output_tokens" } }],
     ["failed", { ...response(), status: "failed", error: { message: "PRIVATE_RAW_CONTENT" } }],
     ["cache breakpoint", response([{ ...opaque[0], prompt_cache_breakpoint: true }, call()])],
@@ -315,11 +340,14 @@ describe("provider factory — configuration only", () => {
     vi.stubEnv("INVOICE_MVP_MODE", undefined);
     expect(createServiceFromEnv().mode).toBe("deterministic");
     expect(createServiceFromEnv().model).toBeUndefined();
+    expect(runtimeAttestation(createServiceFromEnv()).reasoningContext).toBeNull();
     expect(transport).not.toHaveBeenCalled();
   });
   it("preserves Anthropic as the default live provider and rejects unsupported providers", () => {
     vi.stubEnv("INVOICE_MVP_PROVIDER", undefined);
-    expect(createServiceFromEnv().model).toBeInstanceOf(AnthropicInvestigator);
+    const service = createServiceFromEnv();
+    expect(service.model).toBeInstanceOf(AnthropicInvestigator);
+    expect(runtimeAttestation(service)).toMatchObject({ effort: "provider_default", reasoningContext: null });
     vi.stubEnv("INVOICE_MVP_PROVIDER", "unapproved-proxy");
     expect(createServiceFromEnv).toThrow("supported anthropic or openai");
     expect(transport).not.toHaveBeenCalled();
