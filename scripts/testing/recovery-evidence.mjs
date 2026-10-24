@@ -24,7 +24,9 @@ export function recoveryEvidence(report, journal) {
   assert.equal(row.execution, 'settled');
   assert.equal(row.posting, 'posted');
   assert.equal(row.reconciliation, 'matched');
-  assert.equal(report.bankEvidence.calls.createTransfer, 2);
+  assert.equal(report.bankEvidence.calls.createTransfer, 1);
+  assert.ok(Number.isSafeInteger(report.bankEvidence.calls.lookupTransfer) && report.bankEvidence.calls.lookupTransfer >= 1,
+    'Restart must look up the original operation before considering another submission');
   assert.equal(report.bankEvidence.transfers.length, 1);
   const transfer = report.bankEvidence.transfers[0];
   assert.equal(transfer.commandId, command.commandId);
@@ -57,9 +59,10 @@ export function recoveryEvidence(report, journal) {
   assert.ok(Number.isSafeInteger(command.amountCents) && command.amountCents > 0);
   return {
     identityMode: 'local_admin_simulated_human',
-    attempts: 2, createTransferCalls: 2, transfers: 1, postedDebits: 1,
+    attempts: 2, createTransferCalls: 1, lookupTransferCalls: report.bankEvidence.calls.lookupTransfer,
+    transfers: 1, postedDebits: 1,
     cashJournalEntries: 1, closeBlockers: 0, amountCents: command.amountCents,
-    sameCommandAndKey: true, missingWebhookRecoveredByPolling: true,
+    sameCommandAndKey: true, acceptedTransferRecoveredWithoutResend: true, missingWebhookRecoveredByPolling: true,
     duplicateReconciliationPostedNothing: true, // ap-demo asserts a second tick posts zero.
     commandSha256: hash(command.commandId), idempotencyKeySha256: hash(command.idempotencyKey),
     requestHashSha256: hash(command.requestHash), transactionSha256: hash(debit.id),

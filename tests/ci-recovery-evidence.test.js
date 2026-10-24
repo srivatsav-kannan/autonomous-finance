@@ -11,7 +11,7 @@ function fixture() {
       faultSchedule: ['accept_then_lost_response', 'worker_exit', 'missing_webhook'],
       commandId: 'row', fixtureHash: 'fixture',
       review: { commands: [{ _id: 'row', command, attemptCount: 2, execution: 'settled', posting: 'posted', reconciliation: 'matched' }] },
-      bankEvidence: { calls: { createTransfer: 2 }, transfers: [{ ...command, id: 'transfer' }], transactions: [debit] },
+      bankEvidence: { calls: { createTransfer: 1, lookupTransfer: 1 }, transfers: [{ ...command, id: 'transfer' }], transactions: [debit] },
       evidence: { transactions: [{ transaction: debit, state: 'posted', entryId: 'journal' }], blockers: [] },
     },
     journal: [{ _id: 'journal', runId: 'fixture', source: { kind: 'payment_settlement' }, lines: [{ account: '1000', debit: 0, credit: 66290 }] }],
@@ -26,13 +26,16 @@ describe('CI recovery evidence boundary', () => {
     report.bankEvidence.transfers[0].payload = 'provider-payload-canary';
     journal[0].memo = 'raw-memo-canary';
     const result = recoveryEvidence(report, journal);
-    expect(result).toMatchObject({ attempts: 2, transfers: 1, postedDebits: 1, cashJournalEntries: 1, amountCents: 66290 });
+    expect(result).toMatchObject({ attempts: 2, createTransferCalls: 1, lookupTransferCalls: 1, acceptedTransferRecoveredWithoutResend: true,
+      transfers: 1, postedDebits: 1, cashJournalEntries: 1, amountCents: 66290 });
     expect(result.idempotencyKeySha256).toMatch(/^[a-f0-9]{64}$/);
     expect(JSON.stringify(result)).not.toContain('canary');
   });
   it.each([
     ['a changed retry key', ({ report }) => { report.bankEvidence.transfers[0].idempotencyKey = 'different'; }],
     ['missing crash recovery', ({ report }) => { report.review.commands[0].attemptCount = 1; }],
+    ['a blind recovery resend', ({ report }) => { report.bankEvidence.calls.createTransfer = 2; }],
+    ['missing recovery lookup', ({ report }) => { report.bankEvidence.calls.lookupTransfer = 0; }],
     ['a second debit', ({ report }) => { report.bankEvidence.transactions.push(report.bankEvidence.transactions[0]); }],
     ['a second cash effect', ({ journal }) => { journal.push(journal[0]); }],
     ['an unlinked cash effect', ({ journal }) => { journal[0]._id = 'different'; }],
