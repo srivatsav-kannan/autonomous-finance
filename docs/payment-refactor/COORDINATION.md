@@ -13,7 +13,7 @@ paid model use, live money, or unrelated messaging is authorized by this work.
 - Integration starts from #58 `f1a7a73e5865ce86191bd180e1c5a51f76d7ddb2`, then merges final stable #58 `05d3e5fe5a0ce9966096ab2afaff6133bfc8839d` (PR50 `9d4be0f`, including close approval snapshot fixes). This contains the full payment stack and isolated recovery CI.
 - #48 `d1fbfc2` is an alternative legacy executor. Do not merge its handler. Retain its failure cases: pre-send death, lost acceptance, local posting failure, changed destination, stale workers and closed periods. The selected stack already preserves immutable bank commands and separates acceptance from posted evidence.
 - #51 `951b2df` is owned by the invoice MVP coordinator. Its receivables/evaluation changes and #57 task leases are not a dependency of this isolated payment slice. Preserve its future integration requirements: evidence-only cash, verified vendor destinations and task lease generations. Payment snapshots already bind the configured human-verified beneficiary.
-- Shared main and its untracked `artifacts/` are untouched. Integration branch: `codex/payment-module-consolidation` in the managed `payment-refactor` worktree.
+- This task does not modify the shared main checkout or its original untracked `artifacts/`; other chats may continue work there. Integration branch: `codex/payment-module-consolidation` in the managed `payment-refactor` worktree.
 
 ## Scope and contract gate
 
@@ -65,3 +65,19 @@ The follow-up human turn in the source chat explicitly requested parallel CI tes
 | Shared CI wiring | Coordinator | `.github/workflows/`, `package.json`, `package-lock.json`, combined evidence | single writer; worker proposals integrated here |
 
 The core integrated revision `794a10e` passed 387 tests, all three TypeScript checks, the console build and persistent local recovery. Convex rejected hyphenated helper filenames during actual deployment; the coordinator changed them to camelCase before this passing run. Its sanitized evidence is recorded separately from the additional CI/browser work.
+
+## Final integrated validation
+
+The coordinator independently verified clean `28a270dd0d42d76ad55ed7f55105d4cd4b534c7c`:
+400 tests in 37 files, all three TypeScript checks, console build, persistent
+SIGKILL recovery and all three Playwright tests passed. Recovery observed one
+create call, one lookup, one transfer, one posted debit and one cash entry after
+two leased attempts; accepted/pending remained unpaid. The browser independently
+verified the signed test-human approval and persisted $662.90 journal entry.
+See [final-validation.json](final-validation.json) for the sanitized evidence.
+
+Both absent staging opt-in and an explicitly named missing staging manifest
+produced NOT_RUN with exit 2. The reusable staging workflow is implemented, but
+actual staging execution and a deployment pipeline's promotion dependency need
+an available target and authentication fixture. External IdP, live Increase and
+external webhook delivery remain NOT_RUN. Datadog remains deferred.

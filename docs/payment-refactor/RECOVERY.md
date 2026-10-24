@@ -143,3 +143,21 @@ posted debit, one linked cash journal entry, and zero close blockers. See
 `core-validation.json` for hashes and runtime. Additional CI/browser gates are
 tracked in `COORDINATION.md`; they are not inferred from this core run.
 Live Increase, real external human JWT and external webhook delivery remain **NOT_RUN**.
+
+## Final integrated CI and browser validation
+
+The coordinator's clean `28a270dd0d42d76ad55ed7f55105d4cd4b534c7c` passed **400 tests
+in 37 files**, all three TypeScript checks and the console build. The upgraded
+persistent gate sent a real parent-issued **SIGKILL** after durable bank acceptance
+and before any local completion. After lease expiry, the replacement worker
+looked up the identical frozen command: one submit, one lookup, one transfer,
+one posted debit, one cash journal entry and zero close blockers. This supersedes
+the earlier deliberate child-exit recovery proof without claiming a backend restart.
+
+Three real Chromium tests also passed against a separate local Convex/FakeBank
+fixture with signed RS256 test-human JWTs. The browser verified authorization,
+human approval, pending unpaid state, verified settlement and visible evidence;
+the runner independently read the persisted journal. Staging is **NOT_RUN**,
+exit 2, until its target and authentication fixture are supplied. Full sanitized
+results are in [final-validation.json](final-validation.json); commands and the
+reusable staging gate are described in [BROWSER.md](BROWSER.md).
