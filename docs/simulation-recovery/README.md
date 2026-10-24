@@ -3,6 +3,8 @@
 Status: **design and implementation TODO; runtime work has not started here**.
 
 - Implementation issue: [#39](https://github.com/srivatsav-kannan/autonomous-finance/issues/39).
+- All work selection, progress and acceptance tracking now belongs in issue #39.
+  Preparation PR #40 is superseded; its branch and design files are retained.
 - Parent architecture work: [#37](https://github.com/srivatsav-kannan/autonomous-finance/issues/37),
   with the broader design proposed in [PR #38](https://github.com/srivatsav-kannan/autonomous-finance/pull/38).
 - Continuation branch: `codex/simulation-recovery-handoff`.
@@ -34,7 +36,8 @@ are proposals, not evidence that the current application implements their behavi
 
 ## Prompt for the implementing agent
 
-> Continue `codex/simulation-recovery-handoff` for issue #39. Read
+> Use issue #39 as the single work tracker. The preparation branch is
+> `codex/simulation-recovery-handoff`; read
 > `docs/simulation-recovery/TODO.md` and `DESIGN.md`. Inspect current main and the
 > status of existing prerequisite issues/PRs; do not assume they are merged. Work
 > through M0–M5 in dependency order, updating checkboxes only with code and test
@@ -46,6 +49,7 @@ are proposals, not evidence that the current application implements their behavi
 > ambiguous outcomes. Never re-send a bank payment to repair a local posting
 > failure. Keep secrets and evaluator controls unavailable to agents. Report
 > simulator, contract and sandbox results separately; missing credentials mean
-> not run. Continue this PR or split implementation into linked PRs if review size
-> warrants it. Request srivatsav-kannan as reviewer. Do not merge or close #39 until
-> the required implementation and acceptance evidence are complete.
+> not run. Claim a workstream in issue #39 and create scoped implementation PRs
+> linked to that issue; preparation PR #40 is superseded. Request srivatsav-kannan
+> as reviewer. Do not merge or close #39 until the required implementation and
+> acceptance evidence are complete.
