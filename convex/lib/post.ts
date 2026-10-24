@@ -61,6 +61,10 @@ export async function appendEntry(
   const problem = validateLines(input.seat, input.source, input.lines);
   if (problem) return fail("invalid_entry", problem);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date)) return fail("invalid_entry", `bad date ${input.date}`);
+  const parsedDate = new Date(`${input.date}T00:00:00.000Z`);
+  if (!Number.isFinite(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== input.date) {
+    return fail("invalid_entry", `bad date ${input.date}`);
+  }
 
   const period = input.date.slice(0, 7);
   const periodDoc = await ctx.db
