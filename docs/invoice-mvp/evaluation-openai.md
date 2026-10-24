@@ -1,5 +1,7 @@
 # OpenAI evaluation configuration and baseline status
 
+See [the current live results report](evaluation-openai-results.md) for the batch status and independent scoring. This document records configuration, compatibility and the completed baseline diagnosis.
+
 The user stated on 2026-10-24 that they only have OpenAI API keys, then approved one OpenAI batch under the same $7.50 total in the coordination chat. This replaces the Claude batch; it is not additional spending. The frozen scorer/held-out expectations, sealed deterministic scores and earlier Claude preparation are unchanged. Follow-up tracking: [issue #66](https://github.com/srivatsav-kannan/autonomous-finance/issues/66).
 
 The baseline has now run and stopped before submission. Nine model calls and 85 tool calls completed, with 280,549 aggregate input tokens, 4,002 output tokens and calculated usage cost **$0.601118**. The run lasted 42.956 seconds. It is **UNSCORED_NO_SUBMISSION**, with null official/strict accuracy, not a zero score. All nine actual responses settled within their original reservations. Application runs are coordinated separately by root.

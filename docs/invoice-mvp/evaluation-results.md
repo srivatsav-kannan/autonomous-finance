@@ -1,5 +1,7 @@
 # Invoice MVP evaluation results
 
+This is the historical deterministic evaluation at `926e4e8`. The later approved OpenAI batch and its independent results are tracked separately in [evaluation-openai-results.md](evaluation-openai-results.md); the measurements below are unchanged.
+
 The actual deterministic application imported and preserved all **148 original benchmark sources**, but scored **0/18 exact customer net totals**: all 148 cases remained unresolved and no accounting effects were accepted. The held-out suite scored **4/9**, unchanged from its frozen first pass. Both final evaluation states and their source bytes survived an actual backend and gateway restart. These results demonstrate working ingestion and persistence, not successful autonomous interpretation of the benchmark.
 
 The evaluated application was clean commit `926e4e8899a054c6cc1f2548f84a4ba18469797c`; the evaluator was clean `02bd47d1909cb23b7bd11d950e0729d7ef75c79f`. Every source entered through the real loopback HTTP gateway, and totals, proposals, versions and audit records came from persisted Convex state. No mock finance implementation or historical Team adapter was used. Model calls, model tokens, model spend and human interventions were **zero** in both final runs. Live-model evaluation remains **NOT RUN**.
