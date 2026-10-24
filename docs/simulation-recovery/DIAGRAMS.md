@@ -1,4 +1,6 @@
-# All seven architecture diagrams
+# Reference drawings
+
+Start with the shorter [build plan](PLAN.md). These earlier drawings are optional reference.
 
 These are proposed behavior, not evidence of implemented capabilities. All seven use editable handwritten Excalidraw sources and checked-in PNG previews.
 
