@@ -7,6 +7,7 @@ import { authSeat, fail, logActivity, recordViolation, requireAdmin } from "./li
 const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 const LEASE_MS = 120_000;
 const MAX_ATTEMPTS = 4;
+const MAX_DEFERRALS = 200;
 // attempts increases on every claim, including when the same seat reclaims a task.
 // Callers must echo it to distinguish the current lease from delayed worker messages.
 const leaseArgs = { ...seatArgs, taskId: v.id("tasks"), leaseAttempt: v.number() };
@@ -196,6 +197,46 @@ export const waitTask = mutation({
     if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.waitTask", denied);
     await ctx.db.patch(task._id, { status: "waiting", error: args.reason, leaseOwner: undefined, leaseExpiresAt: undefined, updatedAt: now });
     return { ok: true as const };
+  },
+});
+
+/**
+ * Put a leased task back in the queue for later without spending an attempt: the work is
+ * fine, it is waiting on something else (e.g. a parser for its format being built).
+ */
+export const deferTask = mutation({
+  args: { ...leaseArgs, delayMs: v.number(), reason: v.string() },
+  handler: async (ctx, args) => {
+    const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
+    if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "tasks.deferTask", auth);
+    const task = await ctx.db.get(args.taskId);
+    if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
+    const now = Date.now();
+    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
+    if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.deferTask", denied);
+    const deferrals = (task.deferrals ?? 0) + 1;
+    if (deferrals > MAX_DEFERRALS) return fail("too_many_deferrals", `task was deferred ${MAX_DEFERRALS} times`);
+    await ctx.db.patch(task._id, {
+      status: "queued", attempts: Math.max(0, task.attempts - 1), deferrals, error: args.reason,
+      notBefore: now + Math.min(60_000, Math.max(100, args.delayMs)), leaseOwner: undefined, leaseExpiresAt: undefined, updatedAt: now,
+    });
+    return { ok: true as const, deferrals };
+  },
+});
+
+/** Unfinished tasks for a role, e.g. to see whether a parser for a format is already being built. */
+export const openTasks = query({
+  args: { runId: v.string(), role: v.string(), type: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    const out: Doc<"tasks">[] = [];
+    for (const status of ["queued", "leased", "waiting"] as const) {
+      const rows = await ctx.db
+        .query("tasks")
+        .withIndex("by_run_role_status", (q) => q.eq("runId", args.runId).eq("role", args.role).eq("status", status))
+        .collect();
+      out.push(...rows.filter((t) => !args.type || t.type === args.type));
+    }
+    return out;
   },
 });
 

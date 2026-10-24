@@ -6,7 +6,7 @@ const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 
 // Roles the CFO agent may staff up or down on its own. Control roles (controller, payments,
 // auditor) change only with a human, so an agent can't hire its own approver.
-const AGENT_STAFFABLE = new Set(["ap_clerk", "cash_application", "revenue_accountant", "fpa"]);
+const AGENT_STAFFABLE = new Set(["ap_clerk", "ar_clerk", "cash_application", "revenue_accountant", "fpa"]);
 
 export const spawnSeat = mutation({
   args: {

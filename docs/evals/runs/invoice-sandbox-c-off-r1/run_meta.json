@@ -1,0 +1,29 @@
+{
+  "run_id": "c-off-r1",
+  "system": "C",
+  "model": "claude-opus-5-5",
+  "fallbacks": true,
+  "started_at": "2026-10-24T18:45:17.269Z",
+  "run_cap_usd": 3,
+  "timeout_min": 12,
+  "claude": false,
+  "result": {
+    "status": "completed",
+    "kernel_run_id": "bench-is-c-off-r1-mvmr11zq",
+    "claude": false,
+    "documents": 148,
+    "tasks": 151,
+    "llm_tasks": 0,
+    "cost_usd": 0,
+    "parsers_learned": 0,
+    "customers_registered": 18,
+    "undisposed_documents": 0,
+    "kernel_blocks": 0,
+    "memory_commits": 148,
+    "open_asks": 1,
+    "wall_ms": 33988
+  },
+  "wall_ms": 33989,
+  "cost_usd": 0,
+  "total_spent_all_runs_usd": 13.534336400000008
+}

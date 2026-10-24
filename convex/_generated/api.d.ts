@@ -18,6 +18,7 @@ import type * as lib_post from "../lib/post.js";
 import type * as lib_routing from "../lib/routing.js";
 import type * as observe from "../observe.js";
 import type * as payments from "../payments.js";
+import type * as receivables from "../receivables.js";
 import type * as seats from "../seats.js";
 import type * as tasks from "../tasks.js";
 import type * as vendors from "../vendors.js";
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   "lib/routing": typeof lib_routing;
   observe: typeof observe;
   payments: typeof payments;
+  receivables: typeof receivables;
   seats: typeof seats;
   tasks: typeof tasks;
   vendors: typeof vendors;

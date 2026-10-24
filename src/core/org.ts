@@ -20,6 +20,8 @@ export const INITIAL_ORG: SeatPlan[] = [
     mandate: "Owns the accuracy of the books. Resolves held bills, approves payments within limits, reviews proposals, runs the close." },
   { seatId: "ap-clerk-1", role: "ap_clerk", name: "AP Clerk 1", kind: "agent", reportsTo: "controller", effort: "medium",
     mandate: "Turns vendor documents into bills: parse, 3-way match against contract and receiving, code, approve or hold." },
+  { seatId: "ar-clerk-1", role: "ar_clerk", name: "AR Clerk 1", kind: "agent", reportsTo: "controller", effort: "medium",
+    mandate: "Turns customer invoices and credit memos into receivables: parse, check the arithmetic, catch voids, revisions and duplicates, and give every document a disposition." },
   { seatId: "payments", role: "payments", name: "Payments Agent", kind: "agent", reportsTo: "cfo-agent", effort: "medium",
     mandate: "Runs payment batches for approved bills, executes approved payments, handles vendor remit-to change requests." },
   { seatId: "cash-app-1", role: "cash_application", name: "Cash Application Agent", kind: "agent", reportsTo: "controller", effort: "medium",

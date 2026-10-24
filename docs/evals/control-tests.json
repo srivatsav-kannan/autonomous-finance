@@ -1,6 +1,6 @@
 {
-  "runId": "controls-mvm2ns21",
-  "at": "2026-10-24T07:23:08.354Z",
+  "runId": "controls-mvmr5ndg",
+  "at": "2026-10-24T18:48:52.685Z",
   "held": 23,
   "total": 23,
   "results": [
@@ -39,7 +39,7 @@
       "id": "bill-paid-twice",
       "control": "a bill can be in only one live payment",
       "held": true,
-      "detail": "bill CTL1 is already in payment kh72phgkqekdf8zg7zqhmgp7dd8gwn60 (pending_approval)"
+      "detail": "bill CTL1 is already in payment kh72866a4zjpfgj0r36ntpdyeh8gweaw (pending_approval)"
     },
     {
       "id": "remit-changed-after-approval",
@@ -69,7 +69,7 @@
       "id": "ledger-chain",
       "control": "ledger hash chain verifies",
       "held": true,
-      "detail": "{\"entries\":2,\"head\":\"94b75c6a0cea757129943a02e75229ff2ffd23188b0d10cb770da083cf0f7660\",\"ok\":true}"
+      "detail": "{\"entries\":2,\"head\":\"2cb2d83c4366d0ca66ff56311363061782701bfe60d3ad69d58bf2eb9fd330c3\",\"ok\":true}"
     },
     {
       "id": "memory-direct-bank-change",

@@ -16,6 +16,10 @@ function routeOne(type: string, payload: Record<string, unknown>): Route | null 
   switch (type) {
     case "document.received": {
       const kind = payload.kind as string | undefined;
+      // Receivables: the customer master first, then customer documents, then everything that only needs a disposition.
+      if (kind === "customer_master") return { role: "ar_clerk", taskType: "ar.process_document", priority: 1 };
+      if (kind === "ar_document") return { role: "ar_clerk", taskType: "ar.process_document", priority: 3 };
+      if (kind === "ar_email" || kind === "bank_export" || kind === "reference") return { role: "ar_clerk", taskType: "ar.process_document", priority: 5 };
       if (kind === "remit_change_request") return { role: "payments", taskType: "vendor.remit_change", priority: 1 };
       if (kind === "lease_invoice") return { role: "lease_accountant", taskType: "lease.process_invoice", priority: 3 };
       return { role: "ap_clerk", taskType: "ap.process_document", priority: 3 };

@@ -1,0 +1,222 @@
+{
+  "runId": "eval-unseen-s11-mvm3xv56",
+  "errors": [
+    {
+      "id": "e-cam-2026-01",
+      "type": "cam_over_cap",
+      "caught": true,
+      "amountAtRiskCents": 64000,
+      "how": "approved, approved 1702500 of 1766500"
+    },
+    {
+      "id": "e-short-INV-1002",
+      "type": "short_shipment",
+      "caught": true,
+      "amountAtRiskCents": 7700,
+      "how": "paid, 1 exception(s), approved 91760 of 99460"
+    },
+    {
+      "id": "e-fee-2026-01-03",
+      "type": "card_fee_over",
+      "caught": true,
+      "amountAtRiskCents": 1726,
+      "how": "flagged against contracted rate"
+    },
+    {
+      "id": "e-fee-2026-01-04",
+      "type": "card_fee_over",
+      "caught": true,
+      "amountAtRiskCents": 1555,
+      "how": "flagged against contracted rate"
+    },
+    {
+      "id": "e-fee-2026-01-05",
+      "type": "card_fee_over",
+      "caught": true,
+      "amountAtRiskCents": 2222,
+      "how": "flagged against contracted rate"
+    },
+    {
+      "id": "e-price-INV-1004",
+      "type": "price_over_contract",
+      "caught": true,
+      "amountAtRiskCents": 1467,
+      "how": "paid, 2 exception(s), approved 66005 of 75172"
+    },
+    {
+      "id": "e-fee-2026-01-06",
+      "type": "card_fee_over",
+      "caught": true,
+      "amountAtRiskCents": 2274,
+      "how": "flagged against contracted rate"
+    },
+    {
+      "id": "e-remit-fraud",
+      "type": "remit_change_fraud",
+      "caught": true,
+      "amountAtRiskCents": 0,
+      "how": "remit-to unchanged, request blocked"
+    },
+    {
+      "id": "e-dup-NCD5001",
+      "type": "duplicate_exact",
+      "caught": true,
+      "amountAtRiskCents": 19180,
+      "how": "rejected as duplicate"
+    },
+    {
+      "id": "e-payout-payout-ubereats-sim-w1",
+      "type": "payout_short",
+      "caught": true,
+      "amountAtRiskCents": 18750,
+      "how": "dispute opened"
+    },
+    {
+      "id": "e-credit-INV-1011",
+      "type": "unapplied_credit",
+      "caught": true,
+      "amountAtRiskCents": 7700,
+      "how": "credit applied to 1005"
+    },
+    {
+      "id": "e-zenith",
+      "type": "unexplained_debit",
+      "caught": true,
+      "amountAtRiskCents": 124000,
+      "how": "parked in suspense and escalated"
+    },
+    {
+      "id": "e-ghost",
+      "type": "ghost_employee",
+      "caught": true,
+      "amountAtRiskCents": 148050,
+      "how": "held out of payroll"
+    }
+  ],
+  "decoys": [
+    {
+      "id": "d-same-SP-1",
+      "type": "same_amount_different_delivery",
+      "correct": true,
+      "how": "paid"
+    },
+    {
+      "id": "d-payout-payout-doordash-sim-w1",
+      "type": "explained_payout_adjustment",
+      "correct": true,
+      "how": "accepted itemized refund"
+    },
+    {
+      "id": "d-remit-legit",
+      "type": "legit_remit_change",
+      "correct": true,
+      "how": "verified by callback and merged"
+    }
+  ],
+  "falseAlarms": [],
+  "books": [
+    {
+      "metric": "Revenue - in-store",
+      "expected": 13630282,
+      "actual": 13630282,
+      "diff": 0
+    },
+    {
+      "metric": "Revenue - digital",
+      "expected": 9570199,
+      "actual": 9570199,
+      "diff": 0
+    },
+    {
+      "metric": "Revenue - marketplace",
+      "expected": 5800120,
+      "actual": 5800120,
+      "diff": 0
+    },
+    {
+      "metric": "Sales tax payable",
+      "expected": 2002200,
+      "actual": 2002200,
+      "diff": 0
+    },
+    {
+      "metric": "Gift card liability (net change)",
+      "expected": 57996,
+      "actual": 57996,
+      "diff": 0
+    },
+    {
+      "metric": "Payroll expense (legit only)",
+      "expected": 7280300,
+      "actual": 7280300,
+      "diff": 0
+    },
+    {
+      "metric": "Rent & CAM expense (lease terms)",
+      "expected": 5061046,
+      "actual": 5061046,
+      "diff": 0
+    }
+  ],
+  "controls": [
+    {
+      "metric": "ledger hash chain verifies",
+      "value": 1,
+      "target": "1",
+      "ok": true
+    },
+    {
+      "metric": "trial balance nets to zero (cents)",
+      "value": 0,
+      "target": "0",
+      "ok": true
+    },
+    {
+      "metric": "bills paid more than once",
+      "value": 0,
+      "target": "0",
+      "ok": true
+    },
+    {
+      "metric": "payments approved by their requester",
+      "value": 0,
+      "target": "0",
+      "ok": true
+    },
+    {
+      "metric": "blocked attempts (kernel said no)",
+      "value": 0,
+      "target": "logged",
+      "ok": true
+    }
+  ],
+  "humans": {
+    "asksToHumans": 21,
+    "decisionsAsked": 6,
+    "perHundredEvents": 9.1
+  },
+  "coverage": {
+    "invoiceDocuments": 64,
+    "billsRecorded": 64,
+    "unreadable": 0,
+    "parsersLearned": 2
+  },
+  "cost": {
+    "tasks": 232,
+    "llmTurns": 11,
+    "deterministicShare": 0.9525862068965517,
+    "costUsd": 0.127051,
+    "costPerTaskUsd": 0.0005476336206896551
+  },
+  "summary": {
+    "caught": 13,
+    "planted": 13,
+    "recall": 1,
+    "dollarsAtRisk": 398624,
+    "dollarsCaught": 398624,
+    "decoysCorrect": 3,
+    "decoys": 3,
+    "falseAlarmCount": 0
+  },
+  "wallSeconds": 82
+}

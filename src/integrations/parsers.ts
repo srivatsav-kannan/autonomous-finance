@@ -2,6 +2,7 @@ import vm from "node:vm";
 import { parseMoney } from "../core/money";
 import type { MemoryStore } from "../memory/store";
 import { ParsedInvoice, checkInvoiceMath, layoutSignature } from "./invoice";
+import { ParsedArDocument, arLayoutSignature, checkArHeader } from "./ar-document";
 
 export interface Parser {
   id: string;
@@ -83,39 +84,67 @@ export interface ParserRecord {
   id: string;
   signature: string;
   description: string;
-  /** Body of `function parse(text, helpers)`; must return a ParsedInvoice-shaped object. */
+  /** Body of `function parse(text, helpers)`; must return an object of the target's shape. */
   code: string;
   tests: { input: string; expected: unknown }[];
   author: string;
+  /** What the parser reads: vendor invoices (the default) or customer billing documents. */
+  target?: "vendor_invoice" | "ar_document";
 }
 
 /**
  * Agent-written parsers run in an isolated VM context: no require, no process, no network,
  * a 50 ms CPU budget, and their output still has to pass the schema and arithmetic checks.
  */
-export function compileParser(rec: ParserRecord): Parser {
-  const script = new vm.Script(`(function parse(text, helpers) {\n${rec.code}\n})`);
+function sandboxed(code: string): (text: string) => unknown {
+  const script = new vm.Script(`(function parse(text, helpers) {\n${code}\n})`);
   const context = vm.createContext(Object.freeze({}), { codeGeneration: { strings: false, wasm: false } });
   const fn = script.runInContext(context, { timeout: 50 }) as (text: string, helpers: unknown) => unknown;
   const helpers = Object.freeze({ parseMoney });
+  return (t) => JSON.parse(JSON.stringify(vm.runInContext("fn(text, helpers)", vm.createContext({ fn, text: t, helpers }), { timeout: 50 })));
+}
+
+export function compileParser(rec: ParserRecord): Parser {
+  const run = sandboxed(rec.code);
   return {
     id: rec.id,
     origin: "memory",
     detect: (t) => layoutSignature(t) === rec.signature,
-    parse: (t) => {
-      const out = vm.runInContext("fn(text, helpers)", vm.createContext({ fn, text: t, helpers }), { timeout: 50 });
-      return ParsedInvoice.parse(JSON.parse(JSON.stringify(out)));
-    },
+    parse: (t) => ParsedInvoice.parse(run(t)),
   };
 }
 
-export async function loadMemoryParsers(mem: MemoryStore, sha?: string): Promise<Parser[]> {
+export interface ArParser {
+  id: string;
+  signature: string;
+  detect: (text: string) => boolean;
+  parse: (text: string) => ParsedArDocument;
+}
+
+export function compileArParser(rec: ParserRecord): ArParser {
+  const run = sandboxed(rec.code);
+  return {
+    id: rec.id,
+    signature: rec.signature,
+    detect: (t) => arLayoutSignature(t) === rec.signature,
+    parse: (t) => ParsedArDocument.parse(run(t)),
+  };
+}
+
+async function memoryRecords(mem: MemoryStore, sha?: string): Promise<ParserRecord[]> {
   const snapshot = sha ?? (await mem.head());
-  const files = await mem.list("integrations/parsers/", snapshot);
-  const parsers: Parser[] = [];
-  for (const f of files) {
+  const out: ParserRecord[] = [];
+  for (const f of await mem.list("integrations/parsers/", snapshot)) {
     const rec = await mem.read<ParserRecord>(f, snapshot);
-    if (!rec) continue;
+    if (rec) out.push(rec);
+  }
+  return out;
+}
+
+export async function loadMemoryParsers(mem: MemoryStore, sha?: string): Promise<Parser[]> {
+  const parsers: Parser[] = [];
+  for (const rec of await memoryRecords(mem, sha)) {
+    if (rec.target === "ar_document") continue;
     try {
       parsers.push(compileParser(rec));
     } catch {
@@ -123,6 +152,40 @@ export async function loadMemoryParsers(mem: MemoryStore, sha?: string): Promise
     }
   }
   return parsers;
+}
+
+export async function loadArParsers(mem: MemoryStore, sha?: string): Promise<ArParser[]> {
+  const parsers: ArParser[] = [];
+  for (const rec of await memoryRecords(mem, sha)) {
+    if (rec.target !== "ar_document") continue;
+    try {
+      parsers.push(compileArParser(rec));
+    } catch {
+      // Skipped like vendor parsers: the document falls back to extraction.
+    }
+  }
+  return parsers;
+}
+
+export type ArParseOutcome =
+  | { ok: true; doc: ParsedArDocument; parser: string }
+  | { ok: false; signature: string; reason: string };
+
+/** Deterministic parsing of a customer document; the printed header must add up. */
+export function parseArWith(parsers: ArParser[], text: string): ArParseOutcome {
+  const signature = arLayoutSignature(text);
+  for (const p of parsers) {
+    if (!p.detect(text)) continue;
+    try {
+      const doc = p.parse(text);
+      const problem = checkArHeader(doc);
+      if (problem) return { ok: false, signature, reason: `${p.id}: ${problem}` };
+      return { ok: true, doc, parser: p.id };
+    } catch (e) {
+      return { ok: false, signature, reason: `${p.id} failed: ${e instanceof Error ? e.message.slice(0, 200) : e}` };
+    }
+  }
+  return { ok: false, signature, reason: "no parser recognizes this layout" };
 }
 
 export type ParseOutcome =

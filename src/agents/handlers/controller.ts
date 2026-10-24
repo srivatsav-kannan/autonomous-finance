@@ -2,7 +2,9 @@ import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { api } from "../../core/kernel-client";
 import { formatMoney } from "../../core/money";
 import { ROLE_CAPABILITIES } from "../../core/roles";
-import { compileParser, type ParserRecord } from "../../integrations/parsers";
+import { compileArParser, compileParser, type ParserRecord } from "../../integrations/parsers";
+import { checkArHeader } from "../../integrations/ar-document";
+import { DEFAULT_RECEIVABLES_POLICY, type ReceivablesPolicy } from "../../memory/schemas";
 import type { Vendor } from "../../memory/schemas";
 import type { Handler } from "../runtime";
 import type { Exception } from "./ap";
@@ -139,10 +141,20 @@ export const reviewProposal: Handler = async (rt, task) => {
         continue;
       }
       try {
-        const parser = compileParser(rec);
-        for (const [i, t] of rec.tests.entries()) {
-          const got = parser.parse(t.input);
-          if (JSON.stringify(got) !== JSON.stringify(t.expected)) problems.push(`${p}: test ${i + 1} output differs from expected`);
+        if (rec.target === "ar_document") {
+          const parser = compileArParser(rec);
+          for (const [i, t] of rec.tests.entries()) {
+            const got = parser.parse(t.input);
+            const math = checkArHeader(got);
+            if (math) problems.push(`${p}: test ${i + 1}: ${math}`);
+            else if (JSON.stringify(got) !== JSON.stringify(t.expected)) problems.push(`${p}: test ${i + 1} output differs from expected`);
+          }
+        } else {
+          const parser = compileParser(rec);
+          for (const [i, t] of rec.tests.entries()) {
+            const got = parser.parse(t.input);
+            if (JSON.stringify(got) !== JSON.stringify(t.expected)) problems.push(`${p}: test ${i + 1} output differs from expected`);
+          }
         }
       } catch (e) {
         problems.push(`${p}: ${e instanceof Error ? e.message.slice(0, 200) : e}`);
@@ -170,4 +182,51 @@ export const reviewProposal: Handler = async (rt, task) => {
     ...rt.kernel.auth, sha: merged.sha, branch: "main", message: `Merge proposal ${id}`, paths, trailers: { "Approved-By": rt.seat.seatId, "Proposal-Id": id },
   });
   return { outcome: "merged", summary: paths.join(", ") };
+};
+
+/**
+ * Resolve a held customer document. A line-arithmetic error on a document we issued doesn't change
+ * what was billed: policy counts the stated total and flags it for a billing correction. Anything
+ * else goes to the human CFO.
+ */
+export const reviewHeldReceivable: Handler = async (rt, task) => {
+  const documentId = task.payload.documentId as Id<"customerDocuments">;
+  const doc = await rt.kernel.client.query(api.receivables.document, { runId: rt.runId, documentId });
+  if (!doc) return { outcome: "missing", summary: "document not found" };
+  if (doc.status !== "held") return { outcome: "noop", summary: `document already ${doc.status}` };
+  const policy = (await rt.mem.read<ReceivablesPolicy>("policies/receivables.yaml")) ?? DEFAULT_RECEIVABLES_POLICY;
+  const lineOnly = doc.exceptions.length > 0 && doc.exceptions.every((e) => /^(line_math:|line \d+:|lines sum)/.test(e));
+  let decision: "approve" | "reject" | undefined;
+  let note = "";
+  if (lineOnly && policy.lineMathPolicy === "count_stated_total_and_flag") {
+    decision = "approve";
+    note = "billed total stands; line arithmetic flagged for a billing correction";
+  } else {
+    const asks = await rt.kernel.client.query(api.asks.forTask, { runId: rt.runId, taskId: task._id });
+    const answered = asks.find((a) => a.to === "human_cfo" && a.status === "answered" && (a.answer?.optionId === "count" || a.answer?.optionId === "exclude"));
+    if (!answered) {
+      await rt.ask({ to: "human_cfo", severity: "decision", title: `Count ${doc.displayNumber} for ${doc.customerId} (${formatMoney(doc.totalCents)})?`,
+        body: doc.exceptions.join("\n"), options: [{ id: "count", label: "Count at billed total" }, { id: "exclude", label: "Exclude" }], taskId: task._id,
+        evidence: [{ label: "decision", ref: String(task.payload.decisionPath) }] });
+      return { outcome: "asked", summary: "needs a human", waiting: true };
+    }
+    decision = answered.answer!.optionId === "count" ? "approve" : "reject";
+    note = `human ${answered.answer!.by} chose ${answered.answer!.optionId}${answered.answer!.note ? `: ${answered.answer!.note}` : ""}`;
+  }
+  const d = await rt.decide({
+    kind: "held_receivable",
+    subject: { type: doc.kind, id: `${doc.customerId}/${doc.displayNumber}` },
+    outcome: decision === "approve" ? "act" : "reject",
+    confidence: 0.9,
+    summary: `${decision === "approve" ? "Count" : "Exclude"} ${doc.displayNumber} at ${formatMoney(doc.totalCents)}: ${note}`,
+    facts: doc.exceptions.map((e) => ({ key: "exception", value: e, source: { kind: "memory" as const, ref: String(task.payload.decisionPath) } })),
+    rules: [{ path: "policies/receivables.yaml", key: "lineMathPolicy" }],
+    amountCents: doc.totalCents,
+    task: task._id,
+  });
+  const res = await rt.kernel.client.mutation(api.receivables.resolveHeldCustomerDocument, {
+    ...rt.kernel.auth, idempotencyKey: `ar-resolve:${doc._id}`, documentId: doc._id, decision, note, decisionPath: d.path, memorySha: d.memorySha,
+  });
+  if (!res.ok) throw new Error(`resolveHeldCustomerDocument: ${res.code} ${res.error}`);
+  return { outcome: decision === "approve" ? "approved" : "rejected", summary: `${doc.customerId} ${doc.displayNumber}: ${note}` };
 };

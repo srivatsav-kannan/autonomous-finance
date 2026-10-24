@@ -5,6 +5,7 @@ export type Role =
   | "cfo_agent"
   | "controller"
   | "ap_clerk"
+  | "ar_clerk"
   | "payments"
   | "cash_application"
   | "revenue_accountant"
@@ -21,6 +22,8 @@ export interface Capabilities {
   post: string[];
   /** May create approved, held, or rejected vendor bills. */
   billsRecord: boolean;
+  /** May record customer invoices, credit memos, voids and document dispositions. */
+  receivablesRecord: boolean;
   paymentsRequest: boolean;
   /** Max single payment this seat may approve, in cents. 0 = may not approve. */
   paymentsApproveLimit: number;
@@ -37,6 +40,7 @@ export interface Capabilities {
 const NONE: Capabilities = {
   post: [],
   billsRecord: false,
+  receivablesRecord: false,
   paymentsRequest: false,
   paymentsApproveLimit: 0,
   paymentsExecute: false,
@@ -48,7 +52,7 @@ const NONE: Capabilities = {
 };
 
 const ALL_AGENT_ROLES: Role[] = [
-  "cfo_agent", "controller", "ap_clerk", "payments", "cash_application", "revenue_accountant",
+  "cfo_agent", "controller", "ap_clerk", "ar_clerk", "payments", "cash_application", "revenue_accountant",
   "lease_accountant", "payroll_accountant", "treasury", "fpa", "integrations_engineer", "auditor",
 ];
 
@@ -67,6 +71,7 @@ export const ROLE_CAPABILITIES: Record<Role, Capabilities> = {
   controller: {
     ...NONE,
     billsRecord: true,
+    receivablesRecord: true,
     post: ["1", "2", "3", "4", "5", "6"],
     paymentsApproveLimit: 25_000_00,
     memoryMerge: ["vendors/", "playbooks/", "stores/", "integrations/"],
@@ -79,6 +84,13 @@ export const ROLE_CAPABILITIES: Record<Role, Capabilities> = {
     billsRecord: true,
     post: ["2000", "2010", "1150", "1200", "1300", "5000", "5200", "5300", "6000", "6100", "6200"],
     taskRoles: ["controller", "payments", "integrations_engineer"],
+    asks: true,
+  },
+  ar_clerk: {
+    ...NONE,
+    receivablesRecord: true,
+    post: ["1170", "2300", "4030"],
+    taskRoles: ["controller", "integrations_engineer"],
     asks: true,
   },
   payments: {
@@ -118,7 +130,7 @@ export const ROLE_CAPABILITIES: Record<Role, Capabilities> = {
   },
   treasury: { ...NONE, taskRoles: ["controller", "payments", "cfo_agent"], asks: true },
   fpa: { ...NONE, taskRoles: ["controller", "cfo_agent"], asks: true },
-  integrations_engineer: { ...NONE, taskRoles: ["controller"], asks: true },
+  integrations_engineer: { ...NONE, taskRoles: ["controller", "ar_clerk"], asks: true },
   // Independent: reads everything, posts nothing, approves nothing.
   auditor: { ...NONE, taskRoles: [], asks: true },
   world: NONE,

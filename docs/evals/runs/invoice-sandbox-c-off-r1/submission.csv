@@ -1,0 +1,19 @@
+customer_id,customer_name,valid_invoice_count,gross_invoice_spend_usd,credit_memo_total_usd,net_spend_usd
+C001,Aster North Analytics,0,0.00,0.00,0.00
+C002,Brightline Field Services,0,0.00,0.00,0.00
+C003,Cobalt Harbor Clinics,0,0.00,0.00,0.00
+C004,Driftwood Legal Group,0,0.00,0.00,0.00
+C005,Evergreen Robotics Lab,0,0.00,0.00,0.00
+C006,Forgewell Manufacturing,0,0.00,0.00,0.00
+C007,Glasspeak Hospitality,0,0.00,0.00,0.00
+C008,Hearthstone Community Bank,0,0.00,0.00,0.00
+C009,Ion Trail Logistics,0,0.00,0.00,0.00
+C010,Juniper Ridge Schools,0,0.00,0.00,0.00
+C011,Keystone Renewable Works,0,0.00,0.00,0.00
+C012,Lumen Arc Studios,0,0.00,0.00,0.00
+C013,Meridian Public Works,0,0.00,0.00,0.00
+C014,Northstar Produce Cooperative,0,0.00,0.00,0.00
+C015,Oak & Slate Interiors,0,0.00,0.00,0.00
+C016,Prairie Signal Telecom,0,0.00,0.00,0.00
+C017,Quartzline Insurance,0,0.00,0.00,0.00
+C018,Riverbend Arts Foundation,0,0.00,0.00,0.00

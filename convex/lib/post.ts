@@ -9,7 +9,7 @@ export interface LineInput {
   debit: number;
   credit: number;
   memo?: string;
-  dims?: { store?: string; vendor?: string; channel?: string; employee?: string };
+  dims?: { store?: string; vendor?: string; channel?: string; employee?: string; customer?: string };
 }
 
 export interface PostInput {

@@ -1,0 +1,49 @@
+{
+  "result": {
+    "status": "completed",
+    "kernel_run_id": "bench-is-c-off-r1-mvmr11zq",
+    "claude": false,
+    "documents": 148,
+    "tasks": 151,
+    "llm_tasks": 0,
+    "cost_usd": 0,
+    "parsers_learned": 0,
+    "customers_registered": 18,
+    "undisposed_documents": 0,
+    "kernel_blocks": 0,
+    "memory_commits": 148,
+    "open_asks": 1,
+    "wall_ms": 33988
+  },
+  "queue": {
+    "ar_clerk": {
+      "done": 148
+    },
+    "integrations_engineer": {
+      "done": 1
+    }
+  },
+  "undisposed": [],
+  "violations": [],
+  "asks": [
+    {
+      "to": "controller",
+      "status": "open",
+      "title": "Customer documents in format \"ar:northwind-process-automation\" need a parser"
+    }
+  ],
+  "by_seat": [
+    {
+      "seat": "ar-clerk-1",
+      "tasks": 150,
+      "llm": 0,
+      "cost_usd": 0
+    },
+    {
+      "seat": "integrations",
+      "tasks": 1,
+      "llm": 0,
+      "cost_usd": 0
+    }
+  ]
+}

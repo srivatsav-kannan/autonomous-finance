@@ -14,7 +14,7 @@ Built at Cal Hacks 13.0 for the Hyphenate track, *The Hyphenated Enterprise: Aut
 ## What's different
 
 - **The whole finance org, not one seat.**
-  - Twelve seats with distinct identities, limits and managers.
+  - Thirteen seats with distinct identities, limits and managers, from AP and AR clerks to an independent auditor.
   - The CFO agent hires extra AP clerks when queues back up.
   - Humans sit at the top as overseers.
 - **Built for agent pace.**

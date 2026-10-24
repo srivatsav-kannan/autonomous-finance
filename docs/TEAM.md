@@ -8,7 +8,7 @@ Working end to end:
 - kernel
 - git memory
 - world simulator with 11 planted error types
-- 12-seat agent team with dynamic staffing
+- 13-seat agent team with dynamic staffing (AP and AR)
 - scored evals
 - console with human gateway
 

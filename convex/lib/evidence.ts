@@ -19,6 +19,17 @@ export async function billDocument(ctx: QueryCtx, runId: string, documentEventId
   return { ok: true, event };
 }
 
+/** A receivables record must cite a received document from this run (of one of `kinds`, when given). */
+export async function receivedDocument(ctx: QueryCtx, runId: string, documentEventId: string, kinds?: string[]): Promise<Result<{ event: Doc<"events"> }>> {
+  const id = ctx.db.normalizeId("events", documentEventId);
+  const event = id ? await ctx.db.get(id) : null;
+  if (!event || event.runId !== runId) return fail("no_document", `document ${documentEventId} was never received`);
+  if (event.type !== "document.received") return fail("no_document", `${documentEventId} is a ${event.type}, not a document`);
+  const kind = (event.payload as { kind?: string } | null)?.kind;
+  if (kinds && (!kind || !kinds.includes(kind))) return fail("wrong_document", `document ${documentEventId} is a ${kind ?? "document"}, not ${kinds.join(" or ")}`);
+  return { ok: true, event };
+}
+
 /**
  * A cash entry must cite a real bank transaction whose amount equals the entry's net cash
  * movement, and each bank transaction can back only one live entry.

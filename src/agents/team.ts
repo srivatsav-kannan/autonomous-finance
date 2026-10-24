@@ -9,16 +9,19 @@ import { LlmRefused, LlmUnavailable, MODEL } from "./llm";
 import { SeatRuntime, type Handler, type Task } from "./runtime";
 import { TaskLeaseLost, withTaskLease } from "./task-lease";
 import { processDocument } from "./handlers/ap";
-import { approvePayment, reviewHeld, reviewProposal } from "./handlers/controller";
+import { approvePayment, reviewHeld, reviewHeldReceivable, reviewProposal } from "./handlers/controller";
+import { processArDocument } from "./handlers/ar";
 import { paymentRun, remitChange, secondApproval } from "./handlers/payments";
 import { matchBankTxn, reconcilePayout } from "./handlers/cash";
 import { postDailyRevenue, processLeaseInvoice, processPayroll } from "./handlers/books";
-import { buildParser } from "./handlers/integrations";
+import { buildArParser, buildParser } from "./handlers/integrations";
 import { auditReview, dailyDigest, runClose } from "./handlers/oversight";
 
 export const HANDLERS: Record<string, Handler> = {
   "ap.process_document": processDocument,
   "ap.review_held": reviewHeld,
+  "ar.process_document": processArDocument,
+  "ar.review_held": reviewHeldReceivable,
   "payments.approve": approvePayment,
   "payments.second_approval": secondApproval,
   "payments.run": paymentRun,
@@ -30,6 +33,7 @@ export const HANDLERS: Record<string, Handler> = {
   "payroll.process": processPayroll,
   "lease.process_invoice": processLeaseInvoice,
   "integrations.build_parser": buildParser,
+  "integrations.build_ar_parser": buildArParser,
   "cfo.daily_digest": dailyDigest,
   "close.run": runClose,
   "audit.review": auditReview,
@@ -99,7 +103,9 @@ export class Team {
       summary = res.summary;
       const transition = res.waiting
         ? await rt.kernel.client.mutation(api.tasks.waitTask, { ...lease, reason: res.summary ?? "waiting" })
-        : res.outcome === "retry"
+        : res.deferMs !== undefined
+          ? await rt.kernel.client.mutation(api.tasks.deferTask, { ...lease, delayMs: res.deferMs, reason: res.summary ?? "deferred" })
+          : res.outcome === "retry"
           ? await rt.kernel.client.mutation(api.tasks.failTask, { ...lease, error: res.summary ?? "retry", retryInMs: 500 })
           : await rt.kernel.client.mutation(api.tasks.completeTask, { ...lease, result: { outcome, summary } });
       if (!transition.ok) throw new TaskLeaseLost(`${transition.code}: ${transition.error}`);

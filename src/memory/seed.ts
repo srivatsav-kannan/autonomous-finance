@@ -9,6 +9,7 @@ import {
 } from "../../company/sweetgreen/profile";
 import { INITIAL_ORG } from "../core/org";
 import type { FileChange } from "./store";
+import { DEFAULT_RECEIVABLES_POLICY } from "./schemas";
 
 const LANDLORD_FOR: Record<string, string> = {
   "San Francisco": "embarcadero-realty",
@@ -48,6 +49,7 @@ export function seedFiles(storeCount: number): FileChange[] {
 
   files.push({ path: "policies/approval-limits.yaml", data: { autoApproveCents: 5_000_00, dualApprovalCents: 10_000_00, humanApprovalCents: 50_000_00 } });
   files.push({ path: "policies/materiality.yaml", data: { priceVarianceBps: 100, quantityToleranceUnits: 0, payoutToleranceCents: 500, bankMatchToleranceCents: 0 } });
+  files.push({ path: "policies/receivables.yaml", data: DEFAULT_RECEIVABLES_POLICY });
   files.push({
     path: "policies/payments.yaml",
     data: { remitChangeRequires: ["callback_known_number", "crs_check", "controller_approval", "cooling_off_days"], coolingOffDays: 3, paymentRunDaysBeforeDue: 3 },

@@ -1,0 +1,21 @@
+diff --git a/scripts/generate_fixture.py b/scripts/generate_fixture.py
+index 285069e..06f3801 100644
+--- a/scripts/generate_fixture.py
++++ b/scripts/generate_fixture.py
+@@ -6,6 +6,7 @@ import datetime as dt
+ import io
+ import json
+ import mailbox
++import os
+ import random
+ import shutil
+ from dataclasses import dataclass, field
+@@ -30,7 +31,7 @@ except ImportError:  # pragma: no cover - requirements.txt installs Pillow.
+ ROOT = Path(__file__).resolve().parents[1]
+ GOLD_MASTER = ROOT / "gold_master"
+ ANSWER_KEY = ROOT / "answer_key"
+-SEED = 487291
++SEED = int(os.environ.get("INVOICE_SANDBOX_SEED", "487291"))  # local patch: seed override for a fresh fixture
+ 
+ 
+ @dataclass(frozen=True)

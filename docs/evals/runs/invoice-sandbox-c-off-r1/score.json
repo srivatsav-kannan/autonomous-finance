@@ -1,0 +1,1146 @@
+{
+  "run_out_dir": "/Users/srivatsavkannan/Documents/calhacks/benchdata/invoice-sandbox/runs/c-off-r1/out",
+  "official": {
+    "customers_scored": 18,
+    "customers_exact": 0,
+    "customer_accuracy": 0.0,
+    "total_absolute_error_usd": 3566177.15,
+    "missing_customers": 0,
+    "unexpected_customers": 0
+  },
+  "official_returncode": 0,
+  "fields": {
+    "customers": 18,
+    "valid_invoice_count_exact": 0,
+    "gross_invoice_spend_usd_exact": 0,
+    "credit_memo_total_usd_exact": 16,
+    "net_spend_usd_exact": 0,
+    "all_four_exact": 0
+  },
+  "per_customer": [
+    {
+      "customer_id": "C001",
+      "valid_invoice_count": {
+        "expected": "10",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "291587.51",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "1480.00",
+        "actual": "0.00",
+        "ok": false
+      },
+      "net_spend_usd": {
+        "expected": "290107.51",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C002",
+      "valid_invoice_count": {
+        "expected": "4",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "154117.21",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "154117.21",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C003",
+      "valid_invoice_count": {
+        "expected": "9",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "319435.57",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "319435.57",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C004",
+      "valid_invoice_count": {
+        "expected": "2",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "96431.11",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "96431.11",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C005",
+      "valid_invoice_count": {
+        "expected": "11",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "303624.75",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "303624.75",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C006",
+      "valid_invoice_count": {
+        "expected": "4",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "142799.54",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "142799.54",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C007",
+      "valid_invoice_count": {
+        "expected": "9",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "307912.37",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "307912.37",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C008",
+      "valid_invoice_count": {
+        "expected": "5",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "197314.50",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "197314.50",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C009",
+      "valid_invoice_count": {
+        "expected": "7",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "244015.08",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "244015.08",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C010",
+      "valid_invoice_count": {
+        "expected": "3",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "59304.33",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "925.00",
+        "actual": "0.00",
+        "ok": false
+      },
+      "net_spend_usd": {
+        "expected": "58379.33",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C011",
+      "valid_invoice_count": {
+        "expected": "6",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "193492.50",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "193492.50",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C012",
+      "valid_invoice_count": {
+        "expected": "4",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "158782.87",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "158782.87",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C013",
+      "valid_invoice_count": {
+        "expected": "6",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "240319.72",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "240319.72",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C014",
+      "valid_invoice_count": {
+        "expected": "6",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "264592.01",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "264592.01",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C015",
+      "valid_invoice_count": {
+        "expected": "4",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "137276.66",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "137276.66",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C016",
+      "valid_invoice_count": {
+        "expected": "7",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "191606.36",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "191606.36",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C017",
+      "valid_invoice_count": {
+        "expected": "4",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "119295.31",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "119295.31",
+        "actual": "0.00",
+        "ok": false
+      }
+    },
+    {
+      "customer_id": "C018",
+      "valid_invoice_count": {
+        "expected": "4",
+        "actual": "0",
+        "ok": false
+      },
+      "gross_invoice_spend_usd": {
+        "expected": "146674.75",
+        "actual": "0.00",
+        "ok": false
+      },
+      "credit_memo_total_usd": {
+        "expected": "0.00",
+        "actual": "0.00",
+        "ok": true
+      },
+      "net_spend_usd": {
+        "expected": "146674.75",
+        "actual": "0.00",
+        "ok": false
+      }
+    }
+  ],
+  "traps": {
+    "trap_entries": 6,
+    "trap_entries_ok": 4,
+    "trap_documents": 9,
+    "trap_documents_ok": 6,
+    "detail": [
+      {
+        "trap_id": "duplicate_scan",
+        "ok": true,
+        "documents": [
+          {
+            "document": "invoices/INV-2025-1013_duplicate_scan_from_email.pdf",
+            "expected": "excluded_from_spend",
+            "applied": "excluded_from_spend",
+            "ok": true
+          }
+        ]
+      },
+      {
+        "trap_id": "superseded_original",
+        "ok": false,
+        "documents": [
+          {
+            "document": "invoices/INV-2025-2101_original_superseded.pdf",
+            "expected": "excluded_from_spend",
+            "applied": "excluded_from_spend",
+            "ok": true
+          },
+          {
+            "document": "invoices/INV-2025-2101_R1_revised.pdf",
+            "expected": "counted",
+            "applied": "excluded_from_spend",
+            "ok": false
+          }
+        ]
+      },
+      {
+        "trap_id": "void_invoice",
+        "ok": true,
+        "documents": [
+          {
+            "document": "invoices/INV-2025-2199_VOID_do_not_pay.pdf",
+            "expected": "excluded_from_spend",
+            "applied": "excluded_from_spend",
+            "ok": true
+          }
+        ]
+      },
+      {
+        "trap_id": "credit_memos",
+        "ok": false,
+        "documents": [
+          {
+            "document": "invoices/CM-2025-077_C001.pdf",
+            "expected": "subtracted_as_credit",
+            "applied": "excluded_from_spend",
+            "ok": false
+          },
+          {
+            "document": "invoices/CM-2025-091_C010.pdf",
+            "expected": "subtracted_as_credit",
+            "applied": "excluded_from_spend",
+            "ok": false
+          }
+        ]
+      },
+      {
+        "trap_id": "statements_are_not_invoices",
+        "ok": true,
+        "documents": [
+          {
+            "document": "invoices/statement_C003_2025_Q3.pdf",
+            "expected": "excluded_from_spend",
+            "applied": "excluded_from_spend",
+            "ok": true
+          },
+          {
+            "document": "invoices/statement_C007_2025_Q4.pdf",
+            "expected": "excluded_from_spend",
+            "applied": "excluded_from_spend",
+            "ok": true
+          }
+        ]
+      },
+      {
+        "trap_id": "bank_exports_are_payments",
+        "ok": true,
+        "documents": [
+          {
+            "document": "bank_exports/deposits_2025_q4.csv",
+            "expected": "excluded_from_spend (listed)",
+            "applied": "excluded_from_spend",
+            "ok": true
+          }
+        ]
+      }
+    ]
+  },
+  "false_exclusions": {
+    "count": 107,
+    "documents": [
+      {
+        "document": "invoices/CM-2025-077_C001.pdf",
+        "answer_key_policy": "credit_memo"
+      },
+      {
+        "document": "invoices/CM-2025-091_C010.pdf",
+        "answer_key_policy": "credit_memo"
+      },
+      {
+        "document": "invoices/INV-2025-1001_C011.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1002_C003.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1003_C012.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1004_C011.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1005_C012.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1006_C013.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1007_C005.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1008_C008.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1009_C001.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1010_C015.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1011_C005.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1012_C001.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1013_C013.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1014_C017.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1015_C018.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1016_C015.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1017_C009.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1018_C013.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1019_C011.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1020_C001.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1021_C016.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1022_C017.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1023_C007.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1024_C014.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1025_C006.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1026_C018.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1027_C015.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1028_C006.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1029_C003.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1030_C014.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1031_C001.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1032_C012.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1033_C004.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1034_C009.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1035_C009.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1036_C003.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1037_C009.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1038_C011.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1039_C003.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1040_C018.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1041_C009.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1042_C007.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1043_C017.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1044_C002.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1045_C016.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1046_C005.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1047_C015.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1048_C011.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1049_C005.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1050_C008.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1051_C007.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1052_C014.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1053_C005.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1054_C016.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1055_C014.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1056_C018.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1057_C007.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1058_C010.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1059_C005.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1060_C003.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1061_C001.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1062_C008.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1063_C010.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1064_C008.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1065_C016.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1066_C011.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1067_C006.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1068_C002.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1069_C002.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1070_C013.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1071_C012.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1072_C002.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1073_C005.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1074_C014.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1075_C005.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1076_C007.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1077_C016.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1078_C007.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1079_C017.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1080_C013.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1081_C016.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1082_C006.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1083_C008.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1084_C003.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1085_C014.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1086_C001.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1087_C001.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1088_C001.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1089_C007.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1090_C003.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1091_C009.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1092_C013.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1093_C005.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1094_C005.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1095_C007.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1096_C001.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1097_C001.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1098_C003.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1099_C007.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1100_C004.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1101_C016.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1102_C009.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1103_C003.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-1104_C010.pdf",
+        "answer_key_policy": "include"
+      },
+      {
+        "document": "invoices/INV-2025-2101_R1_revised.pdf",
+        "answer_key_policy": "include"
+      }
+    ]
+  },
+  "flagged_but_counted_valid_invoices": [],
+  "suspicious_entries": 148,
+  "suspicious_unmatched_to_key": [
+    {
+      "path": "email_archive/eml/002_INV-2025-1002.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/009_INV-2025-1009.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "operations/ar_aging_snapshot.csv",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/003_INV-2025-1003.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/024_INV-2025-2199.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/026_CM-2025-091.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/005_INV-2025-1005.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/020_INV-2025-1020.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/017_INV-2025-1017.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "operations/service_catalog.csv",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/014_INV-2025-1014.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/029_STMT-2025-Q4.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/025_CM-2025-077.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/008_INV-2025-1008.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/013_INV-2025-1013.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/006_INV-2025-1006.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/001_INV-2025-1001.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/011_INV-2025-1011.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/999_reconciliation_warning.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/021_INV-2025-1021.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/015_INV-2025-1015.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/023_INV-2025-2101.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/018_INV-2025-1018.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "notes/controller_close_notes.txt",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/016_INV-2025-1016.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/028_STMT-2025-Q3.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/004_INV-2025-1004.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "crm/customer_master.csv",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/support_inbox.mbox",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/012_INV-2025-1012.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/010_INV-2025-1010.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/019_INV-2025-1019.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/022_INV-2025-1022.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/007_INV-2025-1007.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    },
+    {
+      "path": "email_archive/eml/027_INV-2025-1013.eml",
+      "treatment": "excluded_from_spend",
+      "category": "reference_only"
+    }
+  ]
+}

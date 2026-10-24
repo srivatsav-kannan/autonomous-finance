@@ -113,7 +113,11 @@ export const ingestEvent = mutation({
           role: route.role,
           status: "queued",
           priority: route.priority,
-          payload: { eventId, externalId: args.externalId, occurredOn: args.occurredOn, ...(args.type === "period.end" ? { period: (args.payload as { period?: string })?.period } : {}) },
+          payload: {
+            eventId, externalId: args.externalId, occurredOn: args.occurredOn,
+            ...(args.type === "period.end" ? { period: (args.payload as { period?: string })?.period } : {}),
+            ...(args.type === "document.received" ? { kind: (args.payload as { kind?: string })?.kind } : {}),
+          },
           idempotencyKey: `event:${args.externalId}:${route.taskType}`,
           createdBy: "world",
           attempts: 0,

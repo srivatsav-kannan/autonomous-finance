@@ -19,6 +19,7 @@ export const lineValidator = v.object({
       vendor: v.optional(v.string()),
       channel: v.optional(v.string()),
       employee: v.optional(v.string()),
+      customer: v.optional(v.string()),
     }),
   ),
 });
@@ -141,6 +142,7 @@ export default defineSchema({
     leaseOwner: v.optional(v.string()),
     leaseExpiresAt: v.optional(v.number()),
     attempts: v.number(),
+    deferrals: v.optional(v.number()),
     result: v.optional(v.any()),
     error: v.optional(v.string()),
     createdAt: v.number(),
@@ -224,6 +226,73 @@ export default defineSchema({
     verifiedAt: v.number(),
     pendingRemit: v.optional(v.object({ bank: v.string(), accountLast4: v.string(), proposedBy: v.string(), evidence: v.string(), at: v.number() })),
   }).index("by_run_vendor", ["runId", "vendorId"]),
+
+  // Receivables: the customer master, customer invoices and credit memos, and a disposition for
+  // every document received, so nothing is silently dropped or counted twice.
+  customers: defineTable({
+    runId: v.string(),
+    customerId: v.string(),
+    legalName: v.string(),
+    aliases: v.array(v.string()),
+    emailDomain: v.optional(v.string()),
+    status: v.union(v.literal("active"), v.literal("blocked")),
+    registeredBy: v.string(),
+    sourceDocumentId: v.string(),
+    at: v.number(),
+  }).index("by_run_customer", ["runId", "customerId"]),
+
+  customerDocuments: defineTable({
+    runId: v.string(),
+    customerId: v.string(),
+    kind: v.union(v.literal("invoice"), v.literal("credit_memo")),
+    number: v.string(), // normalized, for duplicate and revision checks
+    displayNumber: v.string(),
+    revisionOf: v.optional(v.string()), // normalized number of the document this one replaces
+    documentDate: v.string(),
+    subtotalCents: v.number(),
+    discountCents: v.number(),
+    taxCents: v.number(),
+    totalCents: v.number(), // always positive; kind says which way it moves receivables
+    documentEventId: v.string(),
+    status: v.union(
+      v.literal("open"), // counted
+      v.literal("held"), // waiting for the controller
+      v.literal("void"),
+      v.literal("superseded"),
+      v.literal("rejected"),
+    ),
+    exceptions: v.array(v.string()),
+    decisionPath: v.optional(v.string()),
+    createdBy: v.string(),
+    entryId: v.optional(v.id("journalEntries")),
+    reversalEntryId: v.optional(v.id("journalEntries")),
+    supersededBy: v.optional(v.string()),
+  })
+    .index("by_run_customer_number", ["runId", "customerId", "number"])
+    .index("by_run_customer_revision", ["runId", "customerId", "revisionOf"])
+    .index("by_run_document", ["runId", "documentEventId"])
+    .index("by_run_status", ["runId", "status"]),
+
+  dispositions: defineTable({
+    runId: v.string(),
+    documentEventId: v.string(),
+    path: v.string(),
+    documentNumber: v.optional(v.string()),
+    customerId: v.optional(v.string()),
+    category: v.string(), // counted, credit_memo, void, superseded_original, duplicate_scan, statement_summary, bank_deposit, reference_only, data_quality, other
+    treatment: v.union(
+      v.literal("counted"),
+      v.literal("subtracted_as_credit"),
+      v.literal("counted_with_flag"),
+      v.literal("excluded_from_spend"),
+      v.literal("held"),
+      v.literal("unreadable"),
+    ),
+    reason: v.string(),
+    by: v.string(),
+    decisionPath: v.optional(v.string()),
+    at: v.number(),
+  }).index("by_run_document", ["runId", "documentEventId"]),
 
   asks: defineTable({
     runId: v.string(),

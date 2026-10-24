@@ -4,7 +4,7 @@ import { SeatClient, api } from "../core/kernel-client";
 import type { Role } from "../core/roles";
 import { MemoryStore, type FileChange } from "../memory/store";
 import type { Decision, Vendor, Store } from "../memory/schemas";
-import { BUILTIN_PARSERS, loadMemoryParsers, type Parser } from "../integrations/parsers";
+import { BUILTIN_PARSERS, loadArParsers, loadMemoryParsers, type ArParser, type Parser } from "../integrations/parsers";
 import { WorldBank } from "../world/bank";
 import { emptyUsage, type Usage } from "./llm";
 
@@ -14,6 +14,7 @@ export interface HandlerResult {
   outcome: string; // short machine-readable outcome, e.g. "approved", "held", "rejected", "posted"
   summary?: string;
   waiting?: boolean; // task parked until an ask is answered
+  deferMs?: number; // requeue later without spending an attempt (waiting on other work, not failing)
 }
 
 /** Everything a seat needs to do its job. The kernel, not this object, decides what is allowed. */
@@ -22,6 +23,8 @@ export class SeatRuntime {
   readonly usage: Usage = emptyUsage();
   private parsers: Parser[] | null = null;
   private parsersSha: string | null = null;
+  private arParsers: ArParser[] | null = null;
+  private arParsersSha: string | null = null;
   private vendorCache: Map<string, { vendor: Vendor; sha: string }> | null = null;
 
   constructor(
@@ -60,6 +63,16 @@ export class SeatRuntime {
       this.parsersSha = head;
     }
     return this.parsers;
+  }
+
+  /** Parsers for customer billing documents: only agent-written ones, approved into memory. */
+  async arParsersNow(): Promise<ArParser[]> {
+    const head = await this.mem.head();
+    if (!this.arParsers || this.arParsersSha !== head) {
+      this.arParsers = await loadArParsers(this.mem, head);
+      this.arParsersSha = head;
+    }
+    return this.arParsers;
   }
 
   async vendors(refresh = false): Promise<Map<string, { vendor: Vendor; sha: string }>> {

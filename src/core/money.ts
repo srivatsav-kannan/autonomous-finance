@@ -11,7 +11,8 @@ export function assertCents(value: unknown, label = "amount"): asserts value is 
 /** Parse "$1,234.56", "1234.56", "(12.00)" or "-12" into cents. Throws on anything ambiguous. */
 export function parseMoney(text: string): Cents {
   const trimmed = text.trim();
-  const negative = /^\(.*\)$/.test(trimmed) || trimmed.startsWith("-");
+  // "-12.00", "-$12.00", "$-12.00" and "(12.00)" are all negative.
+  const negative = /^\(.*\)$/.test(trimmed) || /^\$?\s*-/.test(trimmed);
   const digits = trimmed.replace(/[()$,\s-]/g, "");
   const match = /^(\d+)(?:\.(\d{1,2}))?$/.exec(digits);
   if (!match) throw new Error(`not a money amount: ${JSON.stringify(text)}`);

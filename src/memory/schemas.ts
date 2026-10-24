@@ -137,7 +137,28 @@ export const IntegrationParser = z.object({
   code: z.string().max(20_000),
   tests: z.array(z.object({ input: z.string(), expected: z.unknown() })).min(1),
   author: z.string(),
+  target: z.enum(["vendor_invoice", "ar_document"]).optional(),
 });
+
+/** How the AR clerk treats a customer document by the status printed on it. Unknown statuses go to a person. */
+export const ReceivablesPolicy = z.object({
+  countStatuses: z.array(z.string()),
+  creditStatuses: z.array(z.string()),
+  excludeStatuses: z.record(z.string(), z.enum(["void", "superseded_original", "duplicate_scan", "statement_summary"])),
+  /** Revision numbers, e.g. "INV-100-R1" replaces "INV-100". */
+  revisionPattern: z.string(),
+  /** Line arithmetic errors on a document we issued: the billed total stands, flagged for correction. */
+  lineMathPolicy: z.enum(["count_stated_total_and_flag", "hold_for_human"]),
+});
+export type ReceivablesPolicy = z.infer<typeof ReceivablesPolicy>;
+
+export const DEFAULT_RECEIVABLES_POLICY: ReceivablesPolicy = {
+  countStatuses: ["OPEN", "ISSUED", "SENT", "DUE", "OVERDUE", "PARTIAL", "PARTIALLY_PAID", "PAID"],
+  creditStatuses: ["CREDIT", "CREDITED"],
+  excludeStatuses: { VOID: "void", VOIDED: "void", CANCELLED: "void", SUPERSEDED: "superseded_original", REPLACED: "superseded_original", DUPLICATE: "duplicate_scan", DUPLICATE_SCAN: "duplicate_scan", STATEMENT: "statement_summary" },
+  revisionPattern: "-R\\d+$",
+  lineMathPolicy: "count_stated_total_and_flag",
+};
 
 /** Which schema governs a path. Unknown paths are rejected. */
 export function schemaFor(path: string): z.ZodType | null {
@@ -145,6 +166,7 @@ export function schemaFor(path: string): z.ZodType | null {
   if (path === "policies/approval-limits.yaml") return ApprovalLimits;
   if (path === "policies/materiality.yaml") return Materiality;
   if (path === "policies/payments.yaml") return PaymentsPolicy;
+  if (path === "policies/receivables.yaml") return ReceivablesPolicy;
   if (/^vendors\/[a-z0-9-]+\.yaml$/.test(path)) return Vendor;
   if (/^stores\/[a-z0-9-]+\.yaml$/.test(path)) return Store;
   if (/^people\/[a-z0-9-]+\.yaml$/.test(path)) return Person;
