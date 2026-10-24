@@ -48,7 +48,8 @@ describe("decision evidence retries", () => {
     const rt = runtime();
     const mirror = vi.mocked(rt.kernel.client.mutation);
     const persisted = new Map<string, unknown>();
-    mirror.mockImplementation(async (_fn, args) => {
+    mirror.mockImplementation(async (...call) => {
+      const [, args] = call;
       if (responseLost) persisted.set(args.sha, args);
       throw new Error("transport failed");
     });
@@ -56,7 +57,8 @@ describe("decision evidence retries", () => {
     await expect(rt.decide(decision)).rejects.toThrow("transport failed");
     const originalPayload = mirror.mock.calls[0]![1];
     const committed = await mem.head();
-    mirror.mockImplementation(async (_fn, args) => {
+    mirror.mockImplementation(async (...call) => {
+      const [, args] = call;
       if (!persisted.has(args.sha)) persisted.set(args.sha, args);
       return { ok: true };
     });
@@ -85,6 +87,19 @@ describe("decision evidence retries", () => {
     expect((await rt.decide(decision)).sha).toBe(committed);
     expect(mirror).toHaveBeenCalledTimes(2);
     expect(mirror.mock.calls[1]![1]).toEqual(mirror.mock.calls[0]![1]);
+  });
+
+  it("preserves Git authorship when a different authenticated seat retries the mirror", async () => {
+    const first = runtime();
+    vi.mocked(first.kernel.client.mutation).mockRejectedValueOnce(new Error("mirror unavailable"));
+    await expect(first.decide(decision)).rejects.toThrow("mirror unavailable");
+    const second = new SeatRuntime("test", { seatId: "ap-2", role: "ap_clerk", name: "Second AP" }, "second-token", mem, {} as WorldBank);
+    const mirror = vi.spyOn(second.kernel.client, "mutation").mockResolvedValue({ ok: true });
+    const retry = await second.decide(decision);
+    expect(await mem.read<Decision>(retry.path)).toMatchObject({ seat: "ap-1" });
+    expect(mirror.mock.calls[0]![1]).toMatchObject({ seatId: "ap-2", token: "second-token", trailers: {
+      "Git-Author": "AP", "Git-Author-Email": MemoryStore.emailFor("ap-1"),
+    } });
   });
 
   it("publishes one decision when separate stores race the same task", async () => {

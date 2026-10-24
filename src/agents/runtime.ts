@@ -118,7 +118,8 @@ export class SeatRuntime {
     // recordCommit is idempotent by SHA; always send the persisted metadata on replay.
     const saved = await this.mem.commitInfo(sha);
     const result = await this.kernel.client.mutation(api.observe.recordCommit, {
-      ...this.kernel.auth, sha, branch: "main", message: saved.subject, paths: saved.paths, trailers: saved.trailers,
+      ...this.kernel.auth, sha, branch: "main", message: saved.subject, paths: saved.paths,
+      trailers: { ...saved.trailers, "Git-Author": saved.author, "Git-Author-Email": saved.email },
     });
     if (!result.ok) throw new Error(`recordCommit failed: ${result.code} ${result.error}`);
   }

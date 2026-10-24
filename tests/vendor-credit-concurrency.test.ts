@@ -45,6 +45,22 @@ afterEach(() => {
 });
 
 describe("AP credit updates", () => {
+  it.each(["credit", "decision"] as const)("recovers a credit memo after its %s mirror fails", async (boundary) => {
+    const ap = runtime("ap-1");
+    const mirror = vi.mocked(ap.kernel.client.mutation);
+    if (boundary === "decision") mirror.mockResolvedValueOnce({ ok: true });
+    mirror.mockRejectedValueOnce(new Error("mirror unavailable"));
+    await expect(credit(ap, "CREDIT-A")).rejects.toThrow("mirror unavailable");
+    const originalCreditPayload = mirror.mock.calls[0]![1];
+    const originalDecisionPayload = boundary === "decision" ? mirror.mock.calls[1]![1] : undefined;
+    expect((await credit(ap, "CREDIT-A")).outcome).toBe("duplicate");
+    const retryStart = boundary === "decision" ? 2 : 1;
+    expect(mirror.mock.calls[retryStart]![1]).toEqual(originalCreditPayload);
+    if (originalDecisionPayload) expect(mirror.mock.calls[retryStart + 1]![1]).toEqual(originalDecisionPayload);
+    expect((await mem.read<Vendor>(vendorPath))!.credits.map((c) => c.id)).toEqual(["CREDIT-A"]);
+    expect(await mem.list("decisions/")).toHaveLength(1);
+  });
+
   it("still rejects controlled and schema-invalid updates without changing memory", async () => {
     const ap = runtime("ap-1");
     const before = await mem.head();
