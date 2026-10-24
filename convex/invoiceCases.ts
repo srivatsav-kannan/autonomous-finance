@@ -206,7 +206,7 @@ function routineMatches(source: Source, conclusion: Conclusion): boolean {
   const title = lines[0]?.toUpperCase();
   if (title !== (conclusion.treatment === "include_invoice" ? "INVOICE" : "CREDIT MEMO")) return false;
   const one = (pattern: RegExp) => { const matches = lines.map((l) => l.match(pattern)).filter((m) => m !== null); return matches.length === 1 ? matches[0]![1]!.trim() : undefined; };
-  const allowed = /^(?:INVOICE|CREDIT MEMO|Customer ID:\s*.+|Customer:\s*.+|(?:Invoice Number|Credit Memo Number|Document Number):\s*.+|Amount Cents:\s*\d+|Total:\s*USD\s+[\d,]+\.\d{2}|Currency:\s*USD)$/i;
+  const allowed = /^(?:INVOICE|CREDIT MEMO|Customer ID:\s*.+|Customer:\s*.+|(?:Invoice Number|Credit Memo Number|Document Number):\s*.+|Amount Cents:\s*\d+|Total:\s*USD\s+[\d,]+\.\d{2}|Currency:\s*USD|Status:\s*(?:issued|final|open|paid|partial))$/i;
   if (lines.some((line) => !allowed.test(line))) return false;
   if (lines.filter((line) => /^(?:Invoice Number|Credit Memo Number|Document Number):/i.test(line)).length !== 1) return false;
   const customer = one(/^Customer ID:\s*(.+)$/i);
@@ -215,7 +215,10 @@ function routineMatches(source: Source, conclusion: Conclusion): boolean {
   const total = one(/^Total:\s*USD\s+([\d,]+\.\d{2})$/i);
   const amount = cents !== undefined ? Number(cents) : total !== undefined ? Number(total.replace(/[,\.]/g, "")) : NaN;
   if (cents !== undefined && total !== undefined && Number(cents) !== Number(total.replace(/[,\.]/g, ""))) return false;
-  if (lines.some((l) => /^(?:Currency:\s*(?!USD\s*$)|Status:\s*(?:void|cancel)|(?:Revises|Supersedes|Revision of):)/i.test(l))) return false;
+  // Compare parsed values instead of a whitespace-backtracking negative lookahead.
+  const currencies = lines.filter((line) => /^Currency:/i.test(line));
+  if (currencies.length > 1 || currencies.some((line) => line.split(":")[1]?.trim().toUpperCase() !== "USD")) return false;
+  if (lines.filter((line) => /^Status:/i.test(line)).length > 1) return false;
   return customer === conclusion.customerId && number === conclusion.documentNumber && amount === conclusion.amountCents;
 }
 function supportingOnly(source: Source): boolean {
@@ -306,7 +309,7 @@ export const submitProposal = mutation({
     if (!["investigating", "needs_review"].includes(c.status)) return fail("invalid_transition", "Only an investigating or review case may receive a proposal");
     const invalid = await validateConclusion(ctx, args.runId, c, args.conclusion); if (invalid) return invalid;
     const source = (await sourceOf(ctx, args.runId, c.documentId))!;
-    const routine = args.mode === "deterministic" && !args.conclusion.contradictions.length && !args.conclusion.missingEvidence.length && !args.conclusion.supersedesDocumentId && (routineMatches(source, args.conclusion) || args.conclusion.treatment === "exclude" && (supportingOnly(source) || /^(?:customerId|customer_id),legal(?:Name|_name)(?:,|$)/i.test(source.text.trim())));
+    const routine = args.mode === "deterministic" && !args.conclusion.contradictions.length && !args.conclusion.missingEvidence.length && !args.conclusion.supersedesDocumentId && (routineMatches(source, args.conclusion) || args.conclusion.treatment === "exclude" && (supportingOnly(source) || /^(?:customerId|customer_id),legal(?:Name|_name)(?:,|$)/i.test(source.text.trim().split(/\r?\n/)[0]!)));
     const problem = routine ? await acceptanceProblem(ctx, args.runId, c, args.conclusion) : null;
     const proposalId = await ctx.db.insert("invoiceProposals", { runId: args.runId, caseId: c._id, evidenceVersion: args.evidenceVersion, conclusion: args.conclusion, author: args.seatId, mode: args.mode, ...(args.model ? { model: args.model } : {}), createdAt: Date.now() });
     await ctx.db.patch(c._id, { currentProposalId: proposalId, reason: args.conclusion.reason, customerId: args.conclusion.customerId, contradictions: [...args.conclusion.contradictions, ...(problem ? [problem.error] : [])], missingEvidence: args.conclusion.missingEvidence, question: args.conclusion.question, updatedAt: Date.now() });
