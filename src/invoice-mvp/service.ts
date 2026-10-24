@@ -6,6 +6,7 @@ import type { DecisionInput, IngestBatchInput, RuntimeMode, SeatAuth } from "./c
 import { ConvexInvoiceBackend, InvoiceError, type InvoiceBackend } from "./backend";
 import { idempotency, investigate, type InvestigationResult, type RelatedFact } from "./investigator";
 import { AnthropicInvestigator, type InvestigatorModel } from "./model";
+import { OpenAIInvestigator } from "./openai-model";
 import { parseSupportedSource } from "./parser";
 
 // Convex transport has a bounded request size. Import larger collections in batches.
@@ -108,8 +109,11 @@ export function createServiceFromEnv(): InvoiceService {
   const mode = process.env.INVOICE_MVP_MODE ?? "deterministic";
   let model: InvestigatorModel | undefined;
   if (mode === "live_model") {
-    model = new AnthropicInvestigator({ maxCalls: Number(process.env.INVOICE_MVP_MAX_MODEL_CALLS), maxInputTokens: Number(process.env.INVOICE_MVP_MAX_INPUT_TOKENS), maxOutputTokens: Number(process.env.INVOICE_MVP_MAX_OUTPUT_TOKENS), maxCostMicros: Number(process.env.INVOICE_MVP_MAX_COST_MICROS) },
-      { inputMicros: Number(process.env.INVOICE_MVP_INPUT_TOKEN_MICROS), outputMicros: Number(process.env.INVOICE_MVP_OUTPUT_TOKEN_MICROS) }, Number(process.env.INVOICE_MVP_OUTPUT_TOKENS_PER_CALL ?? 1200), process.env.INVOICE_MVP_LIVE_OPT_IN === "1");
+    const provider = process.env.INVOICE_MVP_PROVIDER ?? "anthropic";
+    if (provider !== "anthropic" && provider !== "openai") throw new InvoiceError("invalid_provider", "Select the explicitly supported anthropic or openai invoice provider.");
+    const Provider = provider === "openai" ? OpenAIInvestigator : AnthropicInvestigator;
+    model = new Provider({ maxCalls: Number(process.env.INVOICE_MVP_MAX_MODEL_CALLS), maxInputTokens: Number(process.env.INVOICE_MVP_MAX_INPUT_TOKENS), maxOutputTokens: Number(process.env.INVOICE_MVP_MAX_OUTPUT_TOKENS), maxCostMicros: Number(process.env.INVOICE_MVP_MAX_COST_MICROS) },
+      { inputMicros: Number(process.env.INVOICE_MVP_INPUT_TOKEN_MICROS), outputMicros: Number(process.env.INVOICE_MVP_OUTPUT_TOKEN_MICROS) }, Number(process.env.INVOICE_MVP_OUTPUT_TOKENS_PER_CALL ?? (provider === "openai" ? 4096 : 1200)), process.env.INVOICE_MVP_LIVE_OPT_IN === "1");
   } else if (mode !== "deterministic") throw new InvoiceError("invalid_mode", "Only deterministic or explicitly opted-in live_model server mode is supported; mock_model is test-only.");
   return new InvoiceService(new ConvexInvoiceBackend(new ConvexHttpClient(url), human, investigator), model);
 }
