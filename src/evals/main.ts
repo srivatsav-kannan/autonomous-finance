@@ -52,3 +52,6 @@ fs.mkdirSync(path.join("var", "evals"), { recursive: true });
 fs.writeFileSync(path.join("var", "evals", `${runId}.md`), md);
 fs.writeFileSync(path.join("var", "evals", `${runId}.json`), JSON.stringify({ ...report, wallSeconds }, null, 2));
 console.log(`\n\n${md}`);
+// Preserve both reports for diagnosis while making incomplete or incorrect books
+// fail an automated evaluation gate.
+if (report.booksStatus.status !== "passed") process.exitCode = 1;

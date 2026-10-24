@@ -19,7 +19,7 @@ Built at Cal Hacks 13.0 for the Hyphenate track, *The Hyphenated Enterprise: Aut
   - Humans sit at the top as overseers.
 - **Built for agent pace.**
   - Agents talk to typed APIs and events, not spreadsheets.
-  - Fourteen simulated days run in under 20 seconds, with books that match economic truth to the cent.
+  - Seeded simulations compare every chart account, invoice obligation and outgoing payment with independent accounting expectations; missing work is reported explicitly.
 - **The kernel enforces the rules** (`convex/`). Every money fact goes through serializable transactions:
   - double entry in integer cents
   - exactly-once operations (idempotency keys)
@@ -65,6 +65,13 @@ npm run eval -- --stores 3 --days 14   # full scored run; add --chaos 0.3 to re-
 npm run gateway                        # human gateway on :8787 (holds the human CFO seat token)
 npm run console                        # overseer console on http://127.0.0.1:5173
 ```
+
+Evaluation writes its Markdown and JSON reports before exiting. A failed or
+incomplete book-correctness result exits nonzero. Without model credentials,
+unrecognized invoice formats can remain unresolved; they must not count as
+correct books or permit period-close approval. See
+[close and evaluation checks](docs/CLOSE_EVAL_CORRECTNESS.md) for verification
+commands and compatibility notes.
 
 Live demo with the world playing in real time:
 
