@@ -1,0 +1,62 @@
+{
+  "authorized": false,
+  "approvalReference": "REPLACE_ONLY_AFTER_EXPLICIT_USER_APPROVAL",
+  "expiresAt": "REPLACE_WITH_APPROVED_UTC_EXPIRY",
+  "aggregateMaxCostMicros": 7500000,
+  "ledgerPath": "/ABSOLUTE/EVALUATOR_PRIVATE/approved-batch-ledger.json",
+  "pricingProvenance": {
+    "verifiedDate": "2026-10-24",
+    "model": "claude-opus-5-5",
+    "modelSource": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+    "pricingSource": "https://platform.claude.com/docs/en/about-claude/pricing",
+    "provider": "Anthropic first-party Claude API",
+    "standardInputUsdPerMillionTokens": 4,
+    "standardOutputUsdPerMillionTokens": 20,
+    "inputMicrosPerToken": 4,
+    "outputMicrosPerToken": 20,
+    "cachePolicy": "disabled; any reported cache usage fails accounting validation",
+    "fastMode": false,
+    "batchApi": false,
+    "fallbacks": false,
+    "retries": 0,
+    "notes": [
+      "Reverify pricing before approving a future batch; rates are estimates, not billing invoices.",
+      "Opus 5.5 rejects forced tool use. Baseline preserves auto tool behavior; actual application must use compatible configuration."
+    ]
+  },
+  "runs": {
+    "baseline-original": {
+      "kind": "baseline",
+      "model": "claude-opus-5-5",
+      "maxCostMicros": 3000000,
+      "maxCalls": 40,
+      "maxInputTokens": 900000,
+      "maxOutputTokens": 64000,
+      "inputMicros": 4,
+      "outputMicros": 20,
+      "timeoutSeconds": 1200
+    },
+    "app-original": {
+      "kind": "application",
+      "model": "claude-opus-5-5",
+      "maxCostMicros": 3000000,
+      "maxCalls": 160,
+      "maxInputTokens": 100000,
+      "maxOutputTokens": 1200,
+      "inputMicros": 4,
+      "outputMicros": 20,
+      "timeoutSeconds": 1800
+    },
+    "app-heldout": {
+      "kind": "application",
+      "model": "claude-opus-5-5",
+      "maxCostMicros": 1500000,
+      "maxCalls": 64,
+      "maxInputTokens": 100000,
+      "maxOutputTokens": 1200,
+      "inputMicros": 4,
+      "outputMicros": 20,
+      "timeoutSeconds": 1200
+    }
+  }
+}

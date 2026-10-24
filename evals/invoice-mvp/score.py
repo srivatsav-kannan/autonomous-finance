@@ -60,7 +60,7 @@ def score(args):
     verify_seal(args.run); meta=read_json(args.run/'metadata.json')
     if meta['status']!='RECORDED': raise ValueError('Only completely recorded application runs can be scored')
     args.out.mkdir(parents=True,exist_ok=False)
-    result={'recordedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'runArtifactSha256':digest((args.run/'artifact-manifest.json').read_bytes()),'source':source_identity(),'runMetadata':meta,'runtimeMode':meta['runtimeMode'],'liveModel':'NOT RUN' if meta['runtimeMode']!='live_model' else 'RUN'}
+    result={'recordedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'runArtifactSha256':digest((args.run/'artifact-manifest.json').read_bytes()),'source':source_identity(),'runMetadata':meta,'runtimeMode':meta['runtimeMode'],'liveModel':meta.get('liveModel','UNKNOWN')}
     if args.upstream:
         result['upstream']=verify_upstream(args.upstream)
         completed=subprocess.run([sys.executable,'-I',str(args.upstream/'scripts/score_submission.py'),str((args.run/'submission.csv').resolve())],capture_output=True,text=True,check=True)

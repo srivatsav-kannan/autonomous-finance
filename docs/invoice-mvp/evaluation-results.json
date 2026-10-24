@@ -18,10 +18,12 @@
     "totalFailed": 0
   },
   "originalApplication": {
-    "status": "NOT RUN",
+    "status": "FAILED_UNSCORED",
+    "applicationCommit": "f1f03512528772a21da2445f0f698eb3511c88ce",
     "officialAccuracy": null,
-    "costUsd": null,
-    "reason": "Integrated runtime pending; original source storage and runtime attestation being implemented"
+    "successfulImportChunks": 72,
+    "persistedSources": 105,
+    "reason": "HTTP503; root reproduced database write-rate limit; corrected attempt pending"
   },
   "heldoutApplication": {
     "status": "RECORDED_AND_SCORED",
@@ -57,5 +59,22 @@
   },
   "newModelApiCalls": 0,
   "newModelApiSpendUsd": 0,
-  "contamination": "Original fixture previously seen; private held-out scenarios and expected answers not exposed to implementation workers"
+  "contamination": "Original fixture previously seen; private held-out scenarios and expected answers not exposed to implementation workers",
+  "heldoutPostFix": {
+    "status": "RECORDED_AND_SCORED",
+    "applicationCommit": "f1f03512528772a21da2445f0f698eb3511c88ce",
+    "checksPassed": 4,
+    "totalChecks": 9,
+    "improvementOverFrozenFirstPass": 0,
+    "sourceVersionsPreserved": 11
+  },
+  "livePreparation": {
+    "status": "IMPLEMENTED_TESTED_NO_NETWORK",
+    "pythonChecks": 25,
+    "injectedTransportChecks": 4,
+    "typescript": "PASS",
+    "approval": "ABSENT",
+    "credential": "ABSENT",
+    "guide": "../../evals/invoice-mvp/LIVE.md"
+  }
 }
