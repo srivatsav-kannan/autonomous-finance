@@ -74,3 +74,50 @@ The root requested direct integrated API checks rather than an additional worker
 ## Integration notes and limitations
 
 No unresolved API dependency remains for B. Root approved additive schema, source chunks and persistent model-budget reservations. The actual integrated deployment and browser flow remain the root's acceptance work. Existing unrelated APIs retain their prior permission behavior; the new invoice API does not claim to harden the whole historical simulation. New writes require an active workspace. Customer names cannot be silently renamed; unsupported customer aliases require human registration. Large-scale pagination, general source extraction, semantic PDF authenticity and live payment/GL integration are outside this scope.
+
+## Follow-up: measured original-import write throughput failure
+
+A new native goal was activated after root reported a sealed full-input import failure. The isolated branch was rebased onto root's integrated `f1f03512528772a21da2445f0f698eb3511c88ce`; Git recognized the earlier A commits already present and preserved them through the integrated history. Root explicitly approved the narrow ownership exception for the application backend adapter. Fix commit: **`11168b846581189cf82baebcb975db9d28e145d8`**. Files: `src/invoice-mvp/backend.ts`, `tests/invoice-mvp-transport.test.ts`; no Convex function/schema, service scheduling, provider/model or evaluation implementation changed.
+
+The original failed workspace `invoice-original-first` was read only. Its sealed snapshot remained 72 batches, 105 documents, 18 customers, 104 evidence-missing cases and 1 review case. No hidden expected outcomes or answer keys were accessed. Root supplied only the failing source envelope at `/Users/junjiexiong/.codex/invoice-mvp-evaluation-private/diagnostics/original-failed-batch-72.json` (one PDF, 893,926 raw bytes / 1,191,904 base64 characters / 23,973 text bytes). That envelope succeeded unchanged in a fresh diagnostic workspace and with 105 synthetic accumulated sources, so a per-file regex/size failure was not reproduced.
+
+The reproducible low-level error emerged while replaying the sealed run's **source inputs only** in their original batch order into another fresh diagnostic run, with the same background 25-case processing behavior. After 36 successful batches, the unmodified adapter threw:
+
+```text
+{"code":"TooManyWrites","message":"Too many writes per second. Your deployment is limited to 4 MiB bytes written per second. Reduce your write rate or upgrade to a larger deployment."}
+ConvexHttpClient.mutationInner (convex/src/browser/http_client.ts:388)
+ConvexHttpClient.processMutationQueue (convex/src/browser/http_client.ts:421)
+```
+
+This is a measured backend write-rate failure, distinct from per-document and per-transaction limits. The original sealed HTTP 503 discarded its inner error; the exact original event cannot be retrospectively inspected, but the same input workflow reproduced this specific failure. No speculative schema or concurrency changes were made.
+
+The fix retries **only** an `Error.message` that parses as JSON with exact code `TooManyWrites`. All authenticated mutation payloads and idempotency keys remain identical across attempts. Delays are explicitly 250, 500, 1,000 and 2,000 milliseconds: at most five attempts and 3.75 seconds of waiting per write. Exhaustion throws `InvoiceError` code `backend_rate_limited`, status **429**, with guidance to retry the same key or import smaller batches. Other errors, returned stale/conflict results and reads are not retried. This wrapper never calls or retries a model provider. Budget-reservation replay remains marked `replayed: true`, preventing accidental fresh provider authorization. The runtime's existing model retry count of zero is unchanged; backend transport retry policy is separate.
+
+Verification at the fix commit:
+
+```sh
+npx vitest run tests/invoice-mvp-transport.test.ts src/invoice-mvp/service-backend.test.ts
+# 13 passed (10 new transport regressions + 3 existing service/backend integrations)
+npm test
+# 24 files, 245 tests passed
+npm run typecheck
+# passed
+npx tsc --noEmit -p convex/tsconfig.json
+# passed
+npx tsc --ignoreConfig --noEmit --strict --noUncheckedIndexedAccess --target es2022 --module esnext --moduleResolution bundler --types node --skipLibCheck tests/invoice-mvp-transport.test.ts
+# passed
+git diff --check
+# passed
+```
+
+The injected-failure tests use injected waits without sleeps. They verify identical payload identity, bounded exhaustion and 429, exact error classification, unrelated/non-rate errors receiving no retry, stale decisions receiving no retry, one durable source/batch/case after a persisted attempt is replayed, and retained budget-reservation replay flags. These remain deterministic handler/transport tests rather than provider evidence.
+
+A **live local-backend diagnostic**, using the patched adapter without changing the deployed Convex functions, then succeeded in fresh run `invoice-a-diagnostic-backoff`:
+
+- Replayed all 72 original source-prefix batches plus the supplied failing batch: **73 batches / 106 persisted documents**.
+- Encountered and recovered from **3 measured write-rate-limit responses**, with **750 ms** total injected production-equivalent wait, in **23,969 ms** elapsed import time.
+- Concurrent background processing reported 50 retryable case errors during import. A subsequent bounded processing call after import processed 106 cases with **zero errors and zero remaining pending cases**. Final states: 105 evidence-missing, 1 review, 0 recorded. This is transport/resume evidence, not accounting accuracy or a benchmark score.
+- Metadata-only result record: `/Users/junjiexiong/.codex/invoice-mvp-evaluation-private/diagnostics/worker-A-write-backoff-result.json`.
+- The original sealed run was untouched. No deployment, model call, API spend, scoring or hidden-answer access occurred. The full 148-document second transport attempt and official evaluation remain root/D-owned.
+
+The diagnostic can be repeated by initializing a fresh local run with `scripts/invoice-workspace-init.ts`, reading only `workspace.batches`/case source inputs from the sealed run in batch order, importing those envelopes through `InvoiceService`, and running bounded `processPending` during and after import. Preserve the original failed run; use new run IDs and fresh import keys. Original-byte and extracted-text content must be copied unchanged. The live diagnosis created separate runs `invoice-a-diagnostic-20261024-1`, `invoice-a-diagnostic-originalprefix` (failed reproduction) and `invoice-a-diagnostic-backoff` (successful post-fix verification), retained for audit.
