@@ -23,16 +23,21 @@ ERP/billing systems and an external ledger are deferred.
 
 ## Editable diagrams
 
-Open the `.excalidraw` files in Excalidraw. The PNGs are checked-in previews and
-must be regenerated and visually checked when the sources change. The diagrams
-are proposals, not evidence that the current application implements their behavior.
+The [complete gallery](DIAGRAMS.md) includes all seven diagrams, each with an
+editable Excalidraw source and PNG preview:
 
-- [Simulator and mock placement](diagrams/simulation.excalidraw)
-- [Error handling and recovery](diagrams/recovery.excalidraw)
+1. Container and trust boundaries
+2. Payment recovery sequence
+3. Architecture tradeoffs
+4. Simulator and mock placement
+5. Error handling and recovery
+6. Data model and atomic boundaries
+7. Complete AP business workflow
 
-![Simulator and mock placement](diagrams/simulation.png)
-
-![Error handling and recovery](diagrams/recovery.png)
+Read the [data and lifecycle implementation contract](IMPLEMENTATION_CONTRACT.md)
+with views 6 and 7. Its work items map to M0–M5 and the existing acceptance matrix.
+The diagrams are proposed behavior; runtime implementation remains outstanding.
+Regenerate and visually check PNGs whenever their sources change.
 
 ## Prompt for the implementing agent
 

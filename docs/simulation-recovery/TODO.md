@@ -8,6 +8,12 @@ All runtime milestones below remain unchecked. This branch starts from main at
 `9183d48c6921a1e1c08ea6c7fe011edad0ca56e9`; it does not include the unmerged design
 or fix branches. Inspect their current status before integrating any changes.
 
+Read the [seven-diagram gallery](DIAGRAMS.md) and the
+[data and lifecycle contract](IMPLEMENTATION_CONTRACT.md) with this checklist.
+Views 6–7 specify schema ownership, transaction boundaries and approval/cancellation
+guards; their implementation requirements map to the milestones and acceptance
+scenarios below. They do not mark any runtime task complete.
+
 ## Dependencies and first step
 
 M1 (contract/FakeBank) can begin while M0 prerequisites are being resolved.
