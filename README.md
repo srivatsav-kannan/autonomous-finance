@@ -139,3 +139,16 @@ for each new scenario in `var/memory/<run-id>.git`. No separate memory initializ
 command is needed; the obsolete `memory:init` script has been removed.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/TEAM.md](docs/TEAM.md).
+
+## Frontend design
+
+The console uses [Hallmark](https://github.com/Nutlope/hallmark) as project-local
+agent design guidance and a development-time visual linter. Its warm finance
+workbench keeps the live Convex data, human gateway actions, and all seven views.
+See [the design system](design.md) and [Hallmark workflow](docs/HALLMARK.md).
+
+```bash
+npm run build:console
+npm run design:check
+npm run design:review -- --url http://127.0.0.1:5173
+```

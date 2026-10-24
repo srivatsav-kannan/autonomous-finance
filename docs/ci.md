@@ -19,6 +19,10 @@ secrets and no dependency/state cache. It never uses `pull_request_target`.
 PR runs validate GitHub's merge commit; the exact checked-out revision is in
 each artifact. Fork PRs may need a maintainer's normal Actions approval.
 
+Artifact uploads pin official `actions/upload-artifact` v7.0.2 at
+`cf430e030ddbb5b0abf93d22962f4752f3646cd9`. Its [action manifest](https://github.com/actions/upload-artifact/blob/cf430e030ddbb5b0abf93d22962f4752f3646cd9/action.yml)
+uses Node 24 directly, avoiding the deprecated Node 20 action runtime.
+
 The regression job runs `npm ci`, all three application/backend/test typechecks,
 `npm test` once, and `npm run build:console`. The full test command includes
 multiprocess SQLite FakeBank, dispatcher/reconciliation, and real Prism HTTP
