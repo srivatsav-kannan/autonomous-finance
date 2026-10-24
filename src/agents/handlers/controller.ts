@@ -1,4 +1,4 @@
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { api } from "../../core/kernel-client";
 import { formatMoney } from "../../core/money";
 import { ROLE_CAPABILITIES } from "../../core/roles";
@@ -20,15 +20,26 @@ export const reviewHeld: Handler = async (rt, task) => {
   const ex = (task.payload.exceptions ?? []) as Exception[];
   const codes = new Set(ex.map((e) => e.code));
 
+  let humanAnswer: Doc<"asks"> | undefined;
   if (codes.has("no_receiving_record") || codes.has("unknown_store")) {
-    await rt.ask({ to: "human_cfo", severity: "decision", title: `Can't verify ${bill.vendor} ${bill.invoiceNumber}`,
-      body: ex.map((e) => e.detail).join("\n"), options: [{ id: "pay", label: "Pay as billed" }, { id: "reject", label: "Reject" }], taskId: task._id,
-      evidence: [{ label: "decision", ref: String(task.payload.decisionPath) }] });
-    return { outcome: "asked", summary: "needs a human: no receiving record", waiting: true };
+    const asks = await rt.kernel.client.query(api.asks.forTask, { runId: rt.runId, taskId: task._id });
+    humanAnswer = asks.find((a) => a.taskId === task._id && a.to === "human_cfo" && a.status === "answered" &&
+      (a.answer?.optionId === "pay" || a.answer?.optionId === "reject") && a.options.some((o) => o.id === a.answer?.optionId));
+    if (!humanAnswer) {
+      await rt.ask({ to: "human_cfo", severity: "decision", title: `Can't verify ${bill.vendor} ${bill.invoiceNumber}`,
+        body: ex.map((e) => e.detail).join("\n"), options: [{ id: "pay", label: "Pay as billed" }, { id: "reject", label: "Reject" }], taskId: task._id,
+        evidence: [{ label: "decision", ref: String(task.payload.decisionPath) }] });
+      return { outcome: "asked", summary: "needs a human: no receiving record", waiting: true };
+    }
   }
 
-  const approvedCents = Math.max(0, Math.min(bill.totalCents, Number(task.payload.recommendedCents ?? bill.totalCents)));
-  const reasons = ex.filter((e) => e.code !== "needs_controller_approval").map((e) => e.detail);
+  // The human chooses pay-as-billed or rejection, not the stale automated short-pay recommendation.
+  const approvedCents = humanAnswer
+    ? humanAnswer.answer!.optionId === "pay" ? bill.totalCents : 0
+    : Math.max(0, Math.min(bill.totalCents, Number(task.payload.recommendedCents ?? bill.totalCents)));
+  const reasons = humanAnswer
+    ? [`Human ${humanAnswer.answer!.by} chose ${humanAnswer.answer!.optionId}${humanAnswer.answer!.note ? `: ${humanAnswer.answer!.note}` : ""}`]
+    : ex.filter((e) => e.code !== "needs_controller_approval").map((e) => e.detail);
   const decision = approvedCents === 0 ? "reject" : "approve";
   const d = await rt.decide({
     kind: "held_bill",
@@ -38,7 +49,10 @@ export const reviewHeld: Handler = async (rt, task) => {
     summary: reasons.length
       ? `${decision === "approve" ? `Approve ${formatMoney(approvedCents)} of ${formatMoney(bill.totalCents)}` : "Reject"}: ${reasons.join("; ")}`
       : `Approve ${formatMoney(bill.totalCents)} (clean match, over AP auto-approve limit)`,
-    facts: ex.map((e) => ({ key: e.code, value: e.detail, source: { kind: "memory" as const, ref: String(task.payload.decisionPath) } })),
+    facts: [
+      ...ex.map((e) => ({ key: e.code, value: e.detail, source: { kind: "memory" as const, ref: String(task.payload.decisionPath) } })),
+      ...(humanAnswer ? [{ key: "human_answer", value: humanAnswer.answer, source: { kind: "ask" as const, ref: humanAnswer._id } }] : []),
+    ],
     rules: [{ path: "policies/approval-limits.yaml", key: "autoApproveCents" }],
     amountCents: approvedCents,
     task: task._id,
@@ -58,7 +72,7 @@ export const reviewHeld: Handler = async (rt, task) => {
   if (!res.ok) throw new Error(`resolveHeldBill: ${res.code} ${res.error}`);
 
   // Mark credits applied and leave a dispute note for price/quantity problems, in vendor memory.
-  if (vendorRec) {
+  if (vendorRec && !humanAnswer) {
     const v = vendorRec.vendor;
     const appliedIds = ex.filter((e) => e.code === "open_credit" && e.ref).map((e) => e.ref!);
     const disputes = ex.filter((e) => e.code === "price_over_contract" || e.code === "short_shipment");
