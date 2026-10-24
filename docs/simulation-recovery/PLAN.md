@@ -1,46 +1,55 @@
 # AP demo
 
-One invoice → approval → payment → reconciliation. It must survive a worker
-restart without paying twice.
+One invoice, one USD account, outbound ACH. Approval → payment → reconciliation must survive a worker restart without paying twice.
 
-Keep Convex for the app state and journal, and the existing Node worker.
-Use Worldsim for invoices, a persistent FakeBank for repeatable failures, and
-Increase sandbox to check the real API. Defer ERP and external-ledger integrations.
+Keep Convex + the Node worker. Worldsim supplies invoices; persistent FakeBank tests failures; Increase sandbox verifies the real API.
 
-![System](diagrams/system.png)
+![Bank functions and agent access](diagrams/system.png)
+
+[Edit drawing](diagrams/system.excalidraw)
+
+## Bank contract
+
+`getBalance()` · `createTransfer(command)` · `getTransfer(id)` · `getTransaction(id)` · `listTransactions(cursor)`
+
+Bank owns **balances/holds, transfers, posted transactions and events**. Convex owns **bills, approvals, commands and the company journal**.
+
+The backend binds the client to organization/run/environment/account and checks ID ownership. Commands freeze ID, integer cents, USD, destination and idempotency key. Same key/payload returns the same transfer; changed payload fails. Acceptance is not settlement.
+
+| Caller | Access in this demo |
+| --- | --- |
+| AP | Record bills, attach evidence, flag discrepancies |
+| Payments | `requestPayment(billIds)`, `getPaymentStatus(id)` |
+| Controller / CFO / human | `approvePayment(id, version)` within policy; never own request |
+| Reconciliation duty (controller) | Read imported transactions; propose matches/exceptions |
+| Other agent seats | Scoped demo views; no bank calls |
+| Dispatcher / evidence service | Submit approved commands / read bank evidence and post once |
+
+Backend enforcement, not prompt instructions. Compute amounts/destinations from approved records. Require human approval for the demo. Agents get no bank credentials, arbitrary cash posting or test controls.
+
+**Harness only:** `seedAccount`, `advanceTime`, `settleTransfer`, `rejectTransfer`, `returnTransfer`, `setFaultPlan` through a separate test-only API. Prism is optional contract testing; defer ERP/external ledgers.
 
 ## Build
 
-- [ ] **A — Fake bank.** Define the shared bank interface. Persist transfers and
-  transactions independently of the worker. Same key and payload must return the
-  same transfer; a changed payload must fail. Add an accept-then-drop-response fault.
-- [ ] **B — Safe dispatch.** Fix the selected flow's approval and credit bugs.
-  Bind approval to exact payment details. Reserve funds and save the command/key
-  atomically. Persist attempts; a replacement worker must fence out the old one.
-  Unknown outcomes keep their reservations. Cancellation must not race a send.
-- [ ] **C — Reconcile.** Fetch bank evidence after a webhook or poll. Deduplicate
-  it and post once. Retry failed local writes without sending another payment.
-  Returns get a separate entry. Show unresolved payments in the console.
-- [ ] **D — Sandbox demo.** Implement the Increase adapter behind the same
-  interface. Run the flow end to end and record the provider transaction and
-  journal entry. Add request/response contract checks to the adapter tests.
+- [ ] **A — FakeBank.** Shared interface; durable bank state; atomic updates; idempotency conflicts; accept-then-drop-response fault.
+- [ ] **B — Dispatch.** Fix approval/credit handling. Atomically reserve and save commands. Resume after crashes, reject stale workers, prevent cancellation/send races. Keep reservations for unknown outcomes.
+- [ ] **C — Reconcile.** Verified webhooks + polling. Deduplicate evidence; post once. Retry local writes without resending. Record returns separately; surface unresolved payments.
+- [ ] **D — Increase.** Same interface, adapter contract tests, reproducible sandbox demo with bank transaction + journal evidence.
 
-A and B can start together after agreeing the interface. C uses their saved
-command and bank IDs. D can prepare fixtures early; run payments after B and C work.
+Agree the interface, then A/B can run together. C consumes their saved IDs; D validates the full flow.
 
-![Recovery](diagrams/recovery-flow.png)
+![Recovery after a lost response](diagrams/recovery-flow.png)
 
-## Prove it
+[Edit drawing](diagrams/recovery-flow.excalidraw)
 
-1. Approve and pay an invoice. Match one bank debit to one journal entry.
-2. Lose the bank response, restart the worker, and drop the webhook. Polling must
-   recover the same transfer. No duplicate payment or cash posting.
-3. Reject changed payment details without fresh approval. Duplicate events and
-   returns must leave correct balances; unresolved outcomes block a clean close.
+## Done when
 
-Existing bugs and edge cases: [detailed checklist](TODO.md).
-Schema/accounting details: [contract](IMPLEMENTATION_CONTRACT.md).
-Older drawings: [reference gallery](DIAGRAMS.md).
+1. One approved invoice → one bank debit → one matching journal entry.
+2. Lost response + restart + missing webhook recover the same payment. Duplicate events, returns and local-write failures preserve correct balances.
+3. Changed details need fresh approval. Unauthorized roles, cross-account/run IDs and agent test-control access fail. Unresolved outcomes block a clean close.
 
-Track ownership and results in [issue #39](https://github.com/srivatsav-kannan/autonomous-finance/issues/39).
-This is the build plan; the runtime work is still outstanding.
+Track ownership in [issue #39](https://github.com/srivatsav-kannan/autonomous-finance/issues/39).
+
+[Detailed checks](TODO.md) · [Reference drawings](DIAGRAMS.md)
+
+Proposed design; runtime implementation is still outstanding.
