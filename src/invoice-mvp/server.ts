@@ -36,7 +36,7 @@ export function runtimeAttestation(service: InvoiceService) {
     sourceCommit, dirty, mode: service.mode, model: service.model?.model ?? null, effort: service.model?.effort ?? "provider_default", reasoningContext: service.model?.reasoningContext ?? null, fallbacks: false, retries: 0, maxTurns: 10,
     modelProvider: service.model?.provider ?? null, outputTokensPerCall: service.model?.maxOutputTokens ?? null,
     budget: service.model?.budget ?? null, budgetScope: { maxCalls: "persistent_run", maxCostMicros: "persistent_run", maxInputTokens: "per_request", maxOutputTokens: "per_request" }, perRequest: service.model ? { maxInputTokens: service.model.budget?.maxInputTokens ?? null, maxOutputTokens: service.model.maxOutputTokens ?? service.model.budget?.maxOutputTokens ?? null } : null, promptVersion: "invoice-investigator-v1", promptHash: hash(INVESTIGATOR_POLICY), toolsHash: hash(service.model?.toolSchemas ?? TOOL_SCHEMAS),
-    usage: { available: true, source: "persisted invoiceAudit toolCall", reservationTool: "model_reservation", actualUsageTool: "model_usage", cache: "disabled", costKind: "operator-priced estimate; live NOT RUN" },
+    usage: { available: true, source: "persisted invoiceAudit toolCall", reservationTool: "model_reservation", actualUsageTool: "model_usage", cache: "disabled", costKind: "operator-priced estimate from provider-reported tokens" },
     liveExecution: service.mode === "live_model" ? "requires_explicit_process_opt_in_and_atomic_reservation" : "disabled", limits: { maxBatchBytes: MAX_BATCH_BYTES, maxSourceBytes: MAX_SOURCE_BYTES, maxTextBytes: MAX_TEXT_BYTES, maxDocuments: 100 },
   };
 }
