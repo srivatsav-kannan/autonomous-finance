@@ -15,21 +15,26 @@ export type Observation = { tool: ToolName; input: Record<string, unknown>; resu
 export type ModelUsage = { inputTokens: number; outputTokens: number; costMicros: number; durationMs: number };
 export type ModelResponseUsage = Omit<ModelUsage, "costMicros"> & { costMicros: number | null };
 export type ModelRequest = { caseId: string; evidenceVersion: number; observations: Observation[]; decisionSummaries: string[] };
-export type ModelProvider = Readonly<{ baseURL: "https://api.anthropic.com"; authentication: "explicit_api_key"; pricing: Readonly<{ inputMicros: number; outputMicros: number }>; servedModelValidated: true; cacheUsageValidated: true }>;
+type ProviderChecks = { authentication: "explicit_api_key"; pricing: Readonly<{ inputMicros: number; outputMicros: number }>; servedModelValidated: true; cacheUsageValidated: true };
+export type ModelProvider = Readonly<ProviderChecks & ({ baseURL: "https://api.anthropic.com" } | { baseURL: "https://api.openai.com/v1"; api: "responses"; serviceTier: "default"; promptCacheMode: "explicit_without_breakpoints" })>;
 export interface InvestigatorModel {
   mode: "mock_model" | "live_model";
   model: string;
   reservation(request: ModelRequest): ModelUsage;
-  next(request: ModelRequest): Promise<{ action: ToolAction; usage: ModelUsage }>;
+  next(request: ModelRequest): Promise<{ action: ToolAction; usage: ModelUsage; usageSummary?: string }>;
   budget?: ResourceBudget;
   readonly provider?: ModelProvider;
+  readonly effort?: "high";
+  readonly maxOutputTokens?: number;
+  readonly toolSchemas?: readonly unknown[];
+  release?(observations: Observation[]): void;
 }
 export type ResourceBudget = { maxCalls: number; maxInputTokens: number; maxOutputTokens: number; maxCostMicros: number };
 export const ZERO_USAGE: ModelUsage = { inputTokens: 0, outputTokens: 0, costMicros: 0, durationMs: 0 };
 
 /** A billed response can be unusable. Retain its usage without retaining model prose. */
 export class ModelResponseError extends InvoiceError {
-  constructor(message: string, readonly usage: ModelResponseUsage) {
+  constructor(message: string, readonly usage: ModelResponseUsage, readonly usageSummary?: string) {
     super("model_output_invalid", message);
   }
 }

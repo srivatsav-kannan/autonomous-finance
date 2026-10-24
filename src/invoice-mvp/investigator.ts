@@ -21,13 +21,18 @@ export type RelatedFact = { caseId: string; status: string; source: EvidenceRef;
 
 /** Bounded single investigator. Tool results contain facts, never a chain-of-thought transcript. */
 export async function investigate(backend: InvoiceBackend, initial: CaseDetail, model?: InvestigatorModel, maxTurns = 10, relatedFacts: RelatedFact[] = []): Promise<InvestigationResult> {
+  const observations: Observation[] = [];
+  try { return await investigateWithObservations(backend, initial, model, maxTurns, relatedFacts, observations); }
+  finally { model?.release?.(observations); }
+}
+
+async function investigateWithObservations(backend: InvoiceBackend, initial: CaseDetail, model: InvestigatorModel | undefined, maxTurns: number, relatedFacts: RelatedFact[], observations: Observation[]): Promise<InvestigationResult> {
   const mode = model?.mode ?? "deterministic";
   const c = initial.case;
   const evidence = [refFor(initial)];
   let toolCalls = 0, modelCalls = 0;
   const usage = { ...ZERO_USAGE };
   let usageCostUnavailable = false;
-  const observations: Observation[] = [];
   const observedSources = new Map<string, CaseDetail>([[c.documentId, initial]]);
   const availableSources = new Set<string>([c.documentId]);
   const inspectedSources = new Set<string>();
@@ -173,7 +178,7 @@ export async function investigate(backend: InvoiceBackend, initial: CaseDetail, 
         const result = await model.next(request);
         responseUsageKnown = true;
         for (const k of Object.keys(usage) as (keyof ModelUsage)[]) usage[k] += result.usage[k];
-        await audit("model_usage", `Actual provider-reported usage for completed request ${requestIdentity}.`, result.usage, `usage-${requestIdentity}`);
+        await audit("model_usage", `Actual provider-reported usage for completed request ${requestIdentity}.${result.usageSummary ? ` ${result.usageSummary}` : ""}`, result.usage, `usage-${requestIdentity}`);
         await runTool(result.action);
       } catch (e) {
         if (e instanceof InvoiceError && /stale|conflict|forbidden|unauthorized/.test(e.code)) throw e;
@@ -182,10 +187,10 @@ export async function investigate(backend: InvoiceBackend, initial: CaseDetail, 
           if (e.usage.costMicros === null) {
             usageCostUnavailable = true;
             const { costMicros: _unknown, ...knownUsage } = e.usage;
-            await audit("model_usage_unavailable", `Known provider token usage for ${requestIdentity}; actual cost unavailable. The full reservation remains charged.`, knownUsage, `usage-${requestIdentity}`);
+            await audit("model_usage_unavailable", `Known provider token usage for ${requestIdentity}; actual cost unavailable. The full reservation remains charged.${e.usageSummary ? ` ${e.usageSummary}` : ""}`, knownUsage, `usage-${requestIdentity}`);
           } else {
             usage.costMicros += e.usage.costMicros;
-            await audit("model_usage", `Actual provider-reported usage for unusable response ${requestIdentity}.`, { ...e.usage, costMicros: e.usage.costMicros }, `usage-${requestIdentity}`);
+            await audit("model_usage", `Actual provider-reported usage for unusable response ${requestIdentity}.${e.usageSummary ? ` ${e.usageSummary}` : ""}`, { ...e.usage, costMicros: e.usage.costMicros }, `usage-${requestIdentity}`);
           }
         } else if (!responseUsageKnown) {
           usageCostUnavailable = true;
