@@ -19,6 +19,7 @@ import type * as ledger from "../ledger.js";
 import type * as lib_demoAuth from "../lib/demoAuth.js";
 import type * as lib_demoEffects from "../lib/demoEffects.js";
 import type * as lib_demoPost from "../lib/demoPost.js";
+import type * as lib_invoiceIdentity from "../lib/invoiceIdentity.js";
 import type * as lib_kernel from "../lib/kernel.js";
 import type * as lib_post from "../lib/post.js";
 import type * as lib_routing from "../lib/routing.js";
@@ -45,6 +46,7 @@ declare const fullApi: ApiFromModules<{
   "lib/demoAuth": typeof lib_demoAuth;
   "lib/demoEffects": typeof lib_demoEffects;
   "lib/demoPost": typeof lib_demoPost;
+  "lib/invoiceIdentity": typeof lib_invoiceIdentity;
   "lib/kernel": typeof lib_kernel;
   "lib/post": typeof lib_post;
   "lib/routing": typeof lib_routing;

@@ -7,6 +7,7 @@ import { accountingSeat, assertRowScope, auditDemo, getDemoConfig, requireDemoSe
 import { releaseReservations } from "./lib/demoEffects";
 import { canonical, getRun, requireAdmin, sha256Hex } from "./lib/kernel";
 import { appendDemoEntry, validDemoDate } from "./lib/demoPost";
+import { normalizeInvoiceNumber } from "./lib/invoiceIdentity";
 import { commandRequestHash, buildIncreaseRequestBody, type BankCommand } from "../src/integrations/contracts";
 
 const scoped = { scope: scopeValidator };
@@ -50,7 +51,7 @@ export const recordBill = mutation({
     dollars(args.originalCents);
     if (args.vendor !== config.beneficiary.vendor || !validDate(args.invoiceDate) || !args.evidence.length || args.evidence.some(s => !s.trim())) throw new Error("Invalid vendor, date or invoice evidence");
     if (!["5000", "5200", "5300", "6000", "6100", "6200"].includes(args.expenseAccount)) throw new Error("AP expense account required");
-    const invoiceNumber = args.invoiceNumber.toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/^(INV|INVOICE|NO)/, "").replace(/^0+/, "");
+    const invoiceNumber = normalizeInvoiceNumber(args.invoiceNumber);
     if (!invoiceNumber) throw new Error("Invoice identity required");
     const recordHash = await sha256Hex(canonical({ vendor: args.vendor, invoiceNumber, invoiceDate: args.invoiceDate, originalCents: args.originalCents, expenseAccount: args.expenseAccount, evidence: args.evidence }));
     const prior = await ctx.db.query("demoBills").withIndex("by_invoice", q => q.eq("scope.runId", args.scope.runId).eq("vendor", args.vendor).eq("invoiceNumber", invoiceNumber)).unique();
@@ -94,6 +95,30 @@ export const flagException = mutation({
       else await auditDemo(ctx, args.scope, args.seatId, "exception_after_dispatch", { billId: typed._id, reason: args.reason, commandId: command?._id });
     }
     await ctx.db.patch(args.billId, { flags: [...typed.flags, args.reason], version: typed.version + 1 });
+  },
+});
+
+/** Resolve a reviewed discrepancy without revising any approved or paid financial amount. */
+export const resolveBillExceptions = mutation({
+  args: { ...scoped, billId: v.id("demoBills"), expectedVersion: v.number(), flags: v.array(v.string()), reason: v.string(), evidence: v.array(v.string()), seatId: v.optional(v.string()), token: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    const actor = args.seatId !== undefined || args.token !== undefined
+      ? (await requireDemoSeat(ctx, { scope: args.scope, seatId: args.seatId ?? "", token: args.token ?? "" }, ["controller"])).seat
+      : (await requireHuman(ctx, args.scope)).seat;
+    const bill = await ctx.db.get(args.billId); assertRowScope(bill, args.scope);
+    const typed = bill as Doc<"demoBills">;
+    if (typed.createdBy === actor.seatId) throw new Error("Bill creator cannot resolve their own exceptions");
+    if (typed.version !== args.expectedVersion) throw new Error("Stale bill exception review");
+    if (!args.reason.trim() || !args.flags.length || new Set(args.flags).size !== args.flags.length ||
+        args.flags.some(flag => !typed.flags.includes(flag)) || !args.evidence.length ||
+        args.evidence.some(ref => !ref.trim() || !typed.evidence.includes(ref))) {
+      throw new Error("Select current flags and attached evidence with a resolution reason");
+    }
+    await ctx.db.patch(typed._id, { flags: typed.flags.filter(flag => !args.flags.includes(flag)), version: typed.version + 1 });
+    await auditDemo(ctx, args.scope, actor.seatId, "bill_exceptions_resolved", {
+      billId: typed._id, reviewedVersion: typed.version, flags: args.flags, reason: args.reason.trim(), evidence: args.evidence,
+    });
+    return { billId: typed._id, version: typed.version + 1 };
   },
 });
 

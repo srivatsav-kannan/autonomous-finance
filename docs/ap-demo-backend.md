@@ -30,3 +30,19 @@ Focused suites: `npm run test:bank` and `npm run test:payments`. Tests invoke ac
 Deploy backend and workers together. Configure `AP_HUMAN_AUTH_ISSUER`, `AP_HUMAN_AUTH_AUDIENCE`, `AP_BANK_SCOPE` (full JSON scope), and distinct `KERNEL_ADMIN_SECRET`, `AP_DISPATCH_SECRET`, `AP_EVIDENCE_SECRET`. Human JWT authentication must bind the configured issuer+subject to an active human CFO seat. Keep the three service roles and bank/harness files outside agent OS/process access; TypeScript capability objects do not sandbox a process with filesystem access. Broader legacy scenario/evaluator completeness is outside this one-account demo.
 
 Validated on current main `adbe32c`: 212 tests passed (32 new backend/recovery tests and 12 FakeBank tests), application/backend/test TypeScript and console build passed, and the existing local Convex/kernel+Git smoke suite passed all 42 checks. Real human-provider and Increase sandbox execution are not claimed by these checks.
+
+### Reviewed invoice identity and exception resolution
+
+The scoped and legacy AP APIs share `convex/lib/invoiceIdentity.ts`: `INV-001`,
+`INVOICE-001`, `NO-001` and `1` identify the same vendor invoice. Deploy this
+pre-merge change with fresh demo runs. Previously stored invoice identities are
+not rewritten: review any old duplicate bills and their bank outcomes before
+retiring an old run; do not replay historical payments into a new run.
+
+A controller or independently authenticated human can call
+`demoPayments.resolveBillExceptions` with the bill ID, its `expectedVersion`,
+the selected current `flags`, a resolution `reason`, and references in the bill's
+attached `evidence`. The operation records an audit event and clears only the
+reviewed flags. It is available after payment without changing approved amounts,
+reservations, bank evidence or journal entries. Stale reviews, unattached evidence
+and operating-agent callers are rejected; unselected flags continue to block close.
