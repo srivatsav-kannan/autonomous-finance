@@ -1,3 +1,4 @@
+import { assertLegacyRun } from "./lib/demoAuth";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
@@ -34,6 +35,7 @@ export const requestPayment = mutation({
     dueDate: v.string(),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const op = "payments.requestPayment";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
@@ -103,6 +105,7 @@ export const requestPayment = mutation({
 export const approvePayment = mutation({
   args: { ...seatArgs, intentId: v.id("paymentIntents") },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const op = "payments.approvePayment";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
@@ -131,6 +134,7 @@ export const approvePayment = mutation({
 export const executePayment = mutation({
   args: { ...seatArgs, intentId: v.id("paymentIntents"), currentRemitTo: remitTo },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const op = "payments.executePayment";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
@@ -159,6 +163,7 @@ export const executePayment = mutation({
 export const settlePayment = mutation({
   args: { ...seatArgs, intentId: v.id("paymentIntents"), bankRef: v.string(), settledOn: v.string() },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const op = "payments.settlePayment";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
@@ -188,6 +193,7 @@ export const settlePayment = mutation({
 export const voidPayment = mutation({
   args: { ...seatArgs, intentId: v.id("paymentIntents"), reason: v.string() },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const op = "payments.voidPayment";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
@@ -211,6 +217,7 @@ export const voidPayment = mutation({
 export const intents = query({
   args: { runId: v.string(), status: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const rows = await ctx.db
       .query("paymentIntents")
       .withIndex("by_run_status", (q) => q.eq("runId", args.runId))
@@ -222,6 +229,7 @@ export const intents = query({
 export const intent = query({
   args: { runId: v.string(), intentId: v.id("paymentIntents") },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const i = await ctx.db.get(args.intentId);
     return i && i.runId === args.runId ? i : null;
   },

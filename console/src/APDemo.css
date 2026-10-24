@@ -1,0 +1,34 @@
+.ap-console { max-width: 1180px; margin: auto; padding: 28px 20px 64px; }
+.ap-console h1 { font-size: 27px; margin: 9px 0; }
+.ap-console h3 { margin: 0; }
+.ap-console a { color: var(--accent); }
+.ap-console p { overflow-wrap: anywhere; }
+.ap-heading, .ap-row { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.ap-heading { margin-bottom: 20px; }
+.ap-heading p { color: var(--muted); }
+.ap-panel { border: 1px solid var(--line); background: var(--panel); padding: 22px; border-radius: 12px; margin-top: 16px; }
+.ap-login { max-width: 720px; }
+.ap-login form, .ap-resume { display: grid; gap: 10px; }
+.ap-login form { margin-top: 22px; }
+.ap-login button, .ap-resume button { justify-self: start; margin-top: 6px; }
+.ap-console textarea { width: 100%; resize: vertical; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+.ap-console textarea#ap-scope { font-family: ui-monospace, monospace; font-size: 12px; }
+.ap-console :is(button,input,textarea,summary,a):focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.ap-record { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 18px; }
+.ap-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; }
+.ap-facts dt { color: var(--muted); font-size: 12px; }
+.ap-facts dd { margin: 3px 0 0; overflow-wrap: anywhere; }
+.ap-console code { overflow-wrap: anywhere; }
+.ap-console pre { max-height: 360px; overflow: auto; background: var(--bg); padding: 12px; border-radius: 8px; font-size: 12px; }
+.ap-console summary { cursor: pointer; color: var(--accent); }
+.ap-table-wrap { overflow-x: auto; margin-top: 16px; }
+.ap-table-wrap table { min-width: 600px; }
+.ap-approval { display: grid; gap: 12px; margin-top: 16px; }
+.ap-approval label { display: flex; gap: 10px; align-items: flex-start; }
+.ap-approval input { margin-top: 4px; }
+.ap-approval button { justify-self: start; }
+.ap-error { color: var(--urgent); overflow-wrap: anywhere; }
+.ap-success { color: var(--ok); }
+.ap-blockers { padding-left: 22px; }
+.ap-blockers p { margin: 4px 0 14px; }
+@media (max-width: 680px) { .ap-console { padding: 16px 12px 40px; } .ap-panel { padding: 16px; } .ap-facts { grid-template-columns: 1fr; } }

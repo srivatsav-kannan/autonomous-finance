@@ -5,7 +5,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ROLE_CAPABILITIES } from "../core/roles";
 import { parseWith, type ParserRecord } from "../integrations/parsers";
 import { MemoryStore } from "../memory/store";
-import { WorldBank } from "../world/bank";
 import { SeatRuntime } from "./runtime";
 
 const text = "H|test invoice";
@@ -35,7 +34,7 @@ describe("approved parser cache", () => {
     dir = await fs.mkdtemp(path.join(os.tmpdir(), "parser-cache-"));
     mem = new MemoryStore(path.join(dir, "memory.git"));
     await mem.init();
-    runtime = new SeatRuntime("test", { seatId: "ap", role: "ap_clerk", name: "AP" }, "test", mem, new WorldBank("test"));
+    runtime = new SeatRuntime("test", { seatId: "ap", role: "ap_clerk", name: "AP" }, "test", mem);
   });
 
   afterEach(async () => {

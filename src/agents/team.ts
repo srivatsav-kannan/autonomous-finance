@@ -3,7 +3,6 @@ import path from "node:path";
 import { api, convex, hashToken, newToken } from "../core/kernel-client";
 import type { Role } from "../core/roles";
 import { MemoryStore } from "../memory/store";
-import { WorldBank } from "../world/bank";
 import { memoryDir, runDir } from "../world/scenario";
 import { LlmRefused, LlmUnavailable, MODEL } from "./llm";
 import { SeatRuntime, type Handler, type Task } from "./runtime";
@@ -47,7 +46,6 @@ const STAFFABLE: Partial<Record<Role, { max: number; spawnAt: number }>> = {
 export class Team {
   readonly runtimes = new Map<string, SeatRuntime>();
   readonly mem: MemoryStore;
-  readonly bank: WorldBank;
   private tokensFile: string;
   private tokens: Record<string, string>;
   private stopped = false;
@@ -55,7 +53,6 @@ export class Team {
 
   constructor(readonly runId: string, private readonly opts: { log?: (s: string) => void } = {}) {
     this.mem = new MemoryStore(memoryDir(runId));
-    this.bank = new WorldBank(runId);
     this.tokensFile = path.join(runDir(runId), "seats.json");
     this.tokens = JSON.parse(fs.readFileSync(this.tokensFile, "utf8"));
   }
@@ -73,7 +70,7 @@ export class Team {
         continue;
       }
       if (this.runtimes.has(s.seatId) || !this.tokens[s.seatId]) continue;
-      this.runtimes.set(s.seatId, new SeatRuntime(this.runId, { seatId: s.seatId, role: s.role as Role, name: s.name, effort: s.effort }, this.tokens[s.seatId]!, this.mem, this.bank));
+      this.runtimes.set(s.seatId, new SeatRuntime(this.runId, { seatId: s.seatId, role: s.role as Role, name: s.name, effort: s.effort }, this.tokens[s.seatId]!, this.mem));
     }
   }
 

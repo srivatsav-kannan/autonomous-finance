@@ -1,5 +1,7 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { demoTables } from "./demoSchema";
+import { demoEvidenceTables } from "./demoEvidenceSchema";
 
 // Every table is scoped by runId (a scenario namespace) so eval runs and demo resets never mix.
 
@@ -24,6 +26,8 @@ export const lineValidator = v.object({
 });
 
 export default defineSchema({
+  ...demoTables,
+  ...demoEvidenceTables,
   runs: defineTable({
     runId: v.string(),
     label: v.string(),

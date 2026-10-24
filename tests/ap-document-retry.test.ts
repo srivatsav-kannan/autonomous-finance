@@ -9,7 +9,6 @@ import { SeatRuntime, type Task } from "../src/agents/runtime";
 import { MemoryStore } from "../src/memory/store";
 import { seedFiles } from "../src/memory/seed";
 import type { Decision, Vendor } from "../src/memory/schemas";
-import type { WorldBank } from "../src/world/bank";
 import type { ParsedInvoice } from "../src/integrations/invoice";
 
 let dir: string;
@@ -32,7 +31,7 @@ afterEach(() => {
 });
 
 function fixture(mode: "approve" | "hold" | "reject") {
-  const rt = new SeatRuntime("test", { seatId: "ap-1", role: "ap_clerk", name: "AP" }, "token", mem, {} as WorldBank);
+  const rt = new SeatRuntime("test", { seatId: "ap-1", role: "ap_clerk", name: "AP" }, "token", mem);
   const item = vendor.contractPrices[0]!;
   const invoice: ParsedInvoice = {
     vendorName: vendor.legalName, invoiceNumber: "INV-42", invoiceDate: "2026-01-05", dueDate: "2026-02-05", storeId, deliveryId: null,

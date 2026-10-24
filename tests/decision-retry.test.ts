@@ -5,7 +5,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { SeatRuntime } from "../src/agents/runtime";
 import { MemoryStore } from "../src/memory/store";
 import type { Decision } from "../src/memory/schemas";
-import type { WorldBank } from "../src/world/bank";
 
 const decision = {
   on: "2026-01-05", task: "task-1", kind: "bill", subject: { type: "invoice", id: "INV-1" },
@@ -14,7 +13,7 @@ const decision = {
 let dir: string;
 let mem: MemoryStore;
 function runtime(store = mem) {
-  const rt = new SeatRuntime("test", { seatId: "ap-1", role: "ap_clerk", name: "AP" }, "token", store, {} as WorldBank);
+  const rt = new SeatRuntime("test", { seatId: "ap-1", role: "ap_clerk", name: "AP" }, "token", store);
   vi.spyOn(rt.kernel.client, "mutation").mockResolvedValue({ ok: true });
   return rt;
 }
@@ -93,7 +92,7 @@ describe("decision evidence retries", () => {
     const first = runtime();
     vi.mocked(first.kernel.client.mutation).mockRejectedValueOnce(new Error("mirror unavailable"));
     await expect(first.decide(decision)).rejects.toThrow("mirror unavailable");
-    const second = new SeatRuntime("test", { seatId: "ap-2", role: "ap_clerk", name: "Second AP" }, "second-token", mem, {} as WorldBank);
+    const second = new SeatRuntime("test", { seatId: "ap-2", role: "ap_clerk", name: "Second AP" }, "second-token", mem);
     const mirror = vi.spyOn(second.kernel.client, "mutation").mockResolvedValue({ ok: true });
     const retry = await second.decide(decision);
     expect(await mem.read<Decision>(retry.path)).toMatchObject({ seat: "ap-1" });

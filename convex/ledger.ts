@@ -1,3 +1,4 @@
+import { assertLegacyRun } from "./lib/demoAuth";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
@@ -30,6 +31,7 @@ export const postEntry = mutation({
     memorySha: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "ledger.postEntry", auth);
     const { token: _t, ...payload } = args;
@@ -68,6 +70,7 @@ export const reverseEntry = mutation({
     memorySha: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "ledger.reverseEntry", auth);
     const { token: _t, ...payload } = args;
@@ -109,6 +112,7 @@ export const reverseEntry = mutation({
 export const signClose = mutation({
   args: { ...seatArgs, period: v.string(), memoryTag: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "ledger.signClose", auth);
     if (!auth.seat.caps.periodClose) {
@@ -155,6 +159,7 @@ export const signClose = mutation({
 export const trialBalance = query({
   args: { runId: v.string(), period: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const rows = await ctx.db
       .query("balances")
       .withIndex("by_run_account_period", (q) => q.eq("runId", args.runId))
@@ -177,6 +182,7 @@ export const trialBalance = query({
 export const entries = query({
   args: { runId: v.string(), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     return await ctx.db
       .query("journalEntries")
       .withIndex("by_run_sequence", (q) => q.eq("runId", args.runId))
@@ -189,6 +195,7 @@ export const entries = query({
 export const verifyChain = query({
   args: { runId: v.string() },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const all = await ctx.db
       .query("journalEntries")
       .withIndex("by_run_sequence", (q) => q.eq("runId", args.runId))

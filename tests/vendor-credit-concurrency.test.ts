@@ -6,7 +6,6 @@ import { processDocument } from "../src/agents/handlers/ap";
 import { SeatRuntime, type Task } from "../src/agents/runtime";
 import { MemoryStore } from "../src/memory/store";
 import type { Vendor } from "../src/memory/schemas";
-import type { WorldBank } from "../src/world/bank";
 
 const vendorPath = "vendors/test-produce.yaml";
 const vendor: Vendor = {
@@ -18,7 +17,7 @@ const vendor: Vendor = {
 let dir: string;
 let mem: MemoryStore;
 function runtime(seatId: string, store = mem) {
-  const rt = new SeatRuntime("test", { seatId, role: "ap_clerk", name: seatId }, "token", store, {} as WorldBank);
+  const rt = new SeatRuntime("test", { seatId, role: "ap_clerk", name: seatId }, "token", store);
   vi.spyOn(rt.kernel.client, "mutation").mockResolvedValue({ ok: true });
   vi.spyOn(rt, "simDate").mockResolvedValue("2026-01-05");
   return rt;

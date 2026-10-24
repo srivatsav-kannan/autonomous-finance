@@ -19,7 +19,16 @@ export type BankCommand = {
   approvalVersion: string;
   idempotencyKey: string;
   requestHash: string;
+  /** Exact saved HTTP body, mandatory for Increase; included in requestHash. */
+  providerRequest?: string;
 };
+
+/** Pure T2 builder: freeze these bytes before hashing/queuing the command. */
+export function buildIncreaseRequestBody(command: Pick<BankCommand, "scope" | "amountCents" | "destination" | "commandId">): string {
+  return JSON.stringify({ account_id: command.scope.accountId, amount: command.amountCents,
+    external_account_id: command.destination.externalAccountId,
+    statement_descriptor: command.commandId, require_approval: false });
+}
 
 export type TransferObservation = {
   id: string;

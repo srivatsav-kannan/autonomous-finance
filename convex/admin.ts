@@ -1,3 +1,4 @@
+import { assertLegacyRun, demoConfigForRun } from "./lib/demoAuth";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { fail, getRun, logActivity, requireAdmin, DEFAULT_POLICY } from "./lib/kernel";
@@ -141,13 +142,16 @@ export const addGoal = mutation({
 export const runs = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("runs").order("desc").take(20);
+    const rows = await ctx.db.query("runs").order("desc").take(100);
+    const visible = await Promise.all(rows.map(async row => await demoConfigForRun(ctx, row.runId) ? null : row));
+    return visible.filter(row => row !== null).slice(0, 20);
   },
 });
 
 export const event = query({
   args: { runId: v.string(), eventId: v.id("events") },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const e = await ctx.db.get(args.eventId);
     if (!e || e.runId !== args.runId) return null;
     return e;
@@ -158,6 +162,7 @@ export const event = query({
 export const eventsOfType = query({
   args: { runId: v.string(), type: v.string(), from: v.optional(v.string()), to: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     return await ctx.db
       .query("events")
       .withIndex("by_run_type", (q) => {
