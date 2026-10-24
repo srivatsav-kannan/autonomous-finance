@@ -7,7 +7,7 @@ import { appendDemoEntry } from "./lib/demoPost";
 import { canonical, sha256Hex } from "./lib/kernel";
 import type { BankScope } from "../src/payments/contracts";
 
-import { commandFor, transactionFor, saveObservation, saveTransaction, postVerifiedTransaction } from "./lib/payments/apply-observation";
+import { commandFor, transactionFor, saveObservation, saveTransaction, postVerifiedTransaction } from "./lib/payments/applyObservation";
 
 const serviceArgs = { scope: scopeValidator, token: v.string() };
 /** Raw signature verification happens in the credential-isolated ingress. ACK only after this commits. */

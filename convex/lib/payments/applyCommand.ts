@@ -3,7 +3,7 @@ import type { MutationCtx } from "../../_generated/server";
 import { assertRowScope, auditDemo, getPaymentConfig, requirePaymentSeat, requirePaymentHuman } from "../demoAuth";
 import { canonical, sha256Hex } from "../kernel";
 import { releaseReservations, reserveObligations } from "./reservations";
-import { assertReservedObligations } from "./execution-config";
+import { assertReservedObligations } from "./executionConfig";
 import { commandRequestHash, buildIncreaseRequestBody, type BankCommand, type BankScope } from "../../../src/payments/contracts";
 import { assertCanCancel, assertSnapshotCurrent, safeSumCents } from "../../../src/payments/domain/rules";
 const safeSum = safeSumCents;

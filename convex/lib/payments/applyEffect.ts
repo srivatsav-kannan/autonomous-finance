@@ -1,7 +1,7 @@
 import type { Doc, Id } from "../../_generated/dataModel";
 import type { MutationCtx } from "../../_generated/server";
 import { assertRowScope, auditDemo, requirePaymentDispatcher } from "../demoAuth";
-import { assertDispatchAuthority } from "./execution-config";
+import { assertDispatchAuthority } from "./executionConfig";
 import { PAYMENT_EXECUTOR_VERSION, type BankScope, type EffectLease } from "../../../src/payments/contracts";
 
 type DispatcherArgs = { scope: BankScope; token: string; paymentExecutorVersion?: string };

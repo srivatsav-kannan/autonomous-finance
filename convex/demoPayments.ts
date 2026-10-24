@@ -11,9 +11,9 @@ import { normalizeInvoiceNumber } from "./lib/invoiceIdentity";
 import { PAYMENT_EXECUTOR_VERSION } from "../src/payments/contracts";
 import { assertPaymentExecutor } from "../src/payments/domain/rules";
 
-import { cancelUnsent, requestPaymentCommand, approveWithinPolicyCommand, approveAndQueueCommand, resumePayment } from "./lib/payments/apply-command";
+import { cancelUnsent, requestPaymentCommand, approveWithinPolicyCommand, approveAndQueueCommand, resumePayment } from "./lib/payments/applyCommand";
 
-import { claimEffect, completeEffect, failEffect, heartbeatEffect } from "./lib/payments/apply-effect";
+import { claimEffect, completeEffect, failEffect, heartbeatEffect } from "./lib/payments/applyEffect";
 
 const scoped = { scope: scopeValidator };
 const agent = { ...scoped, seatId: v.string(), token: v.string() };
