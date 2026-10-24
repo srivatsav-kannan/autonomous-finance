@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { recordBill } from "../convex/ap";
 import { ROLE_CAPABILITIES, type Role } from "../src/core/roles";
-import { kernelHarness } from "./helpers/kernelHarness";
+import { kernelHarness, mutationHandler } from "./helpers/kernelHarness";
 
 const invoice = {
   idempotencyKey: "bill-1",
@@ -27,7 +27,7 @@ describe("bill creation is atomic with its accrual", () => {
   ])("leaves no bill after %s and allows a corrected retry", async (_label, changes, code) => {
     const h = kernelHarness();
     const auth = await h.setup();
-    const denied = await recordBill._handler(h.ctx, { ...auth, ...invoice, ...changes });
+    const denied = await mutationHandler(recordBill)(h.ctx, { ...auth, ...invoice, ...changes });
     expect(denied).toMatchObject({ ok: false, code });
     expect(h.all("bills")).toHaveLength(0);
     expect(h.all("journalEntries")).toHaveLength(0);
@@ -37,12 +37,12 @@ describe("bill creation is atomic with its accrual", () => {
     expect(h.all("violations")).toHaveLength(1);
     expect(h.all("activity").map((a) => a.kind)).toEqual(["blocked"]);
 
-    const corrected = await recordBill._handler(h.ctx, { ...auth, ...invoice });
+    const corrected = await mutationHandler(recordBill)(h.ctx, { ...auth, ...invoice });
     expect(corrected.ok).toBe(true);
     if (!corrected.ok) throw new Error(corrected.error);
     expect(h.all("bills")).toMatchObject([{ _id: corrected.billId, status: "approved", entryId: corrected.entryId }]);
     expect(h.all("journalEntries")).toMatchObject([{ _id: corrected.entryId, source: { kind: "bill", ref: corrected.billId } }]);
-    expect(await recordBill._handler(h.ctx, { ...auth, ...invoice })).toMatchObject({ ...corrected, replayed: true });
+    expect(await mutationHandler(recordBill)(h.ctx, { ...auth, ...invoice })).toMatchObject({ ...corrected, replayed: true });
     expect(h.all("bills")).toHaveLength(1);
     expect(h.all("journalEntries")).toHaveLength(1);
   });
@@ -51,7 +51,7 @@ describe("bill creation is atomic with its accrual", () => {
     const h = kernelHarness();
     const auth = await h.setup();
     await h.ctx.db.patch(h.all("periods")[0]!._id, { status: "closed" });
-    expect(await recordBill._handler(h.ctx, { ...auth, ...invoice })).toMatchObject({ ok: false, code: "period_closed" });
+    expect(await mutationHandler(recordBill)(h.ctx, { ...auth, ...invoice })).toMatchObject({ ok: false, code: "period_closed" });
     expect(h.all("bills")).toHaveLength(0);
     expect(h.all("violations")).toHaveLength(1);
   });
@@ -64,7 +64,7 @@ describe("bill writing authority", () => {
     const h = kernelHarness();
     const auth = await h.setup(role);
     for (const decision of ["approve", "hold", "reject"] as const) {
-      expect(await recordBill._handler(h.ctx, { ...auth, ...invoice, decision })).toMatchObject({ ok: false, code: "forbidden" });
+      expect(await mutationHandler(recordBill)(h.ctx, { ...auth, ...invoice, decision })).toMatchObject({ ok: false, code: "forbidden" });
     }
     expect(h.all("bills")).toHaveLength(0);
     expect(h.all("journalEntries")).toHaveLength(0);
@@ -76,7 +76,7 @@ describe("bill writing authority", () => {
     const h = kernelHarness();
     const auth = await h.setup(role);
     for (const decision of ["hold", "reject"] as const) {
-      expect(await recordBill._handler(h.ctx, { ...auth, ...invoice, idempotencyKey: decision, invoiceNumber: decision, decision, expenseAccount: "5200" })).toMatchObject({ ok: true, entryId: null });
+      expect(await mutationHandler(recordBill)(h.ctx, { ...auth, ...invoice, idempotencyKey: decision, invoiceNumber: decision, decision, expenseAccount: "5200" })).toMatchObject({ ok: true, entryId: null });
     }
     expect(h.all("bills").map((b) => b.status)).toEqual(["held", "rejected"]);
     expect(h.all("journalEntries")).toHaveLength(0);

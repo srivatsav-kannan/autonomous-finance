@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { postEntry } from "../convex/ledger";
 import { recordBill } from "../convex/ap";
-import { kernelHarness } from "./helpers/kernelHarness";
+import { kernelHarness, mutationHandler } from "./helpers/kernelHarness";
 
 const max = Number.MAX_SAFE_INTEGER;
 const entry = {
@@ -13,7 +13,7 @@ describe("safe aggregate cents", () => {
   it.each([1, 2])("rejects overflow even when floating debit and credit sums compare equal (%i)", async (extraCredit) => {
     const h = kernelHarness();
     const auth = await h.setup();
-    const result = await postEntry._handler(h.ctx, {
+    const result = await mutationHandler(postEntry)(h.ctx, {
       ...auth, ...entry,
       lines: [...entry.lines, { account: "5000", debit: 2, credit: 0 }, { account: "2000", debit: 0, credit: extraCredit }],
     });
@@ -28,7 +28,7 @@ describe("safe aggregate cents", () => {
   it("accepts exactly MAX_SAFE_INTEGER with exact repeated-account accumulation", async () => {
     const h = kernelHarness();
     const auth = await h.setup();
-    const result = await postEntry._handler(h.ctx, {
+    const result = await mutationHandler(postEntry)(h.ctx, {
       ...auth, ...entry,
       lines: [
         { account: "5000", debit: max - 2, credit: 0 }, { account: "5000", debit: 2, credit: 0 },
@@ -43,7 +43,7 @@ describe("safe aggregate cents", () => {
   it.each(["hold", "reject"] as const)("rejects unsafe %s bill totals before inserting AP rows", async (decision) => {
     const h = kernelHarness();
     const auth = await h.setup();
-    const result = await recordBill._handler(h.ctx, {
+    const result = await mutationHandler(recordBill)(h.ctx, {
       ...auth, idempotencyKey: "huge-bill", vendor: "produce", invoiceNumber: "INV-1", invoiceDate: "2026-01-02", dueDate: "2026-01-16",
       lines: [max, 2].map((amountCents) => ({ description: "item", quantity: 1, unitCents: amountCents, amountCents })),
       totalCents: max + 2, documentEventId: "document-1", decision, exceptions: [], expenseAccount: "5000",
@@ -55,7 +55,7 @@ describe("safe aggregate cents", () => {
   it("rejects bill sums that overflow before later negative lines cancel them", async () => {
     const h = kernelHarness();
     const auth = await h.setup();
-    const result = await recordBill._handler(h.ctx, {
+    const result = await mutationHandler(recordBill)(h.ctx, {
       ...auth, idempotencyKey: "cancelled-overflow", vendor: "produce", invoiceNumber: "INV-1", invoiceDate: "2026-01-02", dueDate: "2026-01-16",
       lines: [max, 2, -max].map((amountCents) => ({ description: "item", quantity: 1, unitCents: amountCents, amountCents })),
       totalCents: 1, documentEventId: "document-1", decision: "hold", exceptions: [], expenseAccount: "5000",
@@ -69,9 +69,9 @@ describe("persisted balances", () => {
   it("rejects a later posting that would overflow without advancing the journal or balances", async () => {
     const h = kernelHarness();
     const auth = await h.setup();
-    expect((await postEntry._handler(h.ctx, { ...auth, ...entry })).ok).toBe(true);
+    expect((await mutationHandler(postEntry)(h.ctx, { ...auth, ...entry })).ok).toBe(true);
     const before = { entries: h.all("journalEntries"), heads: h.all("ledgerHeads"), balances: h.all("balances"), idem: h.all("idempotency") };
-    const result = await postEntry._handler(h.ctx, { ...auth, ...entry, idempotencyKey: "entry-2", lines: [
+    const result = await mutationHandler(postEntry)(h.ctx, { ...auth, ...entry, idempotencyKey: "entry-2", lines: [
       { account: "5000", debit: 1, credit: 0 }, { account: "2000", debit: 0, credit: 1 },
     ] });
     expect(result).toMatchObject({ ok: false, code: "invalid_entry" });
@@ -87,7 +87,7 @@ describe("persisted balances", () => {
     const auth = await h.setup();
     await h.seed("balances", { runId: auth.runId, account: "2000", period: "2026-01", debits: 0, credits: max - 2 });
     const balances = h.all("balances");
-    const result = await postEntry._handler(h.ctx, { ...auth, ...entry, lines: [
+    const result = await mutationHandler(postEntry)(h.ctx, { ...auth, ...entry, lines: [
       { account: "5000", debit: 3, credit: 0 },
       { account: "2000", debit: 0, credit: 1 }, { account: "2000", debit: 0, credit: 2 },
     ] });
@@ -100,8 +100,8 @@ describe("persisted balances", () => {
   it("removes a provisional approved bill when its accrual would overflow", async () => {
     const h = kernelHarness();
     const auth = await h.setup();
-    expect((await postEntry._handler(h.ctx, { ...auth, ...entry })).ok).toBe(true);
-    const result = await recordBill._handler(h.ctx, {
+    expect((await mutationHandler(postEntry)(h.ctx, { ...auth, ...entry })).ok).toBe(true);
+    const result = await mutationHandler(recordBill)(h.ctx, {
       ...auth, idempotencyKey: "bill-after-max", vendor: "produce", invoiceNumber: "INV-1", invoiceDate: "2026-01-02", dueDate: "2026-01-16",
       lines: [{ description: "item", quantity: 1, unitCents: 1, amountCents: 1 }],
       totalCents: 1, documentEventId: "document-1", decision: "approve", exceptions: [], expenseAccount: "5000",

@@ -1,9 +1,15 @@
+import type { RegisteredMutation } from "convex/server";
 import type { MutationCtx } from "../../convex/_generated/server";
 import type { Doc, Id, TableNames } from "../../convex/_generated/dataModel";
 import { sha256Hex } from "../../convex/lib/kernel";
 import type { Role } from "../../src/core/roles";
 
 type Row = Record<string, unknown> & { _id: string; _creationTime: number };
+
+// Convex retains _handler at runtime but strips it from its published declarations.
+export function mutationHandler<A extends Record<string, unknown>, R>(mutation: RegisteredMutation<"public", A, R>) {
+  return (mutation as unknown as { _handler: (ctx: MutationCtx, args: A) => R })._handler;
+}
 
 /**
  * Minimal DB double for kernel handler tests. Returned failures deliberately retain
@@ -38,14 +44,36 @@ export function kernelHarness() {
     },
     query(table: string) {
       const filters: [string, unknown][] = [];
+      const predicates: ((row: Row) => boolean)[] = [];
+      let indexName = "";
+      type Expression = (row: Row) => unknown;
+      const evaluate = (value: unknown, row: Row) => typeof value === "function" ? (value as Expression)(row) : value;
+      const expressions = {
+        field: (field: string) => (row: Row) => row[field],
+        eq: (a: unknown, b: unknown) => (row: Row) => evaluate(a, row) === evaluate(b, row),
+        lt: (a: unknown, b: unknown) => (row: Row) => (evaluate(a, row) as number) < (evaluate(b, row) as number),
+        lte: (a: unknown, b: unknown) => (row: Row) => (evaluate(a, row) as number) <= (evaluate(b, row) as number),
+        or: (...values: Expression[]) => (row: Row) => values.some((value) => value(row)),
+      };
       const query = {
         withIndex(_name: string, build: (q: { eq: (field: string, value: unknown) => unknown }) => unknown) {
+          indexName = _name;
           const index = { eq(field: string, value: unknown) { filters.push([field, value]); return index; } };
           build(index);
           return query;
         },
+        filter(build: (q: typeof expressions) => (row: Row) => boolean) {
+          predicates.push(build(expressions));
+          return query;
+        },
         async collect() {
-          return structuredClone([...rows(table).values()].filter((row) => filters.every(([field, value]) => row[field] === value)));
+          const matches = [...rows(table).values()].filter((row) =>
+            filters.every(([field, value]) => row[field] === value) && predicates.every((test) => test(row)));
+          if (indexName === "by_run_role_status") matches.sort((a, b) => (a.priority as number) - (b.priority as number));
+          return structuredClone(matches);
+        },
+        async first() {
+          return (await query.collect())[0] ?? null;
         },
         async unique() {
           const matches = await query.collect();
@@ -60,7 +88,7 @@ export function kernelHarness() {
   return {
     ctx,
     all<T extends TableNames>(table: T): Doc<T>[] {
-      return structuredClone([...rows(table).values()]) as Doc<T>[];
+      return structuredClone([...rows(table).values()]) as unknown as Doc<T>[];
     },
     async seed<T extends TableNames>(table: T, value: Omit<Doc<T>, "_id" | "_creationTime">): Promise<Id<T>> {
       return await db.insert(table, value) as Id<T>;
