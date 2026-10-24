@@ -7,13 +7,18 @@ that branch. Branch protection and merging the stack remain repository-admin dec
 
 ## Pull request gates
 
-`.github/workflows/ap-ci.yml` runs for all pull requests, pushes to `main` and
-`codex/**`, and explicit workflow dispatch. Superseded runs for the same PR/ref
+`.github/workflows/ap-ci.yml` runs for all pull requests, pushes to `main`, and
+explicit workflow dispatch. Feature-branch pushes do not duplicate the PR suite.
+Superseded runs for the same PR/ref
 are cancelled. It uses GitHub-hosted Ubuntu 24.04, Node 24.18.0, SHA-pinned
 actions, `contents: read`, no persisted checkout credentials, no application
 secrets and no dependency/state cache. It never uses `pull_request_target`.
 PR runs validate GitHub's merge commit; the exact checked-out revision is in
 each artifact. Fork PRs may need a maintainer's normal Actions approval.
+
+Artifact uploads pin official `actions/upload-artifact` v7.0.2 at
+`cf430e030ddbb5b0abf93d22962f4752f3646cd9`. Its [action manifest](https://github.com/actions/upload-artifact/blob/cf430e030ddbb5b0abf93d22962f4752f3646cd9/action.yml)
+uses Node 24 directly, avoiding the deprecated Node 20 action runtime.
 
 The regression job runs `npm ci`, all three application/backend/test typechecks,
 `npm test` once, and `npm run build:console`. The full test command includes
