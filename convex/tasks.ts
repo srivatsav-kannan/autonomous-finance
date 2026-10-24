@@ -8,14 +8,15 @@ const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 const LEASE_MS = 120_000;
 const MAX_ATTEMPTS = 4;
 const MAX_DEFERRALS = 200;
-// attempts increases on every claim, including when the same seat reclaims a task.
-// Callers must echo it to distinguish the current lease from delayed worker messages.
-const leaseArgs = { ...seatArgs, taskId: v.id("tasks"), leaseAttempt: v.number() };
+// Generation increases on every claim and is never refunded by a deferral.
+// Callers must echo it; attempts is only the retry budget, not a fencing token.
+const leaseArgs = { ...seatArgs, taskId: v.id("tasks"), leaseGeneration: v.number() };
 
-function leaseFailure(task: Doc<"tasks">, seatId: string, role: string, attempt: number, now: number) {
+function leaseFailure(task: Doc<"tasks">, seatId: string, role: string, generation: number, now: number) {
   if (task.status !== "leased") return fail("not_leased", `task is ${task.status}`);
   if (task.leaseOwner !== seatId || task.role !== role) return fail("not_lease_owner", "not your lease");
-  if (task.attempts !== attempt) return fail("stale_lease", "task has been claimed again");
+  // Legacy leases may already have reused an attempts token. Fail closed until reclaimed.
+  if (task.leaseGeneration === undefined || task.leaseGeneration !== generation) return fail("stale_lease", "task needs a current lease generation");
   if (task.leaseExpiresAt === undefined || task.leaseExpiresAt <= now) return fail("lease_expired", "task lease has expired");
   return null;
 }
@@ -54,6 +55,7 @@ export const createTask = mutation({
       createdBy: args.seatId,
       parentTaskId: args.parentTaskId,
       attempts: 0,
+      leaseGeneration: 0,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -90,6 +92,7 @@ export const adminCreateTask = mutation({
       idempotencyKey: args.idempotencyKey,
       createdBy: "admin",
       attempts: 0,
+      leaseGeneration: 0,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -131,15 +134,19 @@ export const claimTask = mutation({
       });
       return { ok: true as const, task: null };
     }
-    await ctx.db.patch(candidate._id, {
-      status: "leased",
+    // Legacy rows have no generation. Deferrals refunded attempts, so their sum
+    // reconstructs the number of claims without changing either existing budget.
+    const leaseGeneration = (candidate.leaseGeneration ?? (candidate.attempts + (candidate.deferrals ?? 0))) + 1;
+    const lease = {
+      status: "leased" as const,
       leaseOwner: args.seatId,
       leaseExpiresAt: now + LEASE_MS,
+      leaseGeneration,
       attempts: candidate.attempts + 1,
       updatedAt: now,
-    });
-    const task = await ctx.db.get(candidate._id);
-    return { ok: true as const, task, reclaimed: Boolean(expired) };
+    };
+    await ctx.db.patch(candidate._id, lease);
+    return { ok: true as const, task: { ...candidate, ...lease }, reclaimed: Boolean(expired) };
   },
 });
 
@@ -151,7 +158,7 @@ export const completeTask = mutation({
     const task = await ctx.db.get(args.taskId);
     if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
     const now = Date.now();
-    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
+    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseGeneration, now);
     if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.completeTask", denied);
     await ctx.db.patch(task._id, {
       status: "done", result: args.result, updatedAt: now,
@@ -169,7 +176,7 @@ export const failTask = mutation({
     const task = await ctx.db.get(args.taskId);
     if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
     const now = Date.now();
-    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
+    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseGeneration, now);
     if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.failTask", denied);
     const giveUp = task.attempts >= MAX_ATTEMPTS || args.retryInMs === undefined;
     await ctx.db.patch(task._id, {
@@ -193,7 +200,7 @@ export const waitTask = mutation({
     const task = await ctx.db.get(args.taskId);
     if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
     const now = Date.now();
-    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
+    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseGeneration, now);
     if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.waitTask", denied);
     await ctx.db.patch(task._id, { status: "waiting", error: args.reason, leaseOwner: undefined, leaseExpiresAt: undefined, updatedAt: now });
     return { ok: true as const };
@@ -212,7 +219,7 @@ export const deferTask = mutation({
     const task = await ctx.db.get(args.taskId);
     if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
     const now = Date.now();
-    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
+    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseGeneration, now);
     if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.deferTask", denied);
     const deferrals = (task.deferrals ?? 0) + 1;
     if (deferrals > MAX_DEFERRALS) return fail("too_many_deferrals", `task was deferred ${MAX_DEFERRALS} times`);
@@ -249,7 +256,7 @@ export const heartbeatTask = mutation({
     const task = await ctx.db.get(args.taskId);
     if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
     const now = Date.now();
-    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
+    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseGeneration, now);
     if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.heartbeatTask", denied);
     await ctx.db.patch(task._id, { leaseExpiresAt: now + LEASE_MS, updatedAt: now });
     return { ok: true as const };

@@ -38,7 +38,7 @@ async function createAndClaim(client: SeatClient, key: string) {
   assert.ok(created.ok);
   const claimed = await client.client.mutation(api.tasks.claimTask, client.auth);
   assert.ok(claimed.ok && claimed.task);
-  return { ...client.auth, taskId: claimed.task._id, leaseAttempt: claimed.task.attempts, expiresAt: claimed.task.leaseExpiresAt! };
+  return { ...client.auth, taskId: claimed.task._id, leaseGeneration: claimed.task.leaseGeneration, expiresAt: claimed.task.leaseExpiresAt! };
 }
 async function get(client: SeatClient, taskId: Id<"tasks">) {
   return await client.client.query(api.tasks.get, { runId: client.runId, taskId });
@@ -61,16 +61,16 @@ const { expiresAt: _retryExpiry, ...retry } = await createAndClaim(pay, "retry")
 check("owner can retry work", (await pay.client.mutation(api.tasks.failTask, { ...retry, error: "retry", retryInMs: 0 })).ok);
 const reclaim = await pay.client.mutation(api.tasks.claimTask, pay.auth);
 assert.ok(reclaim.ok && reclaim.task);
-check("same seat obtains a new attempt", reclaim.task._id === retry.taskId && reclaim.task.attempts === retry.leaseAttempt + 1);
+check("same seat obtains a new generation", reclaim.task._id === retry.taskId && reclaim.task.leaseGeneration === retry.leaseGeneration + 1);
 const reclaimed = await get(pay, retry.taskId);
 for (const result of [
   await pay.client.mutation(api.tasks.waitTask, { ...retry, reason: "stale" }),
   await pay.client.mutation(api.tasks.failTask, { ...retry, error: "stale", retryInMs: 0 }),
   await pay.client.mutation(api.tasks.completeTask, retry),
   await pay.client.mutation(api.tasks.heartbeatTask, retry),
-]) check("old attempt cannot change a new lease", !result.ok && result.code === "stale_lease");
+]) check("old generation cannot change a new lease", !result.ok && result.code === "stale_lease");
 assert.deepEqual(await get(pay, retry.taskId), reclaimed);
-const current = { ...retry, leaseAttempt: reclaim.task.attempts };
+const current = { ...retry, leaseGeneration: reclaim.task.leaseGeneration };
 check("current owner can wait", (await pay.client.mutation(api.tasks.waitTask, { ...current, reason: "approval" })).ok);
 const question = { to: "controller", severity: "decision" as const, title: "Resume work", body: "Synthetic smoke", evidence: [], options: [{ id: "ack", label: "Resume" }] };
 const ask = await pay.client.mutation(api.asks.createAsk, { ...pay.auth, ...question, taskId: current.taskId });
@@ -79,7 +79,7 @@ check("same-run ask can be answered", (await controller.client.mutation(api.asks
 check("answer wakes its waiting task", (await get(pay, current.taskId))?.status === "queued");
 const resumed = await pay.client.mutation(api.tasks.claimTask, pay.auth);
 assert.ok(resumed.ok && resumed.task);
-await pay.client.mutation(api.tasks.completeTask, { ...current, leaseAttempt: resumed.task.attempts });
+await pay.client.mutation(api.tasks.completeTask, { ...current, leaseGeneration: resumed.task.leaseGeneration });
 
 const { expiresAt: _foreignExpiry, ...foreign } = await createAndClaim(otherPay, "foreign");
 assert.ok((await otherPay.client.mutation(api.tasks.waitTask, { ...foreign, reason: "approval" })).ok);
@@ -103,9 +103,9 @@ if (process.argv.includes("--expiry")) {
   assert.deepEqual(await get(pay, expired.taskId), snapshot);
   const next = await pay.client.mutation(api.tasks.claimTask, pay.auth);
   assert.ok(next.ok && next.task);
-  check("same seat reclaims its expired work", next.reclaimed && next.task.attempts === expired.leaseAttempt + 1);
+  check("same seat reclaims its expired work", next.reclaimed && next.task.leaseGeneration === expired.leaseGeneration + 1);
   const old = await pay.client.mutation(api.tasks.completeTask, expired);
-  check("old expired attempt stays fenced after reclaim", !old.ok && old.code === "stale_lease");
-  check("reclaimed lease completes", (await pay.client.mutation(api.tasks.completeTask, { ...expired, leaseAttempt: next.task.attempts })).ok);
+  check("old expired generation stays fenced after reclaim", !old.ok && old.code === "stale_lease");
+  check("reclaimed lease completes", (await pay.client.mutation(api.tasks.completeTask, { ...expired, leaseGeneration: next.task.leaseGeneration })).ok);
 }
 console.log(`ALL PASS (${checks} checks; run ${runId})`);

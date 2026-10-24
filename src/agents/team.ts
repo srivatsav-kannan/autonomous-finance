@@ -6,7 +6,7 @@ import { MemoryStore } from "../memory/store";
 import { WorldBank } from "../world/bank";
 import { memoryDir, runDir } from "../world/scenario";
 import { LlmRefused, LlmUnavailable, MODEL } from "./llm";
-import { SeatRuntime, type Handler, type Task } from "./runtime";
+import { SeatRuntime, type Handler } from "./runtime";
 import { TaskLeaseLost, withTaskLease } from "./task-lease";
 import { processDocument } from "./handlers/ap";
 import { approvePayment, reviewHeld, reviewHeldReceivable, reviewProposal } from "./handlers/controller";
@@ -85,10 +85,10 @@ export class Team {
   async step(rt: SeatRuntime): Promise<boolean> {
     const claim = await rt.kernel.client.mutation(api.tasks.claimTask, rt.kernel.auth);
     if (!claim.ok) throw new Error(`claim failed for ${rt.seat.seatId}: ${claim.error}`);
-    const task = claim.task as Task | null;
+    const task = claim.task;
     if (!task) return false;
     const handler = HANDLERS[task.type];
-    const lease = { ...rt.kernel.auth, taskId: task._id, leaseAttempt: task.attempts };
+    const lease = { ...rt.kernel.auth, taskId: task._id, leaseGeneration: task.leaseGeneration };
     const before = { ...rt.usage };
     const started = Date.now();
     let outcome = "error";

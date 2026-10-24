@@ -141,7 +141,8 @@ export default defineSchema({
     parentTaskId: v.optional(v.id("tasks")),
     leaseOwner: v.optional(v.string()),
     leaseExpiresAt: v.optional(v.number()),
-    attempts: v.number(),
+    leaseGeneration: v.optional(v.number()), // monotonic fencing token; legacy rows initialize on claim
+    attempts: v.number(), // retry budget: claims minus refunded deferrals
     deferrals: v.optional(v.number()),
     result: v.optional(v.any()),
     error: v.optional(v.string()),

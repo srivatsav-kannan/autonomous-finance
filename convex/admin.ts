@@ -121,6 +121,7 @@ export const ingestEvent = mutation({
           idempotencyKey: `event:${args.externalId}:${route.taskType}`,
           createdBy: "world",
           attempts: 0,
+          leaseGeneration: 0,
           createdAt: Date.now(),
           updatedAt: Date.now(),
         }),
