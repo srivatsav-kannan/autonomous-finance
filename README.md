@@ -42,6 +42,18 @@ Built at Cal Hacks 13.0 for the Hyphenate track, *The Hyphenated Enterprise: Aut
   - controls
   - human load, coverage and cost
 
+## Invoice evidence workspace
+
+A focused workflow for one company in USD: import invoices, credit memos and supporting documents, inspect per-customer **net invoiced totals**, resolve exceptions, and keep source and decision history. Net invoiced means included invoices minus credit memos. It is **not an outstanding balance, cash movement, payment execution or revenue-recognition calculation**; it keeps an auditable subledger in Convex and does not post general-ledger or bank transactions.
+
+1. Import supported documents or select the public synthetic demo.
+2. See customer totals and every contributing source. Exact copies are marked duplicate; a late imported version supersedes the earlier one without adding a second amount.
+3. Open **Needs review** or **Evidence missing** cases. Read the original document, proposed treatment, contradictions, question and audit history.
+4. Accept the exact proposal, exclude it, or request additional evidence. Decisions survive refresh and restart. Stale proposals and conflicting retries are rejected.
+5. Import a late correction and inspect the resumed result.
+
+The default runtime is explicitly **deterministic**: its narrow parser handles documented text/CSV layouts and leaves unfamiliar evidence unresolved. The bounded investigator supports source, related-record and policy tools; model proposals require human review. See the [startup guide](docs/invoice-mvp/STARTUP.md), [acceptance record](docs/invoice-mvp/ACCEPTANCE.md), [architecture and trust boundaries](docs/invoice-mvp/ARCHITECTURE.md), [frozen evaluation protocol](docs/invoice-mvp/evaluation-protocol.md) and [results](docs/invoice-mvp/evaluation-results.md), and the [application benchmark harness](evals/invoice-mvp/README.md).
+
 ## Run it
 
 Requires **Node 24.18.0 or later**, including for the pinned Prism contract tests. Use the committed dependency lockfile.
