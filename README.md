@@ -27,6 +27,9 @@ Then configure a local admin secret once, initialize a workspace, start the invo
 
 ## Evidence and limits
 
+At verified source `926e4e8`, the real browser workflow and process-restart checks pass, as do 269 repository tests and 32 evaluator/transport tests. The deterministic actual-app Invoice Sandbox run is **0/18**, with all 148 originals retained and unresolved; the frozen held-out suite is **4/9**. Live-model results remain **NOT RUN**. These limits matter more than the successful synthetic demo.
+
+
 - [Integrated acceptance record](docs/invoice-mvp/ACCEPTANCE.md)
 - [Architecture and trust boundaries](docs/invoice-mvp/ARCHITECTURE.md)
 - [Frozen evaluation protocol](docs/invoice-mvp/evaluation-protocol.md) and [results](docs/invoice-mvp/evaluation-results.md)
