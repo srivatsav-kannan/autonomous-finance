@@ -60,7 +60,7 @@ npx convex env set KERNEL_ADMIN_SECRET "$(openssl rand -hex 24)"
 Add `ANTHROPIC_API_KEY=...` to `.env.local` to turn on Claude. Without it, the team runs its deterministic paths only.
 
 ```bash
-npm run smoke                          # 38 invariant checks on the kernel and memory
+npm run smoke                          # 42 invariant checks on the kernel and memory
 npm run eval -- --stores 3 --days 14   # full scored run; add --chaos 0.3 to re-deliver 30% of events
 npm run gateway                        # human gateway on :8787 (holds the human CFO seat token)
 npm run console                        # overseer console on http://127.0.0.1:5173
