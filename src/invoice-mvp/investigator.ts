@@ -167,9 +167,11 @@ export async function investigate(backend: InvoiceBackend, initial: CaseDetail, 
           break;
         }
       }
+      let responseUsageKnown = false;
       try {
         modelCalls++;
         const result = await model.next(request);
+        responseUsageKnown = true;
         for (const k of Object.keys(usage) as (keyof ModelUsage)[]) usage[k] += result.usage[k];
         await audit("model_usage", `Actual provider-reported usage for completed request ${requestIdentity}.`, result.usage, `usage-${requestIdentity}`);
         await runTool(result.action);
@@ -185,6 +187,9 @@ export async function investigate(backend: InvoiceBackend, initial: CaseDetail, 
             usage.costMicros += e.usage.costMicros;
             await audit("model_usage", `Actual provider-reported usage for unusable response ${requestIdentity}.`, { ...e.usage, costMicros: e.usage.costMicros }, `usage-${requestIdentity}`);
           }
+        } else if (!responseUsageKnown) {
+          usageCostUnavailable = true;
+          await audit("model_usage_unavailable", `Provider request ${requestIdentity} failed without response usage; tokens and cost are unavailable. The full reservation remains charged.`, {}, `usage-${requestIdentity}`);
         }
         await audit("model_failure", e instanceof ModelResponseError ? `${e.code}: ${e.message}` : "Model request failed or produced an invalid tool action; case remains unresolved.", {}, `failure-${turn}`);
         break;
