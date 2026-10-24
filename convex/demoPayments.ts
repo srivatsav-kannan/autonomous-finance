@@ -214,7 +214,15 @@ export const humanReview = query({
       ctx.db.query("demoVersions").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).collect(),
       ctx.db.query("demoCommands").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).collect(),
     ]);
-    return { operator: { seatId: seat.seatId, name: seat.name }, beneficiary: config.beneficiary, policyVersion: config.policyVersion, bills, credits, versions, commands: commands.map(({ leaseToken: _, ...c }) => c) };
+    const executionEligible = config.paymentExecutorVersion === PAYMENT_EXECUTOR_VERSION;
+    return {
+      operator: { seatId: seat.seatId, name: seat.name }, beneficiary: config.beneficiary, policyVersion: config.policyVersion,
+      executionConfig: {
+        paymentExecutorVersion: config.paymentExecutorVersion ?? null, provenance: config.provenance ?? null,
+        eligible: executionEligible, reason: executionEligible ? null : "Historical executor metadata requires review; automatic dispatch is disabled",
+      },
+      bills, credits, versions, commands: commands.map(({ leaseToken: _, ...c }) => c),
+    };
   },
 });
 export const view = query({

@@ -53,15 +53,13 @@ describe("final authority, close and return review",()=>{
     expect(await f.t.run(ctx=>ctx.db.query("demoCommands").collect())).toHaveLength(0);
   });
 
-  it("a second outstanding approval version stays a close blocker after its invoice settles",async()=>{
+  it("request reservation prevents a second outstanding approval for the same invoice",async()=>{
     const f=await demoFixture();const billId=await f.bill();
     const one=await f.t.mutation(api.demoPayments.requestPayment,{...f.payments,requestKey:"first",billIds:[billId],credits:[]});
-    const two=await f.t.mutation(api.demoPayments.requestPayment,{...f.payments,requestKey:"second",billIds:[billId],credits:[]});
-    await f.human.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...one});
-    const bank=openFakeBank({path:":memory:",scope:f.scope,seed:39,startTime:"2026-10-23T12:00:00.000Z"});openBanks.push(bank);
-    await new PaymentDispatcher(f.t as KernelTransport,f.scope,f.dispatcherToken,bank.provider,"review").tick();bank.harness.settle(bank.harness.inspect().transfers[0]!.id);
-    await new EvidenceWorker(f.t as KernelTransport,f.scope,f.evidenceToken,bank.provider).tick();
-    expect((await f.human.query(api.demoEvidence.humanView,{scope:f.scope})).blockers.some((b:any)=>b.id===two.versionId)).toBe(true);
+    await expect(f.t.mutation(api.demoPayments.requestPayment,{...f.payments,requestKey:"second",billIds:[billId],credits:[]})).rejects.toThrow("not available for payment");
+    expect(await f.t.run(ctx=>ctx.db.query("demoVersions").collect())).toHaveLength(1);
+    expect(await f.t.run(ctx=>ctx.db.get(billId))).toMatchObject({reservedVersionId:one.versionId});
+    expect((await f.human.query(api.demoEvidence.humanView,{scope:f.scope})).blockers.some(b=>b.id===one.versionId)).toBe(true);
     await expect(f.human.mutation(api.demoEvidence.signClose,{scope:f.scope,period:"2026-10"})).rejects.toThrow("AP close blocked");
   });
 

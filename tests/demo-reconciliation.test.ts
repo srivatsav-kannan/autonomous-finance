@@ -1,3 +1,4 @@
+import { PAYMENT_EXECUTOR_VERSION } from "../src/payments/contracts";
 import assert from "node:assert/strict";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
@@ -122,7 +123,7 @@ describe("verified AP evidence and reconciliation", () => {
 
   it("persists an early authenticated hint before the dispatch response and fences stale completion", async () => {
     const f = await fixture(); await f.queued();
-    const dispatchAuth = { scope: f.scope, token: f.dispatcherToken };
+    const dispatchAuth = { scope: f.scope, token: f.dispatcherToken, paymentExecutorVersion: PAYMENT_EXECUTOR_VERSION };
     const claim = await f.t.mutation(api.demoPayments.claim, { ...dispatchAuth, workerId: "worker-before-response", leaseToken: "unique-first-worker-lease" });
     assert(claim);
     const transfer = await f.bank.provider.createTransfer(claim.command);

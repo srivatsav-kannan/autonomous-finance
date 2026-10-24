@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { api, demoFixture } from "./demo-fixture";
+import { api, demoFixture, paymentLeaseProof } from "./demo-fixture";
 import { buildIncreaseRequestBody, commandRequestHash } from "../src/integrations/contracts";
+
+import { PAYMENT_EXECUTOR_VERSION } from "../src/payments/contracts";
 
 afterEach(() => { vi.useRealTimers(); vi.unstubAllEnvs(); });
 
@@ -20,7 +22,7 @@ describe("AP backend authority and immutable approval", () => {
     for (const scope of [{...f.scope, accountId:"other"},{...f.scope, organizationId:"other"},{...f.scope,runId:"other"}]) {
       await expect(f.t.query(api.demoPayments.view, { ...f.payments, scope })).rejects.toThrow("mismatch");
       await expect(f.human.query(api.demoPayments.humanReview, { scope })).rejects.toThrow("mismatch");
-      await expect(f.t.mutation(api.demoPayments.claim, { scope, token: f.dispatcherToken, workerId:"w",leaseToken:"unique-lease-token" })).rejects.toThrow("mismatch");
+      await expect(f.t.mutation(api.demoPayments.claim, { scope, token: f.dispatcherToken, paymentExecutorVersion: PAYMENT_EXECUTOR_VERSION, workerId:"w",leaseToken:"unique-lease-token" })).rejects.toThrow("mismatch");
     }
     for (const endpoint of [api.ap.bills, api.payments.intents, api.observe.overview, api.ledger.entries, api.seats.list, api.asks.list, api.tasks.queueStats]) {
       await expect(f.t.query(endpoint, { runId:f.scope.runId })).rejects.toThrow("scoped demo APIs");
@@ -45,7 +47,7 @@ describe("AP backend authority and immutable approval", () => {
     await expect(f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.evidenceToken,workerId:"w",leaseToken:"unique-lease-token"})).rejects.toThrow("dispatcher credential");
     await expect(f.t.mutation(api.demoEvidence.ingestNotice,{scope:f.scope,token:f.dispatcherToken,eventId:"e",transferId:"t",bodyHash:"0".repeat(64)})).rejects.toThrow("evidence credential");
     vi.stubEnv("AP_BANK_SCOPE",JSON.stringify({...f.scope,accountId:"another-configured-account"}));
-    await expect(f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,workerId:"w",leaseToken:"unique-lease-token"})).rejects.toThrow("service account scope mismatch");
+    await expect(f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"w",leaseToken:"unique-lease-token"})).rejects.toThrow("service account scope mismatch");
     expect(await f.t.run(ctx=>ctx.db.query("demoCommands").collect())).toHaveLength(0);
   });
 
@@ -54,7 +56,7 @@ describe("AP backend authority and immutable approval", () => {
     const p = await f.t.mutation(api.demoPayments.requestPayment, {...f.payments,requestKey:"p",billIds:[billId],credits:[]});
     await f.t.mutation(api.demoPayments.approveWithinPolicy, {...f.controller,...p});
     await f.t.mutation(api.demoPayments.approveWithinPolicy, {...f.auth("cfo_agent"),...p});
-    expect(await f.t.mutation(api.demoPayments.claim, {scope:f.scope,token:f.dispatcherToken,workerId:"w",leaseToken:"unique-lease-token"})).toBeNull();
+    expect(await f.t.mutation(api.demoPayments.claim, {scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"w",leaseToken:"unique-lease-token"})).toBeNull();
     await f.human.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p});
     expect((await f.t.run(ctx => ctx.db.query("demoCommands").collect()))).toHaveLength(1);
   });
@@ -76,7 +78,7 @@ describe("AP backend authority and immutable approval", () => {
     await expect(f.t.mutation(api.demoPayments.requestPayment,{...args,billIds:[b]})).rejects.toThrow("idempotency conflict");
     await expect(f.t.mutation(api.demoPayments.requestPayment,{...args,requestKey:"double",billIds:[a,a]})).rejects.toThrow("Distinct");
     await f.t.mutation(api.demoPayments.flagException,{...f.ap,billId:a,reason:"amount disputed"});
-    await expect(f.human.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p})).rejects.toThrow("Stale bill");
+    await expect(f.human.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p})).rejects.toThrow("Stale payment approval");
     expect((await f.t.run(ctx=>ctx.db.get(a)))?.reservedVersionId).toBeUndefined();
   });
 
@@ -85,7 +87,7 @@ describe("AP backend authority and immutable approval", () => {
     const before=await f.t.run(ctx=>ctx.db.get(q.commandId));
     expect(before!.command.providerRequest).toBe(buildIncreaseRequestBody(before!.command));
     expect(before!.command.requestHash).toBe(await commandRequestHash(before!.command));
-    const claim=await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,workerId:"w",leaseToken:"unique-lease-token"});
+    const claim=await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"w",leaseToken:"unique-lease-token"});
     assert(claim);
     expect(claim.command).toEqual(before!.command);
     expect((await f.human.query(api.demoPayments.humanReview,{scope:f.scope})).operator).toEqual({seatId:"human_cfo",name:"human_cfo"});
@@ -118,9 +120,12 @@ describe("AP backend authority and immutable approval", () => {
     const {creditId} = await f.human.mutation(api.demoPayments.recordCredit,{scope:f.scope,reference:"credit-1",amountCents:6000,evidence:"credit.pdf",date:"2026-10-23",expenseAccount:"5000"});
     await expect(f.human.mutation(api.demoPayments.recordCredit,{scope:f.scope,reference:"credit-1",amountCents:6000,evidence:"credit.pdf",date:"2026-10-24",expenseAccount:"5000"})).rejects.toThrow("idempotency conflict");
     const [a,b] = await Promise.all([f.bill(),f.bill()]);
-    const versions = await Promise.all([a,b].map((billId,i)=>f.t.mutation(api.demoPayments.requestPayment,{...f.payments,requestKey:`credit-${i}`,billIds:[billId],credits:[{creditId,amountCents:6000}]})));
-    const results = await Promise.allSettled(versions.map(p=>f.human.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p})));
-    expect(results.filter(r=>r.status==="fulfilled")).toHaveLength(1);
+    const requests = await Promise.allSettled([a,b].map((billId,i)=>f.t.mutation(api.demoPayments.requestPayment,{...f.payments,requestKey:`credit-${i}`,billIds:[billId],credits:[{creditId,amountCents:6000}]})));
+    expect(requests.filter(r=>r.status==="fulfilled")).toHaveLength(1);
+    expect(await f.t.run(ctx=>ctx.db.query("demoCommands").collect())).toHaveLength(0);
+    const request=requests.find(r=>r.status==="fulfilled")!;
+    assert(request.status==="fulfilled");
+    await f.human.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...request.value});
     expect((await f.t.run(ctx=>ctx.db.get(creditId))) as any).toMatchObject({reservedCents:6000,consumedCents:0});
     expect((await f.t.run(ctx=>ctx.db.query("demoBills").collect())).filter(b=>b.reservedVersionId)).toHaveLength(1);
     expect(await f.t.run(ctx=>ctx.db.query("demoCommands").collect())).toHaveLength(1);
@@ -131,23 +136,23 @@ describe("durable fenced dispatch", () => {
   it("claims once concurrently and fences restarted workers including same worker ID", async () => {
     vi.useFakeTimers();vi.setSystemTime(new Date("2026-10-23T12:00:00Z"));
     const f = await demoFixture();const q = await f.queued();
-    const common={scope:f.scope,token:f.dispatcherToken,workerId:"same-worker"};
+    const common={scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"same-worker"};
     const claims=await Promise.all(["lease-token-first","lease-token-other"].map(leaseToken=>f.t.mutation(api.demoPayments.claim,{...common,leaseToken})));
     expect(claims.filter(Boolean)).toHaveLength(1);const first=claims.find(Boolean)!;
     vi.setSystemTime(Date.now()+30_001);
     const second=await f.t.mutation(api.demoPayments.claim,{...common,leaseToken:"lease-token-restarted"});
     assert(second);
     expect(second.command).toEqual(first.command);expect(second.generation).toBe(first.generation+1);
-    const {command:_,providerTransferId:__,...stale}=first;
-    await expect(f.t.mutation(api.demoPayments.complete,{scope:f.scope,token:f.dispatcherToken,...stale,providerTransferId:"bank-1"})).rejects.toThrow("Stale");
-    await expect(f.t.mutation(api.demoPayments.heartbeat,{scope:f.scope,token:f.dispatcherToken,...stale})).rejects.toThrow("Stale");
+    const stale=paymentLeaseProof(first);
+    await expect(f.t.mutation(api.demoPayments.complete,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,...stale,providerTransferId:"bank-1"})).rejects.toThrow("Stale");
+    await expect(f.t.mutation(api.demoPayments.heartbeat,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,...stale})).rejects.toThrow("Stale");
     await expect(f.human.mutation(api.demoPayments.cancel,{scope:f.scope,versionId:q.versionId})).rejects.toThrow("may have started");
     expect((await f.t.run(ctx=>ctx.db.get(q.billId)))?.reservedVersionId).toBe(q.versionId);
   });
 
   it("cancellation races claim atomically and never releases a possibly sent command", async () => {
     const f=await demoFixture();const q=await f.queued();
-    const results=await Promise.allSettled([f.human.mutation(api.demoPayments.cancel,{scope:f.scope,versionId:q.versionId}),f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,workerId:"w",leaseToken:"unique-lease-token"})]);
+    const results=await Promise.allSettled([f.human.mutation(api.demoPayments.cancel,{scope:f.scope,versionId:q.versionId}),f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"w",leaseToken:"unique-lease-token"})]);
     const c=await f.t.run(ctx=>ctx.db.get(q.commandId));const b=await f.t.run(ctx=>ctx.db.get(q.billId));
     if(c!.execution==="cancelled") {expect(c!.attemptCount).toBe(0);expect(b!.reservedVersionId).toBeUndefined();expect(results[1]).toMatchObject({status:"fulfilled",value:null});}
     else {expect(c!.execution).toBe("in_flight");expect(b!.reservedVersionId).toBe(q.versionId);expect(results[0].status).toBe("rejected");}
@@ -158,7 +163,7 @@ describe("durable fenced dispatch", () => {
     await f.t.mutation(api.demoPayments.flagException,{...f.ap,billId:cancelled.billId,reason:"receipt mismatch"});
     expect(await f.t.run(ctx=>ctx.db.get(cancelled.commandId))).toMatchObject({execution:"cancelled",attemptCount:0});
     expect((await f.t.run(ctx=>ctx.db.get(cancelled.billId)))?.reservedVersionId).toBeUndefined();
-    const started=await f.queued();await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,workerId:"w",leaseToken:"unique-lease-token"});
+    const started=await f.queued();await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"w",leaseToken:"unique-lease-token"});
     await f.t.mutation(api.demoPayments.flagException,{...f.ap,billId:started.billId,reason:"late receipt mismatch"});
     expect(await f.t.run(ctx=>ctx.db.get(started.commandId))).toMatchObject({execution:"in_flight",attemptCount:1});
     expect(await f.t.run(ctx=>ctx.db.get(started.billId))).toMatchObject({reservedVersionId:started.versionId,flags:["late receipt mismatch"]});
@@ -169,29 +174,29 @@ describe("durable fenced dispatch", () => {
     vi.useFakeTimers();vi.setSystemTime(new Date("2026-10-23T12:00:00Z"));
     const f=await demoFixture();const q=await f.queued();let original:any;
     for(let i=0;i<8;i++) {
-      const claim=await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,workerId:"w",leaseToken:`unique-lease-token-${i}`});
+      const claim=await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"w",leaseToken:`unique-lease-token-${i}`});
       assert(claim);
       original??=claim.command;expect(claim.command).toEqual(original);
-      const {command:_,providerTransferId:__,...lease}=claim;
-      const failed=await f.t.mutation(api.demoPayments.fail,{scope:f.scope,token:f.dispatcherToken,...lease,errorClass:i===0?"rate_limit":"transport",error:"response lost",retryAfterMs:i===0?5000:undefined});
+      const lease=paymentLeaseProof(claim);
+      const failed=await f.t.mutation(api.demoPayments.fail,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,...lease,errorClass:i===0?"rate_limit":"transport",error:"response lost",retryAfterMs:i===0?5000:undefined});
       if(i===0)expect(failed.nextAttemptAt-Date.now()).toBeGreaterThanOrEqual(5000);
-      expect(await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,workerId:"w",leaseToken:`premature-lease-token-${i}`})).toBeNull();
+      expect(await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"w",leaseToken:`premature-lease-token-${i}`})).toBeNull();
       vi.setSystemTime(failed.nextAttemptAt+1);
     }
     const row=await f.t.run(ctx=>ctx.db.get(q.commandId));expect(row).toMatchObject({execution:"exception",attemptCount:8});expect((await f.t.run(ctx=>ctx.db.get(q.billId)))?.reservedVersionId).toBe(q.versionId);
     const firstAttemptAt=row!.firstAttemptAt;
     await f.human.mutation(api.demoPayments.resume,{scope:f.scope,commandId:q.commandId,reason:"operator verified configuration and requests recovery"});
-    const c=await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,workerId:"w",leaseToken:"operator-recovery-lease"});assert(c);expect(c.command).toEqual(original);
+    const c=await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"w",leaseToken:"operator-recovery-lease"});assert(c);expect(c.command).toEqual(original);
     expect(await f.t.run(ctx=>ctx.db.get(q.commandId))).toMatchObject({attemptCount:9,firstAttemptAt});
   });
 
   it("pauses auth/configuration/idempotency failures and never treats them as bank rejection", async () => {
     const f=await demoFixture();
     for(const errorClass of ["authentication","configuration","validation","idempotency_conflict"]) {
-      const q=await f.queued();const c=await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,workerId:"w",leaseToken:`lease-token-${errorClass}`});
+      const q=await f.queued();const c=await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"w",leaseToken:`lease-token-${errorClass}`});
       assert(c);
-      const {command:_,providerTransferId:__,...lease}=c;
-      expect(await f.t.mutation(api.demoPayments.fail,{scope:f.scope,token:f.dispatcherToken,...lease,errorClass,error:"operator action required"})).toMatchObject({execution:"exception"});
+      const lease=paymentLeaseProof(c);
+      expect(await f.t.mutation(api.demoPayments.fail,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,...lease,errorClass,error:"operator action required"})).toMatchObject({execution:"exception"});
       expect((await f.t.run(ctx=>ctx.db.get(q.billId)))?.reservedVersionId).toBe(q.versionId);
     }
   });

@@ -8,6 +8,11 @@ import type { Id } from "../convex/_generated/dataModel";
 
 const modules = import.meta.glob("../convex/**/*.ts");
 export { api };
+/** Project only the fenced proof; claim metadata is not a mutation argument. */
+export function paymentLeaseProof(lease: { commandId: Id<"demoCommands">; generation: number; leaseToken: string }) {
+  return { commandId: lease.commandId, generation: lease.generation, leaseToken: lease.leaseToken };
+}
+
 export async function demoFixture(runId = "demo-test", scopeOverrides: Partial<BankScope> = {}) {
   vi.stubEnv("KERNEL_ADMIN_SECRET", "test-admin");
   vi.stubEnv("AP_DISPATCH_SECRET", "test-dispatcher");
