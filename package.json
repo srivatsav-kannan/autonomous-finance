@@ -15,7 +15,10 @@
     "gateway": "tsx src/human/gateway.ts",
     "smoke": "tsx scripts/smoke-kernel.ts && tsx scripts/smoke-memory.ts",
     "baseline": "tsx src/evals/baseline.ts",
-    "controls": "tsx scripts/control-tests.ts"
+    "controls": "tsx scripts/control-tests.ts",
+    "invoice-mvp:server": "tsx scripts/invoice-mvp-server.ts",
+    "invoice-mvp:test": "vitest run src/invoice-mvp",
+    "invoice-mvp:init": "tsx scripts/invoice-workspace-init.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",
