@@ -20,9 +20,12 @@ export class ReconcilePaymentEvidence {
     const observation = parseTransferObservation(await this.bank.getTransfer(this.scope, id));
     if (observation.id !== id || !sameBankScope(observation.scope, this.scope)) throw new Error("Bank transfer scope or identity mismatch");
     const command = await this.evidence.resolveCommand({ idempotencyKey: observation.idempotencyKey });
-    if (!command) throw new Error("No frozen command for bank transfer");
-    await assertFrozenBankCommand(command);
-    assertObservationMatchesCommand(command, observation);
+    // Unmatched, verified account activity is evidence too. Preserve it as a close
+    // blocker; the posting mutation still requires a matching frozen command.
+    if (command) {
+      await assertFrozenBankCommand(command);
+      assertObservationMatchesCommand(command, observation);
+    }
     const transactions: BankTransaction[] = [];
     for (const transactionId of [observation.originalTransactionId, observation.returnTransactionId]) {
       if (transactionId) transactions.push(this.validateTransaction(await this.bank.getTransaction(this.scope, transactionId), transactionId));
