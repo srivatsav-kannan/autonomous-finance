@@ -25,7 +25,7 @@ const billLine = v.object({
 
 /** "INV-000123", "inv 123" and "123" are the same invoice for duplicate detection. */
 export function normalizeInvoiceNumber(n: string): string {
-  return n.toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/^(INV|INVOICE|NO)/, "").replace(/^0+/, "");
+  return n.toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/^(INVOICE|INV|NO)/, "").replace(/^0+/, "");
 }
 
 /**
@@ -59,11 +59,19 @@ export const recordBill = mutation({
     const op = "ap.recordBill";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
+    if (!auth.seat.caps.billsRecord) {
+      return await recordViolation(ctx, args.runId, args.seatId, op,
+        fail("forbidden", `${auth.seat.role} may not record vendor bills`));
+    }
     const { token: _t, ...payload } = args;
     const idem = await checkIdempotency(ctx, args.runId, args.idempotencyKey, op, payload);
     if ("conflict" in idem) return await recordViolation(ctx, args.runId, args.seatId, op, idem.conflict);
     if (idem.hit) return { ...(idem.result as { ok: true; billId: Id<"bills">; entryId: Id<"journalEntries"> | null }), replayed: true };
 
+    if (!Number.isSafeInteger(args.totalCents)) {
+      return await recordViolation(ctx, args.runId, args.seatId, op, fail("invalid_bill", "total must be safe integer cents"));
+    }
+    let lineTotal = 0;
     for (const [i, l] of args.lines.entries()) {
       if (![l.unitCents, l.amountCents].every(Number.isSafeInteger)) {
         return await recordViolation(ctx, args.runId, args.seatId, op, fail("invalid_bill", `line ${i}: cents must be integers`));
@@ -72,8 +80,11 @@ export const recordBill = mutation({
         return await recordViolation(ctx, args.runId, args.seatId, op,
           fail("invalid_bill", `line ${i}: ${l.quantity} x ${l.unitCents} != ${l.amountCents}`));
       }
+      lineTotal += l.amountCents;
+      if (!Number.isSafeInteger(lineTotal)) {
+        return await recordViolation(ctx, args.runId, args.seatId, op, fail("invalid_bill", "line sum must be safe integer cents"));
+      }
     }
-    const lineTotal = args.lines.reduce((s, l) => s + l.amountCents, 0);
     if (lineTotal !== args.totalCents) {
       return await recordViolation(ctx, args.runId, args.seatId, op,
         fail("invalid_bill", `lines sum to ${lineTotal} but total is ${args.totalCents}`));
@@ -139,7 +150,12 @@ export const recordBill = mutation({
         decisionPath: args.decisionPath,
         memorySha: args.memorySha,
       });
-      if (!posted.ok) return await recordViolation(ctx, args.runId, args.seatId, op, posted);
+      if (!posted.ok) {
+        // A returned failure commits the transaction so the violation survives.
+        // Remove the provisional bill as well: it must never outlive a failed accrual.
+        await ctx.db.delete(billId);
+        return await recordViolation(ctx, args.runId, args.seatId, op, posted);
+      }
       entryId = posted.entryId;
       await ctx.db.patch(billId, { entryId });
     } else {

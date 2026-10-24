@@ -100,8 +100,8 @@ export const remitChange: Handler = async (rt, task) => {
       ],
       rules: [{ path: "policies/payments.yaml", key: "remitChangeRequires" }],
     });
-    const updated: Vendor = { ...v, notes: [...v.notes, { on, by: rt.seat.seatId, text: `Blocked suspected payment-fraud attempt from ${p.from}: ${signals.join("; ")}. Remit-to unchanged.` }] };
-    await rt.commit([{ path: `vendors/${v.id}.yaml`, data: updated }], `Record blocked bank-change attempt for ${v.legalName}`, { "Decision-Id": d.path }, `fraud-note:${event.externalId}`);
+    await rt.updateVendor(v.id, (current) => ({ ...current, notes: [...current.notes, { on, by: rt.seat.seatId, text: `Blocked suspected payment-fraud attempt from ${p.from}: ${signals.join("; ")}. Remit-to unchanged.` }] }),
+      `Record blocked bank-change attempt for ${v.legalName}`, { "Decision-Id": d.path }, `fraud-note:${event.externalId}`);
     await rt.ask({
       to: "human_cfo", severity: "urgent", title: `Blocked a suspected fraud attempt against ${v.legalName}`,
       body: `Someone asked us to send ${v.legalName}'s payments to a new account. Nothing changed and no payment was affected.\n\nWhy: ${signals.join("; ")}.`,

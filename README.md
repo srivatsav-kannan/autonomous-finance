@@ -60,7 +60,7 @@ npx convex env set KERNEL_ADMIN_SECRET "$(openssl rand -hex 24)"
 Add `ANTHROPIC_API_KEY=...` to `.env.local` to turn on Claude. Without it, the team runs its deterministic paths only.
 
 ```bash
-npm run smoke                          # 38 invariant checks on the kernel and memory
+npm run smoke                          # 42 invariant checks on the kernel and memory
 npm run eval -- --stores 3 --days 14   # full scored run; add --chaos 0.3 to re-deliver 30% of events
 npm run gateway                        # human gateway on :8787 (holds the human CFO seat token)
 npm run console                        # overseer console on http://127.0.0.1:5173
@@ -72,6 +72,19 @@ Live demo with the world playing in real time:
 npm run world -- --run demo --stores 3 --days 14 --pace 3000
 npm run agents -- --run demo
 ```
+
+### Simulation dates
+
+The requested start and day count bound all emitted events and the answer key.
+Delayed credit memos and invoice resends outside that interval are deferred beyond
+this scenario; they do not extend its reported duration. Invoice due dates may
+still fall after the simulated interval.
+
+Rent and recurring supplier bills are generated once per calendar month touched
+by the scenario. Rent arrives on the first observed day of each month. Monthly
+supplier bills arrive on the fifth, clamped to that month's observed interval for
+partial months. This fixture models a full monthly obligation even when only part
+of the month is simulated; it does not prorate bills.
 
 ## Layout
 
@@ -88,9 +101,26 @@ npm run agents -- --run demo
 | `company/sweetgreen/` | Calibration profile from SEC filings |
 | `docs/` | Architecture, team plan |
 
+`npm run world` and `npm run eval` create and seed company memory automatically
+for each new scenario in `var/memory/<run-id>.git`. No separate memory initialization
+command is needed; the obsolete `memory:init` script has been removed.
+
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/TEAM.md](docs/TEAM.md).
 
 For the proposed next implementation, see [Finance backend and integration design](docs/INTEGRATION_DESIGN.md):
 Convex data ownership, the AP-first Increase sandbox integration, placement of
 Stripe/ERP/billing/ledger/mock tools, and failure-recovery acceptance gates. This
 is a design proposal; the new integrations are not implemented by that document.
+
+## Frontend design
+
+The console uses [Hallmark](https://github.com/Nutlope/hallmark) as project-local
+agent design guidance and a development-time visual linter. Its warm finance
+workbench keeps the live Convex data, human gateway actions, and all seven views.
+See [the design system](design.md) and [Hallmark workflow](docs/HALLMARK.md).
+
+```bash
+npm run build:console
+npm run design:check
+npm run design:review -- --url http://127.0.0.1:5173
+```

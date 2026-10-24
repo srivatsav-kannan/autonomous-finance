@@ -45,6 +45,11 @@ export const requestPayment = mutation({
     if ("conflict" in idem) return await recordViolation(ctx, args.runId, args.seatId, op, idem.conflict);
     if (idem.hit) return { ...(idem.result as { ok: true; intentId: Id<"paymentIntents">; requiredApprovals: number; requiresHuman: boolean }), replayed: true };
 
+    if (new Set(args.billIds).size !== args.billIds.length) {
+      return await recordViolation(ctx, args.runId, args.seatId, op,
+        fail("invalid_payment", "each bill may appear only once in a payment"));
+    }
+
     let total = 0;
     for (const id of args.billIds) {
       const bill = await ctx.db.get(id);
@@ -192,8 +197,12 @@ export const voidPayment = mutation({
     if (!(auth.seat.caps.paymentsApproveLimit > 0 || auth.seat.caps.paymentsRequest)) {
       return await recordViolation(ctx, args.runId, args.seatId, op, fail("forbidden", `${auth.seat.role} may not void payments`));
     }
+    if (intent.status === "voided") return { ok: true as const, replayed: true };
     await ctx.db.patch(intent._id, { status: "voided", voidReason: args.reason });
-    for (const id of intent.billIds) await ctx.db.patch(id, { paymentIntentId: undefined });
+    for (const id of intent.billIds) {
+      const bill = await ctx.db.get(id);
+      if (bill?.paymentIntentId === intent._id) await ctx.db.patch(id, { paymentIntentId: undefined });
+    }
     await logActivity(ctx, args.runId, args.seatId, "voided", `Voided payment to ${intent.payee}: ${args.reason}`, { intentId: intent._id });
     return { ok: true as const };
   },

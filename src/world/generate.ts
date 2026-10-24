@@ -37,7 +37,7 @@ export interface PlantedError {
     | "unexplained_debit";
   occurredOn: string;
   /** How the scorer finds the company's handling of it. */
-  subject: { kind: "invoice" | "document" | "payout" | "deposit" | "lease" | "payroll" | "bank_txn"; vendor?: string; ref: string };
+  subject: { kind: "invoice" | "document" | "payout" | "deposit" | "lease" | "payroll" | "bank_txn"; vendor?: string; ref: string; documentExternalId?: string };
   amountAtRiskCents: number;
   expected: "reject" | "hold" | "short_pay" | "apply_credit" | "flag" | "block_change";
   detail: string;
@@ -142,35 +142,51 @@ export function generateWorld(opts: WorldOptions) {
     events.push({ type: "hr.roster_change", externalId: `roster-change-${ghost.id}`, occurredOn: terminationDay, payload: { employeeId: ghost.id, name: ghost.name, store: ghost.store, change: "terminated", effective: terminationDay } });
   }
 
-  // ---- Leases: rent + CAM billed on day 1 for the month.
-  stores.forEach((s, si) => {
-    const landlordId = s.city === "San Francisco" ? "embarcadero-realty" : ["Oakland", "Berkeley", "Walnut Creek"].includes(s.city) ? "eastbay-properties" : "peninsula-retail";
-    const landlord = LANDLORDS.find((l) => l.id === landlordId)!;
-    const cap = camCapCents(si);
-    const overCap = plant && s.id === errStore2.id;
-    const cam = overCap ? cap + 64_000 : cap - rng.int(5_000, 40_000);
-    const inv = `LSE-${s.id.slice(0, 6).toUpperCase()}-${opts.start.slice(0, 7).replace("-", "")}`;
-    truth.legitRentCents += baseRentCents(si) + Math.min(cam, cap);
-    events.push({
-      type: "document.received",
-      externalId: `doc-${inv}`,
-      occurredOn: opts.start,
-      payload: {
-        kind: "lease_invoice",
-        channel: "email",
-        from: landlord.contact.email,
-        subject: `Rent statement ${inv}`,
-        text: renderLeaseInvoice({ landlord: landlord.legalName, storeId: s.id, storeName: s.name, period: opts.start.slice(0, 7), baseRentCents: baseRentCents(si), camCents: cam, invoiceNumber: inv, date: opts.start, dueDate: addDays(opts.start, 5) }),
-      },
+  // Each touched month has one obligation. For partial months, bring the monthly
+  // bill into the observed interval rather than silently omitting that month.
+  const monthWindows = new Map<string, { first: string; last: string }>();
+  for (const date of days) {
+    const month = date.slice(0, 7);
+    const window = monthWindows.get(month);
+    if (window) window.last = date;
+    else monthWindows.set(month, { first: date, last: date });
+  }
+  const monthlyBillDates = new Set([...monthWindows.entries()].map(([month, window]) => {
+    const fifth = `${month}-05`;
+    return fifth < window.first ? window.first : fifth > window.last ? window.last : fifth;
+  }));
+
+  // ---- Leases: rent + CAM billed on the first observed day of each month.
+  for (const [month, { first: rentDate }] of monthWindows) {
+    stores.forEach((s, si) => {
+      const landlordId = s.city === "San Francisco" ? "embarcadero-realty" : ["Oakland", "Berkeley", "Walnut Creek"].includes(s.city) ? "eastbay-properties" : "peninsula-retail";
+      const landlord = LANDLORDS.find((l) => l.id === landlordId)!;
+      const cap = camCapCents(si);
+      const overCap = plant && s.id === errStore2.id;
+      const cam = overCap ? cap + 64_000 : cap - rng.int(5_000, 40_000);
+      const inv = `LSE-${s.id.slice(0, 6).toUpperCase()}-${month.replace("-", "")}`;
+      truth.legitRentCents += baseRentCents(si) + Math.min(cam, cap);
+      events.push({
+        type: "document.received",
+        externalId: `doc-${inv}`,
+        occurredOn: rentDate,
+        payload: {
+          kind: "lease_invoice",
+          channel: "email",
+          from: landlord.contact.email,
+          subject: `Rent statement ${inv}`,
+          text: renderLeaseInvoice({ landlord: landlord.legalName, storeId: s.id, storeName: s.name, period: month, baseRentCents: baseRentCents(si), camCents: cam, invoiceNumber: inv, date: rentDate, dueDate: addDays(rentDate, 5) }),
+        },
     });
     if (overCap) {
-      errors.push({ id: "e-cam", type: "cam_over_cap", occurredOn: opts.start, subject: { kind: "lease", vendor: landlordId, ref: inv }, amountAtRiskCents: cam - cap,
+      errors.push({ id: `e-cam-${month}`, type: "cam_over_cap", occurredOn: rentDate, subject: { kind: "lease", vendor: landlordId, ref: inv }, amountAtRiskCents: cam - cap,
         expected: "short_pay", detail: `CAM ${cam} exceeds lease cap ${cap} for ${s.id}` });
     }
-  });
+    });
+  }
 
   // ---- Daily: sales, card settlements, deliveries + invoices.
-  const marketplaceByStoreWeek = new Map<string, number>();
+  const marketplaceByStoreWeek = new Map<string, Record<string, number>>();
   let shortShipment: { invoice: string; store: string; amount: number; date: string } | null = null;
 
   for (const [di, date] of days.entries()) {
@@ -182,6 +198,7 @@ export function generateWorld(opts: WorldOptions) {
       const digital = Math.round(gross * ASSUMPTIONS.channelMix.digital);
       const marketplace = gross - inStore - digital;
       const ddShare = Math.round(marketplace * 0.55);
+      const platformSales = { "doordash-sim": ddShare, "ubereats-sim": marketplace - ddShare };
       const tax = applyRate(inStore + digital, SALES_TAX_BPS / 10_000);
       const gcSold = Math.round(gross * ASSUMPTIONS.giftCardSalesPct);
       const gcRedeemed = Math.round(gross * ASSUMPTIONS.giftCardRedemptionPct);
@@ -199,12 +216,17 @@ export function generateWorld(opts: WorldOptions) {
         payload: {
           store: s.id, date,
           in_store: { grossCents: inStore }, digital: { grossCents: digital },
-          marketplace: { "doordash-sim": ddShare, "ubereats-sim": marketplace - ddShare },
+          marketplace: platformSales,
           salesTaxCents: tax, giftCardsSoldCents: gcSold, giftCardsRedeemedCents: gcRedeemed, cardTransactions: txns,
         },
       });
       const weekKey = `${s.id}:${Math.floor(di / 7)}`;
-      marketplaceByStoreWeek.set(weekKey, (marketplaceByStoreWeek.get(weekKey) ?? 0) + marketplace);
+      const weekSales = marketplaceByStoreWeek.get(weekKey) ?? {};
+      // Sum the emitted cents; re-splitting weekly gross can create rounding differences.
+      for (const [platform, amount] of Object.entries(platformSales)) {
+        weekSales[platform] = (weekSales[platform] ?? 0) + amount;
+      }
+      marketplaceByStoreWeek.set(weekKey, weekSales);
 
       // Card settlement lands next day, net of fees.
       const collections = inStore + digital + tax - gcRedeemed + gcSold;
@@ -235,7 +257,7 @@ export function generateWorld(opts: WorldOptions) {
       // Deliveries and invoices
       for (const v of VENDORS) {
         const isDeliveryDay = deliveryDays(v.deliveriesPerWeek).includes(dow);
-        const isMonthlyBill = v.deliveriesPerWeek === 0 && di === Math.min(4, days.length - 1);
+        const isMonthlyBill = v.deliveriesPerWeek === 0 && monthlyBillDates.has(date);
         if (!isDeliveryDay && !isMonthlyBill) continue;
         seq[v.id] = (seq[v.id] ?? 0) + 1;
         const n = seq[v.id]!;
@@ -292,7 +314,7 @@ export function generateWorld(opts: WorldOptions) {
         });
         truth.invoices++;
 
-        if (plant && shortShipment && shortShipment.invoice === num) {
+        if (plant && shortShipment && shortShipment.invoice === num && addDays(date, 1) <= end) {
           // Vendor acknowledges the short shipment with a credit memo the next day.
           const memo = `CM-${num}`;
           events.push({
@@ -302,18 +324,18 @@ export function generateWorld(opts: WorldOptions) {
           });
         }
         // Planted: exact duplicate resent through the portal two days later with a reformatted number.
-        if (plant && v.id === "norcal-dairy" && s.id === errStore.id && !errors.some((e) => e.type === "duplicate_exact")) {
-          const dupNum = num.replace("NCD", "NCD-0");
+        if (plant && v.id === "norcal-dairy" && s.id === errStore.id && addDays(date, 2) <= end && !errors.some((e) => e.type === "duplicate_exact")) {
+          const dupNum = num.replace("NCD", "NCD-");
           events.push({ type: "document.received", externalId: `doc-${v.id}-${dupNum}-portal`, occurredOn: addDays(date, 2),
             payload: { kind: "invoice", channel: "portal", from: v.contact.email, subject: `Invoice ${dupNum} (portal resend)`, text: renderInvoice({ ...doc, invoiceNumber: dupNum }, layout) } });
-          errors.push({ id: `e-dup-${num}`, type: "duplicate_exact", occurredOn: addDays(date, 2), subject: { kind: "invoice", vendor: v.id, ref: dupNum }, amountAtRiskCents: total, expected: "reject", detail: `${dupNum} is ${num} resent` });
+          errors.push({ id: `e-dup-${num}`, type: "duplicate_exact", occurredOn: addDays(date, 2), subject: { kind: "invoice", vendor: v.id, ref: dupNum, documentExternalId: `doc-${v.id}-${dupNum}-portal` }, amountAtRiskCents: total, expected: "reject", detail: `${dupNum} is ${num} resent` });
         }
         // Planted: look-alike re-bill of the same delivery under a new number.
-        if (plant && v.id === "hydra-beverages" && s.id === errStore2.id && di >= 7 && !errors.some((e) => e.type === "duplicate_lookalike")) {
+        if (plant && v.id === "hydra-beverages" && s.id === errStore2.id && di >= 7 && addDays(date, 3) <= end && !errors.some((e) => e.type === "duplicate_lookalike")) {
           const reNum = `${num}-R`;
           events.push({ type: "document.received", externalId: `doc-${v.id}-${reNum}`, occurredOn: addDays(date, 3),
             payload: { kind: "invoice", channel: "email", from: v.contact.email, subject: `Invoice ${reNum}`, text: renderInvoice({ ...doc, invoiceNumber: reNum, invoiceDate: addDays(date, 3), dueDate: addDays(date, 3 + v.termsNetDays) }, layout) } });
-          errors.push({ id: `e-lookalike-${num}`, type: "duplicate_lookalike", occurredOn: addDays(date, 3), subject: { kind: "invoice", vendor: v.id, ref: reNum }, amountAtRiskCents: total, expected: "reject", detail: `${reNum} re-bills delivery ${deliveryId}` });
+          errors.push({ id: `e-lookalike-${num}`, type: "duplicate_lookalike", occurredOn: addDays(date, 3), subject: { kind: "invoice", vendor: v.id, ref: reNum, documentExternalId: `doc-${v.id}-${reNum}` }, amountAtRiskCents: total, expected: "reject", detail: `${reNum} re-bills delivery ${deliveryId}` });
         }
         // Decoy: same vendor, same amount, different delivery: both are legitimate.
         if (plant && v.id === "spotless-supply" && s.id === errStore.id && di >= 6 && !decoys.some((d) => d.type === "same_amount_different_delivery")) {
@@ -369,8 +391,7 @@ export function generateWorld(opts: WorldOptions) {
       const week = Math.floor(di / 7);
       for (const p of DELIVERY_PLATFORMS) {
         const lines = stores.map((s) => {
-          const weekGross = marketplaceByStoreWeek.get(`${s.id}:${week}`) ?? 0;
-          const gross = Math.round(weekGross * (p.id === "doordash-sim" ? 0.55 : 0.45));
+          const gross = marketplaceByStoreWeek.get(`${s.id}:${week}`)?.[p.id] ?? 0;
           const commission = applyRate(gross, p.commissionBps / 10_000);
           const refunds = Math.round(gross * 0.004);
           return { store: s.id, grossCents: gross, commissionCents: commission, refundsCents: refunds, adjustmentsCents: 0, netCents: gross - commission - refunds };

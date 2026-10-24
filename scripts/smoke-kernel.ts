@@ -86,6 +86,13 @@ const dup = await ap.client.mutation(api.ap.recordBill, {
 check("kernel blocks duplicate invoice (INV-0042 vs inv 42)", dup.ok === false && dup.code === "duplicate_invoice", dup);
 
 const billId = (bill as { billId: string }).billId as never;
+const duplicateIds = await pay.client.mutation(api.payments.requestPayment, {
+  ...pay.auth, idempotencyKey: "pay-duplicate-ids", payee: "v-produce", amountCents: 63000, method: "ach",
+  remitTo: { bank: "First Produce Bank", accountLast4: "4321", memorySha: "abc" }, billIds: [billId, billId], dueDate: "2026-01-16",
+});
+check("repeating a bill ID cannot multiply a payment", duplicateIds.ok === false && duplicateIds.code === "invalid_payment", duplicateIds);
+// Keep the remaining checks independent if this regression is run against an older backend.
+if (duplicateIds.ok) await pay.client.mutation(api.payments.voidPayment, { ...pay.auth, intentId: duplicateIds.intentId, reason: "smoke cleanup" });
 const intent = await pay.client.mutation(api.payments.requestPayment, {
   ...pay.auth, idempotencyKey: "pay-1", payee: "v-produce", amountCents: 31500, method: "ach",
   remitTo: { bank: "First Produce Bank", accountLast4: "4321", memorySha: "abc" }, billIds: [billId], dueDate: "2026-01-16",
@@ -116,6 +123,16 @@ const intent2 = await pay.client.mutation(api.payments.requestPayment, {
   remitTo: { bank: "First Produce Bank", accountLast4: "4321", memorySha: "abc" }, billIds: [billId], dueDate: "2026-01-16",
 });
 const intent2Id = (intent2 as { intentId: string }).intentId as never;
+const repeatedVoid = await pay.client.mutation(api.payments.voidPayment, { ...pay.auth, intentId, reason: "replayed cancellation" });
+check("voiding an already voided payment is a replay", repeatedVoid.ok && "replayed" in repeatedVoid, repeatedVoid);
+const reservedBill = await pay.client.query(api.ap.bill, { runId, billId });
+check("old cancellation preserves the replacement payment reservation", reservedBill?.paymentIntentId === intent2Id, reservedBill);
+const thirdIntent = await pay.client.mutation(api.payments.requestPayment, {
+  ...pay.auth, idempotencyKey: "pay-after-replayed-void", payee: "v-produce", amountCents: 31500, method: "ach",
+  remitTo: { bank: "First Produce Bank", accountLast4: "4321", memorySha: "abc" }, billIds: [billId], dueDate: "2026-01-16",
+});
+check("replayed cancellation cannot enable a third payment", thirdIntent.ok === false && thirdIntent.code === "double_payment", thirdIntent);
+if (thirdIntent.ok) await pay.client.mutation(api.payments.voidPayment, { ...pay.auth, intentId: thirdIntent.intentId, reason: "smoke cleanup" });
 await ctl.client.mutation(api.payments.approvePayment, { ...ctl.auth, intentId: intent2Id });
 const exec = await pay.client.mutation(api.payments.executePayment, {
   ...pay.auth, intentId: intent2Id, currentRemitTo: { bank: "First Produce Bank", accountLast4: "4321", memorySha: "abc" },
