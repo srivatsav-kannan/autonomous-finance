@@ -77,3 +77,31 @@ jobs:
           path: var/ci/recovery.json
           if-no-files-found: error
           retention-days: 14
+
+  browser:
+    name: Local payment approval and evidence browser smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.18.0'
+          package-manager-cache: false
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser:local
+        timeout-minutes: 7
+      - name: Retain bounded browser results without credentials or network traces
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: payment-browser-local-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            var/ci/payment-browser-local/summary.json
+            var/ci/payment-browser-local/playwright.json
+            var/ci/payment-browser-local/proof.json
+          if-no-files-found: error
+          retention-days: 14
