@@ -1,0 +1,39 @@
+# Frozen evaluation protocol v1
+
+Freeze this document and `evals/invoice-mvp/heldout-manifest.json` in a commit before any new application or baseline score. Subsequent amendments are additive and dated. The first pass is recorded immutably before product fixes; later runs must say post-fix. Protocol freeze does not mean a model has run.
+
+## Verified upstream task and metric
+
+Upstream [README](https://github.com/ciru-ai/invoice-sandbox-benchmark/blob/b8cb58ff9747486e86c623e867b76fad5d8d075f/README.md) and [original scorer](https://github.com/ciru-ai/invoice-sandbox-benchmark/blob/b8cb58ff9747486e86c623e867b76fad5d8d075f/scripts/score_submission.py) were fetched and read at exact commit `b8cb58ff9747486e86c623e867b76fad5d8d075f`. README SHA-256: `c14e9c0609ab3667f3ba4305e5b7a4ba577bacaa56aada633e842e7010003ae8`. Scorer SHA-256: `b4a9187f94fc12995883e0305631ac29931f9781eea4a8c543c807fe32eca2aa`.
+
+The task requests valid invoice counts, gross invoice totals, positive credit totals, net gross-minus-credit totals, and suspicious/excluded documents with reasons. Voids, duplicate scans, superseded originals, statements, unsupported email totals, and bank deposits do not count. These are net invoiced amounts, not cash or outstanding balances. Only the copied reset workspace is permissible model input; `answer_key/` and `scripts/` remain evaluator-private. Preserve all workspace files, original bytes, PDF page text, CRM aliases and operational notes; do not provide answer-derived labels or helper hints.
+
+The unmodified scorer grades only `customer_id` and `net_spend_usd`. It strips dollar signs and commas, parses Decimal and quantizes to cents (default Decimal rounding), then counts each expected customer exact when absolute error is at most $0.01. Missing customers fail. Unexpected customers are reported but do not reduce accuracy. Blank IDs are ignored; repeated IDs silently overwrite earlier rows. Its missing-row contribution to total error is the expected signed net, not its absolute value. Record this behavior faithfully and separately flag duplicate/extra IDs. Never describe official accuracy as validation of counts, credits, gross totals or document treatment.
+
+## Cohorts and interpretation
+
+1. Original pinned fixture: fresh reset copies, unmodified original scorer. This fixture and its trap structure have been seen in earlier implementation/evaluation (#51); do not call it unseen. Preserve historical A/B/C results as historical only. New app is `MVP`, never relabeled historical Team C.
+2. Held-out v1: fresh structural and temporal cases; source and expectation SHA-256 frozen in the public manifest. Both files reside outside product worktrees. Includes unfamiliar layouts, contradictions, explicit revisions, byte duplicates, missing/late evidence, restart/resume, and untrusted document instructions. No expected outputs enter prompts, source imports, or implementation-worker context before the first score is recorded. Changing amounts alone is not unseen structure.
+3. Report deterministic checks, mock HTTP integration, real-backend deterministic application runs, live-model application runs, original scorer results and custom robustness results separately. A mock endpoint proves adapter behavior only.
+
+## Application boundary and source parity
+
+Import every original workspace file using B's real `POST /api/invoice-mvp/batches` at loopback port 8790. PDF text is extracted using the existing `extract_text.py` page markers and pypdf, and original bytes are retained as base64. All other files use the same UTF-8/CRLF normalization as baseline A. Do not infer treatments, parse invoice amounts, seed totals or read answers during preparation. Explicit revisions in the private suite use stable external IDs; repeated bytes use separate identities. Snapshot totals and case details come only from B's HTTP API backed by A's persisted Convex state. No Team, in-memory finance substitute, or alternate extractor reasoning path is an application evaluation.
+
+Require a fresh isolated workspace, authentic loopback operator session, runtime mode/config and source-commit attestation. Record before/after snapshots and source versions, immutable proposals, decisions, audit/tool records and usage. Stop on state contamination or undocumented wire shape. No automatic acceptance of model conclusions: primary results use accepted persisted effects only. Report proposed conclusions separately. Any operator-assisted run is secondary, with every action and evidence version recorded; never use the hidden key to automate human answers.
+
+## Comparison and resource limits
+
+Use existing single-agent A and actual MVP investigator with identical pinned workspace bytes/text and requested model `claude-opus-5-5` wherever supported. Model identity, effort, fallbacks, prompt, tool schema, text hashes, context limits, input/output token caps, maximum calls, run/cumulative dollar caps and timeout must be recorded. A's tools are generic file reading; MVP has retrieval, deterministic validation, persistent accounting and mandatory model-proposal review. These access/workflow differences preclude a controlled agent-count causal claim. No independent reviewer exists; there is no reviewer comparison and no measured justification for a second role.
+
+No API call is authorized now. All live rows are NOT RUN with null metrics, never zero accuracy or cost. Proposed capped batch: one fresh original-fixture A run (maximum 40 calls, 20 minutes, $3.00), one fresh original-fixture MVP run (maximum 160 calls, 30 minutes, $3.00), and one held-out MVP run (maximum 64 calls, 20 minutes, $1.50), aggregate $7.50 maximum. Enforce reservations before requests against conservative maximum input/output token costs; disable unpriced fallbacks and retries that bypass caps. If either runtime cannot enforce the same approved ceiling, block that run. This is a request specification, not authorization. Required model credential name: `ANTHROPIC_API_KEY`; service session token name will follow B's implementation. Never print credentials.
+
+## Metrics and immutable records
+
+For each run record exact source commit and dirty state, protocol commit/hash, input byte/text manifest, upstream revision/scorer hash, model/config, command, UTC start/end, wall time, completion/stop reason, and immutable outputs before scoring. Capture official accuracy and all-four-fields exactness independently. Audit every source for correct inclusion/exclusion, unsupported accepted conclusions, unresolved states, human interventions, duplicate accounting effects, evidence-reference validity, revision/stale-decision behavior and restart stability. Report unknown rather than infer missing usage as zero. Count model calls, input/output/cache tokens, estimated USD and tool calls from persisted logs; missing accounting prevents a claimed live result.
+
+For held-out runs evaluate original conclusions independently of accepted effects, because model-origin proposals need human acceptance. An unresolved conflict is safe abstention, not an exact financial result. Record autonomous checkpoint before assisted actions. Freeze first-pass artifacts with a hash manifest and exclusive output directory; report only aggregate first-pass results to root before disclosing per-case failures. Restart verification requires actual gateway/backend process restart under root supervision followed by snapshot comparison; reconnecting an HTTP client is insufficient.
+
+## Current validation boundary
+
+Live model, integrated application, original benchmark and held-out scores: NOT RUN at freeze. Upstream source inspection and fixture preparation are free preparation. Root supplies integrated runtime and owns final browser acceptance. D remains active for that continuation; preparing a runnable harness is not end-to-end acceptance.
