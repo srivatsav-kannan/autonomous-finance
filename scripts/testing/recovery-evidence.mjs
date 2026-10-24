@@ -16,6 +16,15 @@ export function recoveryEvidence(report, journal) {
   assert.equal(report.scope.provider, 'fake');
   assert.equal(report.scope.environment, 'local');
   assert.deepEqual(report.faultSchedule, ['accept_then_lost_response', 'worker_exit', 'missing_webhook']);
+  const interruption = report.processRecovery;
+  assert.equal(interruption.signal, 'SIGKILL');
+  assert.equal(interruption.exitCode, null);
+  assert.equal(interruption.acceptedBeforeKill, true);
+  assert.equal(interruption.completionAbsentBeforeKill, true);
+  assert.equal(interruption.unpaidBeforeSettlement, true);
+  assert.match(interruption.frozenCommandSha256, /^[a-f0-9]{64}$/);
+  assert.equal(interruption.acceptedCommandSha256, interruption.frozenCommandSha256);
+  assert.equal(interruption.lookupCommandSha256, interruption.frozenCommandSha256);
   assert.equal(report.review.commands.length, 1);
   const row = report.review.commands[0];
   const command = row.command;
@@ -63,6 +72,8 @@ export function recoveryEvidence(report, journal) {
     transfers: 1, postedDebits: 1,
     cashJournalEntries: 1, closeBlockers: 0, amountCents: command.amountCents,
     sameCommandAndKey: true, acceptedTransferRecoveredWithoutResend: true, missingWebhookRecoveredByPolling: true,
+    interruption: { signal: 'SIGKILL', acceptedBeforeKill: true, completionAbsentBeforeKill: true,
+      unpaidBeforeSettlement: true, frozenCommandSha256: interruption.frozenCommandSha256 },
     duplicateReconciliationPostedNothing: true, // ap-demo asserts a second tick posts zero.
     commandSha256: hash(command.commandId), idempotencyKeySha256: hash(command.idempotencyKey),
     requestHashSha256: hash(command.requestHash), transactionSha256: hash(debit.id),

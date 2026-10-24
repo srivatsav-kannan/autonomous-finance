@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { recoveryEvidence } from '../scripts/testing/recovery-evidence.mjs';
+import { diagnosticCollector, waitForRequiredStep } from '../scripts/testing/ci-report.mjs';
 
 function fixture() {
   const scope = { provider: 'fake', environment: 'local', runId: 'fixture' };
@@ -9,6 +10,8 @@ function fixture() {
     report: {
       profile: 'local', status: 'passed', identityMode: 'local_admin_simulated_human', scope,
       faultSchedule: ['accept_then_lost_response', 'worker_exit', 'missing_webhook'],
+      processRecovery: { signal: 'SIGKILL', exitCode: null, acceptedBeforeKill: true, completionAbsentBeforeKill: true,
+        unpaidBeforeSettlement: true, frozenCommandSha256: 'a'.repeat(64), acceptedCommandSha256: 'a'.repeat(64), lookupCommandSha256: 'a'.repeat(64) },
       commandId: 'row', fixtureHash: 'fixture',
       review: { commands: [{ _id: 'row', command, attemptCount: 2, execution: 'settled', posting: 'posted', reconciliation: 'matched' }] },
       bankEvidence: { calls: { createTransfer: 1, lookupTransfer: 1 }, transfers: [{ ...command, id: 'transfer' }], transactions: [debit] },
@@ -36,6 +39,10 @@ describe('CI recovery evidence boundary', () => {
     ['missing crash recovery', ({ report }) => { report.review.commands[0].attemptCount = 1; }],
     ['a blind recovery resend', ({ report }) => { report.bankEvidence.calls.createTransfer = 2; }],
     ['missing recovery lookup', ({ report }) => { report.bankEvidence.calls.lookupTransfer = 0; }],
+    ['a graceful exit instead of SIGKILL', ({ report }) => { report.processRecovery.signal = null; report.processRecovery.exitCode = 86; }],
+    ['missing before-record checkpoint', ({ report }) => { report.processRecovery.completionAbsentBeforeKill = false; }],
+    ['a changed frozen instruction', ({ report }) => { report.processRecovery.lookupCommandSha256 = 'b'.repeat(64); }],
+    ['a not-run recovery check', ({ report }) => { report.status = 'not_run'; }],
     ['a second debit', ({ report }) => { report.bankEvidence.transactions.push(report.bankEvidence.transactions[0]); }],
     ['a second cash effect', ({ journal }) => { journal.push(journal[0]); }],
     ['an unlinked cash effect', ({ journal }) => { journal[0]._id = 'different'; }],
@@ -46,5 +53,49 @@ describe('CI recovery evidence boundary', () => {
   ])('rejects %s', (_description, change) => {
     const data = fixture(); change(data);
     expect(() => recoveryEvidence(data.report, data.journal)).toThrow();
+  });
+});
+
+describe('CI failure diagnostic boundary', () => {
+  it('retains useful known build categories and source locations without raw credentials', () => {
+    const diagnostics = diagnosticCollector(['convex/lib/payments/applyCommand.ts', 'scripts/ap-demo.ts']);
+    diagnostics.consume('Authorization: Bearer ADMIN_CANARY\nproviderBody={"token":"BANK_CANARY"}\n');
+    diagnostics.consume('\u001b[31mError: Invalid module path convex/lib/payments/applyCommand.ts:12:5 JWT_CANARY\u001b[0m\n');
+    diagnostics.consume('Could not res');
+    diagnostics.consume('olve "scripts/ap-demo.ts" SECRET_CANARY\n');
+    diagnostics.consume('Error: cannot find module /private/credential-canary.ts\n');
+    const result = diagnostics.snapshot();
+    expect(result.events).toContainEqual({ code: 'INVALID_MODULE_PATH', file: 'convex/lib/payments/applyCommand.ts', line: 12, column: 5 });
+    expect(result.events).toContainEqual({ code: 'MODULE_NOT_FOUND', file: 'scripts/ap-demo.ts' });
+    expect(JSON.stringify(result)).not.toMatch(/CANARY|credential-canary|Authorization|Bearer|providerBody/);
+    expect(result.rawOutputRetained).toBe(false);
+  });
+  it('bounds diagnostic input, event count and output size under noisy failures', () => {
+    const diagnostics = diagnosticCollector(['scripts/ap-demo.ts']);
+    diagnostics.consume(Array.from({ length: 100 }, (_, i) => `AssertionError scripts/ap-demo.ts:${i + 1}:1\n`).join(''));
+    diagnostics.consume('SECRET_CANARY'.repeat(100_000));
+    const result = diagnostics.snapshot();
+    expect(result.events.length).toBeLessThanOrEqual(32);
+    expect(result.scannedBytes).toBeLessThanOrEqual(256 * 1024);
+    expect(result.truncated).toBe(true);
+    expect(JSON.stringify(result).length).toBeLessThan(10_000);
+    expect(JSON.stringify(result)).not.toContain('SECRET_CANARY');
+  });
+  it('rejects failed, signalled and incomplete required processes', async () => {
+    const signal = new AbortController().signal;
+    const base = { failed: false, child: { exitCode: null, signalCode: null } };
+    await expect(waitForRequiredStep(() => false, { ...base, failed: true }, 100, signal)).rejects.toThrow();
+    await expect(waitForRequiredStep(() => true, { ...base, child: { exitCode: null, signalCode: 'SIGKILL' } }, 100, signal)).rejects.toThrow();
+    await expect(waitForRequiredStep(() => true, { ...base, child: { exitCode: 1, signalCode: null } }, 100, signal)).rejects.toThrow();
+    await expect(waitForRequiredStep(() => false, { ...base, child: { exitCode: 0, signalCode: null } }, 100, signal)).rejects.toThrow();
+  });
+  it('rejects cancellation and a success that arrives after the deadline', async () => {
+    const state = { failed: false, child: { exitCode: 0, signalCode: null } };
+    const cancelled = new AbortController(); cancelled.abort();
+    await expect(waitForRequiredStep(() => true, state, 100, cancelled.signal)).rejects.toMatchObject({ code: 'RECOVERY_ABORTED' });
+    const now = vi.spyOn(Date, 'now').mockReturnValue(1000);
+    try {
+      await expect(waitForRequiredStep(async () => { now.mockReturnValue(1200); return true; }, state, 100, new AbortController().signal)).rejects.toMatchObject({ code: 'RECOVERY_TIMEOUT' });
+    } finally { now.mockRestore(); }
   });
 });

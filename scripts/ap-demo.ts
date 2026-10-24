@@ -17,7 +17,7 @@ import { EvidenceWorker } from "../src/payments/evidence";
 import { DemoAPAgent, DemoPaymentsAgent } from "../src/payments/agents";
 import { demoInvoice } from "../src/payments/demo-invoice";
 import increaseProvenance from "../src/integrations/fixtures/increase/provenance.json";
-import type { BankScope, BankTransaction } from "../src/integrations/contracts";
+import { canonicalJson, type BankScope, type BankTransaction } from "../src/integrations/contracts";
 
 const profile = process.argv[2] ?? "local";
 if (!["local", "sandbox"].includes(profile)) throw new Error("Usage: npm run demo:local | npm run demo:sandbox");
@@ -100,21 +100,76 @@ const approved = await createPaymentCommandService(createConvexPaymentCommands(h
   commandId: `approve:${requested.versionId}`, command: { type: "ApprovePayment", ...requested },
 });
 let bankEvidence: unknown;
+let processRecovery: unknown;
 if (profile === "local") {
   const bankPath = path.join(artifactDir,"bank.sqlite");
   const bank = openFakeBank({path:bankPath,scope,seed:7,startTime:`${source.invoice.invoiceDate}T12:00:00.000Z`,initialBalanceCents:10_000_000,faults:[{operation:"createTransfer",call:1,kind:"accept_then_lost_response"}]});
   const workerConfig = path.join(artifactDir,"dispatcher.json");
   fs.writeFileSync(workerConfig,JSON.stringify({url,scope,token:secrets.dispatcher,bankPath,seed:7}),{mode:0o600});
-  const child = (crash=false) => new Promise<number|null>((resolve,reject)=>{
-    const proc=spawn(process.execPath,["--import","tsx","scripts/testing/demo-dispatch-child.ts",workerConfig,...(crash?["--crash-after-submit"]:[])],{stdio:["ignore","pipe","pipe"],env:{PATH:process.env.PATH,NODE_NO_WARNINGS:"1"}});
-    let error="";proc.stderr.on("data",chunk=>{error+=chunk});proc.on("error",reject);proc.on("exit",code=>code===0||code===86?resolve(code):reject(new Error(error)));
+  const initialReview = await human.query(api.demoPayments.humanReview, { scope });
+  const frozenCommandSha256 = createHash("sha256").update(canonicalJson(initialReview.commands[0]!.command)).digest("hex");
+  type ChildResult = { exitCode: number | null; signal: NodeJS.Signals | null; acceptedCommandSha256?: string; lookupCommandSha256?: string; checkpointVerified: boolean };
+  const marker = z.object({ event: z.enum(["accepted-before-record", "lookup-start"]), commandSha256: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
+  const child = (crash = false) => new Promise<ChildResult>((resolve, reject) => {
+    const proc = spawn(process.execPath, ["--import", "tsx", "scripts/testing/demo-dispatch-child.ts", workerConfig, ...(crash ? ["--crash-after-submit"] : [])], {
+      stdio: ["ignore", "pipe", "pipe", "ipc"], env: { PATH: process.env.PATH, NODE_NO_WARNINGS: "1" },
+    });
+    let failure: Error | undefined;
+    const observed: Omit<ChildResult, "exitCode" | "signal"> = { checkpointVerified: false };
+    const fail = (reason: string) => { failure = new Error(reason); proc.kill("SIGKILL"); };
+    const deadline = setTimeout(() => fail("Dispatcher child timed out"), 30_000);
+    // Do not propagate raw worker output or exception payloads into CI artifacts.
+    proc.stdout?.resume(); proc.stderr?.resume();
+    proc.on("error", () => { clearTimeout(deadline); reject(new Error("Dispatcher child failed to start")); });
+    proc.on("message", (data: unknown) => {
+      const parsed = marker.safeParse(data);
+      if (!parsed.success || parsed.data.commandSha256 !== frozenCommandSha256) { fail("Invalid frozen-command checkpoint"); return; }
+      if (parsed.data.event === "lookup-start") {
+        if (crash || observed.lookupCommandSha256) { fail("Unexpected recovery lookup checkpoint"); return; }
+        observed.lookupCommandSha256 = parsed.data.commandSha256;
+        return;
+      }
+      if (!crash || observed.acceptedCommandSha256) { fail("Unexpected bank acceptance checkpoint"); return; }
+      observed.acceptedCommandSha256 = parsed.data.commandSha256;
+      void (async () => {
+        // The child is paused in createTransfer. Inspect persisted state before killing it.
+        const review = await human.query(api.demoPayments.humanReview, { scope });
+        const evidence = await human.query(api.demoEvidence.humanView, { scope });
+        assert.equal(bank.harness.inspect().transfers.length, 1);
+        assert.equal(review.commands.length, 1);
+        const row = review.commands[0]!;
+        assert.equal(row.execution, "in_flight"); assert.equal(row.posting, "unposted");
+        assert.equal(row.providerTransferId, undefined); assert.equal(row.attemptCount, 1);
+        assert.equal(createHash("sha256").update(canonicalJson(row.command)).digest("hex"), frozenCommandSha256);
+        assert.ok(review.bills.every(bill => bill.paidCents === 0));
+        assert.equal(evidence.transactions.length, 0);
+        observed.checkpointVerified = true;
+        proc.kill("SIGKILL");
+      })().catch(() => fail("Accepted-before-record checkpoint failed"));
+    });
+    proc.on("close", (exitCode, signal) => {
+      clearTimeout(deadline);
+      if (failure) { reject(failure); return; }
+      if (crash ? signal !== "SIGKILL" || !observed.checkpointVerified : exitCode !== 0 || !observed.lookupCommandSha256) {
+        reject(new Error("Dispatcher child did not complete the required recovery checkpoint")); return;
+      }
+      resolve({ ...observed, exitCode, signal });
+    });
   });
   try {
-  assert.equal(await child(true),86);
+  const killed = await child(true);
+  assert.equal(killed.signal, "SIGKILL"); assert.equal(killed.exitCode, null);
   assert.equal(bank.harness.inspect().transfers.length,1);
-  console.log("Bank accepted; application worker exited before recording a response. Waiting for the 30-second lease to expire.");
+  console.log("Bank accepted; parent SIGKILLed the paused worker before local completion. Waiting for the 30-second lease to expire.");
   await new Promise(resolve=>setTimeout(resolve,31_000));
-  assert.equal(await child(),0);
+  const restarted = await child();
+  assert.equal(restarted.exitCode, 0); assert.equal(restarted.signal, null);
+  const pending = await human.query(api.demoPayments.humanReview, { scope });
+  assert.equal(pending.commands[0]!.execution, "pending"); assert.equal(pending.commands[0]!.posting, "unposted");
+  assert.ok(pending.bills.every(bill => bill.paidCents === 0));
+  processRecovery = { signal: killed.signal, exitCode: killed.exitCode, acceptedBeforeKill: killed.checkpointVerified,
+    completionAbsentBeforeKill: true, unpaidBeforeSettlement: true, frozenCommandSha256,
+    acceptedCommandSha256: killed.acceptedCommandSha256, lookupCommandSha256: restarted.lookupCommandSha256 };
   const transfer=bank.harness.inspect().transfers[0]!;
   bank.harness.settle(transfer.id);
   bank.harness.drainNotifications({drop:true});
@@ -149,5 +204,5 @@ for (const period of periods) {
   assert.equal(closed.status,"closed");closeResults.push({period,...closed});
 }
 const providerContract=profile==="sandbox"?{provider:"increase",environment:"sandbox",specVersion:increaseProvenance.upstreamInfoVersion,specSha256:increaseProvenance.upstreamSha256,pinnedSubsetSha256:increaseProvenance.subsetSha256,fixtureSha256:increaseProvenance.fixtureSha256}:{provider:"fake",environment:"local",contractVersion:1,storage:"sqlite"};
-const report={profile,status:"passed",identityMode,commit:spawnSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).stdout.trim(),scope,providerContract,seed:7,fixtureHash:createHash("sha256").update(JSON.stringify(source.event)).digest("hex"),faultSchedule:profile==="local"?["accept_then_lost_response","worker_exit","missing_webhook"]:[],versionId:requested.versionId,commandId:approved.commandId,bankEvidence,review,evidence,closeResults};
+const report={profile,status:"passed",identityMode,commit:spawnSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).stdout.trim(),scope,providerContract,seed:7,fixtureHash:createHash("sha256").update(JSON.stringify(source.event)).digest("hex"),faultSchedule:profile==="local"?["accept_then_lost_response","worker_exit","missing_webhook"]:[],versionId:requested.versionId,commandId:approved.commandId,bankEvidence,review,evidence,closeResults,processRecovery};
 const reportPath=path.join(artifactDir,"report.json");fs.writeFileSync(reportPath,JSON.stringify(report,null,2));console.log(JSON.stringify({profile,status:"passed",identityMode,reportPath,commandId:approved.commandId,transactionId:paymentEvidence[0]?.transaction.id,entryId:paymentEvidence[0]?.entryId,closeResults},null,2));
