@@ -44,6 +44,19 @@ export class OpenAIBridge {
   // The unchanged loop appends this exact content array. Keep every native output
   // item (encrypted reasoning, function call IDs, message phase) for the next turn.
   private readonly nativeOutput = new WeakMap<object, Item[]>();
+  private readonly nativeOutputTokens = new WeakMap<object, number>();
+
+  priorOutputTokenAllowance(params: Request): number {
+    let total = 0;
+    for (const message of params.messages) {
+      if (message.role !== "assistant") continue;
+      const tokens = message.content && typeof message.content !== "string" ? this.nativeOutputTokens.get(message.content) : undefined;
+      if (tokens === undefined || !Number.isSafeInteger(tokens) || tokens < 0) throw new Error("Missing prior native output usage; cannot bound opaque reasoning by encoded bytes");
+      total += tokens;
+      if (!Number.isSafeInteger(total)) throw new Error("Prior output token allowance exceeds safe integer range");
+    }
+    return total;
+  }
 
   request(params: Request, model: string): OpenAIRequest {
     const input: Item[] = [];
@@ -98,6 +111,9 @@ export class OpenAIBridge {
       stop_reason: refusal ? "refusal" : truncated ? "max_tokens" : callIds.size ? "tool_use" : "end_turn", stop_sequence: null,
       usage: { input_tokens: usage.inputTokens, output_tokens: usage.outputTokens, cache_read_input_tokens: usage.cacheReadTokens, cache_creation_input_tokens: usage.cacheWriteTokens } } as unknown as Anthropic.Beta.BetaMessage;
     this.nativeOutput.set(message.content, response.output);
+    const outputTokens = response.usage?.output_tokens;
+    if (outputTokens === undefined || !Number.isSafeInteger(outputTokens) || outputTokens < 0) throw new Error("Prior output usage required for conservative replay reservation");
+    this.nativeOutputTokens.set(message.content, outputTokens);
     return message;
   }
 }

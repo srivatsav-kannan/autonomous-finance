@@ -68,6 +68,33 @@ test("OpenAI reservation precedes dispatch, reasoning is within output cost, and
   } finally { fs.rmSync(f.root, { recursive: true }); }
 });
 
+test("multistep reservation adds prior reported output tokens beyond opaque wire bytes", async () => {
+  const f = fixture(); let calls = 0;
+  try {
+    configureCappedTransport({ ...f, runId: "a", python, explicitLive: false }, undefined, async wire => {
+      calls++;
+      const record = f.state().runs.a.requests[`turn-${calls}`];
+      assert.equal(record.inputTokensBound, Buffer.byteLength(JSON.stringify(wire), "utf8") + 4096 + (calls === 1 ? 0 : 100));
+      const raw = response();
+      if (calls === 1) {
+        raw.output[0]!.encrypted_content = "x";
+        raw.usage!.output_tokens = 100;
+        raw.usage!.output_tokens_details!.reasoning_tokens = 90;
+      }
+      return raw;
+    });
+    const first = await agentTurn(request, meta);
+    const next: Request = { ...request, messages: [...request.messages, { role: "assistant", content: first.message.content }, { role: "user", content: [{ type: "tool_result", tool_use_id: "call_test", content: "source text" }] }] };
+    await agentTurn(next, { ...meta, purpose: "turn-2" });
+    assert.equal(calls, 2);
+    const bridge = new OpenAIBridge(), one = response(), two = response();
+    two.usage!.output_tokens = 20;
+    const firstMessage = bridge.message(one), secondMessage = bridge.message(two);
+    assert.equal(bridge.priorOutputTokenAllowance({ ...request, messages: [{ role: "assistant", content: firstMessage.content }, { role: "assistant", content: secondMessage.content }] }), 30);
+    assert.throws(() => bridge.priorOutputTokenAllowance({ ...request, messages: [{ role: "assistant", content: [] }] }), /Missing prior native output usage/);
+  } finally { fs.rmSync(f.root, { recursive: true }); }
+});
+
 test("wrong model/tier/cache/missing usage/reasoning halt ledger with original reservation retained", async () => {
   for (const mutate of [
     (r: OpenAIResponse) => { r.model = "unapproved-model"; },
@@ -132,6 +159,7 @@ test("unchanged baseline loop lists, reads, and submits through OpenAI wire with
     const submission = { customers: [{ customer_id: "C_TEST", customer_name: "Synthetic", valid_invoice_count: 1, gross_invoice_spend_usd: "12.34", credit_memo_total_usd: "0.00", net_spend_usd: "12.34" }], suspicious_documents: [], notes: "NO_NETWORK_TEST" };
     configureCappedTransport({ ...f, runId: "a", python, explicitLive: false }, undefined, async (wire) => {
       calls++;
+      assert.equal(f.state().runs.a.requests[`agent-turn-${calls}`].inputTokensBound, Buffer.byteLength(JSON.stringify(wire), "utf8") + 4096 + (calls - 1) * 10);
       const toolOutputs = wire.input.filter(i => i.type === "function_call_output");
       if (calls === 2) assert.match(String(toolOutputs.at(-1)?.output), /invoice.txt/);
       if (calls === 3) assert.match(String(toolOutputs.at(-1)?.output), /SYNTHETIC invoice: C_TEST, 12.34 USD/);

@@ -21,6 +21,7 @@ def verify_live_runtime(runtime,snapshot,approved,app_commit):
     if provider.get('baseURL')!=expected_url or provider.get('authentication')!='explicit_api_key' or provider.get('servedModelValidated') is not True or provider.get('cacheUsageValidated') is not True: raise ValueError('Verified first-party provider/model/cache contract required')
     if is_openai:
         if runtime.get('effort')!=approved['effort'] or provider.get('api')!='responses' or provider.get('serviceTier')!='default' or provider.get('promptCacheMode')!='explicit_without_breakpoints': raise ValueError('Reviewed OpenAI effort/API/tier/cache contract required')
+        if runtime.get('reasoningContext')!='all_turns': raise ValueError('Reviewed OpenAI native reasoning replay context required')
         if approved['maxInputTokens']>250000: raise ValueError('OpenAI long-context pricing not approved')
         if runtime.get('outputTokensPerCall')!=approved['maxOutputTokens']: raise ValueError('OpenAI wire output limit differs from approved comparison')
     if provider.get('pricing')!={'inputMicros':approved['inputMicros'],'outputMicros':approved['outputMicros']}: raise ValueError('Runtime pricing differs from approved provider rates')
@@ -44,16 +45,21 @@ def live_usage(details,approved):
         match=re.search(r'request \(([^)]+)\)',call.get('summary',''))
         if not match or match[1] in reserved_by_id: valid=False
         else: reserved_by_id[match[1]]=call
-    observed_ids=set()
+    observed_ids=set();reasoning_counts=[]
     for call in actual:
-        match=re.fullmatch(r'Actual provider-reported usage for (?:completed request|unusable response) ([^\s.]+)\.',call.get('summary',''))
+        pattern=r'Actual provider-reported usage for (?:completed request|unusable response) ([^\s.]+)\.'
+        if approved.get('provider')=='openai':pattern+=r'(?: Total output includes ([0-9]{1,10}) reasoning tokens; no reasoning content is retained in audit\.)?'
+        match=re.fullmatch(pattern,call.get('summary',''))
         if not match or match[1] not in reserved_by_id or match[1] in observed_ids: valid=False;continue
+        if approved.get('provider')=='openai' and match[2] is not None:
+            count=int(match[2]);reasoning_counts.append(count)
+            if type(call.get('outputTokens')) is not int or count>call['outputTokens']:valid=False
         observed_ids.add(match[1]);bound=reserved_by_id[match[1]]
         if any(call.get(k,-1)>bound.get(k,-1) for k in ['inputTokens','outputTokens','costMicros']):valid=False
     valid=valid and len(reservations)<=approved['maxCalls'] and sum(c.get('costMicros',0) for c in reservations)<=approved['maxCostMicros']
     complete=valid and len(reservations)==len(actual) and observed_ids==set(reserved_by_id)
     # An interrupted reserved request may have reached the provider. Never infer its usage as zero.
-    return {'coverage':'complete_persisted_usage' if complete else 'incomplete_persisted_usage','reservedRequests':len(reservations),'completedRequests':len(actual),'modelCalls':len(actual) if complete else None,'inputTokens':sum(c['inputTokens'] for c in actual) if complete else None,'outputTokens':sum(c['outputTokens'] for c in actual) if complete else None,'costUsd':sum(c['costMicros'] for c in actual)/1e6 if complete else None,'cacheReadTokens':0 if complete else None,'cacheWriteTokens':0 if complete else None,'toolCalls':len(entries),'reservedCostMicros':sum(c.get('costMicros',0) for c in reservations),'errorsOrUnaccountedReservations':not complete}
+    return {'coverage':'complete_persisted_usage' if complete else 'incomplete_persisted_usage','reservedRequests':len(reservations),'completedRequests':len(actual),'modelCalls':len(actual) if complete else None,'inputTokens':sum(c['inputTokens'] for c in actual) if complete else None,'outputTokens':sum(c['outputTokens'] for c in actual) if complete else None,'reasoningTokens':sum(reasoning_counts) if complete and len(reasoning_counts)==len(actual) else None,'costUsd':sum(c['costMicros'] for c in actual)/1e6 if complete else None,'cacheReadTokens':0 if complete else None,'cacheWriteTokens':0 if complete else None,'toolCalls':len(entries),'reservedCostMicros':sum(c.get('costMicros',0) for c in reservations),'errorsOrUnaccountedReservations':not complete}
 
 def live_process_timeout(runtime,approved,elapsed):
     turns=runtime.get('maxTurns')

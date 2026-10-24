@@ -42,7 +42,10 @@ export async function agentTurn(params: Request, meta: { runId: string; system: 
   if (approved.provider === "openai") {
     if (params.effort !== approved.effort) throw new Error("Reasoning effort differs from authorization");
     const wire = openAIBridge.request(params, approved.model);
-    const inputBound = Buffer.byteLength(JSON.stringify(wire), "utf8") + 4096;
+    // Opaque encrypted reasoning bytes do not prove a token bound. Reserve every
+    // prior response's reported output tokens in addition to the full wire bytes.
+    const priorOutputTokenAllowance = openAIBridge.priorOutputTokenAllowance(params);
+    const inputBound = Buffer.byteLength(JSON.stringify(wire), "utf8") + 4096 + priorOutputTokenAllowance;
     budget("reserve", { requestId: meta.purpose, inputTokens: inputBound, outputTokens: params.maxTokens });
     const begin = Date.now();
     let send = openAITransport;
@@ -58,7 +61,7 @@ export async function agentTurn(params: Request, meta: { runId: string; system: 
     // Settle even unusable outputs when usage is complete; invalid accounting halts.
     const settled = budget("settle", { requestId: meta.purpose, usage });
     const message = openAIBridge.message(response);
-    const entry = { ts: new Date().toISOString(), run_id: meta.runId, system: "A-capped", purpose: meta.purpose, provider: "openai", model_requested: approved.model, models_served: [response.model], fallback_used: false, stop_reason: message.stop_reason, input_tokens: usage.inputTokens!, output_tokens: usage.outputTokens!, reasoning_tokens: usage.reasoningTokens!, cache_read_input_tokens: usage.cacheReadTokens!, cache_creation_input_tokens: usage.cacheWriteTokens!, cost_usd: settled.costMicros! / 1e6, latency_ms: Date.now() - begin, system_sha256: createHash("sha256").update(params.system).digest("hex"), tools_sha256: createHash("sha256").update(JSON.stringify(params.tools)).digest("hex"), wire_sha256: createHash("sha256").update(JSON.stringify(wire)).digest("hex"), input_token_bound: inputBound, max_output_tokens: params.maxTokens, provider_response: response };
+    const entry = { ts: new Date().toISOString(), run_id: meta.runId, system: "A-capped", purpose: meta.purpose, provider: "openai", model_requested: approved.model, models_served: [response.model], fallback_used: false, stop_reason: message.stop_reason, input_tokens: usage.inputTokens!, output_tokens: usage.outputTokens!, reasoning_tokens: usage.reasoningTokens!, cache_read_input_tokens: usage.cacheReadTokens!, cache_creation_input_tokens: usage.cacheWriteTokens!, cost_usd: settled.costMicros! / 1e6, latency_ms: Date.now() - begin, system_sha256: createHash("sha256").update(params.system).digest("hex"), tools_sha256: createHash("sha256").update(JSON.stringify(params.tools)).digest("hex"), wire_sha256: createHash("sha256").update(JSON.stringify(wire)).digest("hex"), input_token_bound: inputBound, prior_output_token_allowance: priorOutputTokenAllowance, max_output_tokens: params.maxTokens, provider_response: response };
     return { message, entry };
   }
   const request: WireRequest = { model: approved.model, max_tokens: params.maxTokens, output_config: { effort: params.effort }, system: [{ type: "text", text: params.system }], tools: params.tools, messages: params.messages };
