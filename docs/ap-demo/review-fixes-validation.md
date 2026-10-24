@@ -1,5 +1,26 @@
 # AP review fixes: validation record
 
+## Close-signature follow-up
+
+Validated source `8eed9ab8a9c9b44ca4177d64c534a5076623f300`, including the #49
+snapshot fix `9752272`. The [follow-up record](close-signature-validation.json)
+contains the fresh run IDs and persisted close snapshot hashes. #49 passed 224
+tests; the full #50 stack passed 268 tests, all three typechecks, the console
+build and the whitespace check. Ten new regression cases cover both signature
+orders after another payment or sandbox funding, changes to non-journal evidence,
+duplicate replay, concurrent signatures and pre-upgrade partial signatures. All
+six standalone reproductions from the re-review now pass as well.
+
+A fresh real local Convex/FakeBank recovery run again produced one $662.90
+payment and cash journal effect after the lost response and worker restart. A
+fresh browser approval with the local OIDC test identity produced one $100
+settled/posted/matched payment and zero blockers. Both periods persisted two
+signers and a close snapshot hash. Wrong-audience and expired JWTs were rejected;
+the browser reported no console warnings or errors. External Increase, production
+identity-provider login and external webhook delivery remain **NOT_RUN**.
+
+## Original five-fix validation
+
 Validated implementation `83b23abe19e9820d69269e1e22f1c0890ce25d46` on Node
 24.22.0. The #49 fixes are in `095bbbe`; #50 includes them and the Increase fixes.
 The [machine-readable record](review-fixes-validation.json) contains run IDs and
