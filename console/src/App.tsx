@@ -7,6 +7,9 @@ import { gateway } from "./gateway";
 import { Icon } from "./Icon";
 import { ReviewDrawer } from "./ReviewDrawer";
 import { Ledger } from "./Ledger";
+import { Bank } from "./Bank";
+import { EvidenceRecord } from "./EvidenceRecord";
+import { FinanceFlow } from "./FinanceFlow";
 import { useUrlState } from "./useUrlState";
 
 const $ = (cents: number) => (cents < 0 ? "-" : "") + "$" + (Math.abs(cents) / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -15,9 +18,11 @@ const ago = (t: number) => {
   return s < 60 ? `${s}s ago` : s < 3600 ? `${Math.round(s / 60)}m ago` : `${Math.round(s / 3600)}h ago`;
 };
 
-type Tab = "inbox" | "org" | "activity" | "ledger" | "memory" | "evals" | "control";
+type Tab = "inbox" | "org" | "activity" | "ledger" | "memory" | "evals" | "control" | "bank" | "flow";
 const TABS: { id: Tab; label: string }[] = [
   { id: "inbox", label: "Inbox" },
+  { id: "bank", label: "Bank & cash" },
+  { id: "flow", label: "Finance flow" },
   { id: "org", label: "Team" },
   { id: "activity", label: "Live activity" },
   { id: "ledger", label: "Ledger" },
@@ -105,10 +110,12 @@ export function App() {
             </select>
           </label>
           {!connection.isWebSocketConnected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
-          {runId && <Kpis runId={runId} />}
+          {runId && tab !== "bank" && tab !== "flow" && <Kpis runId={runId} />}
           <main className="main" id="main" tabIndex={-1} key={runId}>
             {!runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div> : <>
               {tab === "inbox" && <Inbox runId={runId} />}
+              {tab === "bank" && <Bank runId={runId} onReview={(askId) => { const url = new URL(location.href); url.searchParams.set("ask", askId); history.replaceState(null, "", url); setTab("inbox"); }} />}
+              {tab === "flow" && <FinanceFlow runId={runId} onNavigate={setTab} />}
               {tab === "org" && <Org runId={runId} />}
               {tab === "activity" && <Activity runId={runId} />}
               {tab === "ledger" && <Ledger runId={runId} />}
@@ -168,7 +175,7 @@ function Inbox({ runId }: { runId: string }) {
   const [filter, setFilter] = useUrlState("inboxFilter", "review", INBOX_FILTERS);
   const [search, setSearch] = useUrlState("inboxSearch");
   const [sort, setSort] = useUrlState("inboxSort", "priority", INBOX_SORTS);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useUrlState("ask");
   const [responseRecorded, setResponseRecorded] = useState(false);
   const openRecord = (id: string) => { setResponseRecorded(false); setSelectedId(id); };
   const asks = useQuery(api.asks.list, { runId, to: "human_cfo" });
@@ -186,7 +193,7 @@ function Inbox({ runId }: { runId: string }) {
   }, [asks, filter, search, sort]);
   const selected = asks?.find((a) => a._id === selectedId);
   const next = (asks ?? []).filter((a) => belongs(a, "review")).sort((a, b) => Number(b.severity === "urgent") - Number(a.severity === "urgent") || a.createdAt - b.createdAt)[0];
-  const close = () => setSelectedId(null);
+  const close = () => setSelectedId("");
   return (
     <section className="inbox-view">
       <div className="page-heading">
@@ -223,26 +230,6 @@ function Inbox({ runId }: { runId: string }) {
   );
 }
 
-function EvidenceRecord({ runId, reference, label }: { runId: string; reference: string; label: string }) {
-  const [open, setOpen] = useState(false);
-  const [text, setText] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const readable = reference.startsWith("decisions/");
-  const read = async () => {
-    if (open) { setOpen(false); return; }
-    setOpen(true);
-    if (text !== null) return;
-    setBusy(true); setError(null);
-    try { const result = await gateway(runId, `memory/show?path=${encodeURIComponent(reference)}`); setText(result.text ?? "This record is not on the main branch."); }
-    catch (e) { setError(e instanceof Error ? e.message : String(e)); }
-    finally { setBusy(false); }
-  };
-  return <div className="evidence-record">
-    {readable ? <button type="button" className="evidence-button" onClick={() => void read()} aria-expanded={open} aria-busy={busy}><Icon name="file" /><span><strong>{label}</strong><span>{reference}</span></span><Icon name="chevron" /></button> : <div className="evidence-reference"><Icon name="file" /><span><strong>{label}</strong><span>{reference}</span></span></div>}
-    {open && <div className="evidence-content">{busy ? <Loading label="Loading source record…" /> : error ? <p className="feedback error" role="alert">{error}. Close and reopen the record to retry.</p> : <pre className="file">{text}</pre>}</div>}
-  </div>;
-}
 
 function AskDetail({ runId, ask, onAnswered }: { runId: string; ask: Doc<"asks">; onAnswered: () => void }) {
   const [busy, setBusy] = useState(false);

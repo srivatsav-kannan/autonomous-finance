@@ -35,7 +35,7 @@ and comparison images live under `.hallmark/` and are ignored by git.
 
 For a concrete scenario and view, retain the existing scenario hash and add a view:
 `http://127.0.0.1:5173/?view=ledger#your-run-id`. View values are `inbox`, `org`,
-`activity`, `ledger`, `memory`, `evals`, and `control`.
+`activity`, `ledger`, `memory`, `evals`, `control`, `bank`, and `flow`.
 
 For a redesign, capture the baseline before editing:
 
@@ -60,8 +60,8 @@ Do not run an unpinned install during application builds.
 ## Design canvas and review workflow
 
 The [editable Figma workspace](https://www.figma.com/design/qUwizlNQktZ68GJjaoKUo5?node-id=2-22)
-contains native inbox and review-drawer frames, reusable controls, design tokens,
-and a two-screen prototype. Its figures are a snapshot of the local
+contains native inbox, review-drawer, Bank & cash, and Finance flow frames,
+reusable controls, design tokens, and prototype links. Its figures are a snapshot of the local
 `finance-workbench` simulation. The canvas is a design reference; changes do not
 synchronize automatically with React. Figma uses Inter as the available fallback
 for the app's system font.
@@ -76,3 +76,24 @@ their original gateway semantics. Answered requests remain under **Answered**.
 The ledger exports the currently filtered journal entries or trial balance as CSV.
 Journal data is still limited to the most recent 60 entries; the screen reports
 that limit separately from the scenario's full hash-chain count.
+
+## Bank and finance flow
+
+Bank & cash reads the complete run through `bank.workspace`: three cash-account
+book balances, a journal-derived balance history, bank events, matching payments,
+agent results and related requests. Original entries and their reversals both
+contribute to the history. A posted entry is **Recorded**; **Reconciled** requires
+an explicit completed match and agreeing payment/accounting evidence. Invalid
+bank payloads are excluded with a visible count. No real bank is connected.
+
+The bank uses `bankAccount`, `bankFilter`, and `bankSearch` URL parameters.
+Transaction drawers reuse the source evidence reader and can open human requests
+through the inbox's `ask` parameter, regardless of the current inbox filter.
+The Finance flow map uses `flowStage` to reveal source records, specialist teams,
+control checks, and books/payments. Its counts come from existing run queries;
+its arrows describe system responsibilities rather than a traced transaction.
+
+Bank aggregation tests cover signs, reversals, derived opening balances, malformed
+payloads, run isolation, match status, request recipients, and complete history.
+The read model collects a full simulation run; very large production datasets
+would need server-side aggregates and pagination before adopting this pattern.
