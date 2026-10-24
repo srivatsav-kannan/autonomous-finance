@@ -1,5 +1,10 @@
 # Architecture
 
+> This describes the original prototype and its intended controls, not a guarantee
+> that every invariant is currently enforced. The proposed next implementation is
+> [Finance backend and integration design](INTEGRATION_DESIGN.md), which defines
+> Convex ownership, provider adapters, recovery semantics and acceptance gates.
+
 **Thesis:** finance software was built for humans: spreadsheets, screens, month-end checklists. Agents work at a different pace, so putting them on human tools wastes most of what they can do.
 
 We rebuild the finance function for agents:
