@@ -1,3 +1,4 @@
+import { workerRequest } from "./lib/workerRequest";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { authSeat, fail, loadSeat, logActivity, recordViolation } from "./lib/kernel";
@@ -11,6 +12,7 @@ const AGENT_STAFFABLE = new Set(["ap_clerk", "cash_application", "revenue_accoun
 export const spawnSeat = mutation({
   args: {
     ...seatArgs,
+    requestId: v.optional(v.string()),
     newSeatId: v.string(),
     role: v.string(),
     name: v.string(),
@@ -28,24 +30,26 @@ export const spawnSeat = mutation({
     if (auth.seat.kind === "agent" && !AGENT_STAFFABLE.has(args.role)) {
       return await recordViolation(ctx, args.runId, args.seatId, op, fail("forbidden", `an agent may not staff ${args.role}; ask a human`));
     }
-    if (await loadSeat(ctx, args.runId, args.newSeatId)) return fail("exists", `seat ${args.newSeatId} exists`);
-    await ctx.db.insert("seats", {
-      runId: args.runId,
-      seatId: args.newSeatId,
-      role: args.role,
-      name: args.name,
-      kind: "agent",
-      capabilities: {},
-      reportsTo: args.reportsTo,
-      status: "active",
-      tokenHash: args.tokenHash,
-      model: args.model,
-      effort: args.effort,
-      spawnedBy: args.seatId,
-      createdAt: Date.now(),
+    return await workerRequest(ctx, args, "seats.spawnSeat", async () => {
+      if (await loadSeat(ctx, args.runId, args.newSeatId)) return fail("exists", `seat ${args.newSeatId} exists`);
+      await ctx.db.insert("seats", {
+        runId: args.runId,
+        seatId: args.newSeatId,
+        role: args.role,
+        name: args.name,
+        kind: "agent",
+        capabilities: {},
+        reportsTo: args.reportsTo,
+        status: "active",
+        tokenHash: args.tokenHash,
+        model: args.model,
+        effort: args.effort,
+        spawnedBy: args.seatId,
+        createdAt: Date.now(),
+      });
+      await logActivity(ctx, args.runId, args.seatId, "spawned", `Spawned ${args.name} (${args.role}): ${args.reason}`, { seatId: args.newSeatId });
+      return { ok: true as const };
     });
-    await logActivity(ctx, args.runId, args.seatId, "spawned", `Spawned ${args.name} (${args.role}): ${args.reason}`, { seatId: args.newSeatId });
-    return { ok: true as const };
   },
 });
 

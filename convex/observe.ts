@@ -1,3 +1,4 @@
+import { workerRequest } from "./lib/workerRequest";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { authSeat, recordViolation } from "./lib/kernel";
@@ -8,6 +9,7 @@ const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 export const logRun = mutation({
   args: {
     ...seatArgs,
+    requestId: v.optional(v.string()),
     taskId: v.optional(v.id("tasks")),
     kind: v.string(),
     model: v.optional(v.string()),
@@ -23,9 +25,11 @@ export const logRun = mutation({
   handler: async (ctx, args) => {
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "observe.logRun", auth);
-    const { token: _t, ...row } = args;
-    await ctx.db.insert("agentRuns", { ...row, at: Date.now() });
-    return { ok: true as const };
+    return await workerRequest(ctx, args, "observe.logRun", async () => {
+      const { token: _t, requestId: _requestId, ...row } = args;
+      await ctx.db.insert("agentRuns", { ...row, at: Date.now() });
+      return { ok: true as const };
+    });
   },
 });
 

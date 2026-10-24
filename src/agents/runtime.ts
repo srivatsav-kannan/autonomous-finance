@@ -30,8 +30,9 @@ export class SeatRuntime {
     token: string,
     readonly mem: MemoryStore,
     readonly bank: WorldBank,
+    client?: ConstructorParameters<typeof SeatClient>[3],
   ) {
-    this.kernel = new SeatClient(runId, seat.seatId, token);
+    this.kernel = new SeatClient(runId, seat.seatId, token, client);
   }
 
   get author() {
