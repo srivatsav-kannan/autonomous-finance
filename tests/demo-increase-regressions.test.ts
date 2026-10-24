@@ -41,6 +41,34 @@ async function fundedFixture() {
 }
 
 describe("Increase account evidence regressions", () => {
+  it.each(["controller", "human"] as const)("expires the %s close signature after a later funding journal", async first => {
+    const f = await fundedFixture();
+    f.routes["/transactions"] = { data: [f.debit], next_cursor: null };
+    await f.dispatcher.tick();
+    expect(await f.worker.tick()).toEqual({ posted: 1, errors: [] });
+    const sign = (actor: "controller" | "human") => actor === "controller"
+      ? f.t.mutation(api.demoEvidence.signClose, { ...f.controller, period: "2026-10" })
+      : f.human.mutation(api.demoEvidence.signClose, { scope: f.scope, period: "2026-10" });
+    const second = first === "controller" ? "human" : "controller";
+    expect(await sign(first)).toEqual({ status: "open" });
+    const before = (await f.t.run(ctx => ctx.db.query("periods").first()))!;
+    f.routes["/transactions"] = { data: [f.debit, f.funding], next_cursor: null };
+    expect((await f.worker.tick()).errors).toEqual(["Unmatched bank transaction"]);
+    await expect(sign(second)).rejects.toThrow("AP close blocked");
+    const approval = { scope: f.scope, transactionId: f.funding.id, expectedAmountCents: 100000, reason: "Newly received sandbox capital" };
+    await f.human.mutation(api.demoEvidence.approveSandboxFunding, approval);
+    expect(await sign(second)).toEqual({ status: "open" });
+    const after = (await f.t.run(ctx => ctx.db.query("periods").first()))!;
+    expect(after.closeSnapshotHash).not.toBe(before.closeSnapshotHash);
+    expect(after.closedBy).toEqual([second === "human" ? "human_cfo" : "controller"]);
+    expect((await f.human.mutation(api.demoEvidence.approveSandboxFunding, approval)).replayed).toBe(true);
+    expect(await f.worker.tick()).toEqual({ posted: 0, errors: [] });
+    expect(await sign(first)).toEqual({ status: "closed" });
+    expect((await f.t.run(ctx => ctx.db.query("periods").first()))!.closeSnapshotHash).toBe(after.closeSnapshotHash);
+    expect(await f.t.run(ctx => ctx.db.query("journalEntries").collect())).toHaveLength(3);
+    expect(await f.t.run(ctx => ctx.db.query("activity").filter(q => q.eq(q.field("kind"), "sandbox_funding_approved")).collect())).toHaveLength(1);
+  });
+
   it("reconciles explicitly approved funding, pays once and closes with both signatures", async () => {
     const f = await fundedFixture();
     await f.t.mutation(api.demoEvidence.ingestNotice, { scope: f.scope, token: f.evidenceToken, eventId: "event_funding", transactionId: "transaction_funding", bodyHash: "b".repeat(64) });

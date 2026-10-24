@@ -12,6 +12,16 @@ Only the evidence service may ingest hints, fetch/import bank facts, advance cur
 
 `/ap-demo` is the human console: exact snapshot review, expected-hash approval, dispatch/posting/matching state, attempts, next retry, operator, evidence IDs and reasoned resume. It requires an actual configured JWT; it does not accept agent/service credentials or expose simulator controls.
 
+Close signatures are bound to a versioned snapshot of the run's ledger head, bills,
+credits, payment versions, commands and reconciliation evidence. Both signers must
+sign the same snapshot. A subsequent payment, funding entry, attached evidence,
+exception resolution or newly reconciled notification requires fresh signatures;
+unchanged polling and duplicate evidence preserve them. The snapshot is run-wide,
+matching the close blockers, and each period keeps its own signatures. Snapshot
+reads and the signature write share one Convex transaction, and the audit records
+the signed hash. Open periods with pre-upgrade signatures lacking a hash require
+both parties to sign again. Already closed periods are not automatically reopened.
+
 ## Checks
 
 Node 24.6+ is required for SQLite. Run:

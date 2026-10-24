@@ -6,6 +6,7 @@ import { transactionValidator, observationValidator } from "./demoEvidenceSchema
 import { requireService, requireDemoSeat, requireHuman, accountingSeat, auditDemo } from "./lib/demoAuth";
 import { releaseReservations, settleEffects, returnEffects } from "./lib/demoEffects";
 import { appendDemoEntry } from "./lib/demoPost";
+import { canonical, sha256Hex } from "./lib/kernel";
 import { canonicalJson, sameBankScope, type BankScope, type BankTransaction, type TransferObservation } from "../src/integrations/contracts";
 
 const serviceArgs = { scope: scopeValidator, token: v.string() };
@@ -252,13 +253,21 @@ export const resolveCommand = query({
     return commands.find(c => c.command.idempotencyKey === args.idempotencyKey)?.command ?? null;
   },
 });
-export async function closeBlockers(ctx: QueryCtx, scope: BankScope) {
-  const commands = await ctx.db.query("demoCommands").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect();
-  const transactions = await ctx.db.query("demoTransactions").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect();
-  const notices = await ctx.db.query("demoInbox").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect();
-  const versions = await ctx.db.query("demoVersions").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect();
-  const observations = await ctx.db.query("demoObservations").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect();
-  const bills = await ctx.db.query("demoBills").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect();
+async function readCloseState(ctx: QueryCtx, scope: BankScope) {
+  const [commands, transactions, notices, versions, observations, bills, credits, ledgerHead] = await Promise.all([
+    ctx.db.query("demoCommands").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect(),
+    ctx.db.query("demoTransactions").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect(),
+    ctx.db.query("demoInbox").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect(),
+    ctx.db.query("demoVersions").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect(),
+    ctx.db.query("demoObservations").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect(),
+    ctx.db.query("demoBills").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect(),
+    ctx.db.query("demoCredits").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect(),
+    ctx.db.query("ledgerHeads").withIndex("by_run", q => q.eq("runId", scope.runId)).unique(),
+  ]);
+  return { commands, transactions, notices, versions, observations, bills, credits, ledgerHead };
+}
+type CloseState = Awaited<ReturnType<typeof readCloseState>>;
+function blockersFor({ commands, transactions, notices, versions, observations, bills }: CloseState) {
   return [
     ...versions.filter(p => p.status === "awaiting_approval").map(p => ({ kind: "approval", id: p._id, reason: "Awaiting approval; cancel stale requests before closing" })),
     ...observations.filter(o => !commands.some(c => c.command.commandId === o.observation.commandId && c.providerTransferId === o.transferId)).map(o => ({ kind: "transfer", id: o.transferId, reason: "Unmatched verified bank transfer" })),
@@ -267,6 +276,27 @@ export async function closeBlockers(ctx: QueryCtx, scope: BankScope) {
     ...notices.filter(n => !n.processed).map(n => ({ kind: "notification", id: n.eventId, reason: n.error ?? "awaiting verification" })),
     ...bills.filter(b => b.status !== "paid" || b.flags.length > 0).map(b => ({ kind: "bill", id: b._id, reason: b.flags.length ? b.flags.join("; ") : b.status })),
   ];
+}
+export async function closeBlockers(ctx: QueryCtx, scope: BankScope) {
+  return blockersFor(await readCloseState(ctx, scope));
+}
+
+/** Bind both signers to the same run-wide state, matching the scope of close blockers.
+ * Index reads have stable creation order. Exclude polling timestamps and dispatcher
+ * leases so observing identical bank facts cannot invalidate a pending signature. */
+async function closeSnapshotHash(scope: BankScope, period: string, state: CloseState) {
+  return sha256Hex(canonical({
+    version: 1, scope, period, ledgerHead: state.ledgerHead?.hash ?? "genesis",
+    bills: state.bills, credits: state.credits, versions: state.versions,
+    commands: state.commands.map(c => ({ id: c._id, command: c.command, providerTransferId: c.providerTransferId,
+      execution: c.execution, posting: c.posting, reconciliation: c.reconciliation, lastError: c.lastError })),
+    transactions: state.transactions.map(({ importedAt: _, matchedAt: _m, ...facts }) => facts),
+    notices: state.notices.map(({ receivedAt: _, ...facts }) => facts),
+    observations: state.observations.map(({ importedAt: _, observation, ...identity }) => {
+      const { updatedAt: _u, ...facts } = observation;
+      return { ...identity, observation: facts };
+    }),
+  }));
 }
 export const view = query({
   args: { scope: scopeValidator, seatId: v.string(), token: v.string() }, handler: async (ctx, args) => {
@@ -302,16 +332,21 @@ export const signClose = mutation({
     const actor = args.seatId && args.token
       ? (await requireDemoSeat(ctx, { scope: args.scope, seatId: args.seatId, token: args.token }, ["controller"])).seat
       : (await requireHuman(ctx, args.scope)).seat;
-    const blockers = await closeBlockers(ctx, args.scope);
+    const state = await readCloseState(ctx, args.scope);
+    const blockers = blockersFor(state);
     if (blockers.length) throw new Error(`AP close blocked: ${blockers.map(b => `${b.kind} ${b.id}: ${b.reason}`).join("; ")}`);
     const period = await ctx.db.query("periods").withIndex("by_run_period", q => q.eq("runId", args.scope.runId).eq("period", args.period)).unique();
     if (!period) throw new Error("Period not found");
     if (period.status === "closed") return { status: "closed" as const };
-    const signedBy = [...new Set([...(period.closedBy ?? []), actor.seatId])];
+    // Convex commits the snapshot reads and signatures atomically; concurrent writes retry.
+    // Old signatures without a snapshot also require a fresh review after this upgrade.
+    const snapshotHash = await closeSnapshotHash(args.scope, args.period, state);
+    const previousSigners = period.closeSnapshotHash === snapshotHash ? period.closedBy ?? [] : [];
+    const signedBy = [...new Set([...previousSigners, actor.seatId])];
     const seats = await Promise.all(signedBy.map(id => ctx.db.query("seats").withIndex("by_run_seat", q => q.eq("runId", args.scope.runId).eq("seatId", id)).unique()));
     const ready = seats.some(s => s?.role === "controller" && s.kind === "agent" && s.status === "active") && seats.some(s => s?.kind === "human" && s.status === "active");
-    await ctx.db.patch(period._id, { closedBy: signedBy, status: ready ? "closed" : "open", closedAt: ready ? Date.now() : undefined });
-    await auditDemo(ctx, args.scope, actor.seatId, "close_signed", { period: args.period, ready });
+    await ctx.db.patch(period._id, { closedBy: signedBy, closeSnapshotHash: snapshotHash, status: ready ? "closed" : "open", closedAt: ready ? Date.now() : undefined });
+    await auditDemo(ctx, args.scope, actor.seatId, "close_signed", { period: args.period, ready, snapshotHash });
     return { status: ready ? "closed" as const : "open" as const };
   },
 });

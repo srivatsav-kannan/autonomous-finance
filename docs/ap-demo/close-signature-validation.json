@@ -1,0 +1,99 @@
+{
+  "recordedAt": "2026-10-24T21:09:22.469246+00:00",
+  "sourceCommit": "8eed9ab8a9c9b44ca4177d64c534a5076623f300",
+  "pr49FixCommit": "97522721c22a01e07e78f2840fa7753411da0495",
+  "runtime": "v24.22.0",
+  "checks": {
+    "pr49": {
+      "tests": 224,
+      "files": 24
+    },
+    "pr50Stack": {
+      "tests": 268,
+      "files": 27
+    },
+    "newRegressionCases": 10,
+    "originalRereviewReproductions": {
+      "passed": 6,
+      "failed": 0
+    },
+    "applicationTypecheck": "passed",
+    "backendTypecheck": "passed",
+    "testsTypecheck": "passed",
+    "consoleBuild": "passed",
+    "diffCheck": "passed"
+  },
+  "regressions": [
+    "Another AP payment invalidates either first signer; both must sign the new snapshot",
+    "Later sandbox capital invalidates either first signer; repeated funding approval does not invalidate the new snapshot",
+    "Attached evidence and resolved exceptions require fresh signatures without a new journal",
+    "Newly reconciled notifications require fresh signatures",
+    "Polling and duplicate evidence keep the same snapshot",
+    "Pre-upgrade signatures without a hash require both parties again",
+    "Concurrent signatures close only the same current snapshot"
+  ],
+  "localRecovery": {
+    "status": "passed",
+    "identityMode": "local_admin_simulated_human",
+    "fullReport": "var/ap-demo/ap-local-1792876093362/report.json",
+    "amountCents": 66290,
+    "attempts": 2,
+    "bankTransfers": 1,
+    "postedDebits": 1,
+    "closeBlockers": 0,
+    "closeResults": [
+      {
+        "period": "2026-01",
+        "status": "closed"
+      }
+    ]
+  },
+  "browser": {
+    "status": "passed",
+    "identityMode": "local_oidc_test_identity",
+    "fullReport": "var/ap-demo/ap-browser-1792876126311/report.json",
+    "approvalViaBrowser": true,
+    "negativeAuthChecks": [
+      "wrong_audience_rejected",
+      "expired_token_rejected"
+    ],
+    "execution": "settled",
+    "posting": "posted",
+    "reconciliation": "matched",
+    "closeBlockers": 0,
+    "close": {
+      "period": "2026-10",
+      "status": "closed"
+    },
+    "consoleErrors": 0
+  },
+  "persistedPeriods": [
+    {
+      "runId": "ap-browser-1792876126311",
+      "period": "2026-10",
+      "status": "closed",
+      "closedBy": [
+        "controller",
+        "human"
+      ],
+      "closeSnapshotHash": "e64ade2c26fb63460efae15e9a61c4ca5a528e63aca64a4e6cbc9258121b04ff"
+    },
+    {
+      "runId": "ap-local-1792876093362",
+      "period": "2026-01",
+      "status": "closed",
+      "closedBy": [
+        "controller",
+        "human"
+      ],
+      "closeSnapshotHash": "7f19d26147e63cd4ea6a41e4f17400488da91749adf0997db13ee769d0c3da43"
+    }
+  ],
+  "externalSandbox": {
+    "status": "not_run",
+    "reason": "Increase sandbox credentials, configured external account and real identity-provider JWT unavailable. Funding tests use real adapter/workers/Convex handlers with mocked provider HTTP.",
+    "productionIdentityProviderLogin": "not_run",
+    "externalWebhookDelivery": "not_run"
+  },
+  "compatibility": "Open periods with signatures lacking a snapshot require both signers again. Already closed periods are preserved."
+}
