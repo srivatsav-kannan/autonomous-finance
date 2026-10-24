@@ -1,0 +1,28 @@
+{
+  "scanned": "2026-10-24",
+  "findings": {
+    "fonts": "System sans and monospace in console/src/styles.css:36",
+    "palette": "Warm background #f6f5f1, green #1f6f4a; automatic dark theme in console/src/styles.css:1",
+    "motion": "No motion dependency",
+    "spacing": "Ad hoc values; consolidated onto Hallmark spacing scale",
+    "framework": "React 19, Vite 8, live Convex queries; package.json",
+    "screens": "Inbox, team, activity, ledger, memory, evals, control room in console/src/App.tsx",
+    "material": "Isolated 14-day, 3-store simulation from the existing eval runner. No invented finance values or brand assets."
+  },
+  "preserve": [
+    "Seven destinations",
+    "Scenario hash URLs",
+    "Convex queries",
+    "Gateway actions and WebMCP tools",
+    "Existing green brand and simulated-company disclaimer",
+    "Light and dark modes"
+  ],
+  "introduce": [
+    "Shared tokens and accessible controls",
+    "Financial position above compact operating figures",
+    "Responsive ledger records",
+    "Keyboard-accessible commit controls",
+    "Loading and gateway feedback",
+    "Hallmark development checks"
+  ]
+}

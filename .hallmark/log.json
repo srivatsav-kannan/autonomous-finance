@@ -1,0 +1,31 @@
+[
+  {
+    "mode": "redesign",
+    "depth": "full",
+    "scope": "app",
+    "shape": "app screen",
+    "theme": "brand",
+    "axes": "warm paper/system sans/green",
+    "nav": "existing sidebar, mobile view selector",
+    "signature": "human decision queue with traceable evidence",
+    "imagery": "real running finance console",
+    "sections": [
+      "inbox",
+      "org",
+      "activity",
+      "ledger",
+      "memory",
+      "evals",
+      "control"
+    ],
+    "waived": [],
+    "prompt": "Integrate Hallmark into the Autonomous Finance frontend; warm, precise finance workbench",
+    "date": "2026-10-24",
+    "sweep": {
+      "floor": 0,
+      "reflex": 0,
+      "keptWarning": "Historical values in acknowledged messages, still available under Show answered",
+      "finishReview": "subagent: 1 finding resolved"
+    }
+  }
+]
