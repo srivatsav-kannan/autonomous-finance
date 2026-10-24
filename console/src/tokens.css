@@ -1,7 +1,7 @@
 :root {
   color-scheme: light;
   --bg: #f6f5f1;
-  --panel: #fdfcf9;
+  --panel: #ffffff;
   --ink: #1d2320;
   --muted: #58635b;
   --line: #d7dbd3;
@@ -33,7 +33,7 @@
   --font-body: "Avenir Next", Avenir, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-body);
   --font-outlier: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  --display-weight: 600;
+  --display-weight: 500;
   --tracking-display: -0.025em;
   --space-3xs: 2px;
   --space-2xs: 4px;
@@ -55,14 +55,16 @@
   --text-section: var(--text-xl);
   --text-title: var(--text-lg);
   --text-lead: var(--text-md);
-  --container: 1440px;
+  --container: 1600px;
   --gutter: 40px;
   --gap-columns: 32px;
   --radius-card: 8px;
-  --radius-input: 6px;
+  --radius-input: 4px;
   --radius-pill: 999px;
   --rule-hair: 1px;
   --shadow-card: none;
+  --drawer-shadow: -12px 0 48px #1d23201a;
+  --scrim: #f6f5f1b8;
   --dur-micro: 120ms;
   --dur-short: 180ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -89,5 +91,7 @@
     --sidebar: #202720;
     --disabled-bg: #343e33;
     --disabled-ink: #b0b8ac;
+    --drawer-shadow: -12px 0 48px #00000050;
+    --scrim: #151a16b8;
   }
 }

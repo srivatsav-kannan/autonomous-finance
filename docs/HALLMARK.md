@@ -56,3 +56,23 @@ Review upstream changes, then replace the vendored `skills/hallmark` directory
 from an explicit Git commit. Preserve the MIT license and update `UPSTREAM.md`.
 Run the project checks and the rendered sweep before accepting updated gates.
 Do not run an unpinned install during application builds.
+
+## Design canvas and review workflow
+
+The [editable Figma workspace](https://www.figma.com/design/qUwizlNQktZ68GJjaoKUo5?node-id=2-22)
+contains native inbox and review-drawer frames, reusable controls, design tokens,
+and a two-screen prototype. Its figures are a snapshot of the local
+`finance-workbench` simulation. The canvas is a design reference; changes do not
+synchronize automatically with React. Figma uses Inter as the available fallback
+for the app's system font.
+
+The Ramp-inspired app shell uses the existing green brand with a neutral sidebar
+and white workspace. Inbox status filters, search and sort persist in the URL as
+`inboxFilter`, `inboxSearch` and `inboxSort`; the ledger uses `ledgerView` and
+`ledgerSearch`. An individual request opens in a keyboard-accessible review drawer.
+Decision evidence reads the existing memory gateway, and response options retain
+their original gateway semantics. Answered requests remain under **Answered**.
+
+The ledger exports the currently filtered journal entries or trial balance as CSV.
+Journal data is still limited to the most recent 60 entries; the screen reports
+that limit separately from the scenario's full hash-chain count.

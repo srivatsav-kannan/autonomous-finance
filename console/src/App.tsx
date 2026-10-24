@@ -4,6 +4,10 @@ import { api } from "../../convex/_generated/api";
 import type { Doc } from "../../convex/_generated/dataModel";
 import { registerWebMcpTools } from "./webmcp";
 import { gateway } from "./gateway";
+import { Icon } from "./Icon";
+import { ReviewDrawer } from "./ReviewDrawer";
+import { Ledger } from "./Ledger";
+import { useUrlState } from "./useUrlState";
 
 const $ = (cents: number) => (cents < 0 ? "-" : "") + "$" + (Math.abs(cents) / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const ago = (t: number) => {
@@ -65,48 +69,45 @@ export function App() {
   }, [runId]);
 
   return (
-    <div className="shell">
+    <div className="shell finance-workbench">
       <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
-      <header className="top">
+      <aside className="sidebar">
         <div className="brand">
-          <span className="mark" aria-hidden="true">AF</span>
-          <div>
-            <h1 className="title">Autonomous Finance</h1>
-            <div className="sub">Sweetgreen, Inc. (simulated)</div>
-          </div>
+          <span className="mark" aria-hidden="true">af</span>
+          <h1 className="title">Autonomous<br />Finance</h1>
         </div>
-        <label className="scenario-picker">
-          <span>Scenario</span>
-          <select value={runId} onChange={(e) => setRunId(e.target.value)} aria-label="Scenario" disabled={!runs?.length}>
-            {!runs?.length && <option value={runId}>{runs ? "No scenarios" : "Loading scenarios…"}</option>}
-            {(runs ?? []).map((r) => (
-              <option key={r.runId} value={r.runId}>{r.label} ({r.runId})</option>
-            ))}
-          </select>
-        </label>
-      </header>
-      {!connection.isWebSocketConnected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
-      {!runId ? <main id="main" tabIndex={-1}>{runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div>}</main> : (
-        <div className="body">
-          <aside className="sidebar">
-            <nav className="side" aria-label="Console views">
-              {TABS.map((t) => (
-                <button type="button" key={t.id} className={t.id === tab ? "on" : ""} aria-current={t.id === tab ? "page" : undefined} onClick={() => setTab(t.id)}>
-                  {t.label}
-                  {t.id === "inbox" && <InboxCount runId={runId} />}
-                </button>
-              ))}
-              <p className="side-note">Agents run the finance function. You oversee.</p>
-            </nav>
-          </aside>
-          <div className="workspace">
-            <label className="mobile-nav">View
-              <select value={tab} onChange={(e) => setTab(e.target.value as Tab)} aria-label="Console view">
-                {TABS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
-              </select>
-            </label>
-            <Kpis runId={runId} />
-            <main className="main" id="main" tabIndex={-1} key={runId}>
+        <div className="company"><span className="company-avatar" aria-hidden="true">S</span><div>Sweetgreen, Inc.<span>Simulated company</span></div></div>
+        <nav className="side" aria-label="Console views">
+          <p className="nav-label">Workspace</p>
+          {TABS.map((t) => (
+            <button type="button" key={t.id} className={t.id === tab ? "on" : ""} aria-current={t.id === tab ? "page" : undefined} onClick={() => setTab(t.id)}>
+              <Icon name={t.id} /><span>{t.label}</span>
+              {t.id === "inbox" && runId && <InboxCount runId={runId} />}
+            </button>
+          ))}
+        </nav>
+        <div className="sidebar-footer"><span className="operator-avatar" aria-hidden="true">HF</span><div>Human finance lead<span>You oversee. Agents operate.</span></div></div>
+      </aside>
+      <div className="workspace">
+        <header className="workspace-top">
+          <div className="breadcrumb"><span>Workspace</span><Icon name="chevron" /><span>{TABS.find((t) => t.id === tab)?.label}</span></div>
+          <label className="scenario-picker"><span>Scenario</span>
+            <select value={runId} onChange={(e) => setRunId(e.target.value)} aria-label="Scenario" disabled={!runs?.length}>
+              {!runs?.length && <option value={runId}>{runs ? "No scenarios" : "Loading scenarios…"}</option>}
+              {(runs ?? []).map((r) => <option key={r.runId} value={r.runId}>{r.label} ({r.runId})</option>)}
+            </select>
+          </label>
+        </header>
+        <div className="workspace-content">
+          <label className="mobile-nav"><span>Autonomous Finance<small>Sweetgreen, Inc. · simulated</small></span>
+            <select value={tab} onChange={(e) => setTab(e.target.value as Tab)} aria-label="Console view">
+              {TABS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+            </select>
+          </label>
+          {!connection.isWebSocketConnected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
+          {runId && <Kpis runId={runId} />}
+          <main className="main" id="main" tabIndex={-1} key={runId}>
+            {!runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div> : <>
               {tab === "inbox" && <Inbox runId={runId} />}
               {tab === "org" && <Org runId={runId} />}
               {tab === "activity" && <Activity runId={runId} />}
@@ -114,10 +115,10 @@ export function App() {
               {tab === "memory" && <Memory runId={runId} />}
               {tab === "evals" && <Evals runId={runId} />}
               {tab === "control" && <Control runId={runId} />}
-            </main>
-          </div>
+            </>}
+          </main>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -142,9 +143,11 @@ function Kpis({ runId }: { runId: string }) {
       <dl className="kpis" aria-label="Financial position">
         {balances.map((k) => <div key={k.label} className="kpi"><dt className="kl">{k.label}</dt><dd className="kv">{k.value}</dd></div>)}
       </dl>
+      <details className="simulation-details"><summary>Simulation activity <span>{o.run?.simDate ?? "No date"}</span></summary>
       <dl className="metrics" aria-label="Simulation activity">
         {metrics.map((k) => <div key={k.label}><dt>{k.label}</dt><dd>{k.value}</dd></div>)}
       </dl>
+      </details>
     </>
   );
 }
@@ -155,71 +158,125 @@ function InboxCount({ runId }: { runId: string }) {
   return n ? <span className="badge" aria-label={`${n} decisions need attention`}>{n}</span> : null;
 }
 
+const INBOX_FILTERS = ["review", "updates", "answered"] as const;
+type InboxFilter = typeof INBOX_FILTERS[number];
+const INBOX_SORTS = ["priority", "newest"] as const;
+const seatName = (id: string) => id.split(/[-_]/).map((part) => /^(cfo|ap|ar|hr)$/.test(part) ? part.toUpperCase() : part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+const askStatus = (ask: Doc<"asks">) => ask.status === "answered" ? "Answered" : ask.severity === "urgent" ? "Needs attention" : ask.severity === "decision" ? "Needs review" : "Update";
+
 function Inbox({ runId }: { runId: string }) {
-  const [showAll, setShowAll] = useState(false);
+  const [filter, setFilter] = useUrlState("inboxFilter", "review", INBOX_FILTERS);
+  const [search, setSearch] = useUrlState("inboxSearch");
+  const [sort, setSort] = useUrlState("inboxSort", "priority", INBOX_SORTS);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [responseRecorded, setResponseRecorded] = useState(false);
+  const openRecord = (id: string) => { setResponseRecorded(false); setSelectedId(id); };
   const asks = useQuery(api.asks.list, { runId, to: "human_cfo" });
-  const list = (asks ?? []).filter((a) => showAll || a.status === "open");
+  const belongs = (ask: Doc<"asks">, group: InboxFilter) => group === "answered" ? ask.status === "answered" : ask.status === "open" && (group === "updates" ? ask.severity === "info" : ask.severity !== "info");
+  const groups: { id: InboxFilter; label: string; count: number }[] = [
+    { id: "review", label: "Needs review", count: (asks ?? []).filter((a) => belongs(a, "review")).length },
+    { id: "updates", label: "Updates", count: (asks ?? []).filter((a) => belongs(a, "updates")).length },
+    { id: "answered", label: "Answered", count: (asks ?? []).filter((a) => belongs(a, "answered")).length },
+  ];
   const ordered = useMemo(() => {
     const rank = { urgent: 0, decision: 1, info: 2 } as const;
-    return [...list].sort((a, b) => rank[a.severity] - rank[b.severity] || b.createdAt - a.createdAt);
-  }, [list]);
+    const query = search.trim().toLowerCase();
+    return (asks ?? []).filter((a) => belongs(a, filter) && [a.title, a.body, a.from, seatName(a.from), ...a.evidence.map((e) => e.ref)].join(" ").toLowerCase().includes(query))
+      .sort((a, b) => (sort === "priority" ? rank[a.severity] - rank[b.severity] : 0) || b.createdAt - a.createdAt);
+  }, [asks, filter, search, sort]);
+  const selected = asks?.find((a) => a._id === selectedId);
+  const next = (asks ?? []).filter((a) => belongs(a, "review")).sort((a, b) => Number(b.severity === "urgent") - Number(a.severity === "urgent") || a.createdAt - b.createdAt)[0];
+  const close = () => setSelectedId(null);
   return (
-    <section>
-      <div className="row between">
-        <h2>Decisions for you</h2>
-        <label className="toggle"><input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} /> Show answered</label>
+    <section className="inbox-view">
+      <div className="page-heading">
+        <div><h2 id="inbox-heading" tabIndex={-1}>Decisions for you</h2>
+          <p className="lede">{asks === undefined ? "Your team's requests, with the evidence to decide." : groups[0]!.count ? `${groups[0]!.count} ${groups[0]!.count === 1 ? "decision needs" : "decisions need"} your review. Your team is handling the routine work.` : "You're up to date. Your team is handling the routine work."}</p>
+        </div>
+        {next && <button type="button" className="primary button-icon" onClick={() => openRecord(next._id)}>Review next<Icon name="arrow" /></button>}
       </div>
-      <p className="lede">Agents only ask when policy says a human must decide, or when they found something you should know. Everything else is already done.</p>
-      {asks === undefined ? <Loading label="Loading decisions…" /> : ordered.length === 0 && <div className="empty"><strong>Nothing needs you right now.</strong>New decisions will appear here when the agents need your input.</div>}
-      {ordered.map((a) => <AskCard key={a._id} runId={runId} ask={a} />)}
+      <div className="tab-strip" role="group" aria-label="Filter inbox">
+        {groups.map((g) => <button type="button" key={g.id} className={`tab-item ${filter === g.id ? "is-active" : ""}`} aria-pressed={filter === g.id} onClick={() => setFilter(g.id)}>{g.label}<span>{asks === undefined ? "—" : g.count}</span></button>)}
+      </div>
+      <div className="table-toolbar">
+        <label className="search-field"><Icon name="search" /><input type="search" aria-label="Search inbox" placeholder="Search decisions, people, or evidence" value={search} onChange={(e) => setSearch(e.target.value)} /></label>
+        <label className="toolbar-select">Sort by<select aria-label="Sort inbox" value={sort} onChange={(e) => setSort(e.target.value as typeof INBOX_SORTS[number])}><option value="priority">Priority</option><option value="newest">Newest first</option></select></label>
+      </div>
+      {asks === undefined ? <Loading label="Loading decisions…" /> : ordered.length === 0 ? <div className="empty queue-empty"><Icon name={search ? "search" : "check"} /><strong>{search ? "No matching records" : filter === "review" ? "All decisions reviewed" : filter === "updates" ? "No new updates" : "No answered decisions yet"}</strong><p>{search ? "Try a different search or switch the inbox filter." : "New records will appear here as your team works."}</p>{search && <button type="button" onClick={() => setSearch("")}>Clear search</button>}</div> : (
+        <div className="table-scroll queue-table"><table className="grid decision-table">
+          <caption className="visually-hidden">{groups.find((g) => g.id === filter)?.label} in {runId}</caption>
+          <thead><tr><th>Decision</th><th>From</th><th>Status</th><th>Evidence</th><th>Received</th></tr></thead>
+          <tbody>{ordered.map((a) => <tr key={a._id}>
+            <td className="decision-subject"><button type="button" className="decision-link" onClick={() => openRecord(a._id)} aria-label={`Review ${a.title}`}><span>{a.title}</span><Icon name="chevron" /></button><p className="decision-excerpt">{a.body.split("\n")[0]}</p></td>
+            <td className="decision-from"><span className="agent-avatar" aria-hidden="true">{a.from.slice(0, 2).toUpperCase()}</span><span>{seatName(a.from)}</span></td>
+            <td className="decision-state"><span className={`status-label ${a.status === "answered" ? "answered" : a.severity}`}><span className="status-dot" />{askStatus(a)}</span></td>
+            <td className="decision-evidence">{a.evidence.length ? <span className="evidence-count"><Icon name="file" />{a.evidence.length} {a.evidence.length === 1 ? "record" : "records"}</span> : <span className="muted">None</span>}</td>
+            <td className="decision-time muted"><time dateTime={new Date(a.createdAt).toISOString()} title={new Date(a.createdAt).toLocaleString()}>{ago(a.createdAt)}</time></td>
+          </tr>)}</tbody>
+        </table></div>
+      )}
+      {asks !== undefined && <p className="table-summary" role="status">{ordered.length} {ordered.length === 1 ? "record" : "records"}{search ? " matching your search" : ` in ${groups.find((g) => g.id === filter)?.label.toLowerCase()}`}<span>Live from the selected simulation</span></p>}
+      <ReviewDrawer open={!!selected} onClose={close} labelledBy="review-title" fallbackFocusId="inbox-heading" preferFallbackFocus={responseRecorded}>
+        {selected && <AskDetail key={selected._id} runId={runId} ask={selected} onAnswered={() => setResponseRecorded(true)} />}
+      </ReviewDrawer>
     </section>
   );
 }
 
-function AskCard({ runId, ask }: { runId: string; ask: Doc<"asks"> }) {
+function EvidenceRecord({ runId, reference, label }: { runId: string; reference: string; label: string }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const readable = reference.startsWith("decisions/");
+  const read = async () => {
+    if (open) { setOpen(false); return; }
+    setOpen(true);
+    if (text !== null) return;
+    setBusy(true); setError(null);
+    try { const result = await gateway(runId, `memory/show?path=${encodeURIComponent(reference)}`); setText(result.text ?? "This record is not on the main branch."); }
+    catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+  return <div className="evidence-record">
+    {readable ? <button type="button" className="evidence-button" onClick={() => void read()} aria-expanded={open} aria-busy={busy}><Icon name="file" /><span><strong>{label}</strong><span>{reference}</span></span><Icon name="chevron" /></button> : <div className="evidence-reference"><Icon name="file" /><span><strong>{label}</strong><span>{reference}</span></span></div>}
+    {open && <div className="evidence-content">{busy ? <Loading label="Loading source record…" /> : error ? <p className="feedback error" role="alert">{error}. Close and reopen the record to retry.</p> : <pre className="file">{text}</pre>}</div>}
+  </div>;
+}
+
+function AskDetail({ runId, ask, onAnswered }: { runId: string; ask: Doc<"asks">; onAnswered: () => void }) {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
+  const [submitted, setSubmitted] = useState<string | null>(null);
+  const confirmation = useRef<HTMLParagraphElement>(null);
   const choose = async (optionId: string) => {
-    setBusy(true);
-    setResult(null);
-    setFailed(false);
+    if (busy || submitted) return;
+    setBusy(true); setResult(null); setFailed(false);
     try {
       const r = await gateway(runId, `asks/${ask._id}/answer`, { method: "POST", body: { optionId } });
-      setResult(r.effects?.length ? r.effects.join(", ") : "answered");
+      setSubmitted(optionId);
+      onAnswered();
+      setResult(r.effects?.length ? r.effects.join(", ") : "Your response has been recorded.");
     } catch (e) {
-      setFailed(true);
-      setResult(e instanceof Error ? e.message : String(e));
-    } finally {
-      setBusy(false);
-    }
+      setFailed(true); setResult(e instanceof Error ? e.message : String(e));
+    } finally { setBusy(false); }
   };
-  return (
-    <article className={`ask ${ask.severity} ${ask.status}`}>
-      <div className="ask-heading">
-        <span className="severity">{ask.severity === "urgent" ? "Needs attention" : ask.severity === "decision" ? "Your decision" : "For your information"}</span>
-        <span className="ask-meta"><span>{ask.from}</span><time dateTime={new Date(ask.createdAt).toISOString()}>{ago(ask.createdAt)}</time></span>
-      </div>
-      <h3 className="ask-title">{ask.title}</h3>
-      <pre className="ask-body">{ask.body}</pre>
-      {ask.evidence.length > 0 && (
-        <div className="chips">
-          {ask.evidence.map((e) => <span key={e.ref} className="chip" title={e.ref}>{e.label}: {e.ref.split("/").pop()}</span>)}
-        </div>
-      )}
-      {ask.status === "open" ? (
-        <div className="ask-actions" aria-busy={busy}>
-          {ask.options.map((o, i) => (
-            <button type="button" key={o.id} disabled={busy} aria-busy={busy} className={i === 0 ? "primary" : ""} onClick={() => choose(o.id)}>{o.label}</button>
-          ))}
-
-        </div>
-      ) : (
-        <div className="muted">Answered: {ask.options.find((o) => o.id === ask.answer?.optionId)?.label ?? ask.answer?.optionId}</div>
-      )}
+  const answered = ask.status === "answered" || submitted !== null;
+  useEffect(() => { if (answered) confirmation.current?.focus({ preventScroll: true }); }, [answered]);
+  return <article className="review-detail">
+    <header className="drawer-header"><h2 id="review-title">{ask.title}</h2><span className={`status-label ${answered ? "answered" : ask.severity}`}><span className="status-dot" />{answered ? "Answered" : askStatus(ask)}</span></header>
+    <div className="drawer-body">
+      <dl className="request-meta"><div><dt>Requested by</dt><dd><span className="agent-avatar" aria-hidden="true">{ask.from.slice(0, 2).toUpperCase()}</span>{seatName(ask.from)}</dd></div><div><dt>Received</dt><dd><time dateTime={new Date(ask.createdAt).toISOString()}>{new Date(ask.createdAt).toLocaleString()}</time></dd></div></dl>
+      <section className="review-section"><h3>From your team</h3><pre className="ask-body">{ask.body}</pre></section>
+      <section className="review-section"><h3>Supporting evidence <span>{ask.evidence.length}</span></h3>{ask.evidence.length ? ask.evidence.map((e) => <EvidenceRecord key={e.ref} runId={runId} reference={e.ref} label={e.label} />) : <p className="muted evidence-empty">No source records attached to this update.</p>}</section>
+      {ask.answer && <section className="review-section"><h3>Response recorded</h3><p>{ask.options.find((o) => o.id === ask.answer?.optionId)?.label ?? ask.answer.optionId}</p><p className="muted response-meta">{seatName(ask.answer.by)} · {new Date(ask.answer.at).toLocaleString()}</p></section>}
+    </div>
+    <footer className="drawer-footer">
       {result && <p className={`feedback ${failed ? "error" : ""}`} role={failed ? "alert" : "status"}>{result}</p>}
-    </article>
-  );
+      {!answered ? <><p className="action-hint">Your response will be sent to {seatName(ask.from)}.</p><div className="ask-actions" aria-busy={busy}>{ask.options.map((o, i) => <button type="button" key={o.id} disabled={busy} aria-busy={busy} className={i === 0 ? "primary" : ""} onClick={() => void choose(o.id)}>{o.label}</button>)}</div></> : <p className="response-confirmed" ref={confirmation} tabIndex={-1}><Icon name="check" />{ask.options.find((o) => o.id === (ask.answer?.optionId ?? submitted))?.label ?? "Response recorded"}</p>}
+    </footer>
+  </article>;
 }
 
 function Org({ runId }: { runId: string }) {
@@ -281,48 +338,6 @@ function Activity({ runId }: { runId: string }) {
   );
 }
 
-function Ledger({ runId }: { runId: string }) {
-  const tb = useQuery(api.ledger.trialBalance, { runId });
-  const entries = useQuery(api.ledger.entries, { runId, limit: 60 });
-  const chain = useQuery(api.ledger.verifyChain, { runId });
-  return (
-    <section>
-      <div className="row between">
-        <h2>Ledger</h2>
-        <span className={`pill ${chain ? chain.ok ? "ok" : "bad" : ""}`}>{chain ? (chain.ok ? `Hash chain verified (${chain.entries} entries)` : "Hash chain broken") : "verifying"}</span>
-      </div>
-      {entries === undefined && <Loading label="Loading ledger…" />}
-      <div className="two">
-        <div className="table-scroll"><table className="grid">
-          <caption>Trial balance</caption>
-          <thead><tr><th>Account</th><th className="num">Balance</th></tr></thead>
-          <tbody>
-            {(tb ?? []).map((a) => (
-              <tr key={a.code}><td data-label="Account">{a.code} {a.name}</td><td data-label="Balance" className="num">{$(a.type === "asset" || a.type === "expense" ? a.net : -a.net)}</td></tr>
-            ))}
-          </tbody>
-        </table></div>
-        <div className="table-scroll"><table className="grid responsive-table">
-          <caption>Journal entries</caption>
-          <thead><tr><th>#</th><th>Date</th><th>Entry</th><th className="num">Amount</th><th>By</th><th>Why</th></tr></thead>
-          <tbody>
-            {entries?.length === 0 && <tr><td colSpan={6}>No entries posted yet.</td></tr>}
-            {(entries ?? []).map((e) => (
-              <tr key={e._id}>
-                <td data-label="#" className="muted nowrap">{e.sequence}</td>
-                <td data-label="Date" className="nowrap">{e.date}</td>
-                <td data-label="Entry">{e.memo}{e.status === "reversed" && <span className="tag blocked"> reversed</span>}</td>
-                <td data-label="Amount" className="num">{$(e.totalCents)}</td>
-                <td data-label="By" className="nowrap">{e.postedBy}</td>
-                <td data-label="Why" className="muted mono" title={e.decisionPath}>{e.decisionPath ? e.decisionPath.split("/").pop()?.slice(0, 22) : ""}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table></div>
-      </div>
-    </section>
-  );
-}
 
 function Memory({ runId }: { runId: string }) {
   const commits = useQuery(api.observe.commits, { runId, limit: 150 });

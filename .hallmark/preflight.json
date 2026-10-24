@@ -7,7 +7,8 @@
     "spacing": "Ad hoc values; consolidated onto Hallmark spacing scale",
     "framework": "React 19, Vite 8, live Convex queries; package.json",
     "screens": "Inbox, team, activity, ledger, memory, evals, control room in console/src/App.tsx",
-    "material": "Isolated 14-day, 3-store simulation from the existing eval runner. No invented finance values or brand assets."
+    "material": "Isolated 14-day, 3-store simulation from the existing eval runner. No invented finance values or brand assets.",
+    "reference": "Nine user-supplied Ramp product screenshots: neutral sidebar, compact tables, review drawers and pinned actions."
   },
   "preserve": [
     "Seven destinations",
@@ -18,11 +19,10 @@
     "Light and dark modes"
   ],
   "introduce": [
-    "Shared tokens and accessible controls",
-    "Financial position above compact operating figures",
-    "Responsive ledger records",
-    "Keyboard-accessible commit controls",
-    "Loading and gateway feedback",
-    "Hallmark development checks"
+    "Persistent neutral sidebar and white workspace",
+    "Compact searchable inbox with real status counts and URL-persisted filters",
+    "Native accessible review drawer with evidence retrieval and anchored actions",
+    "Searchable ledger tabs with filtered CSV export",
+    "Native editable Figma frames and prototype"
   ]
 }

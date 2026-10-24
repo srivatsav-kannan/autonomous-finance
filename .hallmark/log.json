@@ -5,6 +5,35 @@
     "scope": "app",
     "shape": "app screen",
     "theme": "brand",
+    "axes": "warm navigation/white workspace/system sans/green",
+    "nav": "persistent sidebar with seven destinations, mobile view selector",
+    "signature": "searchable decision queue with source evidence and a native review drawer",
+    "imagery": "real finance-workbench simulation and native editable Figma frames",
+    "sections": [
+      "inbox",
+      "org",
+      "activity",
+      "ledger",
+      "memory",
+      "evals",
+      "control"
+    ],
+    "waived": [],
+    "prompt": "Adapt the richness and interaction patterns of the user-provided Ramp screenshots; create an editable design workspace.",
+    "date": "2026-10-24",
+    "sweep": {
+      "floor": 0,
+      "reflex": 0,
+      "warn": 0,
+      "finishReview": "independent subagent: ship; no blocking findings"
+    }
+  },
+  {
+    "mode": "redesign",
+    "depth": "full",
+    "scope": "app",
+    "shape": "app screen",
+    "theme": "brand",
     "axes": "warm paper/system sans/green",
     "nav": "existing sidebar, mobile view selector",
     "signature": "human decision queue with traceable evidence",
