@@ -2,6 +2,8 @@
 
 Implementation of [issue #39](https://github.com/srivatsav-kannan/autonomous-finance/issues/39): one configured organization/run, one USD account, one activated beneficiary version and outbound ACH credits. Convex owns approvals, reservations, attempts, evidence and the AP journal. The bank owns execution and economic transactions in an independent datastore.
 
+See the [validation record](ap-demo/validation.md) for the completed checks, linked recovery evidence and checks still blocked by missing sandbox credentials.
+
 The selected demo uses `src/payments/agents.ts`, `dispatcher.ts` and `evidence.ts`. The legacy agent team and seat runtime no longer receive a bank handle, and the old payment handler no longer submits or unconditionally settles transfers. The old evaluator can still request payments but cannot execute them; money movement uses the dedicated scoped demo path. Demo runs reject the legacy financial mutation/read paths so agents cannot bypass the new permissions through older APIs.
 
 ## Reproducible checks

@@ -1,0 +1,123 @@
+{
+  "recordedAt": "2026-10-24T08:27:01.742Z",
+  "sourceCommit": "3f7013548271830abda7c5b8cee3f65008b654be",
+  "baseMain": "adbe32c8b1d9fd5ba426b43ba5b5d1e52e58f1e8",
+  "runtime": {
+    "node": "v24.18.0"
+  },
+  "checks": {
+    "install": "passed",
+    "typecheck": "passed",
+    "backendTypecheck": "passed",
+    "testsTypecheck": "passed",
+    "consoleBuild": "passed",
+    "tests": {
+      "status": "passed",
+      "files": 24,
+      "count": 246
+    },
+    "smoke": {
+      "status": "passed",
+      "kernelChecks": 25,
+      "memoryChecks": 17
+    }
+  },
+  "simulator": {
+    "status": "passed",
+    "identityMode": "local_admin_simulated_human",
+    "scope": {
+      "organizationId": "ap-demo",
+      "runId": "ap-local-1792830308018",
+      "provider": "fake",
+      "environment": "local",
+      "accountId": "usd-operating"
+    },
+    "seed": 7,
+    "fixtureHash": "7883fd9ff19908e08bdebca04cad888b71154b8e7964c0a83b95d0e8ab08d08a",
+    "providerContract": {
+      "provider": "fake",
+      "environment": "local",
+      "contractVersion": 1,
+      "storage": "sqlite"
+    },
+    "faultSchedule": [
+      "accept_then_lost_response",
+      "worker_exit",
+      "missing_webhook"
+    ],
+    "versionId": "m1771fc9qcgevvayzwq6p6xtj58gw52b",
+    "commandRowId": "k17chqwkxqtq04ydb82kkd6dss8gx66w",
+    "immutableCommandId": "m1771fc9qcgevvayzwq6p6xtj58gw52b",
+    "requestHash": "54402e23fb6b1c33710679bc98bf05866123930f6c009e72726dee76e6b1e421",
+    "idempotencyKey": "demo:m1771fc9qcgevvayzwq6p6xtj58gw52b",
+    "attempts": 2,
+    "createTransferCalls": 2,
+    "transfers": 1,
+    "postedDebits": 1,
+    "amountCents": 66290,
+    "transferId": "transfer_2f0d94334d3476afd70098d4",
+    "transactionId": "txn_c40f8119bc7e249cc73725db",
+    "journalEntryId": "mh734ztkvyq34md40qazbcyaw18gwd8g",
+    "execution": "settled",
+    "posting": "posted",
+    "reconciliation": "matched",
+    "closeBlockers": 0,
+    "fullReport": "var/ap-demo/ap-local-1792830308018/report.json"
+  },
+  "contract": {
+    "status": "passed",
+    "adapterTests": 30,
+    "prismTests": 4,
+    "source": "https://increase.com/openapi_3_0.json",
+    "retrievedOn": "2026-10-23",
+    "upstreamInfoVersion": "0.0.1",
+    "upstreamSha256": "670dba17c4df44f07cee162f4e2388dca1dcacf80d1773cb42de046b3b138995",
+    "subsetSha256": "468a46602ceec2d45727d6d2e2fc3cd184411d8cd7ff54781493625abe10c72a",
+    "transformation": "Selected endpoint paths and transitive component references; stripped descriptions/titles/summaries/x-* documentation metadata; no schema constraints changed; restored required response descriptions.",
+    "paths": [
+      "/ach_transfers",
+      "/ach_transfers/{ach_transfer_id}",
+      "/transactions",
+      "/transactions/{transaction_id}",
+      "/events",
+      "/accounts/{account_id}/balance",
+      "/simulations/ach_transfers/{ach_transfer_id}/submit",
+      "/simulations/ach_transfers/{ach_transfer_id}/settle",
+      "/simulations/ach_transfers/{ach_transfer_id}/return"
+    ],
+    "fixtureSha256": "442e71fbf9fc8ce01c4b68350cdd3b0c1c9b1ea42d2f5dc4dc2ac447766cbc1a",
+    "fixtures": "Hand-authored sandbox-shaped examples derived from pinned upstream examples; no live provider execution claimed."
+  },
+  "sandbox": {
+    "status": "not_run",
+    "exitCode": 2,
+    "missing": [
+      "INCREASE_SANDBOX_API_KEY",
+      "INCREASE_SANDBOX_ACCOUNT_ID",
+      "INCREASE_SANDBOX_EXTERNAL_ACCOUNT_ID",
+      "CONVEX_URL",
+      "KERNEL_ADMIN_SECRET",
+      "AP_DISPATCH_SECRET",
+      "AP_EVIDENCE_SECRET",
+      "AP_HUMAN_JWT",
+      "AP_HUMAN_SUBJECT",
+      "AP_RUN_ID",
+      "AP_ORGANIZATION_ID"
+    ],
+    "realIdentityProviderLogin": "not_run",
+    "liveWebhookDelivery": "not_run"
+  },
+  "dependencyAudit": {
+    "production": {
+      "status": "passed",
+      "vulnerabilities": 0
+    },
+    "all": {
+      "status": "failed",
+      "highFindings": 6,
+      "rootAdvisory": "GHSA-qxc2-j82w-r537",
+      "dependency": "Prism -> http-spec -> postman-collection -> @faker-js/faker@5.5.3",
+      "developmentOnly": true
+    }
+  }
+}
