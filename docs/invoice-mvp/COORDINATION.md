@@ -13,3 +13,13 @@ Integration status: contract established; implementation pending. Required final
 ## Workers
 
 Pending dispatch. Handoffs must include native goal status, chat/host, worktree/branch/base, commit, owned files, commands+results, tests not run, exact blockers, and contract changes. Worker confidence is not acceptance.
+
+Common worker base: `c7052c95acd8dc6f90d4300c0a16a992c22bdc7c`.
+
+| Worker | Chat ID / host | Worktree | Branch | Goal and evidence |
+|---|---|---|---|---|
+| A | `01a16fb6-6aa9-7e63-9225-96a9181b021a` / local | `/Users/junjiexiong/.codex/worktrees/0a5f/calhacks` | `codex/invoice-mvp-cases` | Durable case backend; native goal activation reported, shared types first |
+| B | `01a16fb6-c8b1-7ca1-ad77-b38830f3d893` / local | `/Users/junjiexiong/.codex/worktrees/a729/calhacks` | `codex/invoice-mvp-investigator` | Bounded investigator + application service; depends on A types |
+| D | `01a16fb6-c8b1-7ca1-ad77-b379c61a733c` / local | `/Users/junjiexiong/.codex/worktrees/d500/calhacks` | `codex/invoice-mvp-evaluation` | Frozen evaluation protocol + actual-app harness; depends on A/B integration |
+
+Approved A additive schema proposal: invoiceBatches, invoiceSources, invoiceCaseRecords, invoiceProposals, invoiceDecisions, invoiceAudit, invoiceContributions; reuse existing customers and seat auth. Contributions are a focused net-invoiced subledger, no general-ledger/cash claim. API names invoiceCases.workspace/caseDetail/pendingCases, ingestBatch/beginInvestigation/submitProposal/decide/recordToolCall/registerCustomer.
