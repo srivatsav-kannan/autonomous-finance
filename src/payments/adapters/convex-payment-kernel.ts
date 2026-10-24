@@ -7,10 +7,11 @@ import type { KernelTransport } from "./convex-transport";
 
 export function createConvexPaymentKernel(client: KernelTransport, scope: BankScope, token: string): PaymentKernel {
   const auth = { scope: parseBankScope(scope), token, paymentExecutorVersion: PAYMENT_EXECUTOR_VERSION };
-  const fence = (lease: LeaseProof) => ({ ...auth, ...lease, commandId: lease.commandId as Id<"demoCommands"> });
+  const fence = (lease: LeaseProof) => ({ ...auth, commandId: lease.commandId as Id<"demoCommands">,
+    generation: lease.generation, leaseToken: lease.leaseToken });
   return {
     async claim(args) {
-      const lease = await client.mutation(api.demoPayments.claim, { ...auth, ...args });
+      const lease = await client.mutation(api.demoPayments.claim, { ...auth, workerId: args.workerId, leaseToken: args.leaseToken });
       return lease === null ? null : parseEffectLease(lease);
     },
     heartbeat: lease => client.mutation(api.demoPayments.heartbeat, fence(lease)),
