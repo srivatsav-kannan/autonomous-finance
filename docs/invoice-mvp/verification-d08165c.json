@@ -1,0 +1,170 @@
+{
+  "sourceCommit": "d08165c1ad38bb20817ace294c55ed1c50b8c243",
+  "verifiedAt": "2026-10-24",
+  "browser": {
+    "runId": "invoice-openai-acceptance-20261024",
+    "url": "http://localhost:5181/",
+    "mode": "deterministic",
+    "importedSourceVersions": 9,
+    "sourceIdentities": 8,
+    "humanDecisions": 2,
+    "activeContributions": 4,
+    "progress": {
+      "duplicate": 1,
+      "evidenceMissing": 1,
+      "excluded": 2,
+      "needsReview": 0,
+      "pending": 0,
+      "recorded": 4,
+      "superseded": 1,
+      "total": 9
+    },
+    "totals": [
+      {
+        "customerId": "demo-acorn",
+        "grossCents": 120000,
+        "creditCents": 12500,
+        "netCents": 107500
+      },
+      {
+        "customerId": "demo-birch",
+        "grossCents": 45000,
+        "creditCents": 0,
+        "netCents": 45000
+      }
+    ],
+    "checks": [
+      "UI import of 8 sources",
+      "duplicate visible",
+      "useful missing-evidence question",
+      "contradictory invoice requests human review",
+      "human request for evidence is recorded",
+      "late import resumes unresolved cases and supersedes prior version",
+      "accept exact current proposal",
+      "replay acceptance leaves decision and effect counts unchanged",
+      "refresh preserves totals and decisions",
+      "real 502 while gateway/backend stopped",
+      "retry after restart restores accepted case and workspace",
+      "customer amounts expose original-source links"
+    ],
+    "screenshots": [
+      "screenshots/openai-source-browser-restarted.png",
+      "screenshots/openai-source-browser-outage.png"
+    ]
+  },
+  "structuralAudit": {
+    "aggregateMismatchCustomers": [],
+    "duplicateAccountingEffects": 0,
+    "humanInterventions": 2,
+    "missingSourceIds": [],
+    "semanticSupport": "requires original-key/private-suite or independent manual audit; valid references alone do not prove a claim",
+    "sourceCount": 8,
+    "statusCounts": {
+      "duplicate": 1,
+      "evidence_missing": 1,
+      "excluded": 2,
+      "recorded": 4
+    },
+    "unexpectedSourceIds": [],
+    "unresolvedCases": 1,
+    "unsupportedAcceptedEffectsStructural": 0,
+    "unsupportedDetail": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "costUsd": 0,
+      "coverage": "runtime explicitly deterministic",
+      "inputTokens": 0,
+      "modelCalls": 0,
+      "outputTokens": 0,
+      "toolCalls": 50
+    },
+    "visibleSourceCount": 8
+  },
+  "deployedBackendSmoke": {
+    "result": "PASS",
+    "sourceCommit": "d08165c1ad38bb20817ace294c55ed1c50b8c243",
+    "runId": "invoice-openai-smoke-20261024",
+    "backend": "deployed Convex",
+    "mode": "deterministic",
+    "modelCalls": 0,
+    "liveEvaluation": "NOT RUN",
+    "commands": [
+      "import initial public demo",
+      "check routine invoice/credit totals and duplicate",
+      "late revision invalidates prior approval and resumes after service recreation",
+      "accept exact current proposal, replay decision, verify one contribution per document"
+    ],
+    "progress": {
+      "duplicate": 1,
+      "evidenceMissing": 1,
+      "excluded": 2,
+      "needsReview": 0,
+      "pending": 0,
+      "recorded": 4,
+      "superseded": 1,
+      "total": 9
+    },
+    "customerTotals": [
+      {
+        "customerId": "demo-acorn",
+        "grossCents": 120000,
+        "creditCents": 12500,
+        "netCents": 107500
+      },
+      {
+        "customerId": "demo-birch",
+        "grossCents": 45000,
+        "creditCents": 0,
+        "netCents": 45000
+      }
+    ]
+  },
+  "restart": {
+    "status": "PASS",
+    "beforeHash": "2d8d1e7229513d5589403464bb1c2a7ed21cbff0a03a4c927ac698a21b616e6e",
+    "afterHash": "2d8d1e7229513d5589403464bb1c2a7ed21cbff0a03a4c927ac698a21b616e6e",
+    "attestation": {
+      "backendOldPid": 6782,
+      "backendRestarted": true,
+      "command": "kill -TERM 66645 66733 23205\nkill -INT 6762\nlsof -nP -iTCP:3230 -iTCP:8806 -iTCP:8807 -iTCP:8810 -sTCP:LISTEN -Fpn # exit1, all unbound\nCONVEX_AGENT_MODE=anonymous npx convex dev --local-cloud-port 3230 --local-site-port 3231 --tail-logs disable > var-backend-openai-restarted.log 2>&1\nnode --env-file=var/invoice-mvp/invoice-openai-original-20261024/runtime.env --env-file=/Users/junjiexiong/.codex/invoice-mvp-evaluation-private/openai.env --import tsx scripts/invoice-mvp-server.ts\nnode --env-file=var/invoice-mvp/invoice-openai-heldout-20261024/runtime.env --env-file=/Users/junjiexiong/.codex/invoice-mvp-evaluation-private/openai.env --import tsx scripts/invoice-mvp-server.ts\nINVOICE_MVP_PORT=8810 INVOICE_MVP_ALLOWED_ORIGINS=http://127.0.0.1:5181,http://localhost:5181,http://127.0.0.1:8810 node --env-file=var/invoice-mvp/invoice-openai-acceptance-20261024/runtime.env --import tsx scripts/invoice-mvp-server.ts",
+      "gatewayOldPids": [
+        66645,
+        66733,
+        23205
+      ],
+      "gatewayRestarted": true,
+      "newListenerPids": {
+        "3230": 25364,
+        "8806": 25526,
+        "8807": 25602,
+        "8810": 25679
+      },
+      "operator": "root orchestrator",
+      "paidCallsDuringRestart": 0,
+      "portsConfirmedUnboundAfterStop": true,
+      "restartedAt": "2026-10-24T22:16:25.489240+00:00",
+      "sourceCommit": "d08165c1ad38bb20817ace294c55ed1c50b8c243"
+    }
+  },
+  "knownLimitations": [
+    "Simulated local identity, no production SSO",
+    "Simultaneous invoice gateways on one browser hostname overwrite the shared session cookie; use isolated profiles or hostnames",
+    "Frozen benchmark live results are separately recorded and do not demonstrate reliable unfamiliar-format interpretation",
+    "No payment, banking, deployment or multi-agent-benefit claim"
+  ],
+  "liveEvaluationReport": "evaluation-openai-results.json",
+  "tests": {
+    "repository": {
+      "files": 26,
+      "passed": 331
+    },
+    "pythonEvaluationHarness": 30,
+    "injectedTransport": 14,
+    "appTypecheck": "PASS",
+    "convexTypecheck": "PASS",
+    "evaluationTypecheck": "PASS",
+    "consoleProductionBuild": "PASS",
+    "note": "Application checks repeated at d08165c with only uncommitted documentation/screenshots. No application code changed after measured source."
+  }
+}

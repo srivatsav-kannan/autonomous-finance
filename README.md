@@ -12,7 +12,7 @@ Net invoiced means included invoices minus credit memos. It is **not an outstand
 4. Accept the exact proposal, exclude it, or request additional evidence. Decisions survive refresh and restart. Stale proposals and conflicting retries are rejected.
 5. Import a late correction and inspect the resumed result.
 
-The default runtime is explicitly **deterministic**. Its narrow parser handles documented text/CSV layouts and leaves unfamiliar evidence unresolved. The bounded investigator supports source, related-record and policy tools; model proposals require human review. Live-model evaluation is **NOT RUN** unless an exact-commit evaluation report explicitly says otherwise. There is no second model reviewer and no measured claim that multiple product agents improve results.
+The default runtime is explicitly **deterministic**. Its narrow parser handles documented text/CSV layouts and leaves unfamiliar evidence unresolved. The optional OpenAI investigator selects source, related-record and policy tools; model proposals require human review. A capped live batch has run, with limited coverage described below. There is no second model reviewer and no measured claim that multiple product agents improve results.
 
 ## Run locally
 
@@ -27,7 +27,9 @@ Then configure a local admin secret once, initialize a workspace, start the invo
 
 ## Evidence and limits
 
-At verified source `926e4e8`, the real browser workflow and process-restart checks pass, as do 269 repository tests and 32 evaluator/transport tests. The deterministic actual-app Invoice Sandbox run is **0/18**, with all 148 originals retained and unresolved; the frozen held-out suite is **4/9**. Live-model results remain **NOT RUN**. These limits matter more than the successful synthetic demo.
+At application source `d08165c1ad38bb20817ace294c55ed1c50b8c243`, the fresh browser workflow, real backend/gateway restart, and stale-approval/replay smoke pass. Combined verification passed 331 repository tests and 44 evaluator tests, TypeScript checks and the console build. The browser demo records $1,525 across two customers with four source-backed contributions and one unresolved source.
+
+The approved OpenAI batch made 59 calls for $1.201842 in provider-reported usage estimates. The baseline stopped before submission and is **unscored**. The actual app's original benchmark score is **0/18**: all 148 sources remain unresolved. Conservative reservations exhausted the app envelopes before broad document investigation. See the [live results and comparison limits](docs/invoice-mvp/evaluation-openai-results.md); successful transport and a working synthetic demo do not establish unfamiliar-document accuracy or production readiness. Earlier deterministic results at `926e4e8` remain preserved: **0/18** original and **4/9** held-out.
 
 
 - [Integrated acceptance record](docs/invoice-mvp/ACCEPTANCE.md)
