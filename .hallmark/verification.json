@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-24",
+  "scope": "Hallmark integration and Ramp-inspired seven-view finance workbench",
+  "upstream": "Nutlope/hallmark@7ec868225c6caa040558c321ee0fefa0e73f83a8 (vendored files verified byte-for-byte)",
+  "checks": {
+    "typecheck": "pass",
+    "productionBuild": "pass",
+    "trackedTests": "168 passing tests in 17 tracked suites (vitest run with git-tracked test paths)",
+    "staticDesign": "0 FAIL, 0 REFLEX, 0 WARN",
+    "renderedDesign": "All seven views, 35 screenshots: 0 FAIL, 0 REFLEX, 0 WARN.",
+    "browser": "Seven views and native review drawer at 320, 390, 768, 1024, 1440, 1920px in light/dark; no page overflow, clipped controls or uncaught errors.",
+    "interactions": [
+      "Real finance values and pending decisions from finance-workbench simulation",
+      "Inbox search, no-results reset, severity filters and sort",
+      "Native drawer focus containment, Escape, backdrop dismissal and opener/heading focus restoration",
+      "Real source evidence reads and visible gateway errors",
+      "Failed decision response permits retry (intercepted before any financial action)",
+      "Informational acknowledgement persisted through gateway and visible under Answered",
+      "Confirmation focus and safe restoration when completed row leaves the queue",
+      "Simulation activity disclosure retains all operational metrics",
+      "Journal and trial-balance search, filtered CSV download with formula-safe text",
+      "Inbox/ledger filter state survives refresh and browser Back, preserving scenario hash",
+      "Existing keyboard memory reads and Ask why form retained"
+    ],
+    "simulation": "Isolated finance-workbench deterministic 14-day, 3-store run: 13/13 planted errors, 3/3 decoys, zero false alarms, balanced books and verified 141-entry hash chain.",
+    "finishReview": {
+      "kind": "independent subagent",
+      "findings": 0,
+      "resolved": 0,
+      "detail": "Ship. Reviewed full inbox, all five drawer records at 320\u00d7568, light/dark and seven phone views. Additional functional test caught and fixed focus loss after a response removed its queue row."
+    }
+  },
+  "baseline": {
+    "floorFailures": 10,
+    "reflexFindings": 20
+  },
+  "preservation": {
+    "views": "All seven destinations retained",
+    "data": "Existing Convex queries, scenario hash, gateway semantics and WebMCP tools retained",
+    "disclosures": "Full ask bodies and evidence now in review drawer; historical records under Answered; operating counts under Simulation activity",
+    "ledger": "Latest 60 entries as before, with full chain count and explicit limit; all trial balance accounts remain available"
+  },
+  "limitations": [
+    "Browser tests used local Convex and deterministic simulation, not a deployed environment.",
+    "Figma is a native editable reference snapshot, not an automatic two-way sync with React.",
+    "The journal query still returns the most recent 60 entries; CSV exports the currently filtered records."
+  ],
+  "screenshots": ".hallmark/shots/ and .hallmark/checks/ (local, ignored)",
+  "comparison": ".hallmark/compare.html (local, ignored)",
+  "designWorkspace": "https://www.figma.com/design/qUwizlNQktZ68GJjaoKUo5?node-id=2-22"
+}

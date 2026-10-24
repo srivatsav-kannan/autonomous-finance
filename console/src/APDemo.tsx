@@ -156,8 +156,8 @@ function VersionReview({ version, review, busy, approve }: { version: Snapshot; 
       <div><dt>Approval snapshot hash</dt><dd><code>{version.snapshotHash}</code></dd></div>
     </dl>
     <div className="ap-table-wrap"><table className="grid"><thead><tr><th>Invoice allocation</th><th>Original invoice</th><th>Payment amount</th></tr></thead><tbody>
-      {snapshot.bills.map(item => { const bill = review.bills.find(b => b._id === item.billId); return <tr key={item.billId}><td>{bill?.invoiceNumber ?? item.billId}<br /><code>{item.billId}</code> · version {item.version}</td><td>{bill ? usd(bill.originalCents) : "—"}</td><td>{usd(item.amountCents)}</td></tr>; })}
-      {snapshot.credits.map(item => <tr key={item.creditId}><td>Credit <code>{item.creditId}</code></td><td>—</td><td>−{usd(item.amountCents)}</td></tr>)}
+      {snapshot.bills.map(item => { const bill = review.bills.find(b => b._id === item.billId); return <tr key={item.billId}><td>{bill?.invoiceNumber ?? item.billId}<br /><code>{item.billId}</code> · version {item.version}</td><td>{bill ? usd(bill.originalCents) : "Unavailable"}</td><td>{usd(item.amountCents)}</td></tr>; })}
+      {snapshot.credits.map(item => <tr key={item.creditId}><td>Credit <code>{item.creditId}</code></td><td>Not applicable</td><td>−{usd(item.amountCents)}</td></tr>)}
     </tbody></table></div>
     <details><summary>Exact immutable payment details</summary><pre>{JSON.stringify(snapshot, null, 2)}</pre></details>
     <p className="muted">Approvals: {version.approvals.length ? version.approvals.map(approval => `${approval.seatId} (${approval.kind})`).join(", ") : "Awaiting independent approval"}</p>
