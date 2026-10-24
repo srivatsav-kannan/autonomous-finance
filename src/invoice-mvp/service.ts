@@ -4,8 +4,8 @@ import { z } from "zod";
 import "../core/env";
 import type { DecisionInput, IngestBatchInput, RuntimeMode, SeatAuth } from "./contracts";
 import { ConvexInvoiceBackend, InvoiceError, type InvoiceBackend } from "./backend";
-import { idempotency, investigate, type InvestigationResult } from "./investigator";
-import type { InvestigatorModel } from "./model";
+import { idempotency, investigate, type InvestigationResult, type RelatedFact } from "./investigator";
+import { AnthropicInvestigator, type InvestigatorModel } from "./model";
 import { parseSupportedSource } from "./parser";
 
 // Convex transport has a bounded request size. Import larger collections in batches.
@@ -46,13 +46,12 @@ export class InvoiceService {
   async decide(input: DecisionInput) {
     const result = await this.backend.decide(decisionSchema.parse(input));
     // The decision itself is already durable. A failed resume never undoes it.
-    await this.processPending();
+    if (this.mode !== "live_model") await this.processPending();
     return result;
   }
   async processPending(options: { maxCases?: number; allowLive?: boolean } = {}): Promise<ProcessResult> {
     if (this.mode === "live_model" && !options.allowLive) throw new InvoiceError("live_opt_in_required", "Each live processing batch requires explicit opt-in.");
-    // Current backend cannot reserve a run-wide request budget atomically. Fail closed.
-    if (this.mode === "live_model") throw new InvoiceError("live_budget_backend_required", "Live execution is blocked until the backend supports atomic run-wide budget reservation.", 409);
+    if (this.mode === "live_model" && !this.backend.reserveModelRequest) throw new InvoiceError("live_budget_backend_required", "Live execution requires atomic run-wide budget reservation.", 409);
     if (this.processing) return this.processing;
     const maxCases = Math.min(200, Math.max(1, Math.floor(options.maxCases ?? 25)));
     this.processing = this.process(maxCases);
@@ -63,17 +62,19 @@ export class InvoiceService {
     const pendingCases = await this.backend.pendingCases();
     // CRM sources are dependencies, regardless of filename/order within a batch.
     const prepared = await Promise.all(pendingCases.map(async (pending) => {
-      try { const detail = await this.backend.caseDetail(pending.caseId); return { pending, isCustomer: parseSupportedSource(detail.source, detail.source).customers.length > 0 }; }
-      catch { return { pending, isCustomer: false }; }
+      try { const detail = await this.backend.caseDetail(pending.caseId); const parsed = parseSupportedSource(detail.source, { documentId: detail.source.documentId, version: detail.source.version, contentHash: detail.source.contentHash }); return { pending, isCustomer: parsed.customers.length > 0, fact: { caseId: pending.caseId, status: pending.status, source: { documentId: detail.source.documentId, version: detail.source.version, contentHash: detail.source.contentHash }, conclusion: parsed.conclusion } }; }
+      catch { return { pending, isCustomer: false, fact: undefined }; }
     }));
     prepared.sort((a, b) => Number(b.isCustomer) - Number(a.isCustomer));
-    for (const { pending, isCustomer } of prepared.slice(0, maxCases)) {
+    const facts = prepared.flatMap((p): RelatedFact[] => p.fact ? [p.fact] : []);
+    for (const { pending, isCustomer, fact } of prepared.slice(0, maxCases)) {
       try {
         // Already-investigating work is reclaimable; no process-local state is authoritative.
         await this.backend.beginInvestigation(pending.caseId);
         const detail = await this.backend.caseDetail(pending.caseId);
         if (["recorded", "excluded", "superseded", "duplicate", "needs_review", "evidence_missing"].includes(detail.case.status)) continue;
-        results.push(await investigate(this.backend, detail, isCustomer ? undefined : this.model));
+        const needsJudgment = !fact || fact.conclusion.treatment === "needs_evidence" || fact.conclusion.contradictions.length > 0 || facts.some((other) => other.caseId !== pending.caseId && fact.conclusion.documentNumber && other.conclusion.documentNumber === fact.conclusion.documentNumber && other.conclusion.customerId === fact.conclusion.customerId);
+        results.push(await investigate(this.backend, detail, isCustomer || !needsJudgment ? undefined : this.model, 10, facts));
       } catch (e) {
         errors.push({ caseId: pending.caseId, code: e instanceof InvoiceError ? e.code : "investigation_failed", message: e instanceof InvoiceError ? e.message : "Investigation failed; pending work remains durable for retry." });
         if (e instanceof InvoiceError && /stale|conflict|forbidden|unauthorized/.test(e.code)) continue;
@@ -103,7 +104,12 @@ export function createServiceFromEnv(): InvoiceService {
   const humanToken = process.env.INVOICE_MVP_HUMAN_TOKEN ?? tokens[humanId];
   const investigatorToken = process.env.INVOICE_MVP_INVESTIGATOR_TOKEN ?? tokens[investigatorId];
   if (!humanToken || !investigatorToken) throw new InvoiceError("configuration_required", "Provide server-side human and investigator seat tokens using INVOICE_MVP_SEATS_FILE or dedicated environment variables.");
-  if (process.env.INVOICE_MVP_MODE && process.env.INVOICE_MVP_MODE !== "deterministic") throw new InvoiceError("live_budget_backend_required", "The server supports deterministic mode until atomic budget reservation is available. Mock mode is test-only; live evaluation is NOT RUN.");
   const human: SeatAuth = { runId, seatId: humanId, token: humanToken }, investigator: SeatAuth = { runId, seatId: investigatorId, token: investigatorToken };
-  return new InvoiceService(new ConvexInvoiceBackend(new ConvexHttpClient(url), human, investigator));
+  const mode = process.env.INVOICE_MVP_MODE ?? "deterministic";
+  let model: InvestigatorModel | undefined;
+  if (mode === "live_model") {
+    model = new AnthropicInvestigator({ maxCalls: Number(process.env.INVOICE_MVP_MAX_MODEL_CALLS), maxInputTokens: Number(process.env.INVOICE_MVP_MAX_INPUT_TOKENS), maxOutputTokens: Number(process.env.INVOICE_MVP_MAX_OUTPUT_TOKENS), maxCostMicros: Number(process.env.INVOICE_MVP_MAX_COST_MICROS) },
+      { inputMicros: Number(process.env.INVOICE_MVP_INPUT_TOKEN_MICROS), outputMicros: Number(process.env.INVOICE_MVP_OUTPUT_TOKEN_MICROS) }, Number(process.env.INVOICE_MVP_OUTPUT_TOKENS_PER_CALL ?? 1200), process.env.INVOICE_MVP_LIVE_OPT_IN === "1");
+  } else if (mode !== "deterministic") throw new InvoiceError("invalid_mode", "Only deterministic or explicitly opted-in live_model server mode is supported; mock_model is test-only.");
+  return new InvoiceService(new ConvexInvoiceBackend(new ConvexHttpClient(url), human, investigator), model);
 }

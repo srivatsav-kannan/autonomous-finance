@@ -26,7 +26,7 @@ export const ZERO_USAGE: ModelUsage = { inputTokens: 0, outputTokens: 0, costMic
 
 export const TOOL_SCHEMAS = [
   { name: "inspect_source", description: "Read a page of original extracted text with provenance and exact evidence reference. Omit documentId for this case; follow nextOffset to read the rest.", input_schema: { type: "object" as const, properties: { documentId: { type: "string" }, offset: { type: "integer", minimum: 0 }, limit: { type: "integer", minimum: 1, maximum: 80000 } }, additionalProperties: false } },
-  { name: "related_documents", description: "Find related invoices/credits and compare existing accepted or pending evidence.", input_schema: { type: "object" as const, properties: { customerId: { type: "string" }, documentNumber: { type: "string" } }, additionalProperties: false } },
+  { name: "related_documents", description: "Page lightweight case candidates and accepted contributions. Call inspect_source for selected candidates to compare original evidence.", input_schema: { type: "object" as const, properties: { customerId: { type: "string" }, documentNumber: { type: "string" }, offset: { type: "integer", minimum: 0 }, limit: { type: "integer", minimum: 1, maximum: 50 } }, additionalProperties: false } },
   { name: "related_customers", description: "Retrieve registered customer IDs, names and aliases; zero totals do not imply no customer.", input_schema: { type: "object" as const, properties: { query: { type: "string" } }, additionalProperties: false } },
   { name: "policy", description: "Read the accounting and source-trust policy.", input_schema: { type: "object" as const, properties: {}, additionalProperties: false } },
   { name: "propose_disposition", description: "Submit a supported conclusion for human review. Reference exact observed source versions. Cannot accept or change totals.", input_schema: { type: "object" as const, properties: {
@@ -46,7 +46,8 @@ export class AnthropicInvestigator implements InvestigatorModel {
   constructor(readonly budget: ResourceBudget, private readonly prices: { inputMicros: number; outputMicros: number }, readonly maxOutputTokens = 1200, explicitOptIn = false) {
     if (!explicitOptIn) throw new InvoiceError("live_opt_in_required", "Live inference requires explicit opt-in and a capped resource budget.");
     if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN && !process.env.ANTHROPIC_PROFILE) throw new InvoiceError("model_unconfigured", "Anthropic credentials are not configured.");
-    for (const n of [...Object.values(budget), ...Object.values(prices), maxOutputTokens]) if (!Number.isFinite(n) || n <= 0) throw new InvoiceError("invalid_budget", "Positive resource limits and explicit maximum token prices are required.");
+    for (const n of [...Object.values(budget), maxOutputTokens]) if (!Number.isSafeInteger(n) || n <= 0) throw new InvoiceError("invalid_budget", "Positive safe-integer resource limits are required.");
+    for (const n of Object.values(prices)) if (!Number.isFinite(n) || n <= 0) throw new InvoiceError("invalid_budget", "Explicit positive maximum token prices are required.");
     this.client = new Anthropic({ maxRetries: 0, timeout: 30_000 });
   }
   reservation(request: ModelRequest): ModelUsage {

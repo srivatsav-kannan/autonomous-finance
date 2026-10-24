@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { investigate } from "./investigator";
 import { InvoiceService } from "./service";
 import { TestBackend } from "./test-backend";
@@ -87,5 +87,23 @@ describe("bounded investigator mock integration — no live model", () => {
     expect(result.processed[0]!.caseId).toBe("case-1");
     expect(backend.calls).toContain("registerCustomer");
     expect((await backend.caseDetail("case-0")).case.status).toBe("received");
+  });
+  it("does not download all related originals for each unfamiliar document", async () => {
+    const backend = new TestBackend(), service = new InvoiceService(backend);
+    await service.ingestBatch({ label: "Synthetic size regression", documents: Array.from({ length: 30 }, (_, i) => ({ ...demoBatch().documents[7]!, externalId: `unfamiliar-${i}`, text: `UNKNOWN ${i}\nNo final invoice` })) });
+    const spy = vi.spyOn(backend, "caseDetail");
+    const result = await service.processPending({ maxCases: 30 });
+    expect(result.processed).toHaveLength(30);
+    // One dependency prepass and one source inspection per case, not N squared reads.
+    expect(spy.mock.calls.length).toBe(60);
+  });
+  it("refuses a replayed live request reservation before invoking its transport", async () => {
+    const { backend } = await setup(demoBatch().documents[7]!);
+    const guarded = Object.assign(backend, { reserveModelRequest: async () => ({ replayed: true, reservationId: "old", maxRequests: 5, maxCostMicros: 100, requestsReserved: 1, costReservedMicros: 10 }) });
+    const next = vi.fn(async () => { throw new Error("Must not execute"); });
+    const model: InvestigatorModel = { mode: "live_model", model: "injected-no-network", budget: { maxCalls: 5, maxCostMicros: 100, maxInputTokens: 100, maxOutputTokens: 100 }, reservation: () => ({ ...ZERO_USAGE, costMicros: 10 }), next };
+    const result = await new InvoiceService(guarded, model).processPending({ allowLive: true });
+    expect(next).not.toHaveBeenCalled();
+    expect(result.processed[0]!.outcome).toBe("evidence_missing");
   });
 });

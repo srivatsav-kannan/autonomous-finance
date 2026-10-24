@@ -6,8 +6,8 @@ export function demoBatch(stage: "initial" | "late" = "initial"): { label: strin
   const source = (externalId: string, name: string, text: string): SourceInput => ({ externalId, name, mimeType: "text/plain", text });
   if (stage === "late") return { label: "Late corrected Birch invoice", documents: [source("demo-revision", "Birch corrected.txt", "INVOICE\nCustomer ID: demo-birch\nCustomer: Birch Studio\nDocument Number: BI-20\nCurrency: USD\nTotal: USD 450.00\nStatus: issued")] };
   return { label: "Synthetic invoice review demo", documents: [
-    source("demo-customer-acorn", "Acorn customer.txt", "CUSTOMER\nCustomer ID: demo-acorn\nCustomer: Acorn Design"),
-    source("demo-customer-birch", "Birch customer.txt", "CUSTOMER\nCustomer ID: demo-birch\nCustomer: Birch Studio"),
+    { ...source("demo-customer-acorn", "Acorn customer.csv", "customer_id,legal_name\ndemo-acorn,Acorn Design"), mimeType: "text/csv" },
+    { ...source("demo-customer-birch", "Birch customer.csv", "customer_id,legal_name\ndemo-birch,Birch Studio"), mimeType: "text/csv" },
     source("demo-invoice", "Acorn invoice.txt", invoice),
     source("demo-credit", "Acorn credit.txt", "CREDIT MEMO\nCustomer ID: demo-acorn\nCustomer: Acorn Design\nDocument Number: AC-C10\nCurrency: USD\nTotal: USD 125.00\nStatus: issued"),
     source("demo-duplicate", "Acorn invoice scan copy.txt", invoice),
