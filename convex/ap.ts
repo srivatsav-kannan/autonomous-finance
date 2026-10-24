@@ -13,6 +13,8 @@ import {
   storeIdempotency,
 } from "./lib/kernel";
 import { appendEntry } from "./lib/post";
+import { normalizeInvoiceNumber } from "./lib/invoiceIdentity";
+export { normalizeInvoiceNumber } from "./lib/invoiceIdentity";
 
 const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 
@@ -23,11 +25,6 @@ const billLine = v.object({
   unitCents: v.number(),
   amountCents: v.number(),
 });
-
-/** "INV-000123", "inv 123" and "123" are the same invoice for duplicate detection. */
-export function normalizeInvoiceNumber(n: string): string {
-  return n.toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/^(INVOICE|INV|NO)/, "").replace(/^0+/, "");
-}
 
 /**
  * Record a vendor bill and the clerk's decision. The kernel enforces:
