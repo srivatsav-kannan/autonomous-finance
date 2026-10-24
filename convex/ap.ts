@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import {
   authSeat,
   checkIdempotency,
@@ -43,6 +44,7 @@ export const recordBill = mutation({
     invoiceDate: v.string(),
     dueDate: v.string(),
     store: v.optional(v.string()),
+    deliveryId: v.optional(v.string()),
     lines: v.array(billLine),
     totalCents: v.number(),
     documentEventId: v.string(),
@@ -60,7 +62,7 @@ export const recordBill = mutation({
     const { token: _t, ...payload } = args;
     const idem = await checkIdempotency(ctx, args.runId, args.idempotencyKey, op, payload);
     if ("conflict" in idem) return await recordViolation(ctx, args.runId, args.seatId, op, idem.conflict);
-    if (idem.hit) return { ...(idem.result as object), replayed: true };
+    if (idem.hit) return { ...(idem.result as { ok: true; billId: Id<"bills">; entryId: Id<"journalEntries"> | null }), replayed: true };
 
     for (const [i, l] of args.lines.entries()) {
       if (![l.unitCents, l.amountCents].every(Number.isSafeInteger)) {
@@ -110,6 +112,7 @@ export const recordBill = mutation({
       invoiceDate: args.invoiceDate,
       dueDate: args.dueDate,
       store: args.store,
+      deliveryId: args.deliveryId,
       totalCents: args.totalCents,
       lines: args.lines,
       documentEventId: args.documentEventId,
@@ -173,7 +176,7 @@ export const resolveHeldBill = mutation({
     const { token: _t, ...payload } = args;
     const idem = await checkIdempotency(ctx, args.runId, args.idempotencyKey, op, payload);
     if ("conflict" in idem) return await recordViolation(ctx, args.runId, args.seatId, op, idem.conflict);
-    if (idem.hit) return { ...(idem.result as object), replayed: true };
+    if (idem.hit) return { ...(idem.result as { ok: true; entryId: Id<"journalEntries"> | null }), replayed: true };
 
     const bill = await ctx.db.get(args.billId);
     if (!bill || bill.runId !== args.runId) return fail("not_found", "bill not found");
@@ -224,5 +227,13 @@ export const bills = query({
       .collect();
     if (args.status) rows = rows.filter((b) => b.status === args.status);
     return rows;
+  },
+});
+
+export const bill = query({
+  args: { runId: v.string(), billId: v.id("bills") },
+  handler: async (ctx, args) => {
+    const b = await ctx.db.get(args.billId);
+    return b && b.runId === args.runId ? b : null;
   },
 });

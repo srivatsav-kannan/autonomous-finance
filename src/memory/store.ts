@@ -298,6 +298,29 @@ export class MemoryStore {
     for (const p of paths) {
       if (!canMerge(opts.caps, p)) throw new MemoryError("forbidden", `${opts.approver.seatId} may not approve changes to ${p}`);
     }
+    // Same writer queue as direct writes, plus CAS retry against writers in other processes.
+    const prior = this.queue;
+    let release!: () => void;
+    this.queue = new Promise<void>((r) => (release = r));
+    await prior;
+    try {
+      for (let attempt = 0; attempt < 40; attempt++) {
+        if (attempt > 0) await new Promise((r) => setTimeout(r, 5 + Math.random() * 20 * attempt));
+        const sha = await this.tryMerge(opts, base, head, paths);
+        if (sha) return { sha };
+      }
+      throw new MemoryError("contention", `could not merge proposal ${opts.id} after retries`);
+    } finally {
+      release();
+    }
+  }
+
+  private async tryMerge(
+    opts: { id: string; approver: Author; note: string },
+    base: string,
+    head: string,
+    paths: string[],
+  ): Promise<string | null> {
     const mainHead = await this.head("main");
     const changedOnMain = (await this.git(["diff", "--name-only", base, mainHead])).split("\n").filter(Boolean);
     const overlap = paths.filter((p) => changedOnMain.includes(p));
@@ -319,10 +342,14 @@ export class MemoryStore {
       const tree = (await this.git(["write-tree"], { env })).trim();
       const body = `Merge proposal ${opts.id}: ${opts.note}\n\nApproved-By: ${opts.approver.seatId}\nProposal-Id: ${opts.id}\n`;
       const sha = (await this.git(["commit-tree", tree, "-p", mainHead, "-p", head, "-F", "-"], { env, input: body })).trim();
-      await this.git(["update-ref", "refs/heads/main", sha, mainHead]);
+      try {
+        await this.git(["update-ref", "refs/heads/main", sha, mainHead]);
+      } catch {
+        return null; // main moved under us; retry on the new head
+      }
       await this.git(["update-ref", "-d", `refs/heads/proposal/${opts.id}`]);
       await this.git(["update-ref", `refs/merged/${opts.id}`, head]);
-      return { sha };
+      return sha;
     } finally {
       fs.rmSync(index, { force: true });
     }

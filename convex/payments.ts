@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import {
   authSeat,
   checkIdempotency,
@@ -42,7 +43,7 @@ export const requestPayment = mutation({
     const { token: _t, ...payload } = args;
     const idem = await checkIdempotency(ctx, args.runId, args.idempotencyKey, op, payload);
     if ("conflict" in idem) return await recordViolation(ctx, args.runId, args.seatId, op, idem.conflict);
-    if (idem.hit) return { ...(idem.result as object), replayed: true };
+    if (idem.hit) return { ...(idem.result as { ok: true; intentId: Id<"paymentIntents">; requiredApprovals: number; requiresHuman: boolean }), replayed: true };
 
     let total = 0;
     for (const id of args.billIds) {
@@ -206,5 +207,13 @@ export const intents = query({
       .withIndex("by_run_status", (q) => q.eq("runId", args.runId))
       .collect();
     return args.status ? rows.filter((r) => r.status === args.status) : rows;
+  },
+});
+
+export const intent = query({
+  args: { runId: v.string(), intentId: v.id("paymentIntents") },
+  handler: async (ctx, args) => {
+    const i = await ctx.db.get(args.intentId);
+    return i && i.runId === args.runId ? i : null;
   },
 });

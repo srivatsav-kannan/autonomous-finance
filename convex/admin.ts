@@ -97,24 +97,25 @@ export const ingestEvent = mutation({
       payload: args.payload,
       recordedAt: Date.now(),
     });
-    const route = routeEvent(args.type, args.payload ?? {});
-    let taskId = null;
-    if (route) {
-      taskId = await ctx.db.insert("tasks", {
-        runId: args.runId,
-        type: route.taskType,
-        role: route.role,
-        status: "queued",
-        priority: route.priority,
-        payload: { eventId, externalId: args.externalId, occurredOn: args.occurredOn },
-        idempotencyKey: `event:${args.externalId}`,
-        createdBy: "world",
-        attempts: 0,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
+    const taskIds = [];
+    for (const route of routeEvent(args.type, args.payload ?? {})) {
+      taskIds.push(
+        await ctx.db.insert("tasks", {
+          runId: args.runId,
+          type: route.taskType,
+          role: route.role,
+          status: "queued",
+          priority: route.priority,
+          payload: { eventId, externalId: args.externalId, occurredOn: args.occurredOn, ...(args.type === "period.end" ? { period: (args.payload as { period?: string })?.period } : {}) },
+          idempotencyKey: `event:${args.externalId}:${route.taskType}`,
+          createdBy: "world",
+          attempts: 0,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        }),
+      );
     }
-    return { ok: true as const, eventId, taskId, duplicate: false };
+    return { ok: true as const, eventId, taskIds, duplicate: false };
   },
 });
 

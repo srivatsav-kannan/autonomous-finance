@@ -158,6 +158,7 @@ export default defineSchema({
     invoiceDate: v.string(),
     dueDate: v.string(),
     store: v.optional(v.string()),
+    deliveryId: v.optional(v.string()),
     totalCents: v.number(),
     lines: v.array(
       v.object({

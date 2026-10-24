@@ -59,12 +59,13 @@ export const ROLE_CAPABILITIES: Record<Role, Capabilities> = {
     taskRoles: ALL_AGENT_ROLES,
     asks: true,
   },
-  cfo_agent: { ...NONE, seatsManage: true, taskRoles: ALL_AGENT_ROLES, asks: true, memoryMerge: ["playbooks/"] },
+  // Second approver for dual-approval payments below the human threshold.
+  cfo_agent: { ...NONE, seatsManage: true, taskRoles: ALL_AGENT_ROLES, asks: true, memoryMerge: ["playbooks/"], paymentsApproveLimit: 49_999_99 },
   controller: {
     ...NONE,
     post: ["1", "2", "3", "4", "5", "6"],
     paymentsApproveLimit: 25_000_00,
-    memoryMerge: ["vendors/", "playbooks/", "stores/"],
+    memoryMerge: ["vendors/", "playbooks/", "stores/", "integrations/"],
     periodClose: true,
     taskRoles: ALL_AGENT_ROLES,
     asks: true,
@@ -72,7 +73,7 @@ export const ROLE_CAPABILITIES: Record<Role, Capabilities> = {
   ap_clerk: {
     ...NONE,
     post: ["2000", "2010", "1150", "1200", "1300", "5000", "5200", "5300", "6000", "6100", "6200"],
-    taskRoles: ["controller", "payments"],
+    taskRoles: ["controller", "payments", "integrations_engineer"],
     asks: true,
   },
   payments: {

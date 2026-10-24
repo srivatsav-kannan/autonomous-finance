@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { lineValidator, sourceValidator } from "./schema";
 import {
   authSeat,
@@ -34,7 +35,7 @@ export const postEntry = mutation({
     const { token: _t, ...payload } = args;
     const idem = await checkIdempotency(ctx, args.runId, args.idempotencyKey, "ledger.postEntry", payload);
     if ("conflict" in idem) return await recordViolation(ctx, args.runId, args.seatId, "ledger.postEntry", idem.conflict);
-    if (idem.hit) return { ...(idem.result as object), replayed: true };
+    if (idem.hit) return { ...(idem.result as { ok: true; entryId: Id<"journalEntries">; sequence: number; hash: string }), replayed: true };
 
     const res = await appendEntry(ctx, {
       runId: args.runId,
@@ -72,7 +73,7 @@ export const reverseEntry = mutation({
     const { token: _t, ...payload } = args;
     const idem = await checkIdempotency(ctx, args.runId, args.idempotencyKey, "ledger.reverseEntry", payload);
     if ("conflict" in idem) return await recordViolation(ctx, args.runId, args.seatId, "ledger.reverseEntry", idem.conflict);
-    if (idem.hit) return { ...(idem.result as object), replayed: true };
+    if (idem.hit) return { ...(idem.result as { ok: true; entryId: Id<"journalEntries">; sequence: number }), replayed: true };
 
     const original = await ctx.db.get(args.entryId);
     if (!original || original.runId !== args.runId) {

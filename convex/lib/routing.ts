@@ -6,7 +6,13 @@ export interface Route {
   priority: number; // lower runs first
 }
 
-export function routeEvent(type: string, payload: Record<string, unknown>): Route | null {
+export function routeEvent(type: string, payload: Record<string, unknown>): Route[] {
+  const one = routeOne(type, payload);
+  if (type === "day.end") return [one!, { role: "cfo_agent", taskType: "cfo.daily_digest", priority: 7 }];
+  return one ? [one] : [];
+}
+
+function routeOne(type: string, payload: Record<string, unknown>): Route | null {
   switch (type) {
     case "document.received": {
       const kind = payload.kind as string | undefined;

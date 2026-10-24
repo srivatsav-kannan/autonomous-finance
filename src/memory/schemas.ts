@@ -130,6 +130,15 @@ export const Company = z.object({
   disclaimer: z.string(),
 });
 
+export const IntegrationParser = z.object({
+  id: z.string(),
+  signature: z.string(),
+  description: z.string(),
+  code: z.string().max(20_000),
+  tests: z.array(z.object({ input: z.string(), expected: z.unknown() })).min(1),
+  author: z.string(),
+});
+
 /** Which schema governs a path. Unknown paths are rejected. */
 export function schemaFor(path: string): z.ZodType | null {
   if (path === "company.yaml") return Company;
@@ -141,6 +150,7 @@ export function schemaFor(path: string): z.ZodType | null {
   if (/^people\/[a-z0-9-]+\.yaml$/.test(path)) return Person;
   if (/^seats\/[a-z0-9-]+\.yaml$/.test(path)) return SeatDef;
   if (/^playbooks\/[a-z0-9_-]+\.yaml$/.test(path)) return Playbook;
+  if (/^integrations\/parsers\/[a-z0-9-]+\.yaml$/.test(path)) return IntegrationParser;
   if (/^decisions\/\d{4}-\d{2}\/[a-zA-Z0-9_.-]+\.yaml$/.test(path)) return Decision;
   return null;
 }
@@ -150,6 +160,7 @@ export function schemaFor(path: string): z.ZodType | null {
  * Returns a reason if the change from `before` to `after` is controlled.
  */
 export function controlledReason(path: string, before: unknown, after: unknown): string | null {
+  if (path.startsWith("integrations/")) return "agent-written code requires review";
   if (path.startsWith("policies/") || path.startsWith("seats/") || path.startsWith("people/") || path.startsWith("playbooks/")) {
     return before === undefined && path.startsWith("playbooks/") ? null : `${path.split("/")[0]} changes require approval`;
   }
