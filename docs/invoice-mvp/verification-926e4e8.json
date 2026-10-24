@@ -1,0 +1,173 @@
+{
+  "sourceCommit": "926e4e8899a054c6cc1f2548f84a4ba18469797c",
+  "verifiedAt": "2026-10-24",
+  "node": "24.22.0",
+  "liveModel": "NOT RUN",
+  "modelCalls": 0,
+  "tests": {
+    "repository": {
+      "files": 25,
+      "passed": 269
+    },
+    "pythonEvaluationHarness": 27,
+    "injectedBaselineTransport": 5,
+    "appTypecheck": "PASS",
+    "convexTypecheck": "PASS",
+    "evaluationTypecheck": "PASS",
+    "consoleProductionBuild": "PASS"
+  },
+  "browser": {
+    "runId": "invoice-acceptance-v1",
+    "importedSources": 9,
+    "customerTotals": [
+      {
+        "customerId": "demo-acorn",
+        "grossCents": 120000,
+        "creditCents": 12500,
+        "netCents": 107500
+      },
+      {
+        "customerId": "demo-birch",
+        "grossCents": 45000,
+        "creditCents": 0,
+        "netCents": 45000
+      }
+    ],
+    "humanDecisions": 2,
+    "activeContributions": 4,
+    "progress": {
+      "duplicate": 1,
+      "evidenceMissing": 1,
+      "excluded": 2,
+      "needsReview": 0,
+      "pending": 0,
+      "recorded": 4,
+      "superseded": 1,
+      "total": 9
+    },
+    "replayedAcceptance": "same decision, no second contribution",
+    "pageRefresh": "PASS",
+    "allRecordedAmountsTraceToEvidence": "PASS",
+    "connectionError": "real HTTP 502 displayed while gateway stopped",
+    "recovery": "workspace automatically reconnected after restart"
+  },
+  "deployedBackendSmoke": {
+    "result": "PASS",
+    "sourceCommit": "926e4e8899a054c6cc1f2548f84a4ba18469797c",
+    "runId": "invoice-acceptance-smoke",
+    "backend": "deployed Convex",
+    "mode": "deterministic",
+    "modelCalls": 0,
+    "liveEvaluation": "NOT RUN",
+    "commands": [
+      "import initial public demo",
+      "check routine invoice/credit totals and duplicate",
+      "late revision invalidates prior approval and resumes after service recreation",
+      "accept exact current proposal, replay decision, verify one contribution per document"
+    ],
+    "progress": {
+      "duplicate": 1,
+      "evidenceMissing": 1,
+      "excluded": 2,
+      "needsReview": 0,
+      "pending": 0,
+      "recorded": 4,
+      "superseded": 1,
+      "total": 9
+    },
+    "customerTotals": [
+      {
+        "customerId": "demo-acorn",
+        "grossCents": 120000,
+        "creditCents": 12500,
+        "netCents": 107500
+      },
+      {
+        "customerId": "demo-birch",
+        "grossCents": 45000,
+        "creditCents": 0,
+        "netCents": 45000
+      }
+    ]
+  },
+  "realHttpSmoke": {
+    "result": "PASS",
+    "sourceCommit": "926e4e8899a054c6cc1f2548f84a4ba18469797c",
+    "backend": "deployed Convex through loopback HTTP",
+    "originalBytes": 900000,
+    "sha256": "beb546427e52447053bc83bbb7c3cf5e8681b461059ebff41f47971d4deef4da",
+    "sessionWithoutCookie": 401,
+    "forbiddenOrigin": 403,
+    "sourceStatus": "evidence_missing",
+    "modelCalls": 0,
+    "pdfExtraction": "NOT RUN \u2014 synthetic opaque bytes only",
+    "liveEvaluation": "NOT RUN"
+  },
+  "restart": {
+    "attestation": {
+      "backendOldPid": 77485,
+      "backendRestarted": true,
+      "command": "kill -TERM 63114 63488 65406 65407 65408\nkill -INT 76868\nlsof -nP -iTCP:3230 -sTCP:LISTEN -t # no listener after stop\nCONVEX_AGENT_MODE=anonymous npx convex dev --local-cloud-port 3230 --local-site-port 3231 --tail-logs disable\nnode --env-file=var/invoice-mvp/invoice-acceptance-v1/runtime.env --import tsx scripts/invoice-mvp-server.ts\nINVOICE_MVP_PORT=8796 node --env-file=var/invoice-mvp/invoice-original-complete/runtime.env --import tsx scripts/invoice-mvp-server.ts\nINVOICE_MVP_PORT=8797 node --env-file=var/invoice-mvp/invoice-heldout-final/runtime.env --import tsx scripts/invoice-mvp-server.ts",
+      "gatewayOldPids": [
+        65406,
+        65407,
+        65408
+      ],
+      "gatewayRestarted": true,
+      "newListenerPids": {
+        "3230": "6782",
+        "8790": "6978",
+        "8796": "6979",
+        "8797": "6980"
+      },
+      "operator": "root orchestrator",
+      "portsConfirmedUnboundAfterStop": true,
+      "restartedAt": "2026-10-24T21:37:14.049618+00:00",
+      "sourceCommit": "926e4e8899a054c6cc1f2548f84a4ba18469797c"
+    },
+    "liveModel": "NOT RUN",
+    "runIdSame": true,
+    "status": "PASS"
+  },
+  "stateHashes": {
+    "before": "b1871486728b2ea71a22cbe9760a905f420fbab5214a862ed75d8258a35f743f",
+    "after": "b1871486728b2ea71a22cbe9760a905f420fbab5214a862ed75d8258a35f743f"
+  },
+  "structuralAudit": {
+    "aggregateMismatchCustomers": [],
+    "duplicateAccountingEffects": 0,
+    "humanInterventions": 2,
+    "missingSourceIds": [],
+    "semanticSupport": "requires original-key/private-suite or independent manual audit; valid references alone do not prove a claim",
+    "sourceCount": 9,
+    "statusCounts": {
+      "duplicate": 1,
+      "evidence_missing": 1,
+      "excluded": 2,
+      "recorded": 4
+    },
+    "unexpectedSourceIds": [],
+    "unresolvedCases": 1,
+    "unsupportedAcceptedEffectsStructural": 0,
+    "unsupportedDetail": [],
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "costUsd": 0,
+      "coverage": "runtime explicitly deterministic",
+      "inputTokens": 0,
+      "modelCalls": 0,
+      "outputTokens": 0,
+      "toolCalls": 45
+    },
+    "visibleSourceCount": 8
+  },
+  "notRun": [
+    "Live provider calls",
+    "Paid baseline/app comparison",
+    "Production identity-provider login",
+    "Public deployment",
+    "Real banking or payment execution",
+    "Mobile viewport/file-picker/download roundtrip"
+  ]
+}
