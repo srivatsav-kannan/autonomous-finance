@@ -73,6 +73,19 @@ npm run world -- --run demo --stores 3 --days 14 --pace 3000
 npm run agents -- --run demo
 ```
 
+### Simulation dates
+
+The requested start and day count bound all emitted events and the answer key.
+Delayed credit memos and invoice resends outside that interval are deferred beyond
+this scenario; they do not extend its reported duration. Invoice due dates may
+still fall after the simulated interval.
+
+Rent and recurring supplier bills are generated once per calendar month touched
+by the scenario. Rent arrives on the first observed day of each month. Monthly
+supplier bills arrive on the fifth, clamped to that month's observed interval for
+partial months. This fixture models a full monthly obligation even when only part
+of the month is simulated; it does not prorate bills.
+
 ## Layout
 
 | Path | What |
