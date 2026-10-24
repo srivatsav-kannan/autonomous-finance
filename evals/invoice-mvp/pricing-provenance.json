@@ -1,0 +1,17 @@
+{
+  "verifiedDate": "2026-10-24",
+  "model": "claude-opus-5-5",
+  "modelSource": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+  "pricingSource": "https://platform.claude.com/docs/en/about-claude/pricing",
+  "provider": "Anthropic first-party Claude API",
+  "standardInputUsdPerMillionTokens": 4,
+  "standardOutputUsdPerMillionTokens": 20,
+  "inputMicrosPerToken": 4,
+  "outputMicrosPerToken": 20,
+  "cachePolicy": "disabled; any reported cache usage fails accounting validation",
+  "fastMode": false,
+  "batchApi": false,
+  "fallbacks": false,
+  "retries": 0,
+  "notes": ["Reverify pricing before approving a future batch; rates are estimates, not billing invoices.", "Opus 5.5 rejects forced tool use. Baseline preserves auto tool behavior; actual application must use compatible configuration."]
+}

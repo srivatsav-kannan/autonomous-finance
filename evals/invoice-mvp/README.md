@@ -2,7 +2,7 @@
 
 Protocol frozen at `357866ec73dd8a643408e4a3b1ca4db6654e99b7` before first scores. See `docs/invoice-mvp/evaluation-protocol.md`. Historical A/B/C and their reports are untouched. `system-mvp.py` is the new actual-product adapter, using only the real HTTP gateway and persisted Convex snapshots.
 
-This release performs **free deterministic evaluation only**. It has no model API client and rejects `live_model` and `mock_model` runtime attestation before mutating the product. Mock-server unit tests do not qualify as an application evaluation. Preparation does not produce a benchmark score. Outputs must live outside the product worktree, and run/output directories cannot be reused.
+The default `run.py` path performs **free deterministic evaluation only** and rejects `live_model` and `mock_model` runtime attestation before mutating the product. Separate capped live entrypoints are prepared in [LIVE.md](LIVE.md); they require explicit recorded approval and remain NOT RUN. Mock-server unit tests do not qualify as an application evaluation. Preparation does not produce a benchmark score. Outputs must live outside the product worktree, and run/output directories cannot be reused.
 
 ## Reproduce free preparation
 
@@ -89,6 +89,6 @@ This checks persisted case/proposal pointers, totals/effects and recorded decisi
 
 Required credential name: `ANTHROPIC_API_KEY`. No key was read, no API calls made, and no budget is authorized. Proposed batch is $7.50 maximum (A original $3, MVP original $3, MVP held-out $1.50); details are frozen in the protocol. Credential alone does not authorize spending.
 
-Before that batch can execute, add a **new** capped baseline transport preserving A's prompt/tool schema/source access. The historical A `lib/llm.ts` checks accrued cost before requests, permits four SDK retries and optional fallbacks, and can request 64,000 output tokens; that does not enforce the proposed hard ceiling. A new wrapper must reserve worst-case input/output costs before every attempt, disable unpriced fallbacks/automatic retries, use shared atomic batch/run budgets, record requests and actual served-model usage, and release reservations only after accounting. The app runtime must expose equivalent complete usage and atomic reservations. Then add a separately authorized live mode to this adapter and test guards without network calls. Do not simply bypass `require_free_runtime`.
+The new capped baseline transport and separate live application adapter are now implemented and tested without network calls. Historical A/B/C are unchanged. See [LIVE.md](LIVE.md) for exact disabled-by-default commands, persistent shared budget controls, provider pricing provenance, and remaining external approval/credential requirements. The default deterministic runner remains unchanged. No live result is claimed.
 
-No reviewer is implemented; no reviewer improvement is measurable. Missing usage remains null, never guessed from the number of tool calls. The existing deterministic runner records runtime attestation but no live telemetry claim.
+No reviewer is implemented; no reviewer improvement is measurable. Missing usage remains null, never guessed from the number of tool calls. The explicitly opted-in live adapter consumes only persisted product reservation/actual-usage events.
