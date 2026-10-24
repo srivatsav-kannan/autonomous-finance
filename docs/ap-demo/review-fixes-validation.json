@@ -1,0 +1,77 @@
+{
+  "recordedAt": "2026-10-24T21:01:10.552Z",
+  "sourceCommit": "83b23abe19e9820d69269e1e22f1c0890ce25d46",
+  "pr49FixCommit": "095bbbe",
+  "runtime": "v24.22.0",
+  "checks": {
+    "tests": {
+      "status": "passed",
+      "count": 258,
+      "files": 26,
+      "newRegressionCases": 12
+    },
+    "typecheck": "passed",
+    "backendTypecheck": "passed",
+    "testsTypecheck": "passed",
+    "consoleBuild": "passed",
+    "diffCheck": "passed"
+  },
+  "localRecovery": {
+    "status": "passed",
+    "runId": "ap-local-1792875632193",
+    "identityMode": "local_admin_simulated_human",
+    "amountCents": 66290,
+    "commandId": "m17c9bqfhsa33nnnvtqwgkavkn8gxsp9",
+    "attempts": 2,
+    "bankTransfers": 1,
+    "postedDebits": 1,
+    "execution": "settled",
+    "posting": "posted",
+    "reconciliation": "matched",
+    "closeBlockers": 0,
+    "closeResults": [
+      {
+        "period": "2026-01",
+        "status": "closed"
+      }
+    ],
+    "fullReport": "var/ap-demo/ap-local-1792875632193/report.json"
+  },
+  "browser": {
+    "status": "passed",
+    "runId": "ap-browser-1792875588231",
+    "identityMode": "local_oidc_test_identity",
+    "approvalViaBrowser": true,
+    "negativeAuthChecks": [
+      "wrong_audience_rejected",
+      "expired_token_rejected"
+    ],
+    "execution": "settled",
+    "posting": "posted",
+    "reconciliation": "matched",
+    "closeBlockers": 0,
+    "close": {
+      "period": "2026-10",
+      "status": "closed"
+    },
+    "fullReport": "var/ap-demo/ap-browser-1792875588231/report.json"
+  },
+  "increaseRegression": {
+    "status": "passed",
+    "transport": "mocked provider HTTP with real adapter, workers and Convex handlers",
+    "coverage": [
+      "explicit funding approval, cash journal and dual-signature close",
+      "mixed payable debit and unrelated ACH collection",
+      "signed foreign transfer and transaction notices",
+      "unresolved fetch, identity and nested-resource failures remain blockers",
+      "unselected funding stays blocked; failed funding posting rolls back"
+    ]
+  },
+  "externalSandbox": {
+    "status": "not_run",
+    "exitCode": 2,
+    "reason": "No Increase sandbox credentials/account/beneficiary, production identity-provider JWT or configured sandbox service environment was available.",
+    "productionIdentityProviderLogin": "not_run",
+    "externalWebhookDelivery": "not_run"
+  }
+}
