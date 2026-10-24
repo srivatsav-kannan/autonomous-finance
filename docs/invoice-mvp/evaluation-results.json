@@ -1,80 +1,163 @@
 {
+  "status": "FREE_APPLICATION_EVALUATION_COMPLETE_LIVE_NOT_RUN",
   "protocolCommit": "357866ec73dd8a643408e4a3b1ca4db6654e99b7",
   "upstreamCommit": "b8cb58ff9747486e86c623e867b76fad5d8d075f",
-  "reportStatus": "FIRST_HELDOUT_RECORDED_ORIGINAL_AND_ACCEPTANCE_PENDING",
-  "preparation": {
-    "originalFiles": 148,
-    "originalBytes": 100094614,
-    "pdfFiles": 112,
-    "pdfTextChars": 2686974,
-    "largestSourceJsonBytes": 1218637,
-    "python": "3.12.12",
-    "pypdf": "6.21.2"
-  },
-  "checks": {
-    "adapterAndMockHttpTests": 10,
-    "originalScorerSyntheticSemanticsTests": 3,
-    "totalPassed": 13,
-    "totalFailed": 0
-  },
+  "evaluatedApplicationCommit": "926e4e8899a054c6cc1f2548f84a4ba18469797c",
   "originalApplication": {
-    "status": "FAILED_UNSCORED",
-    "applicationCommit": "f1f03512528772a21da2445f0f698eb3511c88ce",
-    "officialAccuracy": null,
-    "successfulImportChunks": 72,
-    "persistedSources": 105,
-    "reason": "HTTP503; root reproduced database write-rate limit; corrected attempt pending"
+    "runId": "invoice-original-complete",
+    "cohort": "post-fix",
+    "applicationCommit": "926e4e8899a054c6cc1f2548f84a4ba18469797c",
+    "evaluatorCommit": "02bd47d1909cb23b7bd11d950e0729d7ef75c79f",
+    "evaluatorDirty": false,
+    "runtimeMode": "deterministic",
+    "startedAt": "2026-10-24T21:33:36.067107+00:00",
+    "endedAt": "2026-10-24T21:34:44.006980+00:00",
+    "wallSeconds": 67.94,
+    "status": "RECORDED",
+    "official": {
+      "customer_accuracy": "0.0000",
+      "customers_exact": "0",
+      "customers_scored": "18",
+      "missing_customers": "0",
+      "total_absolute_error_usd": "3566177.15",
+      "unexpected_customers": "0"
+    },
+    "strictCustomerMetrics": {
+      "allFourFieldsExactCents": 0,
+      "blankCustomerRows": 0,
+      "customers": 18,
+      "duplicateCustomerRows": 0,
+      "missingCustomers": [],
+      "perFieldExactCents": {
+        "credit_memo_total_usd": 16,
+        "gross_invoice_spend_usd": 0,
+        "net_spend_usd": 0,
+        "valid_invoice_count": 0
+      },
+      "strictPass": false,
+      "unexpectedCustomers": []
+    },
+    "heldoutChecks": null,
+    "sourceVersions": 148,
+    "sourceRetentionPassed": true,
+    "statusCounts": {
+      "evidence_missing": 146,
+      "needs_review": 2
+    },
+    "unresolvedCases": 148,
+    "humanInterventions": 0,
+    "duplicateAccountingEffects": 0,
+    "structurallyUnsupportedAcceptedEffects": 0,
+    "acceptedEffects": 0,
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "costUsd": 0,
+      "coverage": "runtime explicitly deterministic",
+      "inputTokens": 0,
+      "modelCalls": 0,
+      "outputTokens": 0,
+      "toolCalls": 740
+    },
+    "documentIssueCounts": {
+      "missing_inclusion": 107
+    },
+    "runSealSha256": "9b9e387bc6441e75801311383103d321ae751a2b77b2319acdc80d5e91b0ba4a",
+    "scoreJsonSha256": "5a8ef60036a96071d2505dfb3c1e54b29ee8553bf75fb47f4d2674bdd6c199b0",
+    "restart": {
+      "status": "PASS",
+      "stateSealSha256": "bb22a9ed0637a60c40518d43146123843a9de8fe0d96dabd820f5443eeeff689",
+      "sourceVersionsRetained": 148,
+      "sourceRetentionPass": true
+    }
   },
   "heldoutApplication": {
-    "status": "RECORDED_AND_SCORED",
-    "applicationCommit": "c7774f684e5a4248b73c88b702718b935c1d666b",
+    "runId": "invoice-heldout-final",
+    "cohort": "post-fix",
+    "applicationCommit": "926e4e8899a054c6cc1f2548f84a4ba18469797c",
+    "evaluatorCommit": "02bd47d1909cb23b7bd11d950e0729d7ef75c79f",
+    "evaluatorDirty": false,
     "runtimeMode": "deterministic",
-    "checksPassed": 4,
-    "totalChecks": 9,
+    "startedAt": "2026-10-24T21:35:10.355200+00:00",
+    "endedAt": "2026-10-24T21:35:13.151427+00:00",
+    "wallSeconds": 2.796,
+    "status": "RECORDED",
+    "official": null,
+    "strictCustomerMetrics": null,
+    "heldoutChecks": {
+      "checks": 9,
+      "checksPassed": 4
+    },
+    "sourceVersions": 11,
+    "sourceRetentionPassed": true,
+    "statusCounts": {
+      "duplicate": 1,
+      "evidence_missing": 8,
+      "needs_review": 1
+    },
     "unresolvedCases": 9,
     "humanInterventions": 0,
+    "duplicateAccountingEffects": 0,
+    "structurallyUnsupportedAcceptedEffects": 0,
     "acceptedEffects": 0,
-    "costUsd": 0,
-    "report": "evaluation-firstpass.json"
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "costUsd": 0,
+      "coverage": "runtime explicitly deterministic",
+      "inputTokens": 0,
+      "modelCalls": 0,
+      "outputTokens": 0,
+      "toolCalls": 165
+    },
+    "documentIssueCounts": null,
+    "runSealSha256": "331bbe92ef8b9b3dd61778938d29b801443fe0807943e2d0ab6702a36ce81fca",
+    "scoreJsonSha256": "72b5c52ff62293ca241f85e4bfc628479331e01736fef3bc575877bfded05701",
+    "restart": {
+      "status": "PASS",
+      "stateSealSha256": "5a87e76b8d9dfbd939b0e1853e91e7889a482a3bc32492b997d7780e7db92bbd",
+      "sourceVersionsRetained": 11,
+      "sourceRetentionPass": true
+    }
   },
-  "restartAcceptance": {
-    "status": "NOT RUN"
+  "restartAttestationSha256": "f8ad048c2a348fdc130c2cf6c827e5b13eb2f43529938c5020cf57f2e23b4e2e",
+  "restartRetentionSealSha256": "10f6ba10fd737d1ab158774ae3d3a1a2d7e4fea56c0ec53f3bbdf84555754630",
+  "history": {
+    "firstHeldout": "evaluation-firstpass.json",
+    "originalFailedFirstAttemptAndIntermediateHeldout": "evaluation-followups.json",
+    "firstHeldoutChecks": "4/9",
+    "postFixHeldoutChecks": "4/9",
+    "firstOriginalAttempt": "FAILED_UNSCORED after105sources; not0/18"
   },
-  "humanReplayAndStaleApprovalEvaluation": {
-    "status": "NOT RUN"
-  },
-  "liveBaselineA": {
-    "status": "NOT RUN",
-    "costUsd": null,
-    "reason": "No authorized spend or credential; new pre-request capped transport required"
-  },
-  "liveApplication": {
-    "status": "NOT RUN",
-    "costUsd": null,
-    "reason": "No authorized spend or credential; live adapter intentionally disabled"
-  },
-  "reviewerComparison": {
-    "status": "NOT APPLICABLE",
-    "reason": "No reviewer implemented"
-  },
-  "newModelApiCalls": 0,
-  "newModelApiSpendUsd": 0,
-  "contamination": "Original fixture previously seen; private held-out scenarios and expected answers not exposed to implementation workers",
-  "heldoutPostFix": {
-    "status": "RECORDED_AND_SCORED",
-    "applicationCommit": "f1f03512528772a21da2445f0f698eb3511c88ce",
-    "checksPassed": 4,
-    "totalChecks": 9,
-    "improvementOverFrozenFirstPass": 0,
-    "sourceVersionsPreserved": 11
-  },
-  "livePreparation": {
-    "status": "IMPLEMENTED_TESTED_NO_NETWORK",
-    "pythonChecks": 27,
-    "injectedTransportChecks": 5,
+  "harnessChecks": {
+    "pythonPassed": 27,
+    "dedicatedNodePassed": 5,
     "typescript": "PASS",
-    "approval": "ABSENT",
-    "credential": "ABSENT",
-    "guide": "../../evals/invoice-mvp/LIVE.md"
-  }
+    "vitestDiscovery": "dedicated node suite excluded by specificfilename, still independently run"
+  },
+  "live": {
+    "baselineA": "NOT RUN",
+    "actualApplication": "NOT RUN",
+    "officialLiveAccuracy": null,
+    "missingCredentialName": "ANTHROPIC_API_KEY",
+    "spendApproval": "ABSENT",
+    "preparedBatchCapUsd": 7.5,
+    "preparedRunCapsUsd": {
+      "baselineOriginal": 3,
+      "applicationOriginal": 3,
+      "applicationHeldout": 1.5
+    },
+    "instructions": "../../evals/invoice-mvp/LIVE.md"
+  },
+  "reviewerComparison": "NOT APPLICABLE: no reviewer implemented",
+  "evaluationModelApiCalls": 0,
+  "evaluationModelSpendUsd": 0,
+  "interpretation": [
+    "All final application results are deterministic real HTTP-to-Convex runs, not mocks or live-model evaluations.",
+    "Zero unsupported accepted effects is vacuous when accepted effects are zero.",
+    "Conflict check passes mean safe abstention; empty contradiction arrays and generic questions do not prove conflict recognition.",
+    "Primary evaluation uses zero human interventions. Browser human decision/replay/stale-approval acceptance is owned and reported separately by root.",
+    "Historical18/18baseline/pipeline results are not new MVP results; original fixture was previously seen.",
+    "Actual restart comparisons cover all final original and heldout states and source bytes; no accepted accounting effects existed in these evaluation runs."
+  ]
 }
