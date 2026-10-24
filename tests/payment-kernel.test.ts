@@ -185,6 +185,16 @@ describe("recovery preserves the original money identity", () => {
 });
 
 describe("verified account evidence stays separate from cash posting", () => {
+  it("validates unknown transfer evidence before retaining it for review", async () => {
+    const f = await demoFixture();
+    const observation: TransferObservation = { id: "external-transfer", scope: f.scope, commandId: "external-command", idempotencyKey: "external-key", requestHash: "0".repeat(64), amountCents: 2000, currency: "USD", destination: { externalAccountId: "external-account-1", version: "v1" }, status: "pending", createdAt: "2026-10-23T12:00:00.000Z", updatedAt: "2026-10-23T12:00:00.000Z" };
+    const service = { scope: f.scope, token: f.evidenceToken };
+    await expect(f.t.mutation(api.demoEvidence.observeTransfer, { ...service, observation: { ...observation, amountCents: -1 }, transactions: [] })).rejects.toThrow();
+    expect(await f.t.run(ctx => ctx.db.query("demoObservations").collect())).toEqual([]);
+    await f.t.mutation(api.demoEvidence.observeTransfer, { ...service, observation, transactions: [] });
+    expect(await f.human.query(api.demoEvidence.humanView, { scope: f.scope })).toMatchObject({ blockers: expect.arrayContaining([expect.objectContaining({ id: observation.id })]) });
+  });
+
   it("retains an unrelated posted transaction without settling a matching-looking AP payment", async () => {
     const f = await demoFixture(); const q = await f.queued(); const leased = await claim(f); assert(leased);
     const observation: TransferObservation = { ...leased.command, id: "transfer", status: "settled", originalTransactionId: "tx", createdAt: "2026-10-23T12:00:00.000Z", updatedAt: "2026-10-23T12:00:01.000Z" };

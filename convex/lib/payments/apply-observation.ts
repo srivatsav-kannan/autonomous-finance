@@ -5,7 +5,7 @@ import { appendDemoEntry } from "../demoPost";
 import { releaseReservations, settleEffects, returnEffects } from "./reservations";
 import { canonicalJson, sameBankScope, type BankScope, type BankTransaction, type TransferObservation } from "../../../src/payments/contracts";
 import { assertObservationMatchesCommand, assertPostingEvidence } from "../../../src/payments/domain/rules";
-import { assertFrozenBankCommand, parseBankTransaction } from "../../../src/payments/domain/validation";
+import { assertFrozenBankCommand, parseBankTransaction, parseTransferObservation } from "../../../src/payments/domain/validation";
 
 const rank = { pending: 0, rejected: 1, settled: 2, returned: 3 };
 function scoped(a: BankScope, b: BankScope) { if (!sameBankScope(a, b)) throw new Error("Bank evidence scope mismatch"); }
@@ -20,6 +20,7 @@ function checkObservation(command: Doc<"demoCommands">, observation: TransferObs
 }
 export async function saveObservation(ctx: MutationCtx, scope: BankScope, observation: TransferObservation) {
   scoped(scope, observation.scope);
+  parseTransferObservation(observation);
   const command = await commandFor(ctx, scope, observation.commandId);
   if (command) { await assertFrozenBankCommand(command.command); checkObservation(command, observation); }
   const old = await ctx.db.query("demoObservations").withIndex("by_transfer", q => q.eq("scope.runId", scope.runId).eq("transferId", observation.id)).unique();
@@ -53,9 +54,7 @@ export async function saveObservation(ctx: MutationCtx, scope: BankScope, observ
 export async function saveTransaction(ctx: MutationCtx, scope: BankScope, transaction: BankTransaction) {
   scoped(scope, transaction.scope);
   parseBankTransaction(transaction);
-  if (!Number.isSafeInteger(transaction.amountCents) || transaction.amountCents === 0) throw new Error("Invalid bank integer cents");
   if (transaction.status !== "posted") throw new Error("Pending transaction is not economic evidence");
-  if (!transaction.postedAt || !Number.isFinite(Date.parse(transaction.postedAt))) throw new Error("Bank posted timestamp required");
   const old = await transactionFor(ctx, scope, transaction.id);
   if (old) {
     if (canonicalJson(old.transaction) !== canonicalJson(transaction)) throw new Error("Immutable bank transaction changed");
