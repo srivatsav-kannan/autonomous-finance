@@ -170,7 +170,7 @@ export function generateWorld(opts: WorldOptions) {
   });
 
   // ---- Daily: sales, card settlements, deliveries + invoices.
-  const marketplaceByStoreWeek = new Map<string, number>();
+  const marketplaceByStoreWeek = new Map<string, Record<string, number>>();
   let shortShipment: { invoice: string; store: string; amount: number; date: string } | null = null;
 
   for (const [di, date] of days.entries()) {
@@ -182,6 +182,7 @@ export function generateWorld(opts: WorldOptions) {
       const digital = Math.round(gross * ASSUMPTIONS.channelMix.digital);
       const marketplace = gross - inStore - digital;
       const ddShare = Math.round(marketplace * 0.55);
+      const platformSales = { "doordash-sim": ddShare, "ubereats-sim": marketplace - ddShare };
       const tax = applyRate(inStore + digital, SALES_TAX_BPS / 10_000);
       const gcSold = Math.round(gross * ASSUMPTIONS.giftCardSalesPct);
       const gcRedeemed = Math.round(gross * ASSUMPTIONS.giftCardRedemptionPct);
@@ -199,12 +200,17 @@ export function generateWorld(opts: WorldOptions) {
         payload: {
           store: s.id, date,
           in_store: { grossCents: inStore }, digital: { grossCents: digital },
-          marketplace: { "doordash-sim": ddShare, "ubereats-sim": marketplace - ddShare },
+          marketplace: platformSales,
           salesTaxCents: tax, giftCardsSoldCents: gcSold, giftCardsRedeemedCents: gcRedeemed, cardTransactions: txns,
         },
       });
       const weekKey = `${s.id}:${Math.floor(di / 7)}`;
-      marketplaceByStoreWeek.set(weekKey, (marketplaceByStoreWeek.get(weekKey) ?? 0) + marketplace);
+      const weekSales = marketplaceByStoreWeek.get(weekKey) ?? {};
+      // Sum the emitted cents; re-splitting weekly gross can create rounding differences.
+      for (const [platform, amount] of Object.entries(platformSales)) {
+        weekSales[platform] = (weekSales[platform] ?? 0) + amount;
+      }
+      marketplaceByStoreWeek.set(weekKey, weekSales);
 
       // Card settlement lands next day, net of fees.
       const collections = inStore + digital + tax - gcRedeemed + gcSold;
@@ -369,8 +375,7 @@ export function generateWorld(opts: WorldOptions) {
       const week = Math.floor(di / 7);
       for (const p of DELIVERY_PLATFORMS) {
         const lines = stores.map((s) => {
-          const weekGross = marketplaceByStoreWeek.get(`${s.id}:${week}`) ?? 0;
-          const gross = Math.round(weekGross * (p.id === "doordash-sim" ? 0.55 : 0.45));
+          const gross = marketplaceByStoreWeek.get(`${s.id}:${week}`)?.[p.id] ?? 0;
           const commission = applyRate(gross, p.commissionBps / 10_000);
           const refunds = Math.round(gross * 0.004);
           return { store: s.id, grossCents: gross, commissionCents: commission, refundsCents: refunds, adjustmentsCents: 0, netCents: gross - commission - refunds };
