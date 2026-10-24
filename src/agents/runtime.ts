@@ -100,13 +100,15 @@ export class SeatRuntime {
 
   /** Commit a change to company memory and mirror the commit into the kernel's index. */
   async commit(changes: FileChange[], message: string, trailers: Record<string, string> = {}, idempotencyKey?: string): Promise<string> {
-    const { sha, replayed } = await this.mem.write({ changes, author: this.author, message, trailers, idempotencyKey });
-    if (!replayed) {
-      await this.kernel.client.mutation(api.observe.recordCommit, {
-        ...this.kernel.auth, sha, branch: "main", message, paths: changes.map((c) => c.path), trailers,
-      });
-    }
+    const { sha } = await this.mem.write({ changes, author: this.author, message, trailers, idempotencyKey });
     this.vendorCache = null;
+    // A previous attempt may have committed Git but failed before the kernel mirror.
+    // recordCommit is idempotent by SHA; always send the persisted metadata on replay.
+    const saved = await this.mem.commitInfo(sha);
+    const result = await this.kernel.client.mutation(api.observe.recordCommit, {
+      ...this.kernel.auth, sha, branch: "main", message: saved.subject, paths: saved.paths, trailers: saved.trailers,
+    });
+    if (!result.ok) throw new Error(`recordCommit failed: ${result.code} ${result.error}`);
     return sha;
   }
 
@@ -127,10 +129,16 @@ export class SeatRuntime {
     const record: Decision = { id, on, seat: this.seat.seatId, ...d, facts: d.facts, rules: d.rules };
     const sha = await this.commit([{ path, data: record }], `${d.outcome.toUpperCase()} ${d.kind} ${d.subject.id}: ${d.summary}`, {
       "Decision-Id": id,
+      "Memory-Sha": memorySha,
       Confidence: d.confidence.toFixed(2),
       ...(d.task ? { "Task-Id": d.task } : {}),
     }, `decision:${d.task ?? id}:${d.kind}:${d.subject.id}`);
-    return { path, sha, memorySha };
+    const saved = await this.mem.commitInfo(sha);
+    const savedPath = saved.paths.find((p) => p.startsWith("decisions/"));
+    if (!savedPath) throw new Error(`decision commit ${sha} has no decision record`);
+    // Older decision commits have no Memory-Sha trailer; their parent is the best
+    // available pre-decision snapshot. New commits persist the exact snapshot read.
+    return { path: savedPath, sha, memorySha: saved.trailers["Memory-Sha"] ?? saved.parent };
   }
 
   async ask(a: {

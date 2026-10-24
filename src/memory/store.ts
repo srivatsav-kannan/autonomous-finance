@@ -44,7 +44,7 @@ export class MemoryError extends Error {
  */
 export class MemoryStore {
   private idempotencyKeys = new Map<string, string>();
-  private indexed = false;
+  private indexedHead: string | undefined;
 
   constructor(readonly dir: string) {}
 
@@ -130,14 +130,16 @@ export class MemoryStore {
     }
   }
 
-  private async loadIdempotencyIndex(): Promise<void> {
-    if (this.indexed) return;
-    const out = await this.git(["log", "--all", "--format=%H%x1f%(trailers:key=Idempotency-Key,valueonly,separator=)"]);
+  private async loadIdempotencyIndex(head: string): Promise<void> {
+    if (this.indexedHead === head) return;
+    // Pin the scan to the CAS parent, including commits published by other stores.
+    const out = await this.git(["log", "--first-parent", head, "--format=%H%x1f%(trailers:key=Idempotency-Key,valueonly,separator=)"]);
+    this.idempotencyKeys.clear();
     for (const line of out.split("\n")) {
       const [sha, key] = line.split("\x1f");
       if (sha && key?.trim()) this.idempotencyKeys.set(key.trim(), sha);
     }
-    this.indexed = true;
+    this.indexedHead = head;
   }
 
   private validate(p: string, data: unknown): void {
@@ -157,7 +159,7 @@ export class MemoryStore {
     author: Author,
     message: string,
     trailers: Record<string, string>,
-    check: (parentRef: string) => Promise<void>,
+    check: (parentRef: string) => Promise<string | void>,
   ): Promise<string> {
     // Serialize writers inside this process; CAS + retry still protects against other processes.
     const prior = this.queue;
@@ -180,7 +182,7 @@ export class MemoryStore {
     author: Author,
     message: string,
     trailers: Record<string, string>,
-    check: (parentRef: string) => Promise<void>,
+    check: (parentRef: string) => Promise<string | void>,
   ): Promise<string> {
     for (let attempt = 0; attempt < 40; attempt++) {
       if (attempt > 0) await new Promise((r) => setTimeout(r, 5 + Math.random() * 20 * attempt));
@@ -193,7 +195,8 @@ export class MemoryStore {
         parent = await this.head(base);
         oldRef = "0000000000000000000000000000000000000000";
       }
-      await check(parent);
+      const replay = await check(parent);
+      if (replay) return replay;
       const index = path.join(this.dir, `index-${randomBytes(6).toString("hex")}`);
       const env = { ...this.authorEnv(author), GIT_INDEX_FILE: index };
       try {
@@ -236,13 +239,18 @@ export class MemoryStore {
     trailers?: Record<string, string>;
     idempotencyKey?: string;
   }): Promise<{ sha: string; replayed: boolean }> {
-    await this.loadIdempotencyIndex();
-    if (opts.idempotencyKey && this.idempotencyKeys.has(opts.idempotencyKey)) {
-      return { sha: this.idempotencyKeys.get(opts.idempotencyKey)!, replayed: true };
-    }
     for (const c of opts.changes) if (c.data !== null) this.validate(c.path, c.data);
     const trailers = { ...(opts.trailers ?? {}), ...(opts.idempotencyKey ? { "Idempotency-Key": opts.idempotencyKey } : {}) };
+    let replayed = false;
     const sha = await this.commitFiles("main", "main", opts.changes, opts.author, opts.message, trailers, async (parent) => {
+      if (opts.idempotencyKey) {
+        await this.loadIdempotencyIndex(parent);
+        const existing = this.idempotencyKeys.get(opts.idempotencyKey);
+        if (existing) {
+          replayed = true;
+          return existing;
+        }
+      }
       for (const c of opts.changes) {
         const before = await this.read(c.path, parent);
         if (c.path.startsWith("decisions/") && before !== undefined) {
@@ -252,8 +260,16 @@ export class MemoryStore {
         if (reason) throw new MemoryError("controlled", `${reason}; open a proposal instead`);
       }
     });
-    if (opts.idempotencyKey) this.idempotencyKeys.set(opts.idempotencyKey, sha);
-    return { sha, replayed: false };
+    return { sha, replayed };
+  }
+
+  /** Recover persisted metadata for a write, including an idempotent replay. */
+  async commitInfo(sha: string): Promise<CommitInfo & { paths: string[]; parent: string }> {
+    const [info] = await this.log({ ref: sha, limit: 1 });
+    if (!info) throw new MemoryError("missing_commit", `commit ${sha} not found`);
+    const parent = (await this.git(["rev-parse", `${sha}^`])).trim();
+    const paths = (await this.git(["diff", "--name-only", parent, sha])).split("\n").filter(Boolean);
+    return { ...info, paths, parent };
   }
 
   /** Seed or admin bootstrap: bypasses the controlled-change rule (still schema-validated). */
