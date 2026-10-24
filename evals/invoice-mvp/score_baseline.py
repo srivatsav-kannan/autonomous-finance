@@ -16,7 +16,7 @@ def main(args):
     for line in completed.stdout.splitlines():
         if not line:break
         key,value=line.split(',',1);official[key]=value
-    result={'system':'A-capped','official':official,'strictCustomerMetrics':strict_customer_metrics(submission,args.upstream/'answer_key/customer_totals.csv'),'runSealSha256':digest((args.run/'artifact-manifest.json').read_bytes()),'upstream':verified,'source':source_identity(),'configuration':read_json(args.run/'live-output/configuration.json'),'status':read_json(args.run/'live-output/final-status.json')}
+    result={'system':'A-capped','official':official,'strictCustomerMetrics':strict_customer_metrics(submission,args.upstream/'answer_key/customer_totals.csv'),'runSealSha256':digest((args.run/'artifact-manifest.json').read_bytes()),'upstream':verified,'source':source_identity(),'usage':read_json(args.run/'live-output/usage.json'),'configuration':read_json(args.run/'live-output/configuration.json'),'status':read_json(args.run/'live-output/final-status.json')}
     write_json(args.out/'score.json',result);seal(args.out);print(json.dumps({'official':official,'strict':result['strictCustomerMetrics']},indent=2))
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--run',type=Path,required=True);p.add_argument('--upstream',type=Path,required=True);p.add_argument('--out',type=Path,required=True)

@@ -1,4 +1,5 @@
 /** Explicitly authorized capped baseline; importing this file never initiates a call. */
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
@@ -25,12 +26,18 @@ async function main() {
   // Preparation seal remains a separate immutable input record.
   const resultDir = path.join(out, "live-output"); fs.mkdirSync(resultDir);
   configureCappedTransport({ authorization, ledger, runId, python, explicitLive: true });
-  const config = { system: "A-capped", liveModel: "AUTHORIZED_NOT_STARTED", model: approved.model, maxTurns: approved.maxCalls, effort: "high", maxTokensPerCall: 64000, fallbacks: false, retries: 0, cache: "disabled", authorizationId: auth.approvalReference, runEnvelopeMicros: approved.maxCostMicros, aggregateEnvelopeMicros: auth.aggregateMaxCostMicros, sourceAccess: "unchanged historical A Workspace", deviations: ["persistent pre-request reservations", "no caching, fallbacks or SDK retries", "conservative token bound may stop before historical accrued-spend cap"] };
+  const config = { authorizationSha256: createHash("sha256").update(JSON.stringify(auth)).digest("hex"), pricingProvenance: auth.pricingProvenance, system: "A-capped", liveModel: "AUTHORIZED_NOT_STARTED", model: approved.model, maxTurns: approved.maxCalls, effort: "high", maxTokensPerCall: 64000, fallbacks: false, retries: 0, cache: "disabled", authorizationId: auth.approvalReference, runEnvelopeMicros: approved.maxCostMicros, aggregateEnvelopeMicros: auth.aggregateMaxCostMicros, sourceAccess: "unchanged historical A Workspace", deviations: ["persistent pre-request reservations", "no caching, fallbacks or SDK retries", "conservative token bound may stop before historical accrued-spend cap"] };
   fs.writeFileSync(path.join(resultDir, "configuration.json"), JSON.stringify(config, null, 2));
   let result: unknown;
   try { result = await runSystemA({ runId, ws: new Workspace(workspace, textCache), outDir: resultDir, effort: "high", maxTurns: approved.maxCalls, runCapUsd: approved.maxCostMicros / 1e6 }); }
   catch { result = { status: "error", detail: "Provider or accounting failure; no retries; unresolved reservations remain charged" }; }
   fs.writeFileSync(path.join(resultDir, "final-status.json"), JSON.stringify(result, null, 2));
+  const state = fs.existsSync(ledger) ? JSON.parse(fs.readFileSync(ledger, "utf8")) : { runs: {} };
+  const requests = Object.values(state.runs[runId]?.requests ?? {}) as { status: string; chargedCostMicros: number; usage?: { inputTokens: number; outputTokens: number } }[];
+  const complete = requests.every((r) => r.status === "settled");
+  fs.writeFileSync(path.join(resultDir, "usage.json"), JSON.stringify({ reservedRequests: requests.length, completedRequests: requests.filter((r) => r.status === "settled").length, modelCalls: complete ? requests.length : null, inputTokens: complete ? requests.reduce((n, r) => n + r.usage!.inputTokens, 0) : null, outputTokens: complete ? requests.reduce((n, r) => n + r.usage!.outputTokens, 0) : null, costUsd: complete ? requests.reduce((n, r) => n + r.chargedCostMicros, 0) / 1e6 : null, coverage: complete ? "complete_provider_usage" : "incomplete_retained_reservation" }, null, 2));
+  config.liveModel = requests.length ? "PROVIDER_REQUESTS_RESERVED" : "NO_MODEL_CALLS";
+  fs.writeFileSync(path.join(resultDir, "configuration.json"), JSON.stringify(config, null, 2));
   execFileSync(python, ["-c", "import sys;from pathlib import Path;sys.path.insert(0,sys.argv[1]);from core import seal;seal(Path(sys.argv[2]))", here, out]);
   console.log(JSON.stringify(result));
 }

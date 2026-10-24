@@ -44,6 +44,7 @@ def live_usage(details,approved):
         if not match or match[1] not in reserved_by_id or match[1] in observed_ids: valid=False;continue
         observed_ids.add(match[1]);bound=reserved_by_id[match[1]]
         if any(call.get(k,-1)>bound.get(k,-1) for k in ['inputTokens','outputTokens','costMicros']):valid=False
+    valid=valid and len(reservations)<=approved['maxCalls'] and sum(c.get('costMicros',0) for c in reservations)<=approved['maxCostMicros']
     complete=valid and len(reservations)==len(actual) and observed_ids==set(reserved_by_id)
     # An interrupted reserved request may have reached the provider. Never infer its usage as zero.
     return {'coverage':'complete_persisted_usage' if complete else 'incomplete_persisted_usage','reservedRequests':len(reservations),'completedRequests':len(actual),'modelCalls':len(actual) if complete else None,'inputTokens':sum(c['inputTokens'] for c in actual) if complete else None,'outputTokens':sum(c['outputTokens'] for c in actual) if complete else None,'costUsd':sum(c['costMicros'] for c in actual)/1e6 if complete else None,'cacheReadTokens':0 if complete else None,'cacheWriteTokens':0 if complete else None,'toolCalls':len(entries),'reservedCostMicros':sum(c.get('costMicros',0) for c in reservations),'errorsOrUnaccountedReservations':not complete}
