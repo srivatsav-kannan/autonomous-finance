@@ -73,6 +73,10 @@ npm run world -- --run demo --stores 3 --days 14 --pace 3000
 npm run agents -- --run demo
 ```
 
+### External benchmark batch
+
+Compare the full team, a generalist, and deterministic rules on eight pinned APEX + DABstep tasks. See [setup, scoring and run commands](docs/EXTERNAL_EVALS.md). After preparing the fixtures, `npm run bench:run -- --dry-run` shows the default 72-run matrix; `npm run bench:run -- --modes rules-only --repeats 1 --judge off` runs the free baseline.
+
 ### Simulation dates
 
 The requested start and day count bound all emitted events and the answer key.

@@ -1,0 +1,27 @@
+{
+  "id": "finance-eight-v1",
+  "version": 1,
+  "sources": {
+    "apex": {
+      "repo": "mercor/apex-accounting-harbor",
+      "revision": "1662b7e4c3b04b8717f2f723df823e7b6cbe2118",
+      "license": "CC-BY-4.0",
+      "world": "worlds/world-9--(world_0645ad7c997c415e8c43f8de7cee2008)"
+    },
+    "dabstep": {
+      "repo": "adyen/DABstep",
+      "revision": "0545553f02cedc323dee8658af62555852bc3b24",
+      "license": "CC-BY-4.0"
+    }
+  },
+  "tasks": [
+    { "id": "apex-13", "benchmark": "apex", "sourceId": "world-9-task-13-3155ba0f", "label": "AR reconciliation", "role": "revenue_accountant" },
+    { "id": "apex-17", "benchmark": "apex", "sourceId": "world-9-task-17-73b89e1f", "label": "Payroll reconciliation", "role": "payroll_accountant" },
+    { "id": "apex-30", "benchmark": "apex", "sourceId": "world-9-task-30-b66225e0", "label": "AR aging exposure", "role": "revenue_accountant" },
+    { "id": "dabstep-1273", "benchmark": "dabstep", "sourceId": "1273", "label": "Average credit fee", "role": "cash_application", "answerType": "number", "decimals": 6 },
+    { "id": "dabstep-1305", "benchmark": "dabstep", "sourceId": "1305", "label": "Hospitality fee", "role": "cash_application", "answerType": "number", "decimals": 6 },
+    { "id": "dabstep-1681", "benchmark": "dabstep", "sourceId": "1681", "label": "Applicable daily fee IDs", "role": "cash_application", "answerType": "integer-set" },
+    { "id": "dabstep-1753", "benchmark": "dabstep", "sourceId": "1753", "label": "Applicable monthly fee IDs", "role": "cash_application", "answerType": "integer-set" },
+    { "id": "dabstep-1871", "benchmark": "dabstep", "sourceId": "1871", "label": "Fee-change delta", "role": "cash_application", "answerType": "number", "decimals": 14 }
+  ]
+}

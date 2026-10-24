@@ -53,7 +53,7 @@ export class Team {
   private stopped = false;
   processed = 0;
 
-  constructor(readonly runId: string, private readonly opts: { log?: (s: string) => void } = {}) {
+  constructor(readonly runId: string, private readonly opts: { log?: (s: string) => void; handlers?: Record<string, Handler> } = {}) {
     this.mem = new MemoryStore(memoryDir(runId));
     this.bank = new WorldBank(runId);
     this.tokensFile = path.join(runDir(runId), "seats.json");
@@ -83,7 +83,7 @@ export class Team {
     if (!claim.ok) throw new Error(`claim failed for ${rt.seat.seatId}: ${claim.error}`);
     const task = claim.task as Task | null;
     if (!task) return false;
-    const handler = HANDLERS[task.type];
+    const handler = this.opts.handlers?.[task.type] ?? HANDLERS[task.type];
     const lease = { ...rt.kernel.auth, taskId: task._id, leaseAttempt: task.attempts };
     const before = { ...rt.usage };
     const started = Date.now();
