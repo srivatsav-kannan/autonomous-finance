@@ -56,6 +56,7 @@ function fixture(mode: "approve" | "hold" | "reject") {
     throw new Error(`unexpected query ${getFunctionName(ref)}`);
   });
   let failBillResponse = false;
+  let failBillRequest = false;
   let handoffFailure: "before" | "after" | undefined;
   const handoffs = new Map<string, unknown>();
   let originalBillPayload: string | undefined;
@@ -64,6 +65,7 @@ function fixture(mode: "approve" | "hold" | "reject") {
     switch (getFunctionName(ref)) {
       case "observe:recordCommit": return { ok: true };
       case "ap:recordBill": {
+        if (failBillRequest) { failBillRequest = false; throw new Error("bill request unavailable"); }
         // The transport double rejects changed requests, just like kernel idempotency.
         if (originalBillPayload) {
           if (JSON.stringify(args) !== originalBillPayload) return { ok: false, code: "idempotency_conflict", error: "retried recordBill with a recalculated payload" };
@@ -85,11 +87,60 @@ function fixture(mode: "approve" | "hold" | "reject") {
       default: throw new Error(`unexpected mutation ${getFunctionName(ref)}`);
     }
   });
-  return { rt, task, bills, mutation, handoffs, run: () => processDocument(rt, task),
+  return { rt, task, invoice, bills, mutation, handoffs, run: () => processDocument(rt, task),
+    failBillRequest: () => { failBillRequest = true; },
     loseBillResponse: () => { failBillResponse = true; }, failHandoff: (at: "before" | "after") => { handoffFailure = at; } };
 }
 
 describe("AP document retry after kernel acceptance", () => {
+  it.each([
+    ["approve", "decision mirror"], ["hold", "decision mirror"], ["reject", "decision mirror"],
+    ["approve", "bill request"], ["hold", "bill request"], ["reject", "bill request"],
+  ] as const)("keeps the original %s posting inputs after %s fails before bill creation", async (mode, boundary) => {
+    const f = fixture(mode);
+    if (boundary === "decision mirror") f.mutation.mockRejectedValueOnce(new Error("mirror unavailable"));
+    else f.failBillRequest();
+    const originalMemorySha = await mem.head();
+    await expect(f.run()).rejects.toThrow(boundary === "decision mirror" ? "mirror unavailable" : "bill request unavailable");
+    expect(f.bills.filter((b) => b.documentEventId === "source-document")).toHaveLength(0);
+    const [decisionPath] = await mem.list("decisions/");
+    const originalDecision = await mem.read<Decision>(decisionPath!);
+    const savedPlan = originalDecision?.facts.find((f) => f.key === "bill.posting_plan")?.value;
+    expect(savedPlan).not.toHaveProperty("token");
+    expect(savedPlan).not.toHaveProperty("seatId");
+    // Simulate another seat's approved master-data change plus a newly issued credit.
+    await mem.bootstrap([{ path: `vendors/${vendor.id}.yaml`, data: {
+      ...vendor, expenseAccount: "5300",
+      contractPrices: vendor.contractPrices.map((p) => ({ ...p, unitCents: Math.max(1, p.unitCents - 100) })),
+      credits: [{ id: "LATER", amountCents: 200, reason: "new credit", issuedOn: "2026-01-06" }],
+    } }], rtAuthor(), "Later approved vendor changes");
+    const result = await f.run();
+    expect(result.outcome).toBe(mode === "approve" ? "approved" : mode === "reject" ? "rejected" : "held");
+    const posting = f.mutation.mock.calls.filter(([ref]) => getFunctionName(ref) === "ap:recordBill").at(-1)![1];
+    expect(posting).toMatchObject({
+      decision: mode, expenseAccount: vendor.expenseAccount, lines: f.invoice.lines, totalCents: f.invoice.totalCents,
+      memorySha: originalMemorySha, decisionPath, seatId: "ap-1", token: "token",
+    });
+    const expectedCodes = mode === "approve" ? [] : [mode === "hold" ? "price_over_contract" : "duplicate_invoice"];
+    expect(posting.exceptions.map((x: string) => x.split(":")[0])).toEqual(expectedCodes);
+    if (mode === "hold") {
+      expect([...f.handoffs.values()][0]).toMatchObject({ payload: {
+        recommendedCents: vendor.contractPrices[0]!.unitCents,
+        exceptions: [{ code: "price_over_contract", deltaCents: -1000 }], decisionPath,
+      } });
+    } else expect(f.handoffs.size).toBe(0);
+    expect(await mem.read<Decision>(decisionPath!)).toEqual(originalDecision);
+    expect(await mem.list("decisions/")).toHaveLength(1);
+  });
+
+  it("fails explicitly when an old unposted decision has no persisted posting inputs", async () => {
+    const f = fixture("approve");
+    await f.rt.decide({ on: "2026-01-05", task: f.task._id, kind: "bill", subject: { type: "invoice", id: `${vendor.id}/INV-42` },
+      outcome: "act", confidence: 0.97, summary: "Legacy approval", facts: [], rules: [] });
+    await expect(f.run()).rejects.toThrow(/cannot recover bill.*posting inputs/i);
+    expect(f.mutation.mock.calls.filter(([ref]) => getFunctionName(ref) === "ap:recordBill")).toHaveLength(0);
+  });
+
   it.each(["approve", "reject"] as const)("reuses a recorded %s decision after its response is lost", async (mode) => {
     const f = fixture(mode);
     f.loseBillResponse();

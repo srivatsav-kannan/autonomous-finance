@@ -22,6 +22,16 @@ const ExceptionRecord = z.object({
 });
 export type Exception = z.infer<typeof ExceptionRecord>;
 const ReviewPlan = z.object({ exceptions: z.array(ExceptionRecord), recommendedCents: z.number().int().nonnegative() });
+// Only business inputs are persisted. Authentication and evidence pointers come
+// from the current runtime and the saved decision when the request is submitted.
+const PostingPlan = z.object({
+  idempotencyKey: z.string(), vendor: z.string(), invoiceNumber: z.string(),
+  invoiceDate: ParsedInvoice.shape.invoiceDate, dueDate: ParsedInvoice.shape.invoiceDate,
+  store: z.string(), deliveryId: z.string().optional(), lines: ParsedInvoice.shape.lines,
+  totalCents: z.number().int(), documentEventId: z.string(),
+  decision: z.enum(["approve", "hold", "reject"]), exceptions: z.array(z.string()),
+  expenseAccount: z.string(), taskId: z.string(),
+});
 
 /** Contract price in effect for a SKU on a date, from vendor memory. */
 function contractPrice(v: Vendor, sku: string, on: string): number | undefined {
@@ -154,6 +164,13 @@ export const processDocument: Handler = async (rt, task) => {
   if (clean && inv.totalCents > (policy?.autoApproveCents ?? 500_000)) ex.push({ code: "needs_controller_approval", detail: "over the auto-approve limit", deltaCents: 0 });
   const decision = isDuplicate ? "reject" : ex.length === 0 ? "approve" : "hold";
   const recommendedCents = Math.max(0, inv.totalCents + ex.reduce((s, e) => s + e.deltaCents, 0));
+  const postingPlan = PostingPlan.parse({
+    idempotencyKey: `bill:${task.payload.externalId}`, vendor: vendor.id, invoiceNumber: inv.invoiceNumber,
+    invoiceDate: inv.invoiceDate, dueDate: inv.dueDate ?? inv.invoiceDate, store: inv.storeId,
+    deliveryId: inv.deliveryId ?? undefined, lines: inv.lines, totalCents: inv.totalCents,
+    documentEventId: String(task.payload.eventId), decision, exceptions: ex.map((e) => `${e.code}: ${e.detail}`),
+    expenseAccount: vendor.expenseAccount, taskId: task._id,
+  });
 
   const facts = [
     { key: "invoice.total", value: inv.totalCents, source: { kind: "event" as const, ref: String(task.payload.externalId) } },
@@ -161,6 +178,7 @@ export const processDocument: Handler = async (rt, task) => {
     ...(received ? [{ key: "receiving", value: (received.payload as { items: unknown }).items, source: { kind: "event" as const, ref: received.externalId } }] : []),
     { key: "vendor.contract", value: vendor.contractPrices.map((p) => `${p.sku}=${p.unitCents}`).join(","), source: { kind: "memory" as const, ref: `vendors/${vendor.id}.yaml` } },
     // Persist the exact downstream work so a retry never rebuilds it from newer memory.
+    { key: "bill.posting_plan", value: postingPlan, source: { kind: "event" as const, ref: String(task.payload.externalId) } },
     ...(decision === "hold" ? [{ key: "bill.review_plan", value: { exceptions: ex, recommendedCents }, source: { kind: "event" as const, ref: String(task.payload.externalId) } }] : []),
   ];
   const d = await rt.decide({
@@ -175,31 +193,29 @@ export const processDocument: Handler = async (rt, task) => {
     task: task._id,
   });
 
+  // decide() may replay a commit made before a transport failure. Use the plan in
+  // that commit, even when no bill exists yet and current memory has since changed.
+  const original = await rt.mem.read<Decision>(d.path, d.sha);
+  const posting = PostingPlan.safeParse(original?.facts.find((f) => f.key === "bill.posting_plan")?.value);
+  if (!posting.success || posting.data.taskId !== task._id || posting.data.documentEventId !== String(task.payload.eventId)) {
+    throw new Error(`cannot recover bill decision ${d.path}: original posting inputs are missing, invalid, or for another task`);
+  }
+  const request = posting.data;
+  const review = request.decision === "hold" ? ReviewPlan.safeParse(original?.facts.find((f) => f.key === "bill.review_plan")?.value) : undefined;
+  if (review && !review.success) throw new Error(`cannot recover held bill decision ${d.path}: original review inputs are missing or invalid`);
   const res = await rt.kernel.client.mutation(api.ap.recordBill, {
+    ...request,
     ...rt.kernel.auth,
-    idempotencyKey: `bill:${task.payload.externalId}`,
-    vendor: vendor.id,
-    invoiceNumber: inv.invoiceNumber,
-    invoiceDate: inv.invoiceDate,
-    dueDate: inv.dueDate ?? inv.invoiceDate,
-    store: inv.storeId,
-    deliveryId: inv.deliveryId ?? undefined,
-    lines: inv.lines,
-    totalCents: inv.totalCents,
-    documentEventId: String(task.payload.eventId),
-    decision,
-    exceptions: ex.map((e) => `${e.code}: ${e.detail}`),
-    expenseAccount: vendor.expenseAccount,
     decisionPath: d.path,
     memorySha: d.memorySha,
-    taskId: task._id,
   });
   if (!res.ok) {
     if (res.code === "duplicate_invoice") return { outcome: "rejected", summary: `kernel blocked duplicate: ${res.error}` };
     throw new Error(`recordBill failed: ${res.code} ${res.error}`);
   }
-  if (decision === "hold") {
-    await rt.handoff("ap.review_held", "controller", { billId: res.billId, exceptions: ex, recommendedCents, decisionPath: d.path }, `review:${res.billId}`, task._id, 2);
+  if (review?.success) {
+    await rt.handoff("ap.review_held", "controller", { billId: res.billId, ...review.data, decisionPath: d.path }, `review:${res.billId}`, task._id, 2);
   }
-  return { outcome: decision === "approve" ? "approved" : decision === "reject" ? "rejected" : "held", summary: `${vendor.id} ${inv.invoiceNumber} ${formatMoney(inv.totalCents)} via ${parsed.via}` };
+  const originalParser = original?.facts.find((f) => f.key === "invoice.parser")?.value;
+  return { outcome: request.decision === "approve" ? "approved" : request.decision === "reject" ? "rejected" : "held", summary: `${request.vendor} ${request.invoiceNumber} ${formatMoney(request.totalCents)} via ${String(originalParser ?? "saved decision")}` };
 };
