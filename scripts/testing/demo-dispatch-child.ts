@@ -6,7 +6,7 @@ import { PaymentDispatcher } from "../../src/payments/dispatcher";
 import type { BankScope } from "../../src/integrations/contracts";
 const config = JSON.parse(fs.readFileSync(process.argv[2]!, "utf8")) as { url: string; scope: BankScope; token: string; bankPath: string; seed: number };
 const bank = openFakeBank({ path: config.bankPath, scope: config.scope, seed: config.seed });
-const submitting = { createTransfer: async (command: Parameters<typeof bank.provider.createTransfer>[0]) => {
+const submitting = { recovery: bank.provider.recovery, lookupTransfer: bank.provider.lookupTransfer.bind(bank.provider), createTransfer: async (command: Parameters<typeof bank.provider.createTransfer>[0]) => {
   try { return await bank.provider.createTransfer(command); }
   finally { if (process.argv.includes("--crash-after-submit")) process.exit(86); }
 } };

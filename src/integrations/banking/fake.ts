@@ -7,8 +7,11 @@ import {
   type BankingProvider, type BankPage, type BankPagination, type BankScope,
   type BankTransaction, type TransferObservation,
 } from "../contracts.js";
+import type { PaymentRail, TransferLookup } from "../../payments/ports/payment-rail";
+import { assertObservationMatchesCommand } from "../../payments/domain/rules";
+import { assertFrozenBankCommand } from "../../payments/domain/validation";
 
-export type FakeOperation = "createTransfer" | "getBalance" | "getTransfer" | "getTransaction" | "listTransactions" | "listEvents" | "deliverNotifications";
+export type FakeOperation = "createTransfer" | "lookupTransfer" | "getBalance" | "getTransfer" | "getTransaction" | "listTransactions" | "listEvents" | "deliverNotifications";
 export type FakeFault = {
   operation: FakeOperation;
   /** One-based persisted invocation number, shared by every process using this bank. */
@@ -45,7 +48,7 @@ const fail = (message: string): never => { throw new BankProviderError("validati
 
 /** Independent SQLite bank. Only provider/events capabilities should enter application workers. */
 export function openFakeBank(options: FakeBankOptions): {
-  provider: BankingProvider;
+  provider: BankingProvider & PaymentRail;
   events: BankingEvents;
   harness: FakeBankHarness;
   close(): void;
@@ -167,7 +170,26 @@ export function openFakeBank(options: FakeBankOptions): {
     const cursor = `${prefix}${selected.at(-1)?.seq ?? checkpoint}`;
     return { items: selected.map((row) => JSON.parse(row.value) as T), cursor, nextCursor: rows.length > limit ? cursor : null };
   }
-  const provider: BankingProvider = Object.freeze({
+  const provider: BankingProvider & PaymentRail = Object.freeze({
+    recovery: { lookup: "operation_key" as const, sameKeyResend: { kind: "durable" as const,
+      documentation: "docs/ap-demo/fake-bank.md: unique transfers.idem and original request persist in this same scoped SQLite store; replacing/deleting the store invalidates recovery." } },
+    async lookupTransfer(command: BankCommand, providerTransferId?: string): Promise<TransferLookup> {
+      assertScope(command.scope);
+      await assertFrozenBankCommand(command);
+      return invoke("lookupTransfer", () => atomic(() => {
+        const identity = { scope, commandId: command.commandId, idempotencyKey: command.idempotencyKey,
+          requestHash: command.requestHash, checkedAt: Date.now() };
+        const row = db.prepare("SELECT request,value FROM transfers WHERE idem = ?").get(command.idempotencyKey) as { request: string; value: string } | undefined;
+        if (!row) return { ...identity, kind: "not_found" as const, searchedBy: "operation_key" as const };
+        const observation = JSON.parse(row.value) as TransferObservation;
+        if (row.request !== canonicalCommand(command) || (providerTransferId && observation.id !== providerTransferId)) {
+          throw new BankProviderError("configuration", "Stored FakeBank transfer conflicts with frozen payment identity");
+        }
+        try { assertObservationMatchesCommand(command, observation); }
+        catch { throw new BankProviderError("configuration", "Stored FakeBank observation conflicts with frozen command"); }
+        return { ...identity, kind: "found" as const, observation };
+      }));
+    },
     async getBalance(candidate: BankScope) { assertScope(candidate); return invoke("getBalance", () => atomic(balance)); },
     async createTransfer(command: BankCommand) {
       command = JSON.parse(canonicalJson(command)) as BankCommand;

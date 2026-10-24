@@ -5,6 +5,7 @@ import {
   type BankCommand, type BankScope, type BankTransaction, type BankingProvider,
   type BankingEvents, type BankPagination, type BankPage, type BankEvent, type TransferObservation,
 } from "../contracts.js";
+import type { PaymentRail, RailRecoveryCapability, TransferLookup } from "../../payments/ports/payment-rail";
 
 export const INCREASE_SANDBOX_ORIGIN = "https://sandbox.increase.com";
 const id = z.string().min(1);
@@ -101,7 +102,10 @@ export type IncreaseOptions = {
 };
 
 /** Trusted server/dispatcher only. No simulator methods or credential-bearing public fields. */
-export class IncreaseSandboxBank implements BankingProvider, BankingEvents {
+export class IncreaseSandboxBank implements BankingProvider, BankingEvents, PaymentRail {
+  readonly recovery: RailRecoveryCapability = Object.freeze({ lookup: "operation_key", sameKeyResend: Object.freeze({
+    kind: "never", reason: "Provider retention not established for this recovery window",
+  }) });
   readonly #scope: BankScope;
   readonly #apiKey: string;
   readonly #signingSecret?: string;
@@ -234,6 +238,50 @@ export class IncreaseSandboxBank implements BankingProvider, BankingEvents {
   async createTransfer(command: BankCommand): Promise<TransferObservation> {
     await this.#assertCommand(command);
     return this.#observation(parse(transferSchema, await this.#request("/ach_transfers", increaseRequestBody(command), command.idempotencyKey)), command);
+  }
+  /** Read-only scoped recovery. No POST, reconstructed request or process-memory registry.
+   * https://www.increase.com/documentation/api/ach-transfers (account_id + idempotency_key).
+   * https://www.increase.com/documentation/idempotency-keys (one matching object per key).
+   * Retention is intentionally not inferred from these endpoint semantics. */
+  async lookupTransfer(command: BankCommand, providerTransferId?: string): Promise<TransferLookup> {
+    await this.#assertCommand(command);
+    const identity = () => ({ scope: { ...this.#scope }, commandId: command.commandId,
+      idempotencyKey: command.idempotencyKey, requestHash: command.requestHash, checkedAt: this.#now() });
+    if (providerTransferId) {
+      try {
+        const observation = await this.#observation(await this.#rawTransfer(providerTransferId), command);
+        return { ...identity(), kind: "found", observation };
+      }
+      catch (error) {
+        if (error instanceof BankProviderError && error.errorClass === "not_found") {
+          return { ...identity(), kind: "unknown", reason: "Previously accepted Increase transfer is missing; preserve its identity for review" };
+        }
+        throw this.#recoveryError(error);
+      }
+    }
+    const query = new URLSearchParams({ account_id: this.#scope.accountId, idempotency_key: command.idempotencyKey, limit: "100" });
+    const raw = await this.#request(`/ach_transfers?${query}`);
+    const parsed = z.object({ data: z.array(transferSchema), next_cursor: id.nullable() }).safeParse(raw);
+    if (!parsed.success) throw new BankProviderError("configuration", "Malformed Increase operation-key lookup response");
+    const response = parsed.data;
+    // The key filter promises zero or one result. Partial/unexpected results cannot prove absence.
+    if (response.next_cursor || response.data.length > 1) return { ...identity(), kind: "unknown", reason: "Incomplete or ambiguous Increase operation-key lookup" };
+    const transfer = response.data[0];
+    if (!transfer) return { ...identity(), kind: "not_found", searchedBy: "operation_key" };
+    if (transfer.account_id !== this.#scope.accountId || transfer.idempotency_key !== command.idempotencyKey) {
+      throw new BankProviderError("configuration", "Increase lookup differs from the scoped operation key");
+    }
+    let observation: TransferObservation;
+    try { observation = await this.#observation(transfer, command); }
+    catch (error) { throw this.#recoveryError(error); }
+    return { ...identity(), kind: "found", observation };
+  }
+  #recoveryError(error: unknown): unknown {
+    if (error instanceof BankProviderError && (["idempotency_conflict", "validation"].includes(error.errorClass) ||
+        error.message === "Increase response failed the pinned AP contract")) {
+      return new BankProviderError("configuration", "Increase recovery evidence conflicts with the frozen payment command");
+    }
+    return error;
   }
   async getTransfer(scope: BankScope, transferId: string): Promise<TransferObservation> {
     this.#assertScope(scope);

@@ -4,6 +4,8 @@ import type { FunctionReturnType } from "convex/server";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import type { BankScope } from "../../src/integrations/contracts";
+import { createConvexPaymentCommands } from "../../src/payments/adapters/convex-payment-commands";
+import { createPaymentCommandService } from "../../src/payments/application/payment-commands";
 import "./APDemo.css";
 
 type Review = FunctionReturnType<typeof api.demoPayments.humanReview>;
@@ -84,11 +86,12 @@ export function APDemo() {
     } catch (e) { if (session.current === active) setError(failure(e)); }
     finally { setBusy(false); }
   }
-  const approve = (version: Snapshot) => action(active => active.client.mutation(api.demoPayments.approveAndQueue, {
-    scope: active.scope, versionId: version._id, snapshotHash: version.snapshotHash,
+  const commands = (active: Session) => createPaymentCommandService(createConvexPaymentCommands(active.client, active.scope, { kind: "human" }));
+  const approve = (version: Snapshot) => action(active => commands(active).approveAndQueue({
+    commandId: crypto.randomUUID(), command: { type: "ApprovePayment", versionId: version._id, snapshotHash: version.snapshotHash },
   }), "Human approval recorded for the reviewed payment version. The dispatcher can now process it.");
-  const resume = (commandId: Id<"demoCommands">, reason: string) => action(active => active.client.mutation(api.demoPayments.resume, {
-    scope: active.scope, commandId, reason,
+  const resume = (commandId: Id<"demoCommands">, reason: string) => action(active => commands(active).resume({
+    commandId: crypto.randomUUID(), command: { type: "ResumePayment", commandId, reason },
   }), "Recovery resumed using the original saved request and idempotency key.");
   const operator = review && "operator" in review && review.operator && typeof review.operator === "object" && "name" in review.operator
     ? String(review.operator.name) : "Human CFO assigned to this account";

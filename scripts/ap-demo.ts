@@ -1,3 +1,5 @@
+import { createConvexPaymentCommands } from "../src/payments/adapters/convex-payment-commands";
+import { createPaymentCommandService } from "../src/payments/application/payment-commands";
 import fs from "node:fs";
 import path from "node:path";
 import { randomBytes, createHash } from "node:crypto";
@@ -94,7 +96,9 @@ fs.writeFileSync(path.join(artifactDir,"invoice.json"), JSON.stringify(source.ev
 const {billId} = await ap.recordInvoice({vendor:source.vendor,invoiceNumber:source.invoice.invoiceNumber,invoiceDate:source.invoice.invoiceDate,originalCents:source.invoice.totalCents,evidence:[source.event.externalId]});
 await client.mutation(api.demoPayments.acceptBill, {scope,seatId:"controller",token:tokens.controller,billId,approvedCents:source.invoice.totalCents});
 const requested = await payments.requestPayment([billId], `invoice:${source.event.externalId}`);
-const approved = await human.mutation(api.demoPayments.approveAndQueue, {scope,...requested});
+const approved = await createPaymentCommandService(createConvexPaymentCommands(human, scope, { kind: "human" })).approveAndQueue({
+  commandId: `approve:${requested.versionId}`, command: { type: "ApprovePayment", ...requested },
+});
 let bankEvidence: unknown;
 if (profile === "local") {
   const bankPath = path.join(artifactDir,"bank.sqlite");

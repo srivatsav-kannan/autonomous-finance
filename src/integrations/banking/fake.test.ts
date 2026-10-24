@@ -33,6 +33,37 @@ function child(path: string, cmd: BankCommand, mode = "submit"): Promise<{ code:
 afterEach(() => { for (const close of closers) close(); closers.clear(); for (const folder of folders.splice(0)) rmSync(folder, { recursive: true, force: true }); });
 
 describe("persistent FakeBank", () => {
+  it("looks up durable original operation identity after reopen without another send", async () => {
+    const config = options({ faults: [{ operation: "createTransfer", call: 1, kind: "accept_then_lost_response" }] });
+    let bank = open(config); const saved = await command();
+    await expect(bank.provider.createTransfer(saved)).rejects.toMatchObject({ errorClass: "transport" });
+    const original = bank.harness.inspect().transfers[0]!;
+    bank.close(); bank = open(config);
+    expect(await bank.provider.lookupTransfer(saved)).toMatchObject({ kind: "found", scope, commandId: saved.commandId,
+      idempotencyKey: saved.idempotencyKey, requestHash: saved.requestHash, observation: original });
+    expect(bank.harness.inspect().calls).toMatchObject({ createTransfer: 1, lookupTransfer: 1 });
+    expect(bank.provider.recovery).toMatchObject({ lookup: "operation_key", sameKeyResend: { kind: "durable" } });
+  });
+
+  it("looks up absence without creating a transfer and fails on conflicting saved identity", async () => {
+    const bank = open(options()); const saved = await command();
+    expect(await bank.provider.lookupTransfer(saved)).toMatchObject({ kind: "not_found", searchedBy: "operation_key" });
+    expect(bank.harness.inspect().calls.createTransfer).toBeUndefined();
+    const original = await bank.provider.createTransfer(saved);
+    await expect(bank.provider.lookupTransfer(saved, `${original.id}-wrong`)).rejects.toMatchObject({ errorClass: "configuration" });
+    await expect(bank.provider.lookupTransfer(await command({ amountCents: 1 }))).rejects.toMatchObject({ errorClass: "configuration" });
+    for (const field of ["organizationId", "runId", "accountId", "provider", "environment"] as const) {
+      await expect(bank.provider.lookupTransfer({ ...saved, scope: { ...scope, [field]: "foreign" } as BankScope })).rejects.toMatchObject({ errorClass: "authentication" });
+    }
+    expect(bank.harness.inspect().calls.createTransfer).toBe(1);
+  });
+
+  it("failed operation lookup remains a read failure, never an authoritative absence", async () => {
+    const bank = open(options({ faults: [{ operation: "lookupTransfer", call: 1, kind: "unavailable" }] }));
+    await expect(bank.provider.lookupTransfer(await command())).rejects.toMatchObject({ errorClass: "unknown" });
+    expect(bank.harness.inspect().calls).toEqual({ lookupTransfer: 1 });
+  });
+
   it("keeps exactly one transfer under concurrent requests from independent processes", async () => {
     const config = options(); const bank = open(config); const cmd = await command();
     const results = await Promise.all(Array.from({ length: 8 }, () => child(config.path, cmd)));
@@ -175,8 +206,8 @@ describe("persistent FakeBank", () => {
 
   it("exposes no harness, database, credentials or truth through provider capabilities", async () => {
     const bank = open(options());
-    expect(Object.keys(bank.provider).sort()).toEqual(["createTransfer", "getBalance", "getTransaction", "getTransfer", "listTransactions"]);
+    expect(Object.keys(bank.provider).sort()).toEqual(["createTransfer", "getBalance", "getTransaction", "getTransfer", "listTransactions", "lookupTransfer", "recovery"].sort());
     expect(Object.keys(bank.events).sort()).toEqual(["listEvents", "verifyWebhook"]);
-    expect(JSON.stringify(bank.provider)).toBe("{}");
+    expect(JSON.parse(JSON.stringify(bank.provider))).toEqual({ recovery: bank.provider.recovery });
   });
 });
