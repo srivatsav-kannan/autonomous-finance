@@ -37,7 +37,7 @@ export interface PlantedError {
     | "unexplained_debit";
   occurredOn: string;
   /** How the scorer finds the company's handling of it. */
-  subject: { kind: "invoice" | "document" | "payout" | "deposit" | "lease" | "payroll" | "bank_txn"; vendor?: string; ref: string };
+  subject: { kind: "invoice" | "document" | "payout" | "deposit" | "lease" | "payroll" | "bank_txn"; vendor?: string; ref: string; documentExternalId?: string };
   amountAtRiskCents: number;
   expected: "reject" | "hold" | "short_pay" | "apply_credit" | "flag" | "block_change";
   detail: string;
@@ -319,17 +319,17 @@ export function generateWorld(opts: WorldOptions) {
         }
         // Planted: exact duplicate resent through the portal two days later with a reformatted number.
         if (plant && v.id === "norcal-dairy" && s.id === errStore.id && addDays(date, 2) <= end && !errors.some((e) => e.type === "duplicate_exact")) {
-          const dupNum = num.replace("NCD", "NCD-0");
+          const dupNum = num.replace("NCD", "NCD-");
           events.push({ type: "document.received", externalId: `doc-${v.id}-${dupNum}-portal`, occurredOn: addDays(date, 2),
             payload: { kind: "invoice", channel: "portal", from: v.contact.email, subject: `Invoice ${dupNum} (portal resend)`, text: renderInvoice({ ...doc, invoiceNumber: dupNum }, layout) } });
-          errors.push({ id: `e-dup-${num}`, type: "duplicate_exact", occurredOn: addDays(date, 2), subject: { kind: "invoice", vendor: v.id, ref: dupNum }, amountAtRiskCents: total, expected: "reject", detail: `${dupNum} is ${num} resent` });
+          errors.push({ id: `e-dup-${num}`, type: "duplicate_exact", occurredOn: addDays(date, 2), subject: { kind: "invoice", vendor: v.id, ref: dupNum, documentExternalId: `doc-${v.id}-${dupNum}-portal` }, amountAtRiskCents: total, expected: "reject", detail: `${dupNum} is ${num} resent` });
         }
         // Planted: look-alike re-bill of the same delivery under a new number.
         if (plant && v.id === "hydra-beverages" && s.id === errStore2.id && di >= 7 && addDays(date, 3) <= end && !errors.some((e) => e.type === "duplicate_lookalike")) {
           const reNum = `${num}-R`;
           events.push({ type: "document.received", externalId: `doc-${v.id}-${reNum}`, occurredOn: addDays(date, 3),
             payload: { kind: "invoice", channel: "email", from: v.contact.email, subject: `Invoice ${reNum}`, text: renderInvoice({ ...doc, invoiceNumber: reNum, invoiceDate: addDays(date, 3), dueDate: addDays(date, 3 + v.termsNetDays) }, layout) } });
-          errors.push({ id: `e-lookalike-${num}`, type: "duplicate_lookalike", occurredOn: addDays(date, 3), subject: { kind: "invoice", vendor: v.id, ref: reNum }, amountAtRiskCents: total, expected: "reject", detail: `${reNum} re-bills delivery ${deliveryId}` });
+          errors.push({ id: `e-lookalike-${num}`, type: "duplicate_lookalike", occurredOn: addDays(date, 3), subject: { kind: "invoice", vendor: v.id, ref: reNum, documentExternalId: `doc-${v.id}-${reNum}` }, amountAtRiskCents: total, expected: "reject", detail: `${reNum} re-bills delivery ${deliveryId}` });
         }
         // Decoy: same vendor, same amount, different delivery: both are legitimate.
         if (plant && v.id === "spotless-supply" && s.id === errStore.id && di >= 6 && !decoys.some((d) => d.type === "same_amount_different_delivery")) {

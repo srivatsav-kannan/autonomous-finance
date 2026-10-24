@@ -34,6 +34,14 @@ export async function scoreRun(runId: string): Promise<ScoreReport> {
   const runs = await c.query(api.observe.agentRuns, { runId });
   const tb = await c.query(api.ledger.trialBalance, { runId });
   const chain = await c.query(api.ledger.verifyChain, { runId });
+  const documents = await c.query(api.admin.eventsOfType, { runId, type: "document.received" });
+  // A rejection at the kernel may leave no bill row. Resolve its logged task back
+  // to the exact source event rather than crediting a similarly named invoice.
+  const blockedDocuments = new Set<string>();
+  for (const run of runs.filter((r) => r.outcome === "rejected" && r.summary?.startsWith("kernel blocked duplicate:") && r.taskId)) {
+    const task = await c.query(api.tasks.get, { runId, taskId: run.taskId! });
+    if (task?.payload?.eventId) blockedDocuments.add(String(task.payload.eventId));
+  }
   const mem = new MemoryStore(memoryDir(runId));
   const log = await mem.log({ limit: 5000 });
   const subjects = log.map((l) => l.subject);
@@ -50,9 +58,24 @@ export async function scoreRun(runId: string): Promise<ScoreReport> {
     switch (e.type) {
       case "duplicate_exact":
       case "duplicate_lookalike": {
-        const paidOrApproved = bs.some((b) => b.status === "approved" || b.status === "paid");
-        const blocked = violations.some((v) => v.reason.includes("duplicate") && v.reason.includes(e.subject.ref));
-        caught = !paidOrApproved && (bs.some((b) => b.status === "rejected") || blocked || decided("REJECT bill", e.subject.ref));
+        const isApproved = (b: (typeof bills)[number]) => b.status === "approved" || b.status === "paid";
+        const isRejectedDuplicate = (b: (typeof bills)[number]) => b.status === "rejected" &&
+          b.exceptions.some((x) => x.startsWith("duplicate_invoice:") || x.startsWith("duplicate_delivery:"));
+        let paidOrApproved: boolean;
+        if (e.subject.documentExternalId) {
+          const document = documents.find((d) => d.externalId === e.subject.documentExternalId);
+          const duplicates = document ? bs.filter((b) => b.documentEventId === document._id) : [];
+          paidOrApproved = duplicates.some(isApproved);
+          caught = !paidOrApproved && (duplicates.some(isRejectedDuplicate) || Boolean(document && blockedDocuments.has(document._id)));
+        } else {
+          // Old answer keys lack delivery identity. A separately recorded rejection
+          // can coexist with one legitimate original, but never two approved bills.
+          const approved = bs.filter(isApproved);
+          const rejected = bs.some(isRejectedDuplicate);
+          paidOrApproved = approved.length > (rejected ? 1 : 0);
+          const blocked = violations.some((v) => v.reason.includes("duplicate") && v.reason.includes(e.subject.ref));
+          caught = !paidOrApproved && (rejected || (approved.length === 0 && (blocked || decided("REJECT bill", e.subject.ref))));
+        }
         how = paidOrApproved ? "duplicate was approved" : caught ? "rejected as duplicate" : "never processed";
         break;
       }
