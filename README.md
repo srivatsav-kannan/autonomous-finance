@@ -89,3 +89,7 @@ npm run agents -- --run demo
 | `docs/` | Architecture, team plan |
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/TEAM.md](docs/TEAM.md).
+
+The proposed [simulator and payment recovery handoff](docs/simulation-recovery/README.md)
+contains the implementation TODO and editable diagrams for issue #39. It describes
+planned work, not capabilities already implemented by the current simulator.
