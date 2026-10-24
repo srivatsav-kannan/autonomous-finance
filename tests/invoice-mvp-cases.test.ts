@@ -279,6 +279,22 @@ describe("invoice invariants and persistent budgets", () => {
 });
 
 describe("invoice replacement and currency validation", () => {
+  it("records routine USD invoices with explicit currency and ordinary issued status", async () => {
+    const f = await setup();
+    const { caseId } = await f.start(document("INV-1", "100.00", "\nCurrency: USD\nStatus: issued"));
+    expect(unwrap(await f.propose(caseId)).case.status).toBe("recorded");
+    expect((await f.workspace()).customerTotals[0]!.netCents).toBe(10_000);
+    const next = (await f.ingest([document("INV-2", "100.00", "\nCurrency: USD\nCurrency: USD")])).caseIds[0]!;
+    await f.begin(next);
+    expect(unwrap(await f.propose(next)).case.status).toBe("needs_review");
+  });
+  it("auto-excludes a two-column CRM header followed by source rows", async () => {
+    const f = await setup();
+    const caseId = (await f.ingest([{ externalId: "crm", name: "customers.csv", mimeType: "text/csv", text: "customer_id,legal_name\r\nC001,Acme\r\n" }])).caseIds[0]!;
+    await f.begin(caseId);
+    expect(unwrap(await f.propose(caseId, { treatment: "exclude", reason: "Customer master supports identity, not an invoice" })).case.status).toBe("excluded");
+    expect((await f.workspace()).progress.recorded).toBe(0);
+  });
   it("an exclusion cannot smuggle a replacement of another accepted source", async () => {
     const f = await setup(); const { caseId, batch } = await f.start(); unwrap(await f.propose(caseId));
     const other = (await f.ingest([document("INV-2")])).caseIds[0]!; await f.begin(other);
