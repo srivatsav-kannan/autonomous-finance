@@ -26,7 +26,6 @@
     "worker:evidence": "tsx scripts/ap-worker.ts evidence",
     "typecheck:backend": "tsc --noEmit -p convex/tsconfig.json",
     "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json",
-    "build:console": "vite build --config console/vite.config.ts",
     "ci:recovery": "node scripts/testing/ci-local-recovery.mjs"
   },
   "dependencies": {
