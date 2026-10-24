@@ -4,6 +4,8 @@ Implementation of [issue #39](https://github.com/srivatsav-kannan/autonomous-fin
 
 See the [review-fix validation record](ap-demo/review-fixes-validation.md) for the latest regression, browser and recovery checks, and the [original validation record](ap-demo/validation.md) for earlier evidence. External sandbox checks still require credentials.
 
+The [CI guide](ci.md) describes automated PR gates, isolated local recovery, retained evidence and separate optional live validation.
+
 The selected demo uses `src/payments/agents.ts`, `dispatcher.ts` and `evidence.ts`. The legacy agent team and seat runtime no longer receive a bank handle, and the old payment handler no longer submits or unconditionally settles transfers. The old evaluator can still request payments but cannot execute them; money movement uses the dedicated scoped demo path. Demo runs reject the legacy financial mutation/read paths so agents cannot bypass the new permissions through older APIs.
 
 ## Reproducible checks
@@ -17,10 +19,7 @@ npm run typecheck
 npm run typecheck:backend
 npm run typecheck:tests
 npm test
-npm run test:bank
-npm run test:payments
-npm run test:contracts
-npx vite build --config console/vite.config.ts
+npm run build:console
 ```
 
 The focused commands cover the following suites. Running the whole `npm test` suite already includes them; repeat an individual suite when investigating a failure.
