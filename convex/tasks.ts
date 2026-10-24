@@ -238,3 +238,15 @@ export const get = query({
     return t && t.runId === args.runId ? t : null;
   },
 });
+
+/** Drain mode must wait for payment retries, but not human waits or failed tasks. */
+export const nextPaymentRetry = query({
+  args: { runId: v.string() },
+  handler: async (ctx, args) => {
+    const queued = await ctx.db.query("tasks")
+      .withIndex("by_run_role_status", (q) => q.eq("runId", args.runId).eq("role", "payments").eq("status", "queued"))
+      .collect();
+    const retries = queued.filter((t) => t.type === "payments.run" || t.type === "payments.recover");
+    return retries.length ? Math.min(...retries.map((t) => t.notBefore ?? 0)) : null;
+  },
+});

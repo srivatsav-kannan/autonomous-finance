@@ -1,9 +1,70 @@
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { api } from "../../core/kernel-client";
 import { formatMoney } from "../../core/money";
 import type { Vendor } from "../../memory/schemas";
 import { callbackVerify } from "../../world/oracle";
-import type { Handler } from "../runtime";
+import type { Handler, SeatRuntime } from "../runtime";
+
+/** Resume the saved command. A receipt means only local posting remains, never another send. */
+async function dispatchAndSettle(rt: SeatRuntime, intent: Doc<"paymentIntents">): Promise<boolean> {
+  let current = intent.remitTo;
+  if (intent.status === "approved") {
+    const rec = await rt.vendor(intent.payee);
+    if (!rec) return false;
+    const blob = (await rt.mem.blobSha(`vendors/${intent.payee}.yaml`)) ?? rec.sha;
+    current = { bank: rec.vendor.remitTo.bank, accountLast4: rec.vendor.remitTo.accountLast4, memorySha: blob };
+  }
+  const ex = await rt.kernel.client.mutation(api.payments.executePayment, {
+    ...rt.kernel.auth, intentId: intent._id, currentRemitTo: current,
+  });
+  if (!ex.ok) {
+    await rt.note("blocked", `Execution of payment to ${intent.payee} refused: ${ex.error}`);
+    if (intent.status === "submitted") throw new Error(`recover: ${ex.code} ${ex.error}`);
+    return false;
+  }
+  // Another worker may have completed this intent since it was queried.
+  if (ex.status === "settled") return false;
+  const command = ex.command;
+  let sent = rt.bank.get(command.intentId);
+  if (!sent) {
+    if (!command.sentOn) {
+      throw new Error(`payment ${command.intentId} predates frozen dispatch dates and has no bank receipt; manual review required`);
+    }
+    sent = rt.bank.send({ ...command, sentOn: command.sentOn });
+  }
+  if (sent.intentId !== command.intentId || sent.payee !== command.payee || sent.amountCents !== command.amountCents ||
+      sent.bank !== command.bank || sent.accountLast4 !== command.accountLast4 ||
+      (command.sentOn !== undefined && sent.sentOn !== command.sentOn)) {
+    throw new Error(`bank receipt conflicts with payment ${command.intentId}; manual review required`);
+  }
+  const st = await rt.kernel.client.mutation(api.payments.settlePayment, {
+    ...rt.kernel.auth, intentId: intent._id, bankRef: sent.bankRef, settledOn: sent.sentOn,
+  });
+  if (!st.ok) throw new Error(`settle: ${st.code} ${st.error}`);
+  return true;
+}
+
+async function processPayments(rt: SeatRuntime, statuses: ("approved" | "submitted")[]) {
+  let executed = 0;
+  const errors: string[] = [];
+  for (const status of statuses) {
+    const intents = await rt.kernel.client.query(api.payments.intents, { runId: rt.runId, status });
+    for (const intent of intents) {
+      try {
+        if (await dispatchAndSettle(rt, intent)) executed++;
+      } catch (error) {
+        // One unavailable payment must not prevent recovery of unrelated payments.
+        errors.push(`${intent._id}: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
+  }
+  if (errors.length) throw new Error(errors.join("; "));
+  return executed;
+}
+
+export const recoverPayments: Handler = async (rt) => ({
+  outcome: "recovered", summary: `settled ${await processPayments(rt, ["submitted"])} submitted payment(s)`,
+});
 
 /**
  * End-of-day payment run: batch approved bills per vendor into payment requests (controller
@@ -11,7 +72,6 @@ import type { Handler } from "../runtime";
  * verified memory, never from a document.
  */
 export const paymentRun: Handler = async (rt, task) => {
-  const today = String(task.payload.occurredOn ?? (await rt.simDate()));
   const bills = await rt.kernel.client.query(api.ap.bills, { runId: rt.runId, status: "approved" });
   const unpaid = bills.filter((b) => !b.paymentIntentId);
   const byVendor = new Map<string, typeof unpaid>();
@@ -42,22 +102,7 @@ export const paymentRun: Handler = async (rt, task) => {
     await rt.handoff("payments.approve", "controller", { intentId: r.intentId }, `approve:${r.intentId}`, task._id, 2);
   }
 
-  let executed = 0;
-  for (const intent of await rt.kernel.client.query(api.payments.intents, { runId: rt.runId, status: "approved" })) {
-    const rec = await rt.vendor(intent.payee);
-    if (!rec) continue;
-    const blob = (await rt.mem.blobSha(`vendors/${intent.payee}.yaml`)) ?? rec.sha;
-    const current = { bank: rec.vendor.remitTo.bank, accountLast4: rec.vendor.remitTo.accountLast4, memorySha: blob };
-    const ex = await rt.kernel.client.mutation(api.payments.executePayment, { ...rt.kernel.auth, intentId: intent._id, currentRemitTo: current });
-    if (!ex.ok) {
-      await rt.note("blocked", `Execution of payment to ${intent.payee} refused: ${ex.error}`);
-      continue;
-    }
-    const sent = rt.bank.send({ intentId: intent._id, payee: intent.payee, amountCents: intent.amountCents, bank: current.bank, accountLast4: current.accountLast4, sentOn: today });
-    const st = await rt.kernel.client.mutation(api.payments.settlePayment, { ...rt.kernel.auth, intentId: intent._id, bankRef: sent.bankRef, settledOn: today });
-    if (!st.ok) throw new Error(`settle: ${st.code} ${st.error}`);
-    executed++;
-  }
+  const executed = await processPayments(rt, ["submitted", "approved"]);
   return { outcome: "ran", summary: `requested ${requested}, executed ${executed}` };
 };
 

@@ -1,6 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import {
   authSeat,
   checkIdempotency,
@@ -15,6 +15,17 @@ import { appendEntry } from "./lib/post";
 
 const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 const remitTo = v.object({ bank: v.string(), accountLast4: v.string(), memorySha: v.string() });
+
+function dispatchCommand(intent: Doc<"paymentIntents">) {
+  return {
+    intentId: intent._id,
+    payee: intent.payee,
+    amountCents: intent.amountCents,
+    bank: intent.remitTo.bank,
+    accountLast4: intent.remitTo.accountLast4,
+    sentOn: intent.submittedOn,
+  };
+}
 
 /**
  * Payment lifecycle: pending_approval -> approved -> submitted -> settled (or voided).
@@ -139,7 +150,10 @@ export const executePayment = mutation({
     }
     const intent = await ctx.db.get(args.intentId);
     if (!intent || intent.runId !== args.runId) return fail("not_found", "payment not found");
-    if (intent.status === "submitted" || intent.status === "settled") return { ok: true as const, status: intent.status, replayed: true };
+    if (intent.status === "settled") return { ok: true as const, status: "settled" as const, replayed: true };
+    if (intent.status === "submitted") {
+      return { ok: true as const, status: "submitted" as const, command: dispatchCommand(intent), replayed: true };
+    }
     if (intent.status !== "approved") {
       return await recordViolation(ctx, args.runId, args.seatId, op, fail("not_approved", `payment is ${intent.status}`));
     }
@@ -149,9 +163,12 @@ export const executePayment = mutation({
       return await recordViolation(ctx, args.runId, args.seatId, op,
         fail("remit_changed", `remit-to changed since approval (memory ${intent.remitTo.memorySha} -> ${args.currentRemitTo.memorySha}); payment voided, re-approval required`));
     }
-    await ctx.db.patch(intent._id, { status: "submitted" });
+    const run = await getRun(ctx, args.runId);
+    if (!run) return fail("not_found", "run not found");
+    const submittedOn = run.simDate;
+    await ctx.db.patch(intent._id, { status: "submitted", submittedOn });
     await logActivity(ctx, args.runId, args.seatId, "submitted", `Submitted ${(intent.amountCents / 100).toFixed(2)} to ${intent.payee} via ${intent.method}`, { intentId: intent._id });
-    return { ok: true as const, status: "submitted" };
+    return { ok: true as const, status: "submitted" as const, command: dispatchCommand({ ...intent, submittedOn }) };
   },
 });
 
@@ -162,9 +179,17 @@ export const settlePayment = mutation({
     const op = "payments.settlePayment";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
+    if (!auth.seat.caps.paymentsExecute) {
+      return await recordViolation(ctx, args.runId, args.seatId, op, fail("forbidden", `${auth.seat.role} may not settle payments`));
+    }
     const intent = await ctx.db.get(args.intentId);
     if (!intent || intent.runId !== args.runId) return fail("not_found", "payment not found");
-    if (intent.status === "settled") return { ok: true as const, replayed: true };
+    if (intent.status === "settled") {
+      if (intent.bankRef !== args.bankRef || (intent.settledOn !== undefined && intent.settledOn !== args.settledOn)) {
+        return fail("settlement_conflict", "payment already settled with different bank evidence");
+      }
+      return { ok: true as const, replayed: true };
+    }
     if (intent.status !== "submitted") return fail("bad_state", `payment is ${intent.status}`);
     const posted = await appendEntry(ctx, {
       runId: args.runId,
@@ -179,7 +204,7 @@ export const settlePayment = mutation({
       idempotencyKey: `settle:${intent._id}`,
     });
     if (!posted.ok) return await recordViolation(ctx, args.runId, args.seatId, op, posted);
-    await ctx.db.patch(intent._id, { status: "settled", bankRef: args.bankRef });
+    await ctx.db.patch(intent._id, { status: "settled", bankRef: args.bankRef, settledOn: args.settledOn });
     for (const id of intent.billIds) await ctx.db.patch(id, { status: "paid" });
     return { ok: true as const, entryId: posted.entryId };
   },
@@ -213,9 +238,38 @@ export const intents = query({
   handler: async (ctx, args) => {
     const rows = await ctx.db
       .query("paymentIntents")
-      .withIndex("by_run_status", (q) => q.eq("runId", args.runId))
+      .withIndex("by_run_status", (q) => args.status === undefined
+        ? q.eq("runId", args.runId)
+        : q.eq("runId", args.runId).eq("status", args.status as Doc<"paymentIntents">["status"]))
       .collect();
-    return args.status ? rows.filter((r) => r.status === args.status) : rows;
+    return rows;
+  },
+});
+
+/** A new worker can resume submitted payments without waiting for an old task's lease. */
+export const enqueueRecovery = mutation({
+  args: { ...seatArgs, workerId: v.string() },
+  handler: async (ctx, args) => {
+    const op = "payments.enqueueRecovery";
+    const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
+    if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
+    if (!auth.seat.caps.paymentsExecute) {
+      return await recordViolation(ctx, args.runId, args.seatId, op, fail("forbidden", "payment execution permission required"));
+    }
+    const submitted = await ctx.db.query("paymentIntents")
+      .withIndex("by_run_status", (q) => q.eq("runId", args.runId).eq("status", "submitted")).first();
+    if (!submitted) return { ok: true as const, taskId: null };
+    const idempotencyKey = `payment-recovery:${args.seatId}:${args.workerId}`;
+    const existing = await ctx.db.query("tasks")
+      .withIndex("by_run_key", (q) => q.eq("runId", args.runId).eq("idempotencyKey", idempotencyKey)).unique();
+    if (existing) return { ok: true as const, taskId: existing._id };
+    const taskId = await ctx.db.insert("tasks", {
+      runId: args.runId, type: "payments.recover", role: auth.seat.role, status: "queued",
+      priority: 1, payload: {}, idempotencyKey, createdBy: args.seatId,
+      attempts: 0, createdAt: Date.now(), updatedAt: Date.now(),
+    });
+    await logActivity(ctx, args.runId, args.seatId, "handoff", "Queued submitted-payment recovery", { taskId });
+    return { ok: true as const, taskId };
   },
 });
 

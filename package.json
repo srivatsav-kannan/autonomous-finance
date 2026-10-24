@@ -12,6 +12,7 @@
     "eval": "tsx src/evals/main.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:payment-recovery": "tsx scripts/payment-recovery-live.ts",
     "gateway": "tsx src/human/gateway.ts",
     "smoke": "tsx scripts/smoke-kernel.ts && tsx scripts/smoke-memory.ts"
   },

@@ -205,6 +205,9 @@ export default defineSchema({
       v.literal("voided"),
     ),
     bankRef: v.optional(v.string()),
+    // Frozen when dispatch is authorized; never recomputed by a restarted worker.
+    submittedOn: v.optional(v.string()),
+    settledOn: v.optional(v.string()),
     idempotencyKey: v.string(),
     createdAt: v.number(),
     voidReason: v.optional(v.string()),

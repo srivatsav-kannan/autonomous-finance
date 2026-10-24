@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 import { api, convex, hashToken, newToken } from "../core/kernel-client";
 import type { Role } from "../core/roles";
 import { MemoryStore } from "../memory/store";
@@ -10,7 +11,7 @@ import { SeatRuntime, type Handler, type Task } from "./runtime";
 import { TaskLeaseLost, withTaskLease } from "./task-lease";
 import { processDocument } from "./handlers/ap";
 import { approvePayment, reviewHeld, reviewProposal } from "./handlers/controller";
-import { paymentRun, remitChange, secondApproval } from "./handlers/payments";
+import { paymentRun, recoverPayments, remitChange, secondApproval } from "./handlers/payments";
 import { matchBankTxn, reconcilePayout } from "./handlers/cash";
 import { postDailyRevenue, processLeaseInvoice, processPayroll } from "./handlers/books";
 import { buildParser } from "./handlers/integrations";
@@ -22,6 +23,7 @@ export const HANDLERS: Record<string, Handler> = {
   "payments.approve": approvePayment,
   "payments.second_approval": secondApproval,
   "payments.run": paymentRun,
+  "payments.recover": recoverPayments,
   "vendor.remit_change": remitChange,
   "memory.review_proposal": reviewProposal,
   "cash.match_bank_txn": matchBankTxn,
@@ -51,6 +53,8 @@ export class Team {
   private tokensFile: string;
   private tokens: Record<string, string>;
   private stopped = false;
+  private recoveryEnqueued = false;
+  private readonly workerId = randomUUID();
   processed = 0;
 
   constructor(readonly runId: string, private readonly opts: { log?: (s: string) => void } = {}) {
@@ -167,6 +171,16 @@ export class Team {
   /** Run every seat until all queues are empty (eval/drain mode) or `stop()` is called. */
   async runUntilIdle(opts: { idleRounds?: number } = {}): Promise<void> {
     await this.refreshSeats();
+    if (!this.recoveryEnqueued) {
+      const payments = [...this.runtimes.values()].find((rt) => rt.seat.role === "payments");
+      if (payments) {
+        const recovery = await payments.kernel.client.mutation(api.payments.enqueueRecovery, {
+          ...payments.kernel.auth, workerId: this.workerId,
+        });
+        if (!recovery.ok) throw new Error(`queue payment recovery: ${recovery.error}`);
+        this.recoveryEnqueued = true;
+      }
+    }
     let idle = 0;
     while (!this.stopped && idle < (opts.idleRounds ?? 2)) {
       await this.staff();
@@ -180,6 +194,14 @@ export class Team {
         return did;
       }));
       idle = results.some(Boolean) ? 0 : idle + 1;
+      if (idle > 0 && this.runtimes.size) {
+        const next = await convex().query(api.tasks.nextPaymentRetry, { runId: this.runId });
+        if (next !== null && [...this.runtimes.values()].some((rt) => rt.seat.role === "payments")) {
+          // A delayed payment retry is still work. Do not advance the simulation day or exit early.
+          await new Promise((resolve) => setTimeout(resolve, Math.max(10, Math.min(1000, next - Date.now()))));
+          idle = 0;
+        }
+      }
     }
   }
 
