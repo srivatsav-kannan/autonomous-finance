@@ -45,7 +45,7 @@ function start(args) {
 }
 async function until(predicate, state, milliseconds) {
   const deadline = Date.now() + milliseconds;
-  while (!predicate()) {
+  while (!await predicate()) {
     if (abort.signal.aborted || Date.now() > deadline || state.failed || state.child.exitCode !== null || state.child.signalCode !== null) {
       throw new Error('Step did not complete');
     }
@@ -88,6 +88,17 @@ try {
   await until(() => fs.existsSync(configPath), backend, 180_000);
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   if (!Number.isInteger(config.ports.cloud) || config.ports.cloud < 1 || config.ports.cloud > 65535 || !config.adminKey || config.backendVersion !== backendVersion) throw new Error('Unexpected local backend configuration');
+  // The CLI writes config before the downloaded backend finishes starting.
+  // Wait for this instance, not merely for its config file, before sending auth.
+  result.stage = 'backend-ready'; save();
+  await until(async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:${config.ports.cloud}/instance_name`, {
+        redirect: 'error', signal: AbortSignal.timeout(1000),
+      });
+      return response.ok && await response.text() === config.deploymentName;
+    } catch { return false; }
+  }, backend, 60_000);
   result.stage = 'backend-deploy'; save();
   const response = await fetch(`http://127.0.0.1:${config.ports.cloud}/api/update_environment_variables`, {
     method: 'POST', redirect: 'error', signal: AbortSignal.timeout(10_000),
