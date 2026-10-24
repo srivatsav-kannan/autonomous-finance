@@ -8,7 +8,7 @@ D's evaluation objective is fulfilled by an honest completed batch, including it
 - Independent scoring/restart evaluator source `53af871`, clean. Both actual restart state comparisons pass; entire audits, usage and original bytes remain unchanged. Corrected restart output preserves the original run's live-model label.
 - All original/held-out scores and diagnostics are sealed separately from run artifacts. Companion JSON contains full source identities and hashes. Root's deterministic browser/decision/replay/stale-approval evidence remains distinct from primary model evaluation.
 - Verification: D 30 Python + 14 no-network Node tests and evaluation TypeScript pass. Root reports 331 tests in 26 files, all app/Convex/eval typechecks and Vite build pass on measured app code.
-- Limits: no controlled baseline comparison, reviewer or demonstrated multi-agent benefit; unfamiliar-format coverage remains weak; worst-case reservations exhaust below actual cost; same-host local gateways overwrite the session cookie. No product tuning followed the runs.
+- Limits: no controlled baseline comparison, reviewer or demonstrated multi-agent benefit; unfamiliar-format coverage remains weak; worst-case reservations exhaust the allowance while actual costs remain below it; same-host local gateways overwrite the session cookie. No product tuning followed the runs.
 
 This final handoff commit is documentation only. The native goal completion transition is recorded separately after committing the handoff. The previous blocked-goal history and earlier free/Claude checkpoint below are retained as historical context, not current status.
 

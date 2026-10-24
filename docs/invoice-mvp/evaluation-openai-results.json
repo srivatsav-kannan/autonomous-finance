@@ -367,7 +367,7 @@
     },
     "sharedLedgerHalted": false,
     "envelopesResetOrReallocated": false,
-    "explanation": "App worst-case request reservations are not reconciled down after success. They reached the persistent limit well below actual token cost. Baseline settles actual usage but stopped on input estimate."
+    "explanation": "App worst-case request reservations are not reconciled down after success. They reached the persistent limit while actual token cost remained well below the approved envelope. Baseline settles actual usage but stopped on input estimate."
   },
   "restartAttestationSha256": "cddcbf76839ec12de8662671f2a0cd6918a370b50bd99c08e10455461723883d",
   "restartRetentionUsageSealSha256": "963894dc75f27a259134a2d246ac14a28abc619f8d29c2bffcdcd7bdb8fdafdf",
