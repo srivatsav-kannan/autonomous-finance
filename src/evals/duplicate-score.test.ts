@@ -63,6 +63,15 @@ describe("duplicate document scoring", () => {
     state.bills.push(bill("event-third", "approved"));
     expect((await scoreRun("test")).errors[0]?.caught).toBe(false);
   });
+  it("never exempts an approved lookalike rebill in a legacy answer key", async () => {
+    const file = path.join(state.dir, "answer-key.json");
+    const key = JSON.parse(fs.readFileSync(file, "utf8"));
+    key.errors[0].type = "duplicate_lookalike";
+    delete key.errors[0].subject.documentExternalId;
+    fs.writeFileSync(file, JSON.stringify(key));
+    state.bills = [bill("event-rejected", "rejected", ["duplicate_delivery: same delivery"]), bill("event-duplicate", "approved")];
+    expect((await scoreRun("test")).errors[0]).toMatchObject({ caught: false, how: "duplicate was approved" });
+  });
   it("plants an exact duplicate with the same normalized number and explicit document identity", () => {
     const w = generateWorld({ seed: 7, storeCount: 3, start: "2026-01-01", days: 14, plantErrors: true });
     const error = w.answerKey.errors.find((e) => e.type === "duplicate_exact")!;

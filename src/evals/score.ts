@@ -72,7 +72,7 @@ export async function scoreRun(runId: string): Promise<ScoreReport> {
           // can coexist with one legitimate original, but never two approved bills.
           const approved = bs.filter(isApproved);
           const rejected = bs.some(isRejectedDuplicate);
-          paidOrApproved = approved.length > (rejected ? 1 : 0);
+          paidOrApproved = approved.length > (e.type === "duplicate_exact" && rejected ? 1 : 0);
           const blocked = violations.some((v) => v.reason.includes("duplicate") && v.reason.includes(e.subject.ref));
           caught = !paidOrApproved && (rejected || (approved.length === 0 && (blocked || decided("REJECT bill", e.subject.ref))));
         }
