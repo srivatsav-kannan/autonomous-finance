@@ -238,6 +238,8 @@ export class MemoryStore {
     message: string;
     trailers?: Record<string, string>;
     idempotencyKey?: string;
+    /** Reject a stale replacement instead of rebuilding it over newer contents. */
+    expectedHead?: string;
   }): Promise<{ sha: string; replayed: boolean }> {
     for (const c of opts.changes) if (c.data !== null) this.validate(c.path, c.data);
     const trailers = { ...(opts.trailers ?? {}), ...(opts.idempotencyKey ? { "Idempotency-Key": opts.idempotencyKey } : {}) };
@@ -251,6 +253,9 @@ export class MemoryStore {
           return existing;
         }
       }
+      if (opts.expectedHead && parent !== opts.expectedHead) {
+        throw new MemoryError("stale", "memory changed while preparing the write; read and update again");
+      }
       for (const c of opts.changes) {
         const before = await this.read(c.path, parent);
         if (c.path.startsWith("decisions/") && before !== undefined) {
@@ -261,6 +266,36 @@ export class MemoryStore {
       }
     });
     return { sha, replayed };
+  }
+
+  /**
+   * Read/modify/write one existing record. The updater must be pure: a concurrent
+   * commit reruns it against the latest record instead of publishing a stale copy.
+   * Schema validation, controlled-change rules and idempotency still apply.
+   */
+  async update<T>(opts: {
+    path: string;
+    update: (current: T) => T;
+    author: Author;
+    message: string;
+    trailers?: Record<string, string>;
+    idempotencyKey?: string;
+  }): Promise<{ sha: string; replayed: boolean }> {
+    for (let attempt = 0; attempt < 40; attempt++) {
+      const head = await this.head();
+      const current = await this.read<T>(opts.path, head);
+      if (current === undefined) throw new MemoryError("missing_record", `${opts.path} does not exist`);
+      const data = opts.update(current);
+      try {
+        return await this.write({
+          changes: [{ path: opts.path, data }], expectedHead: head,
+          author: opts.author, message: opts.message, trailers: opts.trailers, idempotencyKey: opts.idempotencyKey,
+        });
+      } catch (error) {
+        if (!(error instanceof MemoryError) || error.code !== "stale") throw error;
+      }
+    }
+    throw new MemoryError("contention", `could not update ${opts.path} after retries`);
   }
 
   /** Recover persisted metadata for a write, including an idempotent replay. */

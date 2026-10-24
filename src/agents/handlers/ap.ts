@@ -52,8 +52,11 @@ async function handleCreditMemo(rt: SeatRuntime, task: Task, payload: Record<str
   const v = sender.vendor;
   if (v.credits.some((c) => c.id === memo)) return { outcome: "duplicate", summary: `credit ${memo} already recorded` };
   const on = await rt.simDate();
-  const updated: Vendor = { ...v, credits: [...v.credits, { id: memo, amountCents: parseMoney(amount), reason: /Reason: (.+)/.exec(text)?.[1] ?? "credit memo", issuedOn: on }] };
-  await rt.commit([{ path: `vendors/${v.id}.yaml`, data: updated }], `Record credit ${memo} from ${v.legalName} (${amount}, ref ${ref})`, { "Task-Id": task._id }, `credit:${v.id}:${memo}`);
+  const entry = { id: memo, amountCents: parseMoney(amount), reason: /Reason: (.+)/.exec(text)?.[1] ?? "credit memo", issuedOn: on };
+  await rt.updateVendor(v.id, (current) => current.credits.some((c) => c.id === memo)
+    ? current
+    : { ...current, credits: [...current.credits, entry] },
+  `Record credit ${memo} from ${v.legalName} (${amount}, ref ${ref})`, { "Task-Id": task._id }, `credit:${v.id}:${memo}`);
   await rt.decide({ kind: "credit_memo", subject: { type: "credit", id: memo }, outcome: "act", confidence: 0.99, task: task._id,
     summary: `Recorded ${amount} credit from ${v.legalName}; it must be deducted from the next payment`,
     facts: [{ key: "credit.amount", value: amount, source: { kind: "event", ref: String(task.payload.externalId) } }, { key: "credit.ref_invoice", value: ref, source: { kind: "event", ref: String(task.payload.externalId) } }],

@@ -101,6 +101,18 @@ export class SeatRuntime {
   /** Commit a change to company memory and mirror the commit into the kernel's index. */
   async commit(changes: FileChange[], message: string, trailers: Record<string, string> = {}, idempotencyKey?: string): Promise<string> {
     const { sha } = await this.mem.write({ changes, author: this.author, message, trailers, idempotencyKey });
+    await this.mirrorCommit(sha);
+    return sha;
+  }
+
+  /** Apply only the intended vendor changes against the current CAS-protected record. */
+  async updateVendor(id: string, update: (current: Vendor) => Vendor, message: string, trailers: Record<string, string> = {}, idempotencyKey?: string): Promise<string> {
+    const { sha } = await this.mem.update<Vendor>({ path: `vendors/${id}.yaml`, update, author: this.author, message, trailers, idempotencyKey });
+    await this.mirrorCommit(sha);
+    return sha;
+  }
+
+  private async mirrorCommit(sha: string): Promise<void> {
     this.vendorCache = null;
     // A previous attempt may have committed Git but failed before the kernel mirror.
     // recordCommit is idempotent by SHA; always send the persisted metadata on replay.
@@ -109,7 +121,6 @@ export class SeatRuntime {
       ...this.kernel.auth, sha, branch: "main", message: saved.subject, paths: saved.paths, trailers: saved.trailers,
     });
     if (!result.ok) throw new Error(`recordCommit failed: ${result.code} ${result.error}`);
-    return sha;
   }
 
   async propose(id: string, changes: FileChange[], message: string, trailers: Record<string, string> = {}): Promise<{ branch: string; sha: string }> {

@@ -64,12 +64,11 @@ export const reviewHeld: Handler = async (rt, task) => {
     const disputes = ex.filter((e) => e.code === "price_over_contract" || e.code === "short_shipment");
     if (appliedIds.length || disputes.length) {
       const on = await rt.simDate();
-      const updated: Vendor = {
-        ...v,
-        credits: v.credits.map((c) => (appliedIds.includes(c.id) ? { ...c, appliedTo: bill.invoiceNumber } : c)),
-        notes: [...v.notes, ...disputes.map((e) => ({ on, by: rt.seat.seatId, text: `Short-paid ${bill.invoiceNumber}: ${e.detail}. Vendor notified.` }))],
-      };
-      await rt.commit([{ path: `vendors/${v.id}.yaml`, data: updated }], `Apply credits / record disputes for ${bill.invoiceNumber}`, { "Decision-Id": d.path }, `vendor-update:${bill._id}`);
+      await rt.updateVendor(v.id, (current) => ({
+        ...current,
+        credits: current.credits.map((c) => (appliedIds.includes(c.id) ? { ...c, appliedTo: bill.invoiceNumber } : c)),
+        notes: [...current.notes, ...disputes.map((e) => ({ on, by: rt.seat.seatId, text: `Short-paid ${bill.invoiceNumber}: ${e.detail}. Vendor notified.` }))],
+      }), `Apply credits / record disputes for ${bill.invoiceNumber}`, { "Decision-Id": d.path }, `vendor-update:${bill._id}`);
     }
   }
   return { outcome: decision === "approve" ? "approved" : "rejected", summary: `${bill.vendor} ${bill.invoiceNumber}: ${formatMoney(approvedCents)}` };
