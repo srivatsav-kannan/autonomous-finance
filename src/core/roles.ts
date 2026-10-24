@@ -19,6 +19,8 @@ export type Role =
 export interface Capabilities {
   /** Account code prefixes this seat may post to. Empty = may not post. */
   post: string[];
+  /** May create approved, held, or rejected vendor bills. */
+  billsRecord: boolean;
   paymentsRequest: boolean;
   /** Max single payment this seat may approve, in cents. 0 = may not approve. */
   paymentsApproveLimit: number;
@@ -34,6 +36,7 @@ export interface Capabilities {
 
 const NONE: Capabilities = {
   post: [],
+  billsRecord: false,
   paymentsRequest: false,
   paymentsApproveLimit: 0,
   paymentsExecute: false,
@@ -63,6 +66,7 @@ export const ROLE_CAPABILITIES: Record<Role, Capabilities> = {
   cfo_agent: { ...NONE, seatsManage: true, taskRoles: ALL_AGENT_ROLES, asks: true, memoryMerge: ["playbooks/"], paymentsApproveLimit: 49_999_99 },
   controller: {
     ...NONE,
+    billsRecord: true,
     post: ["1", "2", "3", "4", "5", "6"],
     paymentsApproveLimit: 25_000_00,
     memoryMerge: ["vendors/", "playbooks/", "stores/", "integrations/"],
@@ -72,6 +76,7 @@ export const ROLE_CAPABILITIES: Record<Role, Capabilities> = {
   },
   ap_clerk: {
     ...NONE,
+    billsRecord: true,
     post: ["2000", "2010", "1150", "1200", "1300", "5000", "5200", "5300", "6000", "6100", "6200"],
     taskRoles: ["controller", "payments", "integrations_engineer"],
     asks: true,
@@ -98,6 +103,7 @@ export const ROLE_CAPABILITIES: Record<Role, Capabilities> = {
   },
   lease_accountant: {
     ...NONE,
+    billsRecord: true,
     post: ["1600", "2000", "2400", "5200"],
     paymentsRequest: true,
     taskRoles: ["controller", "payments"],
