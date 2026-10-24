@@ -24,13 +24,37 @@ class LiveTests(unittest.TestCase):
 
     def test_openai_runtime_requires_exact_provider_api_cache_tier_and_effort(self):
         approved={**self.approved,'provider':'openai','model':'gpt-6.1-sol','effort':'high','inputMicros':2,'outputMicros':10}
-        runtime={**self.runtime,'model':'gpt-6.1-sol','effort':'high','outputTokensPerCall':approved['maxOutputTokens'],'modelProvider':{**self.runtime['modelProvider'],'baseURL':'https://api.openai.com/v1','api':'responses','serviceTier':'default','promptCacheMode':'explicit_without_breakpoints','pricing':{'inputMicros':2,'outputMicros':10}}}
+        runtime={**self.runtime,'model':'gpt-6.1-sol','effort':'high','reasoningContext':'all_turns','outputTokensPerCall':approved['maxOutputTokens'],'modelProvider':{**self.runtime['modelProvider'],'baseURL':'https://api.openai.com/v1','api':'responses','serviceTier':'default','promptCacheMode':'explicit_without_breakpoints','pricing':{'inputMicros':2,'outputMicros':10}}}
         verify_live_runtime(runtime,{'runtimeMode':'live_model'},approved,'exact')
         for field,bad in [('baseURL','https://example.invalid'),('api','chat_completions'),('serviceTier','fast'),('promptCacheMode','implicit')]:
             changed={**runtime,'modelProvider':{**runtime['modelProvider'],field:bad}}
             with self.assertRaises(ValueError):verify_live_runtime(changed,{'runtimeMode':'live_model'},approved,'exact')
         with self.assertRaises(ValueError):verify_live_runtime({**runtime,'effort':'medium'},{'runtimeMode':'live_model'},approved,'exact')
         with self.assertRaises(ValueError):verify_live_runtime({**runtime,'outputTokensPerCall':100},{'runtimeMode':'live_model'},approved,'exact')
+        with self.assertRaises(ValueError):verify_live_runtime({**runtime,'reasoningContext':'current_turn'},{'runtimeMode':'live_model'},approved,'exact')
+
+    def test_openai_reasoning_suffix_preserves_usage_only_for_exact_bounded_records(self):
+        approved={**self.approved,'provider':'openai','model':'gpt-6.1-sol','inputMicros':2,'outputMicros':10}
+        reservation={'auditId':'r','toolCall':{'tool':'model_reservation','summary':'Reserved one gpt-6.1-sol request (r1); max output 100; no retries or fallback.','mode':'live_model','model':'gpt-6.1-sol','inputTokens':100,'outputTokens':100,'costMicros':1200}}
+        actual={'auditId':'a','toolCall':{'tool':'model_usage','summary':'','mode':'live_model','model':'gpt-6.1-sol','inputTokens':10,'outputTokens':10,'costMicros':120}}
+        for outcome in ['completed request','unusable response']:
+            base=f'Actual provider-reported usage for {outcome} r1.'
+            for count in [0,7,10]:
+                actual['toolCall']['summary']=base+f' Total output includes {count} reasoning tokens; no reasoning content is retained in audit.'
+                result=live_usage([{'audit':[reservation,actual]}],approved)
+                self.assertEqual(result['coverage'],'complete_persisted_usage');self.assertEqual(result['modelCalls'],1)
+                self.assertEqual(result['costUsd'],0.00012);self.assertEqual(result['reasoningTokens'],count)
+            for suffix in [' Total output includes 11 reasoning tokens; no reasoning content is retained in audit.',' Total output includes -1 reasoning tokens; no reasoning content is retained in audit.',' Total output includes 1.5 reasoning tokens; no reasoning content is retained in audit.',' Total output includes 7 reasoning tokens; different text.',' Total output includes 7 reasoning tokens; no reasoning content is retained in audit. trailing']:
+                actual['toolCall']['summary']=base+suffix
+                result=live_usage([{'audit':[reservation,actual]}],approved)
+                self.assertEqual(result['coverage'],'incomplete_persisted_usage');self.assertIsNone(result['costUsd'])
+            actual['toolCall']['summary']=base
+            result=live_usage([{'audit':[reservation,actual]}],approved)
+            self.assertEqual(result['costUsd'],0.00012);self.assertIsNone(result['reasoningTokens'])
+        # The new suffix is never accepted for the historical Anthropic provider.
+        actual['toolCall'].update(model=self.approved['model'],costMicros=240,summary='Actual provider-reported usage for completed request r1. Total output includes 7 reasoning tokens; no reasoning content is retained in audit.')
+        reservation['toolCall'].update(model=self.approved['model'],costMicros=2400)
+        self.assertEqual(live_usage([{'audit':[reservation,actual]}],self.approved)['coverage'],'incomplete_persisted_usage')
 
     def test_process_http_timeout_is_explicit_without_changing_read_default(self):
         client=AppClient();timeouts=[]
