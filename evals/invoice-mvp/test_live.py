@@ -1,11 +1,12 @@
-import copy,unittest
-from live_app import verify_live_runtime,live_usage,execute
+import copy,io,unittest
+from http_app import AppClient
+from live_app import verify_live_runtime,live_usage,execute,live_process_timeout
 from types import SimpleNamespace
 
 class LiveTests(unittest.TestCase):
     def setUp(self):
-        self.approved={'model':'claude-opus-5-5','maxCalls':40,'maxCostMicros':3000000,'maxInputTokens':100000,'maxOutputTokens':1200,'inputMicros':4,'outputMicros':20}
-        self.runtime={'mode':'live_model','sourceCommit':'exact','dirty':False,'model':'claude-opus-5-5','fallbacks':False,'retries':0,'liveExecution':'requires_explicit_process_opt_in_and_atomic_reservation','budget':{k:v for k,v in self.approved.items() if k.startswith('max')},'budgetScope':{'maxCalls':'persistent_run','maxCostMicros':'persistent_run'},'usage':{'available':True,'cache':'disabled','reservationTool':'model_reservation','actualUsageTool':'model_usage'},'promptHash':'prompt','toolsHash':'tools','modelProvider':{'baseURL':'https://api.anthropic.com','authentication':'explicit_api_key','pricing':{'inputMicros':4,'outputMicros':20},'servedModelValidated':True,'cacheUsageValidated':True}}
+        self.approved={'model':'claude-opus-5-5','maxCalls':40,'maxCostMicros':3000000,'maxInputTokens':100000,'maxOutputTokens':1200,'inputMicros':4,'outputMicros':20,'timeoutSeconds':1200}
+        self.runtime={'maxTurns':10,'mode':'live_model','sourceCommit':'exact','dirty':False,'model':'claude-opus-5-5','fallbacks':False,'retries':0,'liveExecution':'requires_explicit_process_opt_in_and_atomic_reservation','budget':{k:v for k,v in self.approved.items() if k.startswith('max')},'budgetScope':{'maxCalls':'persistent_run','maxCostMicros':'persistent_run'},'usage':{'available':True,'cache':'disabled','reservationTool':'model_reservation','actualUsageTool':'model_usage'},'promptHash':'prompt','toolsHash':'tools','modelProvider':{'baseURL':'https://api.anthropic.com','authentication':'explicit_api_key','pricing':{'inputMicros':4,'outputMicros':20},'servedModelValidated':True,'cacheUsageValidated':True}}
     def test_missing_opt_in_stops_before_network_or_configuration(self):
         with self.assertRaises(ValueError):execute(SimpleNamespace(allow_live=False))
     def test_accepts_only_real_attested_bounded_live_mode(self):
@@ -17,6 +18,22 @@ class LiveTests(unittest.TestCase):
         actual={'auditId':'a','toolCall':{'tool':'model_usage','summary':'Actual provider-reported usage for completed request r1.','mode':'live_model','model':'claude-opus-5-5','inputTokens':10,'outputTokens':10,'costMicros':240}}
         complete=live_usage([{'audit':[reservation,actual]}],self.approved);self.assertEqual(complete['costUsd'],0.00024);self.assertEqual(complete['modelCalls'],1)
         partial=live_usage([{'audit':[reservation]}],self.approved);self.assertIsNone(partial['modelCalls']);self.assertIsNone(partial['costUsd'])
+        actual['toolCall']['summary']='Actual provider-reported usage for unusable response r1.'
+        self.assertEqual(live_usage([{'audit':[reservation,actual]}],self.approved)['costUsd'],0.00024)
         actual['toolCall']['model']='wrong';self.assertEqual(live_usage([{'audit':[reservation,actual]}],self.approved)['coverage'],'incomplete_persisted_usage')
+
+    def test_process_http_timeout_is_explicit_without_changing_read_default(self):
+        client=AppClient();timeouts=[]
+        def open_without_network(request,timeout):
+            timeouts.append(timeout);return io.StringIO('{"ok":true}')
+        client.opener=SimpleNamespace(open=open_without_network)
+        client.request('process',{'live':True,'maxCases':1},timeout=360)
+        client.request('runtime')
+        self.assertEqual(timeouts,[360,30])
+    def test_process_timeout_allows_full_case_and_respects_deadline(self):
+        self.assertEqual(live_process_timeout(self.runtime,self.approved,0),360)
+        self.assertEqual(live_process_timeout(self.runtime,self.approved,840),360)
+        with self.assertRaises(TimeoutError):live_process_timeout(self.runtime,self.approved,841)
+        with self.assertRaises(ValueError):live_process_timeout({**self.runtime,'maxTurns':21},self.approved,0)
 
 if __name__=='__main__':unittest.main()

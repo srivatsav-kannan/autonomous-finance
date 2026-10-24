@@ -14,12 +14,12 @@ class AppClient:
         if url.scheme!='http' or url.hostname not in {'127.0.0.1','localhost','::1'} or url.username or url.password or url.query or url.fragment or url.path not in {'','/'}: raise ValueError('Use a loopback HTTP application origin')
         self.base=base.rstrip('/'); self.origin=origin; self.timeout=timeout
         self.opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()),NoRedirect())
-    def request(self,route,body=None):
+    def request(self,route,body=None,*,timeout=None):
         headers={'Accept':'application/json','Origin':self.origin}
         if body is not None: headers.update({'Content-Type':'application/json','X-Invoice-MVP-Session':'1'})
         req=urllib.request.Request(self.base+'/api/invoice-mvp/'+route,data=None if body is None else json.dumps(body).encode(),headers=headers)
         try:
-            with self.opener.open(req,timeout=self.timeout) as res: value=json.load(res)
+            with self.opener.open(req,timeout=self.timeout if timeout is None else timeout) as res: value=json.load(res)
         except urllib.error.HTTPError as exc:
             # Do not log arbitrary server bodies; they may include credentials or source text.
             try: code=json.load(exc).get('error',{}).get('code','unknown')

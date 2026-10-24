@@ -40,7 +40,7 @@ def live_usage(details,approved):
         else: reserved_by_id[match[1]]=call
     observed_ids=set()
     for call in actual:
-        match=re.search(r'request ([^\s.]+)\.',call.get('summary',''))
+        match=re.fullmatch(r'Actual provider-reported usage for (?:completed request|unusable response) ([^\s.]+)\.',call.get('summary',''))
         if not match or match[1] not in reserved_by_id or match[1] in observed_ids: valid=False;continue
         observed_ids.add(match[1]);bound=reserved_by_id[match[1]]
         if any(call.get(k,-1)>bound.get(k,-1) for k in ['inputTokens','outputTokens','costMicros']):valid=False
@@ -48,6 +48,15 @@ def live_usage(details,approved):
     complete=valid and len(reservations)==len(actual) and observed_ids==set(reserved_by_id)
     # An interrupted reserved request may have reached the provider. Never infer its usage as zero.
     return {'coverage':'complete_persisted_usage' if complete else 'incomplete_persisted_usage','reservedRequests':len(reservations),'completedRequests':len(actual),'modelCalls':len(actual) if complete else None,'inputTokens':sum(c['inputTokens'] for c in actual) if complete else None,'outputTokens':sum(c['outputTokens'] for c in actual) if complete else None,'costUsd':sum(c['costMicros'] for c in actual)/1e6 if complete else None,'cacheReadTokens':0 if complete else None,'cacheWriteTokens':0 if complete else None,'toolCalls':len(entries),'reservedCostMicros':sum(c.get('costMicros',0) for c in reservations),'errorsOrUnaccountedReservations':not complete}
+
+def live_process_timeout(runtime,approved,elapsed):
+    turns=runtime.get('maxTurns')
+    if type(turns) is not int or not 1<=turns<=20: raise ValueError('Bounded runtime maxTurns attestation required')
+    # One case can make maxTurns sequential 30-second provider requests.
+    # Reserve a further minute for local tools/backend work before dispatch.
+    allowance=turns*30+60
+    if approved['timeoutSeconds']-elapsed < allowance: raise TimeoutError('Insufficient approved wall time for another bounded case')
+    return allowance
 
 def execute(args):
     if not args.allow_live: raise ValueError('Live evaluation disabled; explicit --allow-live and recorded authorization required')
@@ -72,7 +81,8 @@ def execute(args):
                 final=app.workspace()
                 if not any(c['status'] in {'received','investigating'} for c in final['cases']):break
                 if time.monotonic()-started>=approved['timeoutSeconds']:raise TimeoutError('Approved wall-time expired')
-                result=app.request('process',{'live':True,'maxCases':1});write_json(stage/f'process-{iteration:03d}.json',result)
+                process_timeout=live_process_timeout(runtime,approved,time.monotonic()-started)
+                result=app.request('process',{'live':True,'maxCases':1},timeout=process_timeout);write_json(stage/f'process-{iteration:03d}.json',result)
             else:stop='process_round_limit'
             final=app.workspace();detail=app.details(final);write_json(stage/'snapshot.json',final);write_json(stage/'details.json',detail)
             if stop!='settled':break

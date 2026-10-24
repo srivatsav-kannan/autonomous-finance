@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { configureCappedTransport, agentTurn, BudgetExceeded, type Transport } from "./capped-llm";
+import { configureCappedTransport, createCappedClient, agentTurn, BudgetExceeded, type Transport } from "./capped-llm";
 const python = process.env.INVOICE_MVP_PYTHON ?? "python3";
 function fixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "invoice-budget-")), authorization = path.join(root, "authorization.json"), ledger = path.join(root, "ledger.json");
@@ -32,4 +32,18 @@ test("network failure has one attempt, retained charge, and no automatic retry",
 });
 test("missing explicit opt-in fails without transport", () => {
   const f = fixture(); assert.throws(() => configureCappedTransport({ ...f, runId: "a", python, explicitLive: false }));fs.rmSync(f.root, { recursive: true });
+});
+
+test("explicit key and first-party URL ignore ambient token and base URL", () => {
+  const token = process.env.ANTHROPIC_AUTH_TOKEN, url = process.env.ANTHROPIC_BASE_URL;
+  try {
+    process.env.ANTHROPIC_AUTH_TOKEN = "synthetic-ambient-token";
+    process.env.ANTHROPIC_BASE_URL = "https://example.invalid";
+    const client = createCappedClient("synthetic-explicit-key", 30000);
+    assert.equal(client.apiKey, "synthetic-explicit-key"); assert.equal(client.authToken, null);
+    assert.equal(client.baseURL, "https://api.anthropic.com"); assert.equal(client.maxRetries, 0);
+  } finally {
+    if (token === undefined) delete process.env.ANTHROPIC_AUTH_TOKEN; else process.env.ANTHROPIC_AUTH_TOKEN = token;
+    if (url === undefined) delete process.env.ANTHROPIC_BASE_URL; else process.env.ANTHROPIC_BASE_URL = url;
+  }
 });

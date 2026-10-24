@@ -70,8 +70,8 @@
   },
   "livePreparation": {
     "status": "IMPLEMENTED_TESTED_NO_NETWORK",
-    "pythonChecks": 25,
-    "injectedTransportChecks": 4,
+    "pythonChecks": 27,
+    "injectedTransportChecks": 5,
     "typescript": "PASS",
     "approval": "ABSENT",
     "credential": "ABSENT",

@@ -24,6 +24,9 @@ function budget(action: string, details: object): Record<string, number> {
     }));
   } catch { throw new BudgetExceeded("Persistent pre-request budget/authorization check failed; no retry permitted"); }
 }
+export function createCappedClient(apiKey: string, timeout: number) {
+  return new Anthropic({ apiKey, authToken: null, baseURL: "https://api.anthropic.com", maxRetries: 0, timeout });
+}
 export async function agentTurn(params: Request, meta: { runId: string; system: string; purpose: string; runCapUsd?: number }) {
   if (!config || meta.runId !== config.runId) throw new Error("Run identity differs from configured authorization");
   // Read no credential until validation and persisted reservation have succeeded.
@@ -41,7 +44,7 @@ export async function agentTurn(params: Request, meta: { runId: string; system: 
   if (!transport) {
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!config.explicitLive || !apiKey) throw new Error("ANTHROPIC_API_KEY and explicit live opt-in required; reservation retained");
-    const sdk = new Anthropic({ apiKey, baseURL: "https://api.anthropic.com", maxRetries: 0, timeout: Math.min(60000, approved.timeoutSeconds * 1000) });
+    const sdk = createCappedClient(apiKey, Math.min(60000, approved.timeoutSeconds * 1000));
     transport = (wire) => sdk.beta.messages.stream(wire).finalMessage();
   }
   // Errors retain the entire reservation; callers must not retry automatically.
