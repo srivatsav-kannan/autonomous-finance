@@ -1,0 +1,218 @@
+{
+  "schema": "ap-recovered-business-checkpoint-v1",
+  "extractedAt": "2026-10-25T13:53:41.029067+00:00",
+  "observationMethod": "Independently read and sanitized saved scoped-query responses from recovery copy; no provider call or backend mutation performed by evidence preparer.",
+  "recoveryBackendPort": 3262,
+  "originalDatabaseReplaced": false,
+  "databaseRecoveryComplete": false,
+  "priorCase": {
+    "sourceArtifact": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/prior-case-recovered.json",
+    "sourceArtifactSha256": "18d3eed409d10161179b6aa028d273b9733dfb871a6c68917beca3e2e93bca0b",
+    "caseId": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
+    "invoiceNumber": "INV-1001",
+    "currency": "USD",
+    "candidateRevision": 1,
+    "revision": 1,
+    "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+    "amounts": {
+      "acceptedCents": 67860,
+      "creditedCents": 0,
+      "disputedCents": 0,
+      "instructedCents": 67860,
+      "invoicedCents": 67860,
+      "outstandingCents": 0,
+      "settledCents": 67860
+    },
+    "states": {
+      "accounting": "recognized",
+      "authorization": "authorized",
+      "business": "approved",
+      "document": "reviewed",
+      "execution": "settled",
+      "reconciliation": "matched"
+    },
+    "paymentCount": 1,
+    "journalCount": 2,
+    "paymentStatuses": [
+      "settled"
+    ],
+    "journalKinds": [
+      "recognition",
+      "settlement"
+    ],
+    "linkCounts": {
+      "bankTransactionIds": 1,
+      "commandIds": 1,
+      "externalAccountingIds": 0,
+      "paymentVersionIds": 1,
+      "settlementJournalIds": 1
+    },
+    "billPresent": true,
+    "timeline": [
+      {
+        "at": 1792924581913,
+        "kind": "source_revision",
+        "summary": "Source case revision 1 retained"
+      },
+      {
+        "at": 1792924581913,
+        "kind": "source_delivery",
+        "summary": "Received invoice.pdf"
+      },
+      {
+        "at": 1792924581913,
+        "kind": "source_delivery",
+        "summary": "Received purchase-order.pdf"
+      },
+      {
+        "at": 1792924581913,
+        "kind": "source_delivery",
+        "summary": "Received receipt.pdf"
+      },
+      {
+        "at": 1792924581913,
+        "kind": "source_delivery",
+        "summary": "Received contract.pdf"
+      },
+      {
+        "at": 1792925977234,
+        "kind": "field_review",
+        "summary": "Recorded review decision; personal actor identity omitted."
+      },
+      {
+        "at": 1792925991852,
+        "kind": "bill_approval",
+        "summary": "Recorded review decision; personal actor identity omitted."
+      }
+    ],
+    "decisions": [
+      {
+        "kind": "field_review",
+        "outcome": "approved",
+        "candidateRevision": 1
+      },
+      {
+        "kind": "bill_approval",
+        "outcome": "approved",
+        "candidateRevision": 1
+      }
+    ]
+  },
+  "newCase": {
+    "sourceArtifact": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/new-business-case-recovered.json",
+    "sourceArtifactSha256": "f7fe0a2ded606be1027f8f256d7d68e7299125ee4e8cee7d5f2ec0ec9d69ea6f",
+    "caseId": "kd70djc8wdam76s7dxz0jxdgv98gzmq4",
+    "invoiceNumber": "INV-AGENT-20261025-01",
+    "currency": "USD",
+    "candidateRevision": 2,
+    "revision": 2,
+    "snapshotHash": "e646c6b50f7f9b385a275e6cc00d3147cd0172d42247d70146703606777acce9",
+    "amounts": {
+      "acceptedCents": null,
+      "creditedCents": 0,
+      "disputedCents": null,
+      "instructedCents": 0,
+      "invoicedCents": 7700,
+      "outstandingCents": null,
+      "settledCents": 0
+    },
+    "states": {
+      "accounting": "unposted",
+      "authorization": "not_requested",
+      "business": "held",
+      "document": "reviewed",
+      "execution": "not_started",
+      "reconciliation": "unmatched"
+    },
+    "paymentCount": 0,
+    "journalCount": 0,
+    "paymentStatuses": [],
+    "journalKinds": [],
+    "linkCounts": {
+      "bankTransactionIds": 0,
+      "commandIds": 0,
+      "externalAccountingIds": 0,
+      "paymentVersionIds": 0,
+      "settlementJournalIds": 0
+    },
+    "billPresent": false,
+    "timeline": [
+      {
+        "at": 1792930826440,
+        "kind": "source_revision",
+        "summary": "Source case revision 1 retained"
+      },
+      {
+        "at": 1792930826440,
+        "kind": "source_delivery",
+        "summary": "Received invoice.pdf"
+      },
+      {
+        "at": 1792930826440,
+        "kind": "source_delivery",
+        "summary": "Received purchase_order.pdf"
+      },
+      {
+        "at": 1792930826440,
+        "kind": "source_delivery",
+        "summary": "Received contract.pdf"
+      },
+      {
+        "at": 1792930827403,
+        "kind": "agent_missing_evidence",
+        "summary": "missing_receipt Required: accepted_receiving_evidence"
+      },
+      {
+        "at": 1792930838730,
+        "kind": "source_revision",
+        "summary": "Source case revision 2 retained"
+      },
+      {
+        "at": 1792930838730,
+        "kind": "source_delivery",
+        "summary": "Received receipt.pdf"
+      },
+      {
+        "at": 1792930838847,
+        "kind": "agent_field_review",
+        "summary": "Current original fields require the existing independent review. Required: current_source_field_review"
+      },
+      {
+        "at": 1792930953456,
+        "kind": "field_review",
+        "summary": "Recorded review decision; personal actor identity omitted."
+      },
+      {
+        "at": 1792930953705,
+        "kind": "agent_bill_approval",
+        "summary": "Current bill and coding require the configured approval route before recognition. Required: current_bill_approval"
+      }
+    ],
+    "decisions": [
+      {
+        "kind": "field_review",
+        "outcome": "approved",
+        "candidateRevision": 2
+      }
+    ]
+  },
+  "unresolvedAgentQueueError": {
+    "operation": "apCaseAgent:inspect",
+    "meaning": "Recovered business projection is readable, but the agent work-queue index still references a missing document; safe full-flow resume is not established.",
+    "evidence": {
+      "timestamp": "2026-10-25T13:50:30.238586Z",
+      "error": "Dangling index reference for IndexKeyBytes([16, 97, 112, 57, 55, 45, 97, 117, 116, 104, 48, 45, 108, 105, 118, 101, 45, 50, 48, 50, 54, 49, 48, 50, 53, 0, 16, 107, 100, 55, 48, 100, 106, 99, 56, 119, 100, 97, 109, 55, 54, 115, 55, 100, 120, 122, 48, 106, 120, 100, 103, 118, 57, 56, 103, 122, 109, 113, 52, 0, 13, 194, 122, 23, 48, 20, 140, 135, 10, 16, 116, 53, 55, 54, 49, 101, 55, 57, 114, 109, 112, 48, 107, 57, 57, 97, 102, 102, 102, 122, 51, 49, 57, 103, 99, 115, 56, 103, 122, 98, 119, 115, 0]) Timestamp(1792931146672960000)",
+      "logSha256": "884f37b83595a5f21259228db44ec86488117555b252d0f7f796cd3e4973a834",
+      "logPath": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/candidate-backend.log"
+    }
+  },
+  "limits": [
+    "SQLite structural integrity passing does not prove all Convex documents and indexes are recoverable.",
+    "No fresh Increase or QuickBooks provider readback is represented here.",
+    "No new payment authorization or settlement mutation was performed.",
+    "No personal actor identities, session tokens, credentials, or account configuration are copied into this checkpoint."
+  ],
+  "recoveryBackendStatus": "stopped_after_readbacks",
+  "recoveryBackendStatusObservedBy": "parent agent",
+  "updatedAt": "2026-10-25T13:53:54.581487+00:00"
+}

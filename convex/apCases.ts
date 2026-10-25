@@ -1,3 +1,4 @@
+import { ensureAPCaseWork } from "./lib/apSystem/agentWork";
 import { activeBusinessPolicy } from "./lib/apSystem/businessAuthority";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
@@ -280,6 +281,7 @@ export const ingest = mutation({
         sourceHashes: input.documents.map((d) => d.sha256),
       },
     );
+    await ensureAPCaseWork(ctx, row);
     const result = {
       caseId: row._id,
       revision: row.currentRevision,

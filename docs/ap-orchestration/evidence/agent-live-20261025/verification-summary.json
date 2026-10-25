@@ -1,0 +1,232 @@
+{
+  "schema": "ap-live-rollout-evidence-v1",
+  "generatedAt": "2026-10-25T13:50:41.587394+00:00",
+  "status": "blocked_not_full_flow_passed",
+  "scope": {
+    "environment": "existing local Auth0 / Increase sandbox",
+    "runId": "ap97-auth0-live-20261025",
+    "ci": "skipped_by_user",
+    "production": false,
+    "realFunds": false
+  },
+  "source": {
+    "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks",
+    "baseCommit": "71853508db2bb95d6d87929ab46c79db1d7b2a0f",
+    "referenceCommit": "6438103e28c0374110e3d6fb971319555a568690",
+    "deploymentStrategy": "minimal source delta; additive schema tables; regenerated Convex API declarations",
+    "fileHashes": [
+      {
+        "path": "convex/apCaseAgent.ts",
+        "sha256": "087698ed36548f34e66fd1067e301bc22cfa4750cfafc4a6e5f0d2ad406563cb",
+        "matches_reference_commit": true
+      },
+      {
+        "path": "convex/lib/apSystem/agentWork.ts",
+        "sha256": "e7ce05ad9cf908ff40f57880fe48544f55096a9580162267806e5d0003d8dc00",
+        "matches_reference_commit": true
+      },
+      {
+        "path": "convex/lib/apSystem/casePayment.ts",
+        "sha256": "43dde93ebdf2996ce81cdd52518875303e6a1d6486d5863947d3eb23e32f1997",
+        "matches_reference_commit": true
+      },
+      {
+        "path": "convex/apCasePayments.ts",
+        "sha256": "ed76975e42fe8bc06013b489c1c0050d130aeb00ffc15b869949409a64c6af5c",
+        "matches_reference_commit": true
+      },
+      {
+        "path": "convex/apCases.ts",
+        "sha256": "657be7bb2c5eb3fe5c64ab8edf9e64e2ef80529dd2e024cdcce463596bbf7db5",
+        "matches_reference_commit": true
+      },
+      {
+        "path": "convex/apSystemSchema.ts",
+        "sha256": "0e8f37558f5b2417db2a387b532ad37e7f5b79e751556dc2263e7a16e981e06c",
+        "matches_reference_commit": false
+      },
+      {
+        "path": "convex/lib/apSystem/projection.ts",
+        "sha256": "a4b0efeccc4fcb8ecfe11abe81835f1fb7800fcaffda6032227d668ddaaccba3",
+        "matches_reference_commit": true
+      },
+      {
+        "path": "src/ap-system/agent-policy.ts",
+        "sha256": "0e08ba9a378fbd0c847c19c632eefe2a0d15f19df9d306e4e555f5d769f32b15",
+        "matches_reference_commit": true
+      },
+      {
+        "path": "src/agents/ap-case-tools.ts",
+        "sha256": "1a2ec4a059d1c9676d8986ceda2d63c0ac5156ad4715a2d37decc1a6b860dd5a",
+        "matches_reference_commit": true
+      },
+      {
+        "path": "src/agents/ap-case-worker.ts",
+        "sha256": "d9d41c294e68c5408e556b6e71362912afbe500d3ac6605ba150813ea4f50cc6",
+        "matches_reference_commit": true
+      },
+      {
+        "path": "scripts/ap-case-agent.ts",
+        "sha256": "4fca186c7e8ad6634db128e6da5ee6826457e100c2836783340e727835ada836",
+        "matches_reference_commit": true
+      },
+      {
+        "path": "package.json",
+        "sha256": "8c840caae778a75311ef2bb74b571cb8f45972d7a076eca0d04fec54d1d78389",
+        "matches_reference_commit": true
+      },
+      {
+        "path": "convex/_generated/api.d.ts",
+        "sha256": "3b0b0c23ec9a9c5083a13f8fcd7c0669a0087fe05920d8f56bef6ceb6caaecc2",
+        "matches_reference_commit": false
+      }
+    ]
+  },
+  "case": {
+    "id": "kd70djc8wdam76s7dxz0jxdgv98gzmq4",
+    "invoiceNumber": "INV-AGENT-20261025-01",
+    "amountMinor": 7700,
+    "currency": "USD",
+    "synthetic": true
+  },
+  "parentReportedResults": [
+    {
+      "step": "backend_typecheck",
+      "status": "passed"
+    },
+    {
+      "step": "missing_receipt_wait",
+      "status": "passed",
+      "detail": "Agent persisted missing-evidence wait for revision 1"
+    },
+    {
+      "step": "receipt_added_resume",
+      "status": "passed",
+      "detail": "Revision 2 resumed into field review"
+    },
+    {
+      "step": "field_review",
+      "status": "recorded"
+    },
+    {
+      "step": "bill_approval",
+      "status": "pending",
+      "detail": "Prior browser bill-approval click was rejected by automatic review, requiring the user; no workaround taken. No payment authorization is claimed."
+    },
+    {
+      "step": "independent_payment_authorization",
+      "status": "not_reached"
+    },
+    {
+      "step": "increase_payment_settlement",
+      "status": "not_run_for_this_case"
+    },
+    {
+      "step": "bank_reconciliation",
+      "status": "not_run_for_this_case"
+    },
+    {
+      "step": "qbo_bill_and_billpayment",
+      "status": "not_run_for_this_case"
+    }
+  ],
+  "independentlyVerified": {
+    "sourceFilesRead": true,
+    "sourceMatchesReferenceCount": 11,
+    "sourceFileCount": 13,
+    "schemaChange": "adds apCaseWork and apCaseWorkEvents to existing base schema",
+    "runtimeEvidenceRead": true,
+    "databaseHashRead": true,
+    "runtimeEvidenceScope": "saved scoped business-case query responses from isolated recovery copy; not full agent queue or provider validation",
+    "priorCase": {
+      "execution": "settled",
+      "reconciliation": "matched",
+      "outstandingCents": 0,
+      "paymentCount": 1
+    },
+    "newCase": {
+      "document": "reviewed",
+      "business": "held",
+      "authorization": "not_requested",
+      "paymentCount": 0,
+      "journalCount": 0,
+      "timelineKinds": [
+        "source_revision",
+        "source_delivery",
+        "source_delivery",
+        "source_delivery",
+        "agent_missing_evidence",
+        "source_revision",
+        "source_delivery",
+        "agent_field_review",
+        "field_review",
+        "agent_bill_approval"
+      ]
+    }
+  },
+  "evidenceGap": {
+    "expectedRuntimeArtifacts": [
+      "01-waiting.json",
+      "02-resumed.json",
+      "03-current.json",
+      "old-case-preserved.json"
+    ],
+    "missingAtPreparation": [
+      "01-waiting.json",
+      "02-resumed.json",
+      "03-current.json",
+      "old-case-preserved.json"
+    ],
+    "detail": "Original temporary checkpoints/fixtures remain absent. Saved scoped queries from a recovery copy now independently corroborate prior wait/resume/review timeline and old-case settled/matched state. The work queue itself remains unreadable due to a dangling index reference. No claim of full database recovery or full provider-flow pass."
+  },
+  "limits": [
+    "Synthetic native PDF; no new LlamaParse extraction validation.",
+    "No Claude independent model review or practitioner sign-off is claimed.",
+    "CI intentionally skipped.",
+    "Earlier INV-1001 / QBO145 / QBO146 results do not establish this new case passed.",
+    "Full new-case flow remains unverified until separate authorization, settlement, reconciliation and any claimed QBO synchronization are observed."
+  ],
+  "blocker": {
+    "code": "local_backend_sqlite_malformed",
+    "severity": "blocks_live_validation",
+    "observedBy": "parent agent direct readback",
+    "detail": "Original Convex SQLite database is malformed. A recovery copy passes SQLite integrity (parent observation) and a separate backend starts at port 3262. Saved scoped queries independently show both business cases, but apCaseAgent:inspect still fails with a dangling index reference. Original database has not been replaced; full database recovery is not established.",
+    "cause": "unknown",
+    "recoveryStatus": "partial_business_projection_recovered_agent_queue_still_blocked",
+    "originalDatabase": {
+      "path": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/.convex/local/default/convex_local_backend.sqlite3",
+      "sizeBytes": 4370432,
+      "sha256": "e568e28a5f5c27e901c568d4a652d38f7e47202f88920f20b6f71f35a71b6af6",
+      "hashObservedAt": "2026-10-25T13:50:41.587394+00:00"
+    },
+    "unresolvedError": {
+      "timestamp": "2026-10-25T13:50:30.238586Z",
+      "error": "Dangling index reference for IndexKeyBytes([16, 97, 112, 57, 55, 45, 97, 117, 116, 104, 48, 45, 108, 105, 118, 101, 45, 50, 48, 50, 54, 49, 48, 50, 53, 0, 16, 107, 100, 55, 48, 100, 106, 99, 56, 119, 100, 97, 109, 55, 54, 115, 55, 100, 120, 122, 48, 106, 120, 100, 103, 118, 57, 56, 103, 122, 109, 113, 52, 0, 13, 194, 122, 23, 48, 20, 140, 135, 10, 16, 116, 53, 55, 54, 49, 101, 55, 57, 114, 109, 112, 48, 107, 57, 57, 97, 102, 102, 102, 122, 51, 49, 57, 103, 99, 115, 56, 103, 122, 98, 119, 115, 0]) Timestamp(1792931146672960000)",
+      "logSha256": "884f37b83595a5f21259228db44ec86488117555b252d0f7f796cd3e4973a834",
+      "logPath": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/candidate-backend.log"
+    },
+    "recoveryBackendPort": 3262,
+    "originalDatabaseReplaced": false,
+    "recoveryBackendStatus": "stopped_after_readbacks"
+  },
+  "updatedAt": "2026-10-25T13:53:54.581487+00:00",
+  "durableRecoveredCheckpoint": {
+    "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/recovered-business-checkpoint.json",
+    "sha256": "4437bb96362ae0f3518d4d1848e49bd7f94017fd20807947a39fdf3044dae565"
+  },
+  "freshValidation": {
+    "observedAtApprox": "2026-10-25T13:54:00Z",
+    "observedBy": "parent agent direct command results",
+    "checks": [
+      {
+        "command": "npm run typecheck",
+        "status": "passed"
+      },
+      {
+        "command": "npm run typecheck:backend",
+        "status": "passed"
+      }
+    ],
+    "ci": "skipped_by_user"
+  }
+}
