@@ -1,6 +1,7 @@
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {mkdtemp,readdir,rm} from 'node:fs/promises';
 import {join} from 'node:path';
+import {tmpdir} from 'node:os';
 import type {ConvexHttpClient} from 'convex/browser';
 import {makeFunctionReference} from 'convex/server';
 import {businessFixture,binding} from './business-fixture';
@@ -18,7 +19,7 @@ async function fixture(increase=false){
  if(increase)await f.t.run(async ctx=>{ // Explicit synthetic scope conversion only, no Increase API or bank verification.
   for(const table of ['demoConfigs','apCaseRecords','apCaseRevisions','apCaseSources','apCaseDeliveries','apCaseDecisions','apCaseOperations','apBusinessPolicies','apSupplierContacts','apSuppliers','apSupplierRevisions','apApprovalProposals','apCloseActions','apAccruals','apAccrualApplications'] as const)for(const row of await ctx.db.query(table).collect())await ctx.db.patch(row._id,{scope});
  });
- const dir=await mkdtemp('/private/tmp/ap97-v5x-runtime-');dirs.push(dir);const store=new PrivateStore(dir);await store.write('mappings.json',mappings);
+ const dir=await mkdtemp(join(tmpdir(),'ap97-v5x-runtime-'));dirs.push(dir);const store=new PrivateStore(dir);await store.write('mappings.json',mappings);
  const env={QBO_CLIENT_ID:'synthetic-v5x-client',QBO_CLIENT_SECRET:'synthetic-v5x-secret',QBO_REALM_ID:'123',QBO_REDIRECT_URI:CALLBACK,QBO_ENVIRONMENT:'sandbox',QBO_PRIVATE_DIR:dir};
  return {...f,scope,store,dir,env,request:{actionId:p.actionId}};
 }
