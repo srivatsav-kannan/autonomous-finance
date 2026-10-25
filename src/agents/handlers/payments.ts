@@ -116,7 +116,7 @@ export const remitChange: Handler = async (rt, task) => {
   return { outcome: "proposed", summary: `${v.id} -> ${cb.newBank} ****${cb.newAccountLast4}` };
 };
 
-/** Second approval for payments over the dual threshold but under the human threshold. */
+/** The CFO agent's independent approval on a dual-approval payment, alongside the controller or the human. */
 export const secondApproval: Handler = async (rt, task) => {
   const intentId = task.payload.intentId as Id<"paymentIntents">;
   const intent = await rt.kernel.client.query(api.payments.intent, { runId: rt.runId, intentId });

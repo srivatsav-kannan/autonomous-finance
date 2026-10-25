@@ -17,6 +17,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "gateway": "tsx src/human/gateway.ts",
+    "gateway:token": "tsx scripts/gateway-token.ts",
     "smoke": "tsx scripts/smoke-kernel.ts && tsx scripts/smoke-memory.ts",
     "build:console": "vite build --config console/vite.config.ts",
     "design:check": "node .agents/skills/hallmark/scripts/sloplint.mjs console --genre modern-minimal --scope app",

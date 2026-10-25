@@ -13,6 +13,7 @@ import {
   storeIdempotency,
 } from "./lib/kernel";
 import { appendEntry } from "./lib/post";
+import { ROLE_CAPABILITIES, canApprovePayment, type Role } from "../src/core/roles";
 
 const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 const remitTo = v.object({ bank: v.string(), accountLast4: v.string(), memorySha: v.string() });
@@ -22,6 +23,7 @@ const remitTo = v.object({ bank: v.string(), accountLast4: v.string(), memorySha
  * Segregation of duties is enforced here: requester != approver, approval limits per seat,
  * a second approver above the dual threshold, a human above the human threshold, and the
  * remit-to is re-checked at execution so a bank-detail change after approval can't slip through.
+ * A request is refused up front when the run's active seats could never approve it.
  */
 export const requestPayment = mutation({
   args: {
@@ -75,6 +77,14 @@ export const requestPayment = mutation({
     const policy = runPolicy(run);
     const requiresHuman = args.amountCents >= policy.humanApprovalCents;
     const requiredApprovals = args.amountCents >= policy.dualApprovalCents ? 2 : 1;
+    // Don't ask anyone for an approval that cannot complete the payment.
+    const needs = { amountCents: args.amountCents, requiresHuman, requiredApprovals };
+    const approvers = (await ctx.db.query("seats").withIndex("by_run_seat", (q) => q.eq("runId", args.runId)).collect())
+      .filter((s) => s.status === "active" && s.seatId !== args.seatId && ROLE_CAPABILITIES[s.role as Role] && canApprovePayment(ROLE_CAPABILITIES[s.role as Role], needs));
+    if (approvers.length < requiredApprovals || (requiresHuman && !approvers.some((s) => s.kind === "human"))) {
+      return fail("unsatisfiable_approval",
+        `${(args.amountCents / 100).toFixed(2)} needs ${requiredApprovals} independent approval(s)${requiresHuman ? " including a human" : ""}; active seats able to approve: ${approvers.map((s) => s.seatId).join(", ") || "none"}`);
+    }
 
     const intentId = await ctx.db.insert("paymentIntents", {
       runId: args.runId,
@@ -116,7 +126,7 @@ export const approvePayment = mutation({
       return await recordViolation(ctx, args.runId, args.seatId, op, fail("sod", "the requester of a payment cannot approve it"));
     }
     if (intent.approvals.some((a) => a.seatId === args.seatId)) return fail("already_approved", "this seat already approved");
-    if (auth.seat.caps.paymentsApproveLimit < intent.amountCents) {
+    if (!canApprovePayment(auth.seat.caps, intent)) {
       return await recordViolation(ctx, args.runId, args.seatId, op,
         fail("over_limit", `${auth.seat.role} may approve up to ${auth.seat.caps.paymentsApproveLimit} cents`));
     }

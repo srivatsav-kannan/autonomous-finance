@@ -80,9 +80,14 @@ Add `ANTHROPIC_API_KEY=...` to `.env.local` to turn on Claude. Without it, the t
 ```bash
 npm run smoke                          # kernel and memory invariant checks
 npm run eval -- --stores 3 --days 14   # legacy scored run; payments are request-only
+npm run gateway:token                  # once: writes VITE_GATEWAY_TOKEN to .env.local
 npm run gateway                        # human gateway on :8787 (holds the human CFO seat token)
 npm run console                        # overseer console on http://127.0.0.1:5173
 ```
+
+The gateway acts as the human CFO, so it serves only the console. Every request must carry `VITE_GATEWAY_TOKEN` in an `x-gateway-token` header; the console reads the same value from `.env.local` and sends it. Browser requests are accepted only from `http://127.0.0.1:5173` and `http://localhost:5173` (set `GATEWAY_ALLOWED_ORIGINS` to a comma-separated list to change that), and POSTs must be JSON. The gateway refuses to start without a token of at least 32 characters. Run `npm run gateway:token` again to rotate it, then restart both the gateway and the console. Without a token the console shows an error on human actions instead of reaching the gateway.
+
+Answering an ask in the console records the answer in the kernel first, then runs its effect (approve or void a payment, co-sign a close, merge a proposal), then completes the ask. A different answer to the same ask is refused. If an effect fails, the ask stays open with its answer recorded; choosing the same answer again resumes it.
 
 Evaluation writes its Markdown and JSON reports before exiting. A failed or
 incomplete book-correctness result exits nonzero. Without model credentials,
