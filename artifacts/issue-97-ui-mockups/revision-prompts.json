@@ -1,0 +1,22 @@
+[
+  {
+    "slug": "01-work-queue",
+    "prompt": "Keep this exact UI, composition, colors and all financial content. Replace the three invented calendar date/time strings in Recent activity with just 'Day 1'. Change the last activity heading 'Receipt requested' to 'Receipt request drafted'. Remove all skeleton placeholder rows below the one real case row: replace the space with a quiet blank table background and centered small label 'One case in this view'. Remove the tiny orange dot inside the Missing receipt chip. No other changes."
+  },
+  {
+    "slug": "02-source-review",
+    "prompt": "Keep this exact UI composition and all key labels and amount USD662.90. Correct the bottom sidebar navigation label to exactly 'Integrations' (currently garbled). REMOVE the dotted green line from the paper Total to the Delivery reference field; keep the green rectangle around printed Total and the selected pale-green Total field as the visual connection, with no line between them. On the synthetic paper remove the invented addresses, ACME Foods bill-to and calendar date; replace their area with 'Synthetic company fixture' and 'Illustrative source'. In the paper line-item table replace the made-up quantities 10,5,8,6 with neutral gray placeholder bars just like unit prices. Keep the four placeholder product rows and Total. Do not invent new values. Everything else identical."
+  },
+  {
+    "slug": "03-bill-approval",
+    "prompt": "Preserve this exact mockup except for these precise text changes for correct accounting state. Change summary heading 'Accepted' to 'Proposed accepted'. Change summary heading 'Outstanding' to 'Proposed payable'. Change section heading 'Accounting treatment' to 'Proposed recognition entry'. Change small note 'Illustrative coding. Confirm the policy and period.' to 'Draft entry / not posted. Confirm policy and period.' Change source evidence row from 'receipt v2' to 'receipt v1'. Keep all dollar amounts unchanged, keep the independent reviewer and separate payment authorization requirement, retain Approve bill button. Remove the orange decorative dot next to Still required, leave text. Do not change layout or style."
+  },
+  {
+    "slug": "04-payment-recovery",
+    "prompt": "Preserve this exact UI composition, typography and all labels/amounts except these fixes. Under 'Separate payer approval' replace the confusing subtitle 'Payment required additional approval' with 'Independent payer approved saved version'. Replace all Today/time strings in the recovery timeline with just 'Day 3', without a measured time. Add a small gray 'Design concept' badge alongside 'Illustrative recovery' at the top right. Remove any gradient in green buttons, make them uniform dark green #1f6f4a. Do not change the essential Outcome unknown state, Create replacement payment remains disabled."
+  },
+  {
+    "slug": "06-history-controls",
+    "prompt": "Preserve this exact UI composition and all content except these targeted consistency edits. Replace timeline dates/times: first two events say 'Day 1'; Receipt added and Bill approved say 'Day 2'; Payment authorized, Recovery checked original operation, Bank and journal linked say 'Day 3'. No clock times. Under Receipt added replace 'Source version 2 / Previous hold retained' with 'Evidence set revision 2 / Previous hold retained'. In What changed panel replace the label 'Source version' with 'Evidence set revision', leave value 2. In Controls and connections change 'Supplier destination / Independent verification required' to 'Supplier destination / Approved version preserved'. Keep Increase sandbox Verification required and QuickBooks Not connected. All other style and content unchanged."
+  }
+]

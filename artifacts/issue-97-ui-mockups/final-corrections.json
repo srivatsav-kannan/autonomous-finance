@@ -1,0 +1,22 @@
+{
+  "corrections": [
+    {
+      "slug": "02-source-review",
+      "prompt": "Make ONLY this exact correction in the attached desktop UI screenshot: the BOTTOM sidebar item has a misspelled label resembling 'Hitegrations'. Replace that entire word with exactly 'Integrations', capital I followed by n t e g r a t i o n s. Keep the chain link icon left of it. Every other pixel, all typography and content, must remain unchanged."
+    },
+    {
+      "slug": "04-payment-recovery",
+      "prompt": "Make ONLY this exact text correction in the attached desktop UI screenshot. Under the timeline event 'Response lost', replace the sentence 'Worker interrupted after bank acceptance' with exactly 'Response unavailable after submission'. This screen cannot yet know if the bank accepted the request. Keep the main Outcome unknown status and everything else exactly unchanged."
+    }
+  ],
+  "reviewCorrections": [
+    {
+      "slug": "02-source-review",
+      "prompt": "Correct a typography defect in this UI mockup. Completely erase and redraw the entire bottom navigation row labeled Integrations, including its icon and label, in the sidebar around x=30..200 y=480..520. Use a simple clean chain-link outline icon and a fresh, crisp, normal sans-serif text label 'Integrations'. The opening letters MUST clearly read I n t e, with no overlapped glyphs or stray marks. The label should use the same normal font as Suppliers. This is the only change. Preserve all other UI content."
+    },
+    {
+      "slug": "06-history-controls",
+      "prompt": "Correct this history UI. Every event in the left case-history list is a recorded event, including Bill approved, Payment authorized, Recovery checked original operation, and Bank and journal linked. Change the four hollow gray circle markers for those four lower recorded events into filled dark-green small circles, visually identical to the recorded 'Invoice received' and 'Held for missing receipt' markers. Retain the green outer selection ring around Receipt added. Keep ALL labels, dates, amounts, layouts, and content identical. Only the four timeline markers change."
+    }
+  ]
+}
