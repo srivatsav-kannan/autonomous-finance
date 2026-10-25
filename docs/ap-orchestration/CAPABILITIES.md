@@ -6,17 +6,17 @@ This is the live implementation matrix for issue #97. A capability is not integr
 | --- | --- | --- |
 | Isolated worktree/backend and source/spec baseline | verified-local | P0-evidence.json, adoption.json; main d24f220 |
 | Shared source/evidence/review/payment contracts | verified-local | C0-acceptance.json; independent readiness review; six boundary tests |
-| Golden State original PDF/PO/receipt/contract | implemented, verified-local packet | A1-packet.md; five hashes, reproducible rendering; V1 outcome review pending |
-| Direct LlamaParse original ingestion | implemented, live component-verified | A2-ingestion.md; four synthetic source jobs, actual I1 pending |
+| Golden State original PDF/PO/receipt/contract | implemented, verified-local packet | A1-packet.md; five hashes, reproducible rendering; V1 independent agent review passed |
+| Direct LlamaParse original ingestion | implemented, live component-verified | A2-ingestion.md; four genuine parser jobs on synthetic originals; I1 HTTP upload reused hash-verified cache |
 | Native/raw-word/local-OCR/unresolved grounding | implemented, component-verified | Preserve per-method provenance, unresolved denominator; no universal OCR reliability claim |
-| PO matching and owned exceptions | implemented, component-verified | B1; original amounts, missing receipt/SKU/unit and authority gates |
-| Field review → bill → payable recognition | implemented, component-verified | B2; exact case/source/review snapshot and atomic entries |
-| Separate payment authorization and durable engine handoff | implemented, component-verified | C1-component.json, V-C1.md; independent component pass, I1 pending |
-| Source session/hash validation and original serving | implemented, component-verified | ap-system-server.test.ts; integrated browser path pending |
-| Unified case workspace | implemented, component-verified | D1; actual linked runtime I1 pending |
-| Same-case PDF → FakeBank → settlement reconciliation | planned integration | I1; all upstream gates required |
-| Negative cases and crash/recovery | existing engine component tests, connected cases pending | V2; source/review and possible-send controls must be exercised together |
-| Increase sandbox | auth/resource-read verified only | C2 after V2; no outbound payment yet |
+| PO matching and owned exceptions | clean case integrated-verified; negative gate underway | B1/V1/I1; V2 independently exercises missing/conflicting evidence |
+| Field review → bill → payable recognition | integrated-verified locally | I1; exact source/review binding, separate decisions and one recognition journal |
+| Separate payment authorization and durable engine handoff | integrated-verified locally | V-C1.md and I1; proposal waits for independent local simulated-human approval |
+| Source session/hash validation and original serving | integrated-verified locally | I1 original HTTP downloads match four hashes; native original highlight visually inspected |
+| Unified case workspace | integrated-verified locally, usability corrections underway | I1 same settled case in browser; D fixes field-panel length and direct-link session race |
+| Same-case PDF → FakeBank → settlement reconciliation | integrated-verified locally | I1-integrated.md/json; one transfer, bank debit and settlement entry; zero AP outstanding |
+| Negative cases and crash/recovery | independent connected verification in progress | V2 at190201f; no inherited external or practitioner claim |
+| Increase sandbox | auth/resource-read verified only | C2 after V2; genuine human OIDC configuration also absent; no outbound payment yet |
 | Broader suppliers/non-PO/partial receipt/credits/allocations | planned | B3 after V2 |
 | Business due-date scheduling | planned | C3 after V2; independent of ERP access |
 | Period close and unpaid AP carryforward | planned | B4; accounting correctness and locked-period gates |
