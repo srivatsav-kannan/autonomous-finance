@@ -1,6 +1,26 @@
 # Integrated acceptance evidence
 
-## Current OpenAI integration — 2026-10-24
+## Updated workbench integration — 2026-10-24
+
+Application source: `09336cf4d5c1f6ba11d01c3a40b27d090363b2e8`. This merges the committed workbench through `5b9ef92` into the invoice branch and embeds Invoices alongside all nine simulation views. Invoice totals remain scoped to their gateway workspace; simulation scenario selection, bank balances and WebMCP actions remain scoped to the simulation. The invoice route works even without a configured simulation backend.
+
+Fresh deterministic workspace `invoice-ui-integration-20261024`, through a separate gateway on :8812 and browser on `http://localhost:5182`, passed empty-state rendering, eight-source demo import, exact disputed-invoice approval, replay without a second receipt, reload persistence, late correction and source drill-down. Final totals were Acorn $1,075 and Birch $450: four recorded documents, one duplicate, one superseded version and one unresolved unfamiliar source. The synthetic operator decision is explicitly labeled as a UI acceptance test. No paid inference, benchmark rerun, payment or general-ledger posting was performed.
+
+The shared drawer traps focus and restores the source button after Escape; opening it by URL and closing after reload restores the invoice heading. Browser back/forward switches views correctly. All ten navigation destinations load; the simulation Scenario selector is absent on Invoices and the simulation WebMCP tools are unregistered there. The existing simulation backend on :3220 and its human gateway on :8787 stopped during visual verification and were restarted with the same stored database/functions. Bank & cash recovered its $252,289.30 simulated book balance. No teammate source files or deployed functions were changed by that restart.
+
+Validation at this application source:
+
+- 339 repository tests in 27 files pass; application and Convex TypeScript checks pass.
+- Production console build passes (106 modules); static design lint is clean.
+- Rendered design checks for all ten populated views pass with zero failures and zero warnings. Existing composite account/stage controls use the documented gate-39b waiver.
+- Desktop (1440×900) and phone (390×844) captures were produced in light/dark modes; invoice totals, labelled mobile rows, and the shared invoice drawer were visually checked. A separate modal scan reported one heading-spacing advisory (gate 71), with no failure; it also measured the dimmed background headings.
+- Missing-simulation configuration was tested at :5183: Invoices remained usable, while simulation views displayed a setup message with an Open invoices action.
+
+[Desktop](screenshots/integrated-ui-desktop.png), [phone](screenshots/integrated-ui-phone.png), [dark mode](screenshots/integrated-ui-dark.png), and [review drawer](screenshots/integrated-ui-drawer.png) show the integrated UI. The primary local preview is `http://127.0.0.1:5173/?view=invoices#finance-workbench`.
+
+This is new UI/workflow evidence. The sealed paid evaluation below measured application source `d08165c`, not this later UI integration; its scores, coverage limits and costs are unchanged. Production sign-in, native PDF extraction and reliable unfamiliar-document interpretation remain outside the verified demo.
+
+## Historical OpenAI integration — 2026-10-24
 
 Application source: `d08165c1ad38bb20817ace294c55ed1c50b8c243`, clean at startup and after an actual backend/gateway restart. The optional OpenAI transport and evaluator fixes are integrated. The browser remains the focused invoice UI; the newer broad simulation UI on :5180 is separate.
 
