@@ -1,0 +1,234 @@
+{
+  "baseline": "391f2e9fc027f79babd736fe83047bc253bab1fa",
+  "review": "Independent agent engineering checkpoint, not external or practitioner acceptance",
+  "V4Repair": {
+    "integratedCommit": "126596b6f344b4fd26d7ace04664d51b22a7dd1c",
+    "independentUnchangedCases": 15,
+    "ownerRegressionCases": 13,
+    "originalFileHashesVerified": true,
+    "closedFindings": [
+      "V4-F1",
+      "V4-F2",
+      "V4-F3"
+    ]
+  },
+  "V3Migration": {
+    "historicalCommit": "ac0be77906b1a9458b180c6fcdf39a63489f6cad",
+    "historicalProductionBaseline": "6251f5770f1394a48a3c6d517429498f9a569bfd",
+    "file": "tests/ap-system/v3-quickbooks.test.ts",
+    "historicalFileSha256": "adf69e9a6d2307acd1d5de153f43af19fbb45f754231270e973e33267b1aa232",
+    "currentFileSha256": "45687c4128cf7670276d9c6375cecfc2211962d7af2c9fef86edd01aeab2f9f5",
+    "cases": 13
+  },
+  "typecheck": "PASS",
+  "runs": [
+    {
+      "rawPath": "/private/tmp/ap97-v5-v4-repair-results.json",
+      "rawSha256": "acb1eba980016eae70435a7dcaf0f264e7a27114af2d81f778c372cba5e6fd43",
+      "total": 28,
+      "passed": 28,
+      "failed": 0,
+      "files": [
+        {
+          "file": "tests/ap-system/business-authority-regressions.test.ts",
+          "cases": [
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans cannot replenish original PO/receipt units by renaming source and parser IDs, but permits only the exact remaining units",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans holds a changed sku semantic interpretation of identical original bytes",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans holds a changed unit semantic interpretation of identical original bytes",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans holds a changed quantity semantic interpretation of identical original bytes",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans denies supplier activation when retained verifier is retired",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans denies supplier activation when retained verifier is group_removed",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans denies supplier activation when retained verifier is binding_changed",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans denies supplier activation when retained verifier is approver_alias",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans blocks existing payment authority after verifier retirement and permits explicit new supplier verification plus business recertification without rebooking",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans cannot count two subject aliases for one human seat toward a quorum",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans rejects one underlying person across sequential approval groups",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans rejects rebinding a retained voter's subject before final recognition or payment",
+              "status": "passed"
+            },
+            {
+              "name": "B3 verifier regressions: immutable capacity and independent humans cannot delegate to one's own subject alias or reuse a delegated principal's seat",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "tests/ap-system/v4-auth.test.ts",
+          "cases": [
+            {
+              "name": "V4 independent request-bound Auth0 gateway uses distinct verified identities through actual backend reviews and rejects cross-subject cookies",
+              "status": "passed"
+            },
+            {
+              "name": "V4 independent request-bound Auth0 gateway rechecks private allowlist and actual active seat on every request, including source reads",
+              "status": "passed"
+            },
+            {
+              "name": "V4 independent request-bound Auth0 gateway does not accept an expired token plus a valid cookie and logout revokes only its subject-bound session",
+              "status": "passed"
+            },
+            {
+              "name": "V4 independent request-bound Auth0 gateway actual mutation rejects a seat revoked after gateway authentication but before commit",
+              "status": "passed"
+            },
+            {
+              "name": "V4 independent request-bound Auth0 gateway drops a previous account response when the JSON body completes after account switch",
+              "status": "passed"
+            },
+            {
+              "name": "V4 independent request-bound Auth0 gateway failed old token acquisition cannot expire a replacement account and logout hides data before network completion",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "tests/ap-system/v4-business.test.ts",
+          "cases": [
+            {
+              "name": "V4 independent B3 financial authority rejects changed parser line IDs as new capacity for the same PO and receipt originals",
+              "status": "passed"
+            },
+            {
+              "name": "V4 independent B3 financial authority does not approve a bank change after its verification human was retired",
+              "status": "passed"
+            },
+            {
+              "name": "V4 independent B3 financial authority retains original7700 and recognizes exact partial3850 with no automatic payment",
+              "status": "passed"
+            },
+            {
+              "name": "V4 independent B3 financial authority blocks invoice-derived contacts, replacement contact bank changes and same-human verification approval",
+              "status": "passed"
+            },
+            {
+              "name": "V4 independent B3 financial authority cannot finish sequential recognition after delegation expires or its grantor is retired",
+              "status": "passed"
+            },
+            {
+              "name": "V4 independent B3 financial authority retains original beneficiary after real FakeBank response loss and supplier bank-change approval",
+              "status": "passed"
+            },
+            {
+              "name": "V4 underlying human identity segregation cannot count two configured subject aliases for the same human seat as two quorum votes",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "tests/ap-system/v4-credits.test.ts",
+          "cases": [
+            {
+              "name": "V4 independent credits and return-source capacity cannot recredit the same return bytes by renumbering the return line",
+              "status": "passed"
+            },
+            {
+              "name": "V4 independent credits and return-source capacity reverses every original allocated cent once and atomically rolls back a multi-credit overdraw",
+              "status": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rawPath": "/private/tmp/ap97-v5-v3-migration-results.json",
+      "rawSha256": "4e4b23380a138982b677ebbee3ea1372a3562d3d7300c99a7f05ab18465736d2",
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "files": [
+        {
+          "file": "tests/ap-system/v3-quickbooks.test.ts",
+          "cases": [
+            {
+              "name": "V3 independent credential-free QBO boundaries exports authoritative recognition, rejects wrong account, anonymous access and stale approval, and redacts originals",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries exports only exact partial cash and gross discharge with original linked credit, credit applied=false",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries exports only exact partial cash and gross discharge with original linked credit, credit applied=true",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries blocks a BillPayment when its linked external Bill changed before first write",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries serializes two separate journal instances and preserves one provider identity",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries recovers a lost create response after journal reopen with no new POST, preserving exact request",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries unknown with no match never reposts, and duplicate marker matches require review",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries rejects a changed external SyncToken and immutable mapping change without rewriting the receipt",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries does not accept a mismatched create response or later changed economic payload",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries rechecks approval after mapping waits and does not write after authority was withdrawn",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries binds concurrent callbacks to one use and rejects cross-session state without spending it",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries never reuses a refresh token after an ambiguous rotation, including a fresh OAuth instance",
+              "status": "passed"
+            },
+            {
+              "name": "V3 independent credential-free QBO boundaries rejects symlinked or broadly readable private files and immutable operation corruption",
+              "status": "passed"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "nextScope": "Independent B4 close/export, governed credits, C4 signed discounts and bank return/replacement review still pending"
+}

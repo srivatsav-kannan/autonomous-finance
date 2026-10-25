@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { makeFunctionReference } from "convex/server";
 import { fixture, refs } from "./accounting-fixture";
+import { creditFixture } from "./quickbooks-business-fixture";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import {
@@ -21,7 +22,7 @@ import {
   SyncJournal,
   QuickBooksDispatcher,
 } from "../../src/ap-system/quickbooks/sync";
-import { billPlan, paymentPlan } from "../../src/ap-system/quickbooks/plans";
+import { billPlan, paymentPlan, creditPlan } from "../../src/ap-system/quickbooks/plans";
 import type {
   AccountingExport,
   Mappings,
@@ -218,6 +219,17 @@ async function protocol(
     },
   };
 }
+// Current first-POST contract. Historical V3 tests/report remain at ac0be779.
+const authorization = (p: Plan) => ({
+  subject: "v3-synthetic-authorized-writer",
+  planHash: hash(p),
+  decidedAt: Date.now(),
+});
+const successful = (p: Plan, id: string): Operation => ({
+  ...p, requestId: `ap-${hash({ realm: p.realmId, identity: p.identity }).slice(0,44)}`,
+  payloadHash: hash(p), state: "succeeded", createdAt: 1, updatedAt: 1, attempts: 1,
+  externalId: id, syncToken: "0", lastError: null, responseHash: "a".repeat(64),
+});
 const authenticated = (e: AccountingExport): AccountingExport => ({
   ...structuredClone(e),
   exportedAt: Date.now(),
@@ -264,21 +276,16 @@ describe("V3 independent credential-free QBO boundaries", () => {
     await expect(f.load()).rejects.toThrow(/approved snapshot/);
   });
   it.each([false, true])(
-    "rejects actual partial settlement, credit applied=%s, rather than exporting a full BillPayment",
+    "exports only exact partial cash and gross discharge with original linked credit, credit applied=%s",
     async (credits) => {
-      const f = await approved();
-      let selected: any[] = [];
-      if (credits) {
-        const r = await f.human.mutation(api.demoPayments.recordCredit, {
-          scope: f.scope,
-          reference: "V3-QBO-CREDIT",
-          amountCents: 1200,
-          evidence: "explicit synthetic credit",
-          date: "2026-10-25",
-          expenseAccount: "5000",
-        });
-        selected = [{ creditId: r.creditId, amountCents: 1200 }];
-      }
+      // B3 now supports partial export; the applied 1200 must come from an
+      // actually recognized linked credit, not the obsolete unlinked legacy hook.
+      const governed = credits ? await creditFixture() : null;
+      const f = governed ? { ...governed, caseId: governed.detail.caseId,
+        billId: governed.original.billId as Id<"demoBills"> } : await approved();
+      const selected = governed
+        ? [{ creditId: (await governed.credit("V3-QBO-LINKED-CREDIT")).creditId, amountCents: 1200 }]
+        : [];
       const r = await f.t.mutation(api.demoPayments.requestPayment, {
         scope: f.scope,
         seatId: "payments",
@@ -325,13 +332,26 @@ describe("V3 independent credential-free QBO boundaries", () => {
           paidCents: 5000,
           status: "approved",
         });
-        await expect(
-          f.human.query(current, {
-            scope: f.scope,
-            caseId: f.caseId,
-            paymentVersionId: r.versionId,
-          }),
-        ).rejects.toThrow("Settled exact bill payment required");
+        const exported = await f.human.query(current, {
+          scope: f.scope, caseId: f.caseId, paymentVersionId: r.versionId,
+        }) as AccountingExport;
+        expect(exported.settlement).toMatchObject({ amountCents: credits ? 3800 : 5000,
+          grossAppliedCents: 5000, paymentVersionId: r.versionId });
+        expect(exported.detail.amounts.outstandingCents).toBe(2700);
+        expect(exported.detail.amounts.acceptedCents).toBe(7700);
+        expect(exported.settlement!.credits!.map(c => c.amountCents)).toEqual(credits ? [1200] : []);
+        // Only planning gets an Increase-shaped scope; actual bank execution above remains FakeBank.
+        const e = authenticated(exported), bill = successful(billPlan(e, mapping), "901");
+        const creditOps = e.settlement!.credits!.map(c => successful(creditPlan(c.recognition, mapping, bill), "902"));
+        const planned = paymentPlan(e, mapping, bill, creditOps);
+        expect(bill.payload.TotalAmt).toBe(77);
+        expect(planned.payload.TotalAmt).toBe(credits ? 38 : 50);
+        expect(planned.payload.Line).toEqual([
+          { Amount: 50, LinkedTxn: [{ TxnId: "901", TxnType: "Bill" }] },
+          ...(credits ? [{ Amount: 12, LinkedTxn: [{ TxnId: "902", TxnType: "VendorCredit" }] }] : []),
+        ]);
+        expect(() => paymentPlan({ ...e, settlement: { ...e.settlement!, grossAppliedCents: 7700 } }, mapping, bill, creditOps))
+          .toThrow("payment_application_sum_mismatch");
       } finally {
         bank.close();
       }
@@ -427,20 +447,21 @@ describe("V3 independent credential-free QBO boundaries", () => {
       h = await protocol(p, { delay: true }),
       second = new SyncJournal(new PrivateStore(h.s.root), h.client);
     const [a, b] = await Promise.all([
-      h.journal.execute(p, mapping),
-      second.execute(p, mapping),
+      h.journal.execute(p, mapping, undefined, authorization(p)),
+      second.execute(p, mapping, undefined, { ...authorization(p), subject: "concurrent-second-writer" }),
     ]);
     expect(a.externalId).toBe("901");
     expect(b.externalId).toBe("901");
     expect(a.requestId).toBe(b.requestId);
     expect(h.posts).toBe(1);
     expect(a.attempts).toBe(1);
+    expect(b.submissionAuthorization).toEqual(a.submissionAuthorization);
   });
   it("recovers a lost create response after journal reopen with no new POST, preserving exact request", async () => {
     const f = await approved(),
       p = billPlan(f.e, mapping),
       h = await protocol(p, { lost: true });
-    await expect(h.journal.execute(p, mapping)).rejects.toThrow(
+    await expect(h.journal.execute(p, mapping, undefined, authorization(p))).rejects.toThrow(
       "qbo_transport_unknown",
     );
     const before = (await h.journal.get(p))!;
@@ -456,13 +477,14 @@ describe("V3 independent credential-free QBO boundaries", () => {
     expect(after.payload).toEqual(before.payload);
     expect(after.requestId).toBe(before.requestId);
     expect(after.attempts).toBe(1);
+    expect(after.submissionAuthorization).toEqual(before.submissionAuthorization);
     expect(h.posts).toBe(1);
   });
   it("unknown with no match never reposts, and duplicate marker matches require review", async () => {
     const f = await approved(),
       p = billPlan(f.e, mapping),
       h = await protocol(p, { lost: true });
-    await expect(h.journal.execute(p, mapping)).rejects.toThrow();
+    await expect(h.journal.execute(p, mapping, undefined, authorization(p))).rejects.toThrow();
     const original = h.rows[0]!;
     h.rows = [];
     for (let i = 0; i < 2; i++)
@@ -479,7 +501,7 @@ describe("V3 independent credential-free QBO boundaries", () => {
     const f = await approved(),
       p = billPlan(f.e, mapping),
       h = await protocol(p);
-    const first = await h.journal.execute(p, mapping);
+    const first = await h.journal.execute(p, mapping, undefined, authorization(p));
     h.rows = [{ ...h.rows[0], SyncToken: "1" }];
     await expect(h.journal.execute(p, mapping)).rejects.toThrow(
       "external_stale_or_changed",
@@ -498,7 +520,7 @@ describe("V3 independent credential-free QBO boundaries", () => {
     const f = await approved(),
       p = billPlan(f.e, mapping),
       h = await protocol(p, { badResponse: true });
-    await expect(h.journal.execute(p, mapping)).rejects.toThrow(
+    await expect(h.journal.execute(p, mapping, undefined, authorization(p))).rejects.toThrow(
       "external_response_mismatch",
     );
     expect((await h.journal.get(p))?.state).toBe("unknown");
@@ -577,7 +599,7 @@ describe("V3 independent credential-free QBO boundaries", () => {
     const f = await approved(),
       p = billPlan(f.e, mapping),
       h = await protocol(p);
-    await h.journal.execute(p, mapping);
+    await h.journal.execute(p, mapping, undefined, authorization(p));
     await h.s.write("target.json", { fixture: true });
     await symlink(h.s.path("target.json"), h.s.path("linked.json"));
     await expect(h.s.read("linked.json")).rejects.toThrow(
