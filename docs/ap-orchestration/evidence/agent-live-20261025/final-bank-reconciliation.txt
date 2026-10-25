@@ -1,0 +1,49 @@
+Bank reconciliation
+Refresh bank evidence
+
+Imported activity for this run is linked to its journals. The imported net is not a live bank balance. Period close and QuickBooks accounting have separate records.
+
+Test capital recorded. Journal rx7e33cyp8s2a5b2asbthrr89n8gz3m8.
+
+All imported bank transactions matched and posted.
+
+Cash ledger / 1000
+$0.00
+Imported net activity
+$0.00
+Unresolved items
+0
+
+Latest complete bank scan: 10/25/2026, 7:35:35 AM
+
+-$678.60 / Ach transfer intention
+Posted / 2026-10-25T11:34:47Z
+sandbox_transaction_02j4j1ax6a81pw5y034h
+
+Journal
+rx71arac24mhdfs13bvcmwy1a18gzheq
+
+$678.60 / Inbound ach transfer
+Posted / 2026-10-25T11:31:29Z
+sandbox_transaction_7in7uo3dooxz3307i4cu
+
+Journal
+rx73vfsg1t42av182g987kn3c58gytxg
+
+User requested classification of the exact USD 678.60 sandbox test funding. Increase readback confirms posted inbound ACH sandbox_transaction_7in7uo3dooxz3307i4cu, from simulator transfer sandbox_inbound_ach_transfer_dv1kh0uole1qcljp2rdm. Simulated contributed test capital only: Dr bank 1000 / Cr equity 3000. No revenue, supplier payment, or real funds created by this classification.
+
+$77.00 / Inbound ach transfer
+Posted / 2026-10-25T14:34:08Z
+sandbox_transaction_oy9m8onuj9jyvcxbpgik
+
+Journal
+rx7e33cyp8s2a5b2asbthrr89n8gz3m8
+
+Verified simulated test capital for INV-AGENT-20261025-01: USD 77.00 from Increase sandbox inbound ACH sandbox_inbound_ach_transfer_v6d19ejq15jofeg01w6f, posted transaction sandbox_transaction_oy9m8onuj9jyvcxbpgik. Record Dr bank 1000 / Cr equity 3000. This is test funding, not operating revenue.
+
+-$77.00 / Ach transfer intention
+Posted / 2026-10-25T14:35:32Z
+sandbox_transaction_r8hbiuowvzm2dq0o7s7g
+
+Journal
+rx7atffq428wt3z2ey0t81j4r98gyv8g

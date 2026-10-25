@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-10-25T14:37:58.859Z",
+  "providerBusinessWrites": 0,
+  "increase": {
+    "newTransfer": {
+      "id": "sandbox_ach_transfer_8mguyq0upoyjbjoa0516",
+      "amount": 7700,
+      "accountMatches": true,
+      "destinationMatches": true,
+      "status": "submitted",
+      "settlement": {
+        "settled_at": "2026-10-25T14:35:32Z"
+      },
+      "transactionId": "sandbox_transaction_r8hbiuowvzm2dq0o7s7g",
+      "idempotencyKey": "demo:q175ng25mn4x5jbxtj102jmnz18gzyb9"
+    },
+    "oldTransfer": {
+      "id": "sandbox_ach_transfer_spyd2r518l9gutry0hfn",
+      "amount": 67860,
+      "accountMatches": true,
+      "status": "submitted",
+      "settlement": {
+        "settled_at": "2026-10-25T11:34:47Z"
+      },
+      "transactionId": "sandbox_transaction_02j4j1ax6a81pw5y034h",
+      "idempotencyKey": "demo:q17cdf2z1zj9nv2rvmgax3dwtd8gzqyc"
+    },
+    "balance": {
+      "accountMatches": true,
+      "currentCents": 0,
+      "availableCents": 0
+    },
+    "passed": true
+  },
+  "quickbooks": {
+    "bill": {
+      "id": "147",
+      "total": 77,
+      "balance": 0,
+      "currency": "USD"
+    },
+    "billPayment": {
+      "id": "148",
+      "total": 77,
+      "payType": "Check",
+      "lines": [
+        {
+          "amount": 77,
+          "linkedTxn": [
+            {
+              "TxnId": "147",
+              "TxnType": "Bill"
+            }
+          ]
+        }
+      ],
+      "currency": "USD"
+    },
+    "passed": true
+  },
+  "passed": true
+}

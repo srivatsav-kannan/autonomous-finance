@@ -1,7 +1,7 @@
 {
   "schema": "ap-live-rollout-evidence-v1",
   "generatedAt": "2026-10-25T13:50:41.587394+00:00",
-  "status": "partial_runtime_restored_full_flow_not_passed",
+  "status": "minimal_synthetic_full_flow_passed",
   "scope": {
     "environment": "existing local Auth0 / Increase sandbox",
     "runId": "ap97-auth0-live-20261025",
@@ -89,47 +89,6 @@
     "currency": "USD",
     "synthetic": true
   },
-  "parentReportedResults": [
-    {
-      "step": "backend_typecheck",
-      "status": "passed"
-    },
-    {
-      "step": "missing_receipt_wait",
-      "status": "passed",
-      "detail": "Agent persisted missing-evidence wait for revision 1"
-    },
-    {
-      "step": "receipt_added_resume",
-      "status": "passed",
-      "detail": "Revision 2 resumed into field review"
-    },
-    {
-      "step": "field_review",
-      "status": "recorded"
-    },
-    {
-      "step": "bill_approval",
-      "status": "pending",
-      "detail": "Prior browser bill-approval click was rejected by automatic review, requiring the user; no workaround taken. No payment authorization is claimed."
-    },
-    {
-      "step": "independent_payment_authorization",
-      "status": "not_reached"
-    },
-    {
-      "step": "increase_payment_settlement",
-      "status": "not_run_for_this_case"
-    },
-    {
-      "step": "bank_reconciliation",
-      "status": "not_run_for_this_case"
-    },
-    {
-      "step": "qbo_bill_and_billpayment",
-      "status": "not_run_for_this_case"
-    }
-  ],
   "independentlyVerified": {
     "sourceFilesRead": true,
     "sourceMatchesReferenceCount": 11,
@@ -137,7 +96,7 @@
     "schemaChange": "adds apCaseWork and apCaseWorkEvents to existing base schema",
     "runtimeEvidenceRead": true,
     "databaseHashRead": true,
-    "runtimeEvidenceScope": "saved repaired-backend scoped query readbacks, copy-repair audit and runtime manifest; not fresh provider validation",
+    "runtimeEvidenceScope": "Final saved local case readback, independent provider readback at2026-10-25T14:37:58.859Z, reconciliation text and both final UI screenshots were independently inspected.",
     "priorCase": {
       "execution": "settled",
       "reconciliation": "matched",
@@ -145,11 +104,26 @@
       "paymentCount": 1
     },
     "newCase": {
+      "accounting": "recognized",
+      "authorization": "authorized",
+      "business": "approved",
       "document": "reviewed",
-      "business": "held",
-      "authorization": "not_requested",
-      "paymentCount": 0,
-      "journalCount": 0,
+      "execution": "settled",
+      "reconciliation": "matched",
+      "amounts": {
+        "acceptedCents": 7700.0,
+        "creditedCents": 0.0,
+        "disputedCents": 0.0,
+        "instructedCents": 7700.0,
+        "invoicedCents": 7700.0,
+        "outstandingCents": 0.0,
+        "settledCents": 7700.0
+      },
+      "paymentCount": 1,
+      "caseJournalCount": 2,
+      "workStage": "reconciled",
+      "workStatus": "complete",
+      "workRequirements": [],
       "timelineKinds": [
         "source_revision",
         "source_delivery",
@@ -160,12 +134,12 @@
         "source_delivery",
         "agent_field_review",
         "field_review",
-        "agent_bill_approval"
-      ],
-      "workStage": "bill_approval",
-      "workStatus": "waiting",
-      "workRequirements": [
-        "current_bill_approval"
+        "agent_bill_approval",
+        "bill_approval",
+        "agent_payment_authorization",
+        "agent_bank_settlement",
+        "agent_bank_settlement",
+        "agent_reconciled"
       ]
     },
     "caseListReadSucceeded": true,
@@ -195,73 +169,84 @@
         "matches": true
       }
     ],
-    "postWorkerRestart": {
-      "checkedAt": "2026-10-25T14:21:51.491978+00:00",
-      "waitingAfterWorkerRestart": true,
-      "workStage": "bill_approval",
-      "authorization": "not_requested",
-      "paymentCount": 0,
-      "journalCount": 0,
-      "originalMalformedDatabaseUnchanged": true,
-      "flowPassed": false,
-      "source": {
-        "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/post-restart-checkpoint.json",
-        "sha256": "a5fac8fa79cc5f81927353349bae44b49bde02e4bcfc9ffc7fab84d0fa82a9e7"
+    "increase": {
+      "transferId": "sandbox_ach_transfer_8mguyq0upoyjbjoa0516",
+      "paymentVersionId": "q175ng25mn4x5jbxtj102jmnz18gzyb9",
+      "debitTransactionId": "sandbox_transaction_r8hbiuowvzm2dq0o7s7g",
+      "amountCents": 7700,
+      "nativeStatus": "submitted",
+      "settlementPresent": true,
+      "normalizedStatus": "settled",
+      "checkedAt": "2026-10-25T14:35:33.644131+00:00",
+      "independentReadback": {
+        "checkedAt": "2026-10-25T14:37:58.859Z",
+        "passed": true,
+        "settledAt": "2026-10-25T14:35:32Z",
+        "currentBalanceCents": 0,
+        "availableBalanceCents": 0,
+        "oldTransferPreserved": true
       }
-    }
-  },
-  "evidenceGap": {
-    "expectedRuntimeArtifacts": [
-      "01-waiting.json",
-      "02-resumed.json",
-      "03-current.json",
-      "old-case-preserved.json"
-    ],
-    "missingAtPreparation": [
-      "01-waiting.json",
-      "02-resumed.json",
-      "03-current.json",
-      "old-case-preserved.json"
-    ],
-    "detail": "Original temporary checkpoints remain absent. Durable recovered readbacks independently corroborate wait/resume/field-review history and unchanged old-case settled/matched state; current repaired readback confirms a waiting bill-approval work item. Four PDF original hashes match. Full .recover completeness for entirely lost records and new-case external payment/accounting flow remain unproven."
-  },
-  "limits": [
-    "Synthetic native PDF; no new LlamaParse extraction validation.",
-    "No Claude independent model review or practitioner sign-off is claimed.",
-    "CI intentionally skipped.",
-    "Earlier INV-1001 / QBO145 / QBO146 results do not establish this new case passed.",
-    "Full new-case flow remains unverified until separate authorization, settlement, reconciliation and any claimed QBO synchronization are observed."
-  ],
-  "blocker": {
-    "code": "local_backend_sqlite_malformed",
-    "severity": "blocks_live_validation",
-    "observedBy": "parent agent direct readback",
-    "detail": "Original malformed database remains preserved and unreplaced. Targeted copy-only repair removed five orphan index versions; all 1,672 surviving documents, persistence globals and unaffected index hashes are unchanged. Latest dangling index references are zero. Saved scoped queries now read agent work state and both cases; four PDF original hashes match. Repaired recovery copy serves existing sandbox ports 3252/3253. SQLite .recover completeness for completely missing records cannot be proved.",
-    "cause": "unknown",
-    "recoveryStatus": "repaired_copy_serving_3252_3253",
-    "originalDatabase": {
-      "path": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/.convex/local/default/convex_local_backend.sqlite3",
-      "sizeBytes": 4370432,
-      "sha256": "e568e28a5f5c27e901c568d4a652d38f7e47202f88920f20b6f71f35a71b6af6",
-      "hashObservedAt": "2026-10-25T13:50:41.587394+00:00"
     },
-    "recoveryBackendPort": 3252,
-    "originalDatabaseReplaced": false,
-    "recoveryBackendStatus": "running_repaired_copy",
-    "status": "targeted_dangling_index_blocker_resolved_full_recovery_unproven",
-    "recoverySitePort": 3253,
-    "historicalError": {
-      "timestamp": "2026-10-25T13:50:30.238586Z",
-      "error": "Dangling index reference for IndexKeyBytes([16, 97, 112, 57, 55, 45, 97, 117, 116, 104, 48, 45, 108, 105, 118, 101, 45, 50, 48, 50, 54, 49, 48, 50, 53, 0, 16, 107, 100, 55, 48, 100, 106, 99, 56, 119, 100, 97, 109, 55, 54, 115, 55, 100, 120, 122, 48, 106, 120, 100, 103, 118, 57, 56, 103, 122, 109, 113, 52, 0, 13, 194, 122, 23, 48, 20, 140, 135, 10, 16, 116, 53, 55, 54, 49, 101, 55, 57, 114, 109, 112, 48, 107, 57, 57, 97, 102, 102, 102, 122, 51, 49, 57, 103, 99, 115, 56, 103, 122, 98, 119, 115, 0]) Timestamp(1792931146672960000)",
-      "logSha256": "884f37b83595a5f21259228db44ec86488117555b252d0f7f796cd3e4973a834",
-      "logPath": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/candidate-backend.log"
+    "quickbooks": {
+      "bill": {
+        "id": "147",
+        "state": "succeeded",
+        "attempts": 1,
+        "amount": 77,
+        "currency": "USD",
+        "payloadHash": "422ced26813979ba7d649684fa441c15c61f22b53032605590dd01dbcd392315",
+        "responseHash": "551905e95be688629a71caf26a4fcc94d16fe4ee386cdae1a3c7d201989ab3c3",
+        "balance": 0,
+        "readbackCheckedAt": "2026-10-25T14:37:58.859Z"
+      },
+      "billPayment": {
+        "status": "verified",
+        "id": "148",
+        "total": 77,
+        "currency": "USD",
+        "linkedBillId": "147",
+        "readbackCheckedAt": "2026-10-25T14:37:58.859Z",
+        "uiVerifiedAt": "2026-10-25T07:37:35-07:00"
+      }
+    },
+    "funding": {
+      "amountCents": 7700,
+      "inboundTransferId": "sandbox_inbound_ach_transfer_v6d19ejq15jofeg01w6f",
+      "creditTransactionId": "sandbox_transaction_oy9m8onuj9jyvcxbpgik",
+      "nativeStatus": "accepted",
+      "classification": "simulated_contributed_capital",
+      "reconciliationClosed": true,
+      "journalId": "rx7e33cyp8s2a5b2asbthrr89n8gz3m8",
+      "journalLines": [
+        {
+          "account": "1000",
+          "debit": 7700,
+          "credit": 0
+        },
+        {
+          "account": "3000",
+          "debit": 0,
+          "credit": 7700
+        }
+      ]
+    },
+    "bankReconciliation": {
+      "importedTransactionCount": 4,
+      "allMatchedAndPosted": true,
+      "cashLedgerCents": 0,
+      "importedNetActivityCents": 0,
+      "unresolvedItemCount": 0,
+      "formalPeriodCloseClaimed": false
+    },
+    "finalEvidence": {
+      "method": "Read final independent provider JSON and reconciliation text; visually inspected both final screenshots.",
+      "providerVerifierBusinessWrites": 0,
+      "providerCheckPassed": true,
+      "qboScreenshotVerified": true,
+      "bankScreenshotVerified": true
     }
   },
-  "updatedAt": "2026-10-25T14:22:44.031022+00:00",
-  "durableRecoveredCheckpoint": {
-    "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/recovered-business-checkpoint.json",
-    "sha256": "f98d3d8a701a4b2fd76db63414e1ee685525feda2f33c4f17a23d1fcc6667c5f"
-  },
+  "updatedAt": "2026-10-25T14:39:10.738542+00:00",
   "freshValidation": {
     "observedAtApprox": "2026-10-25T13:54:00Z",
     "observedBy": "parent agent direct command results",
@@ -277,7 +262,7 @@
     ],
     "ci": "skipped_by_user"
   },
-  "currentRemainingGate": "new_case_waiting_for_bill_approval_then_separate_payment_authorization_and_external_flow",
+  "currentRemainingGate": "minimal_flow_complete_issue108_model_adapter_and_evidence_remaining",
   "copyRepairAudit": {
     "removedIndexRows": 5,
     "documentsBefore": 1672,
@@ -303,25 +288,261 @@
       }
     ]
   },
-  "parentReportedCurrentChecks": {
-    "apAgentOnceResult": [],
-    "browserRestoration": "completed_normal_Auth0_login",
-    "ci": "skipped_by_user",
-    "claudeIndependentReview": "not_performed",
-    "browserCaseView": "Chrome5192 originals,17 fields and review controls rendered",
-    "apWorker": "resident_worker_running_after_once_returned_empty",
-    "nextUserAction": "bill_approval_77_USD_via_authenticated_UI",
-    "screenshot": {
-      "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/recovered-ap-page.png",
-      "exists": true,
-      "sha256": "1e88cae1a1d5429306c075157fec6c48b3a76c1afcc47b7a28a3b0936d96cbd6"
-    }
-  },
   "remainingIssue108Handoff": "ISSUE-108-REMAINING.md",
   "issue108Acceptance": {
     "qboBillAndBillPaymentReadbacks": "required_for_new_case",
     "linkedProviderIds": "QBO and Increase IDs required",
     "apex107Adapter": "consume shared packet/importer contract",
-    "fullFlowPassed": false
-  }
+    "fullFlowPassed": true,
+    "newExternalFlow": "completed_with_linked_QBO147_QBO148_and_Increase_transfer",
+    "issue108Complete": false
+  },
+  "latestFlowSummary": {
+    "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/flow-summary.json",
+    "sha256": "73eff1069d22210b03d8c2ed8c5994117d8b80a494fb3a343915d2da635784ed",
+    "fullFlowPassed": true
+  },
+  "historicalCheckpointNotice": "Earlier recovery/waiting snapshots remain historical. flow-summary.json contains the completed minimal synthetic flow and final evidence hashes.",
+  "minimalSyntheticFlowPassed": true,
+  "issue108Complete": false,
+  "historicalRecoveryCheckpoint": {
+    "asOfBeforeFinalFlow": "2026-10-25T14:21:51.491978+00:00",
+    "status": "historical_superseded_by_final_minimal_flow",
+    "parentReportedResults": [
+      {
+        "step": "backend_typecheck",
+        "status": "passed"
+      },
+      {
+        "step": "missing_receipt_wait",
+        "status": "passed",
+        "detail": "Agent persisted missing-evidence wait for revision 1"
+      },
+      {
+        "step": "receipt_added_resume",
+        "status": "passed",
+        "detail": "Revision 2 resumed into field review"
+      },
+      {
+        "step": "field_review",
+        "status": "recorded"
+      },
+      {
+        "step": "bill_approval",
+        "status": "pending",
+        "detail": "Prior browser bill-approval click was rejected by automatic review, requiring the user; no workaround taken. No payment authorization is claimed."
+      },
+      {
+        "step": "independent_payment_authorization",
+        "status": "not_reached"
+      },
+      {
+        "step": "increase_payment_settlement",
+        "status": "not_run_for_this_case"
+      },
+      {
+        "step": "bank_reconciliation",
+        "status": "not_run_for_this_case"
+      },
+      {
+        "step": "qbo_bill_and_billpayment",
+        "status": "not_run_for_this_case"
+      }
+    ],
+    "independentlyVerified": {
+      "sourceFilesRead": true,
+      "sourceMatchesReferenceCount": 11,
+      "sourceFileCount": 13,
+      "schemaChange": "adds apCaseWork and apCaseWorkEvents to existing base schema",
+      "runtimeEvidenceRead": true,
+      "databaseHashRead": true,
+      "runtimeEvidenceScope": "saved repaired-backend scoped query readbacks, copy-repair audit and runtime manifest; not fresh provider validation",
+      "priorCase": {
+        "execution": "settled",
+        "reconciliation": "matched",
+        "outstandingCents": 0,
+        "paymentCount": 1
+      },
+      "newCase": {
+        "document": "reviewed",
+        "business": "held",
+        "authorization": "not_requested",
+        "paymentCount": 0,
+        "journalCount": 0,
+        "timelineKinds": [
+          "source_revision",
+          "source_delivery",
+          "source_delivery",
+          "source_delivery",
+          "agent_missing_evidence",
+          "source_revision",
+          "source_delivery",
+          "agent_field_review",
+          "field_review",
+          "agent_bill_approval"
+        ],
+        "workStage": "bill_approval",
+        "workStatus": "waiting",
+        "workRequirements": [
+          "current_bill_approval"
+        ]
+      },
+      "caseListReadSucceeded": true,
+      "originalPdfsVerified": [
+        {
+          "sourceId": "source-agent-20261025-01-invoice",
+          "bytes": 2345,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "matches": true
+        },
+        {
+          "sourceId": "source-agent-20261025-01-purchase_order",
+          "bytes": 2421,
+          "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+          "matches": true
+        },
+        {
+          "sourceId": "source-agent-20261025-01-contract",
+          "bytes": 2419,
+          "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+          "matches": true
+        },
+        {
+          "sourceId": "source-agent-20261025-01-receipt",
+          "bytes": 2475,
+          "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+          "matches": true
+        }
+      ],
+      "postWorkerRestart": {
+        "checkedAt": "2026-10-25T14:21:51.491978+00:00",
+        "waitingAfterWorkerRestart": true,
+        "workStage": "bill_approval",
+        "authorization": "not_requested",
+        "paymentCount": 0,
+        "journalCount": 0,
+        "originalMalformedDatabaseUnchanged": true,
+        "flowPassed": false,
+        "source": {
+          "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/post-restart-checkpoint.json",
+          "sha256": "a5fac8fa79cc5f81927353349bae44b49bde02e4bcfc9ffc7fab84d0fa82a9e7"
+        }
+      }
+    },
+    "evidenceGap": {
+      "expectedRuntimeArtifacts": [
+        "01-waiting.json",
+        "02-resumed.json",
+        "03-current.json",
+        "old-case-preserved.json"
+      ],
+      "missingAtPreparation": [
+        "01-waiting.json",
+        "02-resumed.json",
+        "03-current.json",
+        "old-case-preserved.json"
+      ],
+      "detail": "Original temporary checkpoints remain absent. Durable recovered readbacks independently corroborate wait/resume/field-review history and unchanged old-case settled/matched state; current repaired readback confirms a waiting bill-approval work item. Four PDF original hashes match. Full .recover completeness for entirely lost records and new-case external payment/accounting flow remain unproven."
+    },
+    "limits": [
+      "Synthetic native PDF; no new LlamaParse extraction validation.",
+      "No Claude independent model review or practitioner sign-off is claimed.",
+      "CI intentionally skipped.",
+      "Earlier INV-1001 / QBO145 / QBO146 results do not establish this new case passed.",
+      "Full new-case flow remains unverified until separate authorization, settlement, reconciliation and any claimed QBO synchronization are observed."
+    ],
+    "blocker": {
+      "code": "local_backend_sqlite_malformed",
+      "severity": "blocks_live_validation",
+      "observedBy": "parent agent direct readback",
+      "detail": "Original malformed database remains preserved and unreplaced. Targeted copy-only repair removed five orphan index versions; all 1,672 surviving documents, persistence globals and unaffected index hashes are unchanged. Latest dangling index references are zero. Saved scoped queries now read agent work state and both cases; four PDF original hashes match. Repaired recovery copy serves existing sandbox ports 3252/3253. SQLite .recover completeness for completely missing records cannot be proved.",
+      "cause": "unknown",
+      "recoveryStatus": "repaired_copy_serving_3252_3253",
+      "originalDatabase": {
+        "path": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/.convex/local/default/convex_local_backend.sqlite3",
+        "sizeBytes": 4370432,
+        "sha256": "e568e28a5f5c27e901c568d4a652d38f7e47202f88920f20b6f71f35a71b6af6",
+        "hashObservedAt": "2026-10-25T13:50:41.587394+00:00"
+      },
+      "recoveryBackendPort": 3252,
+      "originalDatabaseReplaced": false,
+      "recoveryBackendStatus": "running_repaired_copy",
+      "status": "targeted_dangling_index_blocker_resolved_full_recovery_unproven",
+      "recoverySitePort": 3253,
+      "historicalError": {
+        "timestamp": "2026-10-25T13:50:30.238586Z",
+        "error": "Dangling index reference for IndexKeyBytes([16, 97, 112, 57, 55, 45, 97, 117, 116, 104, 48, 45, 108, 105, 118, 101, 45, 50, 48, 50, 54, 49, 48, 50, 53, 0, 16, 107, 100, 55, 48, 100, 106, 99, 56, 119, 100, 97, 109, 55, 54, 115, 55, 100, 120, 122, 48, 106, 120, 100, 103, 118, 57, 56, 103, 122, 109, 113, 52, 0, 13, 194, 122, 23, 48, 20, 140, 135, 10, 16, 116, 53, 55, 54, 49, 101, 55, 57, 114, 109, 112, 48, 107, 57, 57, 97, 102, 102, 102, 122, 51, 49, 57, 103, 99, 115, 56, 103, 122, 98, 119, 115, 0]) Timestamp(1792931146672960000)",
+        "logSha256": "884f37b83595a5f21259228db44ec86488117555b252d0f7f796cd3e4973a834",
+        "logPath": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/candidate-backend.log"
+      }
+    },
+    "parentReportedCurrentChecks": {
+      "apAgentOnceResult": [],
+      "browserRestoration": "completed_normal_Auth0_login",
+      "ci": "skipped_by_user",
+      "claudeIndependentReview": "not_performed",
+      "browserCaseView": "Chrome5192 originals,17 fields and review controls rendered",
+      "apWorker": "resident_worker_running_after_once_returned_empty",
+      "nextUserAction": "bill_approval_77_USD_via_authenticated_UI",
+      "screenshot": {
+        "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/recovered-ap-page.png",
+        "exists": true,
+        "sha256": "1e88cae1a1d5429306c075157fec6c48b3a76c1afcc47b7a28a3b0936d96cbd6"
+      }
+    },
+    "durableRecoveredCheckpoint": {
+      "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/recovered-business-checkpoint.json",
+      "sha256": "f98d3d8a701a4b2fd76db63414e1ee685525feda2f33c4f17a23d1fcc6667c5f"
+    }
+  },
+  "parentReportedResults": [
+    {
+      "step": "user_bill_approval",
+      "status": "completed"
+    },
+    {
+      "step": "user_independent_payment_authorization",
+      "status": "completed"
+    },
+    {
+      "step": "test_funding_classification",
+      "status": "completed",
+      "journalId": "rx7e33cyp8s2a5b2asbthrr89n8gz3m8"
+    }
+  ],
+  "blocker": {
+    "code": "historical_local_database_corruption",
+    "status": "resolved_for_minimal_synthetic_flow",
+    "blocksCompletedFlow": false,
+    "originalMalformedDatabasePreserved": true,
+    "runtime": "repaired_recovery_copy_serving_3252_3253",
+    "limitation": "Forensic copy repair removed five orphan index versions without changing 1,672 surviving documents. Full completeness of SQLite .recover for entirely missing records remains unproven.",
+    "historicalDetail": "historicalRecoveryCheckpoint.blocker"
+  },
+  "limits": [
+    "Forensic recovery copy serves the sandbox; original malformed database is preserved. Exact five orphan index versions removed with surviving 1,672 documents unchanged. SQLite .recover cannot prove no wholly missing records.",
+    "Current agent progression is deterministic; real model decision/tool loop remains missing, so issue108 cannot close.",
+    "Synthetic native PDFs; this run is not a new LlamaParse validation.",
+    "CI skipped by user. No Claude independent model review or practitioner sign-off."
+  ],
+  "parentReportedCurrentChecks": {
+    "billApproval": "performed_by_user",
+    "independentPaymentAuthorization": "performed_by_user",
+    "testFundingClassification": "completed_via_normal_UI",
+    "nextUserAction": null,
+    "ci": "skipped_by_user",
+    "claudeIndependentReview": "not_performed"
+  },
+  "evidenceGap": {
+    "blocksMinimalFlow": false,
+    "remainingScope": "Issue108 requirements and forensic recovery completeness only; no pending step in the verified minimal synthetic flow.",
+    "remainingForIssue108": [
+      "Real model decision/tool loop; current progression is deterministic.",
+      "Consume issue107 shared APEX packet through the intended adapter.",
+      "Remaining crash/retry/duplicate/denied-action evidence.",
+      "Before/after actual model/tool traces and handoff review."
+    ],
+    "historicalTemporaryArtifactLoss": "See historicalRecoveryCheckpoint.evidenceGap; final flow has durable evidence and hashes."
+  },
+  "fullFlowPassed": true
 }
