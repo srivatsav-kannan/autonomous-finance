@@ -210,8 +210,19 @@ export type PaymentAllocationEvidence = {
 };
 export type PaymentAllocationCorrection = PaymentAllocationEvidence &
   CorrectionApproval;
+export type CreditAllocationEvidence = Omit<
+  PaymentAllocationEvidence,
+  "kind" | "settlement"
+> & {
+  kind: "credit_allocation";
+  creditApplication: CreditApplication;
+};
+export type CreditAllocationCorrection = CreditAllocationEvidence &
+  CorrectionApproval;
+export type PayableAllocationCorrection =
+  PaymentAllocationCorrection | CreditAllocationCorrection;
 export type AccountingCorrection =
-  BankReturnCorrection | PaymentAllocationCorrection;
+  BankReturnCorrection | PayableAllocationCorrection;
 
 /** Durable read-verification proof; status may inspect it without contacting QBO. */
 export type CorrectionVerification = {

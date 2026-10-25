@@ -5,6 +5,7 @@ import type {
   BankReturnCorrection,
   BankReturnEvidence,
   PaymentAllocationEvidence,
+  CreditAllocationEvidence,
 } from "../../../src/ap-system/quickbooks/types";
 import {
   accountingCorrectionRequestSchema,
@@ -12,7 +13,9 @@ import {
 } from "../../../src/ap-system/quickbooks/corrections";
 import { assertRowScope } from "../demoAuth";
 import { canonical, sha256Hex } from "../kernel";
-import { deny } from "./shared";
+import { deny, caseRow } from "./shared";
+import { creditApplication } from "./accountingCredits";
+import { loadRecognizedBusinessExport } from "./businessExport";
 import {
   requireBusinessPolicy,
   currentSupplier,
@@ -36,28 +39,77 @@ export async function evaluateCorrection(
   request: AccountingCorrectionRequest,
   excludeId?: string,
 ) {
-  const bank = await paymentEvidence(
-    ctx,
-    scope,
-    request.caseId,
-    request.paymentVersionId,
-    request.kind === "bank_return" ? "returned" : "settled",
-  );
+  const context =
+    request.kind === "credit_allocation"
+      ? await (async () => {
+          const row = await caseRow(ctx, scope, request.caseId);
+          if (!row.billId) throw Error("recognized_bill_required");
+          const bill = await ctx.db.get(row.billId);
+          assertRowScope(bill, scope);
+          if (!bill) throw Error("recognized_bill_required");
+          const recognized = await loadRecognizedBusinessExport(
+            ctx,
+            scope,
+            row._id,
+          );
+          if (recognized.kind !== "invoice")
+            throw Error("recognized_invoice_required");
+          const id = ctx.db.normalizeId(
+            "apCreditApplications",
+            request.creditApplicationId,
+          );
+          if (!id) throw Error("credit_application_required");
+          const application = await creditApplication(
+            ctx,
+            scope,
+            row._id,
+            bill._id,
+            id,
+          );
+          return {
+            row,
+            bill,
+            recognized,
+            date: application.date,
+            gross: application.amountCents,
+            versionId: null,
+            application,
+            settlement: null,
+            returned: null,
+          };
+        })()
+      : await (async () => {
+          const bank = await paymentEvidence(
+            ctx,
+            scope,
+            request.caseId,
+            request.paymentVersionId,
+            request.kind === "bank_return" ? "returned" : "settled",
+          );
+          return {
+            ...bank,
+            date: bank.settlement.date,
+            gross: bank.settlement.grossAppliedCents!,
+            versionId: bank.version._id,
+            application: null,
+          };
+        })();
   const policy = await requireBusinessPolicy(ctx, scope);
-  const supplier = await currentSupplier(ctx, scope, bank.bill.vendor);
-  let payload: BankReturnEvidence | PaymentAllocationEvidence;
+  const supplier = await currentSupplier(ctx, scope, context.bill.vendor);
+  let payload:
+    BankReturnEvidence | PaymentAllocationEvidence | CreditAllocationEvidence;
   if (request.kind === "bank_return") {
     if (
-      !bank.returned ||
-      bank.returned.returnTransactionId !== request.returnTransactionId
+      !context.returned ||
+      context.returned.returnTransactionId !== request.returnTransactionId
     )
       deny(
         "return_identity_mismatch",
         "Requested return must be the verified exact transaction",
       );
-    payload = bank.returned;
+    payload = context.returned;
   } else {
-    await openPeriod(ctx, scope, bank.settlement.date);
+    await openPeriod(ctx, scope, context.date);
     if (
       new Set(request.restoredPayables.map((r) => r.correctionId)).size !==
       request.restoredPayables.length
@@ -69,14 +121,14 @@ export async function evaluateCorrection(
     const rows = await ctx.db
       .query("apAccountingCorrections")
       .withIndex("by_case", (q) =>
-        q.eq("scope.runId", scope.runId).eq("caseId", bank.row._id),
+        q.eq("scope.runId", scope.runId).eq("caseId", context.row._id),
       )
       .collect();
     const approvedAllocations = rows.filter(
       (r) =>
         r.status === "approved" &&
         r._id !== excludeId &&
-        r.payload?.kind === "payment_allocation",
+        ["payment_allocation", "credit_allocation"].includes(r.payload?.kind),
     );
     const restored: PaymentAllocationEvidence["restoredPayables"] = [];
     for (const item of request.restoredPayables) {
@@ -93,10 +145,10 @@ export async function evaluateCorrection(
       );
       if (
         correction.kind !== "bank_return" ||
-        correction.billId !== bank.bill._id ||
-        correction.supplierId !== bank.bill.vendor ||
-        correction.date > bank.settlement.date ||
-        correction.original.paymentVersionId === bank.version._id
+        correction.billId !== context.bill._id ||
+        correction.supplierId !== context.bill.vendor ||
+        correction.date > context.date ||
+        correction.original.paymentVersionId === context.versionId
       )
         deny(
           "restored_payable_binding",
@@ -118,7 +170,7 @@ export async function evaluateCorrection(
     restored.sort((a, b) =>
       a.correction.correctionId.localeCompare(b.correction.correctionId),
     );
-    const gross = bank.settlement.grossAppliedCents!;
+    const gross = context.gross;
     if (
       BigInt(request.originalBillCents) +
         restored.reduce((n, p) => n + BigInt(p.amountCents), 0n) !==
@@ -135,49 +187,74 @@ export async function evaluateCorrection(
         .collect()
     ).filter(
       (v) =>
-        v._id !== bank.version._id &&
+        v._id !== context.versionId &&
         v.reservations === "consumed" &&
         ["settled", "returned"].includes(v.status) &&
-        v.snapshot.bills.some((b) => b.billId === bank.bill._id),
+        v.snapshot.bills.some((b) => b.billId === context.bill._id),
     );
     let originalUsed = 0n;
     for (const version of versions) {
       assertRowScope(version, scope);
       const a = approvedAllocations.find(
-        (a) => a.payload.settlement.paymentVersionId === version._id,
+        (a) =>
+          a.payload.kind === "payment_allocation" &&
+          a.payload.settlement.paymentVersionId === version._id,
       );
       originalUsed += BigInt(
         a
           ? (a.payload as PaymentAllocationEvidence).originalBillCents
-          : version.snapshot.bills.find((b) => b.billId === bank.bill._id)!
+          : version.snapshot.bills.find((b) => b.billId === context.bill._id)!
               .amountCents,
       );
     }
     const direct = await ctx.db
       .query("apCreditApplications")
       .withIndex("by_bill", (q) =>
-        q.eq("scope.runId", scope.runId).eq("billId", bank.bill._id),
+        q.eq("scope.runId", scope.runId).eq("billId", context.bill._id),
       )
       .collect();
+    const seen = new Set<string>();
     for (const a of direct) {
       assertRowScope(a, scope);
-      originalUsed += BigInt(a.amountCents);
+      if (
+        context.application?.applicationIds.includes(a._id) ||
+        seen.has(a.requestKey)
+      )
+        continue;
+      seen.add(a.requestKey);
+      const group = direct.filter((g) => g.requestKey === a.requestKey);
+      for (const g of group) assertRowScope(g, scope);
+      const allocation = approvedAllocations.find(
+        (r) =>
+          r.payload.kind === "credit_allocation" &&
+          r.payload.creditApplication.applicationIds.includes(a._id),
+      );
+      originalUsed += allocation
+        ? BigInt(allocation.payload.originalBillCents)
+        : group.reduce((n, g) => n + BigInt(g.amountCents), 0n);
     }
     if (
       originalUsed + BigInt(request.originalBillCents) >
-      BigInt(bank.recognized.amountCents)
+      BigInt(context.recognized.amountCents)
     )
       deny(
         "original_payable_exhausted",
         "Allocation exceeds the original external Bill principal",
       );
     payload = {
-      kind: "payment_allocation",
-      caseId: bank.row._id,
-      billId: bank.bill._id,
-      supplierId: bank.bill.vendor,
+      ...(request.kind === "credit_allocation"
+        ? {
+            kind: "credit_allocation" as const,
+            creditApplication: context.application!,
+          }
+        : {
+            kind: "payment_allocation" as const,
+            settlement: context.settlement!,
+          }),
+      caseId: context.row._id,
+      billId: context.bill._id,
+      supplierId: context.bill.vendor,
       amountCents: gross,
-      settlement: bank.settlement,
       originalBillCents: request.originalBillCents,
       restoredPayables: restored,
     };
@@ -207,9 +284,11 @@ export async function evaluateCorrection(
   const identity =
     request.kind === "bank_return"
       ? `bank_return:${request.returnTransactionId}`
-      : `payment_allocation:${request.paymentVersionId}`;
+      : request.kind === "credit_allocation"
+        ? `credit_allocation:${context.application!.applicationId}`
+        : `payment_allocation:${request.paymentVersionId}`;
   return {
-    row: bank.row,
+    row: context.row,
     policy,
     supplier,
     payload,
