@@ -1,13 +1,51 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { APCaseStatus, APActions, APMatching, APAccounting } from "../console/src/APSystemWorkspace";
-import { EvidencePage } from "../console/src/APSystemEvidence";
-import { apMoney, displayedFrame, regionPolygon, reviewPayload, sourceForEvidence, paymentBelongsToCase } from "../console/src/apSystemView";
+import { APSystemWorkspace, APCaseStatus, APActions, APMatching, APAccounting } from "../console/src/APSystemWorkspace";
+import { APSystemEvidence, EvidencePage } from "../console/src/APSystemEvidence";
+import { apFieldLabel, apFieldValue, apMoney, displayedFrame, regionPolygon, reviewPayload, sourceForEvidence, paymentBelongsToCase } from "../console/src/apSystemView";
 import { apPageUrl, apSystemApi, loadPage } from "../console/src/apSystemApi";
 import { apUIFixture, uiEvidence } from "./ap-system-ui.fixture";
 
 afterEach(()=>vi.unstubAllGlobals());
 describe("AP case workspace evidence boundaries",()=>{
+  it("keeps direct-link detail and upload gated while the initial session is loading",()=>{
+    vi.stubGlobal("window",{location:{search:"?case=cold-session-case"}});
+    const html=renderToStaticMarkup(<APSystemWorkspace/>);
+    expect(html).toContain("Loading linked case evidence");
+    expect(html).toMatch(/disabled="" aria-expanded="false">Upload documents<\/button>/);
+    expect(html).not.toContain("Case unavailable");
+    expect(html).not.toContain("No AP cases yet");
+  });
+  it("names source fields for readers and formats cents without altering raw citations",()=>{
+    expect(apFieldLabel("totalCents")).toBe("Total amount");
+    expect(apFieldLabel("invoiceNumber")).toBe("Invoice number");
+    expect(apFieldLabel("lines.line-4.unitPriceCents")).toBe("Line 4 / Unit price");
+    expect(apFieldValue({fieldPath:"totalCents",normalizedValue:67860})).toBe("$678.60");
+    expect(apFieldValue({fieldPath:"taxCents",normalizedValue:0})).toBe("$0.00");
+    expect(apFieldValue({fieldPath:"totalCents",normalizedValue:null})).toBe("Unresolved");
+    expect(apFieldValue({fieldPath:"invoiceNumber",normalizedValue:"0067860"})).toBe("0067860");
+    const f=apUIFixture(),e=uiEvidence("totalCents","native","678.60 USD (original)");
+    e.normalizedValue=67860;
+    const html=renderToStaticMarkup(<EvidencePage detail={f} evidence={e}/>);
+    expect(html).toContain("$678.60");
+    expect(html).toContain('class="aps-quote">678.60 USD (original)</blockquote>');
+    expect(html).toContain("Field path");
+  });
+  it("exposes all 35 fields through a labelled compact selector and searchable scroll region",()=>{
+    const f=apUIFixture();
+    const paths=["extractedSupplierName","invoiceNumber","invoiceDate","dueDate","currency","terms","subtotalCents","taxCents","freightCents","discountCents","totalCents",...Array.from({length:4},(_,index)=>["sku","description","quantity","unit","unitPriceCents","amountCents"].map(name=>`lines.line-${index+1}.${name}`)).flat()];
+    f.candidate!.evidence=paths.map((path,index)=>{const e=uiEvidence(path,index===0?"unresolved":index===12?"derived":"native",`Original quote ${index}`);e.normalizedValue=path.endsWith("Cents")?67860:`Value ${index}`;return e;});
+    f.extraction.evidence=f.candidate!.evidence;
+    const html=renderToStaticMarkup(<APSystemEvidence detail={f}/>);
+    expect(paths).toHaveLength(35);
+    expect(html.match(/<option /g)).toHaveLength(35);
+    expect(html).toContain('type="search"');
+    expect(html).toContain('role="region" aria-label="Field search results" tabindex="0"');
+    expect(html).toContain("Line 4 / Unit price");
+    expect(html).toContain("Derived location");
+    expect(html).toContain("Location unresolved");
+    expect(html).toContain("Selected source evidence");
+  });
   it("maps rotated original regions into display coordinates without merging lines",()=>{
     const frame={width:600,height:800,units:"pixel" as const,origin:"top_left" as const,rotation:90 as const,transform:[0,1,-1,0,800,0] as [number,number,number,number,number,number]};
     expect(displayedFrame(frame)).toEqual({x:0,y:0,width:800,height:600});

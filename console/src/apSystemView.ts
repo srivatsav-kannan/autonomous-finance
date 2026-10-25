@@ -1,6 +1,19 @@
 import type { APCaseDetail, CoordinateFrame, EvidenceRegion, FieldEvidence, ReviewRequest, SourceBinding, SourceDocument } from "../../src/ap-system/contracts";
 export const apMoney = (value: number | null) => value === null ? "Not established" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value / 100);
 export const apLabel = (value: string) => value.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
+const fieldNames: Record<string, string> = { extractedSupplierName: "Supplier name", totalCents: "Total amount", subtotalCents: "Subtotal", sku: "SKU" };
+export function apFieldLabel(path: string): string {
+  const parts = path.split(".");
+  const name = parts.pop() ?? path;
+  const label = fieldNames[name] ?? apLabel(name.replace(/Cents$/, "").replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_/g, " ").toLowerCase());
+  const context = parts.filter(part => part !== "lines").map(part => apLabel(part.replace(/[-_]/g, " "))).join(" / ");
+  return context ? `${context} / ${label}` : label;
+}
+export function apFieldValue(evidence: Pick<FieldEvidence, "fieldPath" | "normalizedValue">): string {
+  const value = evidence.normalizedValue;
+  if (value === null) return "Unresolved";
+  return /Cents$/.test(evidence.fieldPath) && typeof value === "number" ? apMoney(value) : String(value);
+}
 export const sameSource = (a: SourceBinding, b: SourceBinding) => a.sourceId === b.sourceId && a.revision === b.revision && a.sha256 === b.sha256;
 export function sourceForEvidence(detail: APCaseDetail, evidence: FieldEvidence): SourceDocument | undefined {
   if (detail.candidate && !detail.candidate.sources.some(source => sameSource(source, evidence.source))) return undefined;

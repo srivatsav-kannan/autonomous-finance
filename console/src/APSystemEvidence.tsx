@@ -1,21 +1,30 @@
 import { useEffect, useMemo, useState } from "react";
 import type { APCaseDetail, FieldEvidence } from "../../src/ap-system/contracts";
 import { apError, downloadOriginal, loadPage } from "./apSystemApi";
-import { apLabel, displayedFrame, evidenceForCase, regionPolygon, sourceForEvidence } from "./apSystemView";
+import { apFieldLabel, apFieldValue, apLabel, displayedFrame, evidenceForCase, regionPolygon, sourceForEvidence } from "./apSystemView";
 
 export function APSystemEvidence({ detail }: { detail: APCaseDetail }) {
   const fields = useMemo(() => evidenceForCase(detail), [detail]);
   const [selectedId, setSelectedId] = useState(fields[0]?.evidenceId ?? "");
+  const [query, setQuery] = useState("");
   const selected = fields.find(e=>e.evidenceId===selectedId) ?? fields[0];
+  const visibleFields = fields.filter(e=>`${apFieldLabel(e.fieldPath)} ${apFieldValue(e)} ${e.fieldPath}`.toLowerCase().includes(query.trim().toLowerCase()));
+  const pageKey = selected ? `${detail.caseId}:${selected.source.sourceId}:${selected.source.revision}:${selected.source.sha256}:${selected.grounding.page}:${JSON.stringify(selected.grounding.frame)}` : "";
   return <div className="aps-evidence-grid">
     <div className="aps-field-list" aria-label="Extracted fields">
       <h3>Source fields</h3>
-      <p className="aps-caption">Select a field to inspect its original evidence.</p>
-      {fields.length === 0 ? <p className="aps-empty">No field evidence is available. The original files remain below.</p> : fields.map(e=><button key={e.evidenceId} type="button" aria-pressed={selected?.evidenceId===e.evidenceId} className={selected?.evidenceId===e.evidenceId ? "is-selected" : ""} onClick={()=>setSelectedId(e.evidenceId)}>
-        <span>{apLabel(e.fieldPath.replace(/\./g, " / "))}</span><strong>{e.normalizedValue === null ? "Unresolved" : String(e.normalizedValue)}</strong><small>{apLabel(e.contentStatus)} content <span className="aps-field-separator">/</span> {e.grounding.status === "unresolved" ? "Location unresolved" : `${apLabel(e.grounding.status)} location`}</small>
-      </button>)}
+      <p className="aps-caption">{fields.length} fields. Select one to inspect its original evidence.</p>
+      {fields.length === 0 ? <p className="aps-empty">No field evidence is available. The original files remain below.</p> : <>
+        <label className="aps-field-search">Find a field<input type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Name or value" /></label>
+        <label className="aps-field-select">Selected field<select aria-label="Selected field" value={selected?.evidenceId} onChange={event=>setSelectedId(event.target.value)}>{fields.map(e=><option key={e.evidenceId} value={e.evidenceId}>{apFieldLabel(e.fieldPath)}: {apFieldValue(e)}</option>)}</select></label>
+        <div className="aps-field-options" role="region" aria-label="Field search results" tabIndex={0}>
+          {visibleFields.length === 0 ? <p className="aps-empty" role="status">No matching fields. Your selected source remains visible.</p> : visibleFields.map(e=><button key={e.evidenceId} type="button" aria-pressed={selected?.evidenceId===e.evidenceId} className={selected?.evidenceId===e.evidenceId ? "is-selected" : ""} onClick={()=>setSelectedId(e.evidenceId)}>
+            <span>{apFieldLabel(e.fieldPath)}</span><strong>{apFieldValue(e)}</strong><small>{apLabel(e.contentStatus)} content <span className="aps-field-separator">/</span> {e.grounding.status === "unresolved" ? "Location unresolved" : `${apLabel(e.grounding.status)} location`}</small>
+          </button>)}
+        </div>
+      </>}
     </div>
-    <div className="aps-source-view">{selected ? <EvidencePage key={`${detail.caseId}:${detail.revision}:${selected.evidenceId}`} detail={detail} evidence={selected} /> : <p className="aps-empty">A source citation will appear when fields are extracted.</p>}</div>
+    <div className="aps-source-view">{selected ? <EvidencePage key={pageKey} detail={detail} evidence={selected} /> : <p className="aps-empty">A source citation will appear when fields are extracted.</p>}</div>
   </div>;
 }
 export function EvidencePage({ detail, evidence }: { detail: APCaseDetail; evidence: FieldEvidence }) {
@@ -27,15 +36,17 @@ export function EvidencePage({ detail, evidence }: { detail: APCaseDetail; evide
   const [downloading,setDownloading]=useState(false);
   const [imageReady,setImageReady]=useState(false);
   const frame=g.frame ? displayedFrame(g.frame) : null;
+  const frameKey=JSON.stringify(g.frame);
   useEffect(()=>{
     if(!source || !g.page || !g.frame) return;
     const abort = new AbortController(); let url:string|undefined;
     loadPage(source,g.page,abort.signal).then(blob=>{ if(abort.signal.aborted)return;url=URL.createObjectURL(blob);setPageUrl(url); }).catch(error=>{if(!abort.signal.aborted)setPageError(apError(error));});
     return ()=>{abort.abort();if(url)URL.revokeObjectURL(url);};
-  },[source?.sourceId,source?.revision,source?.sha256,g.page,g.frame]);
+  },[source?.sourceId,source?.revision,source?.sha256,g.page,frameKey]);
   const download=async()=>{if(!source)return;setDownloading(true);setDownloadError(undefined);try{await downloadOriginal(source);}catch(error){setDownloadError(apError(error));}finally{setDownloading(false);}};
   return <section aria-label="Selected source evidence">
     <div className="aps-section-heading"><div><h3>{source?.name ?? "Source version unavailable"}</h3><p className="aps-caption">{source ? `Revision ${source.revision}` : "Exact source binding is missing"}{g.page ? ` / Page ${g.page}` : ""}</p></div>{source && <button type="button" onClick={()=>void download()} disabled={downloading}>{downloading ? "Downloading…" : "Download original"}</button>}</div>
+    <p className="aps-selected-field"><strong>{apFieldLabel(evidence.fieldPath)}</strong><span>{apFieldValue(evidence)}</span></p>
     <div className="aps-evidence-labels"><span className={`aps-status ${g.status}`}>{g.status === "unresolved" ? "Location unresolved" : `${apLabel(g.status)} location`}</span><span className={`aps-status ${evidence.contentStatus}`}>{apLabel(evidence.contentStatus)} content</span></div>
     {!source && <p className="aps-error" role="alert">This evidence belongs to a missing or different source revision. Highlights are hidden.</p>}
     {source && g.status === "unresolved" && <p className="aps-notice">{g.failureReason ?? "Precise geometry is unavailable."} {g.contextRegions.length ? "Only coarse context is shown." : "Review the original file and text citation."}</p>}
@@ -52,6 +63,7 @@ export function EvidencePage({ detail, evidence }: { detail: APCaseDetail; evide
     <blockquote className="aps-quote">{evidence.quote || evidence.rawValue || "No readable text citation available."}</blockquote>
     {downloadError && <p className="aps-error" role="alert">{downloadError}</p>}
     <details className="aps-provenance"><summary>Evidence provenance</summary><dl className="aps-record">
+      <div><dt>Field path</dt><dd><code>{evidence.fieldPath}</code></dd></div>
       <div><dt>Source hash</dt><dd><code>{evidence.source.sha256}</code></dd></div><div><dt>Source revision</dt><dd>{evidence.source.revision}</dd></div>
       <div><dt>Method</dt><dd>{apLabel(g.method)}</dd></div><div><dt>Processor</dt><dd>{g.processor.provider} {g.processor.version}</dd></div>
       <div><dt>Resolved version</dt><dd>{g.processor.resolvedVersion ?? "Not supplied by provider"}</dd></div><div><dt>Coordinates</dt><dd>{g.frame ? `${g.frame.width} × ${g.frame.height} ${g.frame.units}, ${g.frame.rotation}° orientation` : "No visual coordinates"}</dd></div>

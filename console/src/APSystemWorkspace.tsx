@@ -12,27 +12,32 @@ const VIEWS = ["evidence", "matching", "accounting", "history"] as const;
 const FILTERS = ["all", "attention", "approved", "settled"] as const;
 const dateTime = (value: number) => new Date(value).toLocaleString();
 export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContextChange?: (context: APSystemContext | undefined) => void; onBusyChange?: (busy: boolean) => void }) {
-  const [cases,setCases]=useState<APCaseDetail[]>();
-  const [listError,setListError]=useState<string>();
-  const [detail,setDetail]=useState<APCaseDetail>();
-  const [detailError,setDetailError]=useState<string>();
+  const [listResult,setListResult]=useState<{generation:number;cases?:APCaseDetail[];error?:string}>();
+  const [detailResult,setDetailResult]=useState<{generation:number;caseId:string;detail?:APCaseDetail;error?:string}>();
   const [selectedId,setSelectedId]=useUrlState("case");
   const [filter,setFilter]=useUrlState("apFilter","all",FILTERS);
   const [search,setSearch]=useUrlState("apSearch");
   const [view,setView]=useUrlState("apView","evidence",VIEWS);
   const [reload,setReload]=useState(0);
+  const currentList=listResult?.generation===reload ? listResult : undefined;
+  const cases=currentList?.cases, listError=currentList?.error;
+  const sessionReady=cases!==undefined;
+  const currentDetail=sessionReady && detailResult?.generation===reload && detailResult.caseId===selectedId ? detailResult : undefined;
+  const detail=currentDetail?.detail, detailError=currentDetail?.error;
   const [busy,setBusy]=useState(false);
   const [showUpload,setShowUpload]=useState(false);
   const heading=useRef<HTMLHeadingElement>(null);
-  useEffect(()=>{const abort=new AbortController();setListError(undefined);
-    apSystemApi.list(abort.signal).then(setCases).catch(e=>{if(!abort.signal.aborted)setListError(apError(e));});
+  useEffect(()=>{const abort=new AbortController();
+    // GET cases establishes the read/write session. Tag every result so an old
+    // refresh can never unlock detail reads or uploads for a newer generation.
+    apSystemApi.list(abort.signal).then(value=>{if(!abort.signal.aborted)setListResult({generation:reload,cases:value});}).catch(e=>{if(!abort.signal.aborted)setListResult({generation:reload,error:apError(e)});});
     return ()=>abort.abort();
   },[reload]);
-  useEffect(()=>{if(!selectedId){setDetail(undefined);setDetailError(undefined);return;}
-    const abort=new AbortController();setDetail(undefined);setDetailError(undefined);
-    apSystemApi.detail(selectedId,abort.signal).then(value=>{setDetail(value);heading.current?.focus();}).catch(e=>{if(!abort.signal.aborted)setDetailError(apError(e));});
+  useEffect(()=>{if(!selectedId || !sessionReady)return;
+    const abort=new AbortController();
+    apSystemApi.detail(selectedId,abort.signal).then(value=>{if(!abort.signal.aborted){setDetailResult({generation:reload,caseId:selectedId,detail:value});heading.current?.focus();}}).catch(e=>{if(!abort.signal.aborted)setDetailResult({generation:reload,caseId:selectedId,error:apError(e)});});
     return ()=>abort.abort();
-  },[selectedId,reload]);
+  },[selectedId,reload,sessionReady]);
   useEffect(()=>{onBusyChange?.(busy);return ()=>onBusyChange?.(false);},[busy,onBusyChange]);
   useEffect(()=>{const active=detail ?? cases?.[0];onContextChange?.(active ? {runId:active.runId,organizationId:active.organizationId,provider:active.scope.provider === "fake" ? "Local FakeBank" : "Increase sandbox",identityMode:active.identityMode} : undefined);},[detail,cases,onContextChange]);
   const refresh=useCallback(()=>setReload(n=>n+1),[]);
@@ -41,21 +46,21 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
     return matches && (filter === "all" || filter === "attention" && caseNeedsAttention(c) || filter === "approved" && c.states.business === "approved" || filter === "settled" && c.states.execution === "settled");
   }),[cases,search,filter]);
   return <section className="aps-app" aria-label="Accounts payable workspace">
-    <div className="page-heading"><div><h2>Accounts payable</h2><p className="lede">Inspect the obligation, its approvals and the outcome.</p></div><div className="aps-heading-actions"><button type="button" onClick={refresh} disabled={busy}>Refresh</button><button type="button" className="primary" onClick={()=>setShowUpload(v=>!v)} disabled={busy} aria-expanded={showUpload}>Upload documents</button></div></div>
-    {showUpload && <APUpload onBusy={setBusy} onComplete={id=>{setSelectedId(id);setShowUpload(false);refresh();}} />}
+    <div className="page-heading"><div><h2>Accounts payable</h2><p className="lede">Inspect the obligation, its approvals and the outcome.</p></div><div className="aps-heading-actions"><button type="button" onClick={refresh} disabled={busy}>Refresh</button><button type="button" className="primary" onClick={()=>setShowUpload(v=>!v)} disabled={busy||!sessionReady} aria-expanded={showUpload}>Upload documents</button></div></div>
+    {showUpload && <APUpload sessionReady={sessionReady} onBusy={setBusy} onComplete={id=>{setSelectedId(id);setShowUpload(false);refresh();}} />}
     {listError && <div className="aps-error" role="alert"><strong>Case list unavailable</strong><p>{listError}</p><button type="button" onClick={refresh} disabled={busy}>Retry connection</button></div>}
     <div className="aps-workspace-grid">
       <aside className="aps-case-queue" aria-label="AP cases"><div className="aps-queue-controls">
         <label className="search-field"><Icon name="search"/><input type="search" placeholder="Supplier, invoice or source" aria-label="Search AP cases" value={search} onChange={e=>setSearch(e.target.value)} /></label>
         <label className="aps-filter-label">Show<select value={filter} onChange={e=>setFilter(e.target.value as typeof filter)} aria-label="Filter AP cases">{FILTERS.map(v=><option key={v} value={v}>{v === "attention" ? "Needs attention" : apLabel(v)}</option>)}</select></label>
       </div>
-      {!cases && !listError ? <APLoading label="Loading cases…"/> : !filtered?.length ? <div className="aps-empty"><h3>{cases?.length ? "No matching cases" : "No AP cases yet"}</h3><p>{cases?.length ? "Change the search or filter to find a case." : "Upload the invoice and its supporting documents to start a case."}</p></div> : <ul className="aps-cases">{filtered.map(c=><li key={c.caseId}><button type="button" disabled={busy} className={c.caseId===selectedId ? "is-selected" : ""} aria-pressed={c.caseId===selectedId} onClick={()=>setSelectedId(c.caseId)}>
+      {listError ? <p className="aps-empty">Cases will be available after the connection is restored.</p> : !cases ? <APLoading label="Loading cases…"/> : !filtered?.length ? <div className="aps-empty"><h3>{cases?.length ? "No matching cases" : "No AP cases yet"}</h3><p>{cases?.length ? "Change the search or filter to find a case." : "Upload the invoice and its supporting documents to start a case."}</p></div> : <ul className="aps-cases">{filtered.map(c=><li key={c.caseId}><button type="button" disabled={busy} className={c.caseId===selectedId ? "is-selected" : ""} aria-pressed={c.caseId===selectedId} onClick={()=>setSelectedId(c.caseId)}>
         <span className="aps-case-supplier">{c.candidate?.extractedSupplierName ?? "Extraction needs review"}</span><span className="aps-case-line"><span>{c.candidate?.invoiceNumber ?? c.sources[0]?.name ?? c.caseId}</span><strong>{apMoney(c.amounts.invoicedCents)}</strong></span><span className="aps-case-line"><small>{c.links.duplicateOfCaseId ? "Duplicate delivery" : apLabel(c.states.business)}</small><small>{caseNeedsAttention(c) ? "Needs attention" : apLabel(c.states.execution)}</small></span>
       </button></li>)}</ul>}
       {cases && <p className="aps-queue-footer">{filtered?.length ?? 0} of {cases.length} cases shown</p>}
       </aside>
       <div className="aps-case-content">
-        {selectedId && !detail && !detailError ? <APLoading label="Loading linked case evidence…"/> : detailError ? <div className="aps-error" role="alert"><h3>Case unavailable</h3><p>{detailError}</p><button onClick={refresh} disabled={busy}>Retry case</button></div> : !detail ? <div className="aps-empty aps-case-placeholder"><Icon name="file"/><h3>Select an AP case</h3><p>Originals, review decisions, the bill and payment evidence stay together here.</p></div> : <>
+        {selectedId && listError ? <p className="aps-empty">Case evidence is unavailable until the workspace connection is restored. Retry the connection above.</p> : selectedId && !detail && !detailError ? <APLoading label="Loading linked case evidence…"/> : detailError ? <div className="aps-error" role="alert"><h3>Case unavailable</h3><p>{detailError}</p><button onClick={refresh} disabled={busy}>Retry case</button></div> : !detail ? <div className="aps-empty aps-case-placeholder"><Icon name="file"/><h3>Select an AP case</h3><p>Originals, review decisions, the bill and payment evidence stay together here.</p></div> : <>
           <header className="aps-case-header"><div><h3 ref={heading} tabIndex={-1}>{detail.candidate?.invoiceNumber ?? "Document review"}</h3><p>{detail.candidate?.extractedSupplierName ?? "Supplier not established"}</p></div><div className="aps-case-identity"><span>{detail.scope.provider === "fake" ? "Local FakeBank" : "Increase sandbox"}</span><span>{detail.identityMode === "simulated_human" ? "Simulated human identity" : "Authenticated human identity"}</span></div></header>
           <p className="aps-caption">Case <code>{detail.caseId}</code> / Revision {detail.revision} / {detail.sources.every(s=>s.provenance.kind === "synthetic") ? "Synthetic documents" : "Document provenance varies; inspect originals"}</p>
           <APCaseStatus detail={detail}/>
@@ -135,8 +140,8 @@ export function APActions({detail,busy,onBusy,onChanged}:{detail:APCaseDetail;bu
     <p className="aps-caption">Payment release requires the exact amount, verified beneficiary, funding account and independent authorization. Review the proposal under Accounting.</p>
   </section>;
 }
-function APUpload({onBusy,onComplete}:{onBusy:(busy:boolean)=>void;onComplete:(caseId:string)=>void}){
+function APUpload({sessionReady,onBusy,onComplete}:{sessionReady:boolean;onBusy:(busy:boolean)=>void;onComplete:(caseId:string)=>void}){
   const [files,setFiles]=useState<{file:File;kind:SourceDocument["kind"]}[]>([]);const [error,setError]=useState<string>();const [uploading,setUploading]=useState(false);const key=useRef<string | undefined>(undefined);
-  const submit=async(e:FormEvent)=>{e.preventDefault();setError(undefined);if(!files.length)return;if(files.length>10||files.reduce((n,f)=>n+f.file.size,0)>8*1024*1024){setError("Choose up to 10 documents totaling no more than 8 MiB.");return;}onBusy(true);setUploading(true);key.current??=crypto.randomUUID();try{const result=await apSystemApi.intake(files,key.current);onComplete(result.caseId);}catch(e){setError(apError(e));}finally{setUploading(false);onBusy(false);}};
-  return <form className="aps-upload" onSubmit={submit}><h3>Upload a source packet</h3><p>Preserve the supplier invoice with its purchase order, receipt or contract.</p><label htmlFor="ap-source-files">Original documents</label><input id="ap-source-files" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.xml" disabled={uploading} onChange={e=>{key.current=undefined;setFiles(Array.from(e.target.files ?? []).map(file=>({file,kind:"invoice"})));setError(undefined);}}/>{files.length>0 && <ul>{files.map((entry,i)=><li key={`${entry.file.name}:${i}`}><span>{entry.file.name}</span><label>Document kind<select aria-label={`Kind of ${entry.file.name}`} value={entry.kind} disabled={uploading} onChange={e=>{key.current=undefined;setFiles(current=>current.map((f,n)=>n===i ? {...f,kind:e.target.value as SourceDocument["kind"]} : f));}}>{["invoice","purchase_order","receipt","contract","credit_note","correction","other"].map(kind=><option key={kind} value={kind}>{apLabel(kind)}</option>)}</select></label></li>)}</ul>}{error && <p className="aps-error" role="alert">{error}</p>}<button type="submit" className="primary" disabled={uploading||!files.length}>{uploading ? "Preserving and parsing sources…" : "Create AP case"}</button><small>PDF, scanned image or XML. Up to 10 files and 8 MiB per packet. Parsing does not approve a bill.</small></form>;
+  const submit=async(e:FormEvent)=>{e.preventDefault();setError(undefined);if(!sessionReady){setError("Restore the workspace connection before uploading documents.");return;}if(!files.length)return;if(files.length>10||files.reduce((n,f)=>n+f.file.size,0)>8*1024*1024){setError("Choose up to 10 documents totaling no more than 8 MiB.");return;}onBusy(true);setUploading(true);key.current??=crypto.randomUUID();try{const result=await apSystemApi.intake(files,key.current);onComplete(result.caseId);}catch(e){setError(apError(e));}finally{setUploading(false);onBusy(false);}};
+  return <form className="aps-upload" onSubmit={submit}><h3>Upload a source packet</h3><p>Preserve the supplier invoice with its purchase order, receipt or contract.</p><label htmlFor="ap-source-files">Original documents</label><input id="ap-source-files" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.xml" disabled={uploading} onChange={e=>{key.current=undefined;setFiles(Array.from(e.target.files ?? []).map(file=>({file,kind:"invoice"})));setError(undefined);}}/>{files.length>0 && <ul>{files.map((entry,i)=><li key={`${entry.file.name}:${i}`}><span>{entry.file.name}</span><label>Document kind<select aria-label={`Kind of ${entry.file.name}`} value={entry.kind} disabled={uploading} onChange={e=>{key.current=undefined;setFiles(current=>current.map((f,n)=>n===i ? {...f,kind:e.target.value as SourceDocument["kind"]} : f));}}>{["invoice","purchase_order","receipt","contract","credit_note","correction","other"].map(kind=><option key={kind} value={kind}>{apLabel(kind)}</option>)}</select></label></li>)}</ul>}{!sessionReady && <p className="aps-notice" role="status">Waiting for the workspace connection before upload.</p>}{error && <p className="aps-error" role="alert">{error}</p>}<button type="submit" className="primary" disabled={uploading||!sessionReady||!files.length}>{uploading ? "Preserving and parsing sources…" : "Create AP case"}</button><small>PDF, scanned image or XML. Up to 10 files and 8 MiB per packet. Parsing does not approve a bill.</small></form>;
 }
