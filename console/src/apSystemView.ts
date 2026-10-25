@@ -47,3 +47,13 @@ export function paymentBelongsToCase(detail: APCaseDetail, snapshot: import("../
   const a=detail.scope,b=snapshot.scope;
   return a.organizationId===b.organizationId && a.runId===b.runId && a.provider===b.provider && a.environment===b.environment && a.accountId===b.accountId && !!detail.links.billId && snapshot.bills.some(bill=>bill.billId===detail.links.billId);
 }
+
+/** Exact dollars-to-cents input; a blank selection means the displayed approved remainder. */
+export function paymentAmountInput(value:string,outstandingCents:number|null):number {
+  if(!Number.isSafeInteger(outstandingCents)||outstandingCents===null||outstandingCents<=0)throw new Error("An approved outstanding balance is required.");
+  if(!value.trim())return outstandingCents;
+  if(!/^(0|[1-9]\d*)(\.\d{1,2})?$/.test(value.trim()))throw new Error("Enter a positive USD amount with at most two decimal places.");
+  const [dollars,fraction=""]=value.trim().split(".");const cents=BigInt(dollars!)*100n+BigInt(fraction.padEnd(2,"0"));
+  if(cents<=0n||cents>BigInt(outstandingCents))throw new Error("Payment must be positive and no more than the approved outstanding balance.");
+  return Number(cents);
+}

@@ -202,10 +202,12 @@
       "commit": "f62d84c",
       "evidence": [
         "docs/ap-orchestration/evidence/D1",
-        "tests/ap-system-ui.test.tsx"
+        "tests/ap-system-ui.test.tsx",
+        "docs/ap-orchestration/evidence/D1-live-layout",
+        "docs/ap-orchestration/evidence/D1-cold-session.png"
       ],
       "blocker": null,
-      "next_action": "Integrated same-case browser check in I1/D2; component fixtures do not establish connected workflow",
+      "next_action": "Live gateway process restarted; direct same-case URL loads without Retry and retains actual settled IDs. D2 will extend audit/operations UX.",
       "source_sha": "ac62854"
     },
     {
@@ -419,14 +421,19 @@
         "A2"
       ],
       "acceptance": "Declared XML profile maps exact values with structural paths; PDF/JPEG/PNG/TIFF representative originals and multipage completeness are measured; unsupported profiles, rotations and failed pages are explicit. Runtime never reads expected key.",
-      "status": "in_progress",
+      "status": "accepted",
       "session_id": "/root/p0_inventory",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-evidence/calhacks",
       "branch": "codex/ap-system-formats",
-      "commit": null,
-      "evidence": [],
+      "commit": "e0e9e99",
+      "evidence": [
+        "docs/ap-orchestration/evidence/A3-formats.md",
+        "docs/ap-orchestration/evidence/A3-formats.json",
+        "docs/ap-orchestration/evidence/A3-replay.json",
+        "tests/ap-system/formats-policy.test.ts"
+      ],
       "blocker": null,
-      "next_action": "Implement remaining issue97 section4 formats independently of first-case integration"
+      "next_action": "Strict supported XML profile and image/TIFF format controls accepted; parsed tax XML also tested through AP backend to ensure missing business authority still holds. Docker deployment remains unverified."
     },
     {
       "id": "C2-Auth0",
@@ -488,7 +495,7 @@
     "backend_version": "precompiled-2026-10-10-72ce13c",
     "max_original_packet_bytes": 8388608,
     "backend_exec_session": 18961,
-    "ap_server_exec_session": 59605,
+    "ap_server_exec_session": 77240,
     "frontend_exec_session": 59299,
     "increase_frontend_reserved_port": 5192,
     "increase_backend_reserved_port": 3252,
@@ -529,7 +536,7 @@
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true
   },
-  "last_updated_at": "2026-10-25T09:08:18.583546+00:00",
+  "last_updated_at": "2026-10-25T09:13:37.901251+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",

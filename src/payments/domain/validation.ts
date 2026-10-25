@@ -35,6 +35,7 @@ export const paymentSnapshotSchema = z.object({
   bills: z.array(z.object({ billId: nonempty, version: positiveCentsSchema, amountCents: positiveCentsSchema }).strict()).min(1),
   credits: z.array(credit), amountCents: positiveCentsSchema, currency: z.literal("USD"),
   destination, policyVersion: nonempty,
+  schedule: z.object({ executionDate: businessDateSchema, timeZone: z.literal("UTC") }).strict().optional(),
 }).strict().superRefine((snapshot, ctx) => {
   if (new Set(snapshot.bills.map(item => item.billId)).size !== snapshot.bills.length ||
       new Set(snapshot.credits.map(item => item.creditId)).size !== snapshot.credits.length) {
@@ -89,7 +90,7 @@ export const bankTransactionSchema = z.object({
   }
 });
 const paymentCommandSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("RequestPayment"), billIds: z.array(nonempty).min(1), credits: z.array(credit) }).strict(),
+  z.object({ type: z.literal("RequestPayment"), billIds: z.array(nonempty).min(1), credits: z.array(credit), billAmounts: z.array(z.object({ billId: nonempty, amountCents: positiveCentsSchema }).strict()).min(1).optional(), executionDate: businessDateSchema.optional() }).strict(),
   z.object({ type: z.literal("ApprovePayment"), versionId: nonempty, snapshotHash: hash }).strict(),
   z.object({ type: z.literal("ApproveWithinPolicy"), versionId: nonempty, snapshotHash: hash }).strict(),
   z.object({ type: z.literal("CancelPayment"), versionId: nonempty }).strict(),
@@ -104,6 +105,11 @@ export const commandEnvelopeSchema = z.object({ commandId: nonempty, command: pa
   if (command.type === "RequestPayment" && (new Set(command.billIds).size !== command.billIds.length ||
       new Set(command.credits.map(item => item.creditId)).size !== command.credits.length)) {
     ctx.addIssue({ code: "custom", message: "Distinct bill and credit identities required" });
+  }
+  if (command.type === "RequestPayment" && command.billAmounts &&
+      (command.billAmounts.length !== command.billIds.length || new Set(command.billAmounts.map(b => b.billId)).size !== command.billAmounts.length ||
+       command.billAmounts.some(b => !command.billIds.includes(b.billId)))) {
+    ctx.addIssue({ code: "custom", message: "Explicit amounts must cover each requested bill exactly once" });
   }
 });
 export const effectLeaseSchema = z.object({

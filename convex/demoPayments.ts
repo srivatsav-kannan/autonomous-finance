@@ -172,7 +172,7 @@ export const recordCredit = mutation({
 });
 
 export const requestPayment = mutation({
-  args: { ...agent, requestKey: v.string(), billIds: v.array(v.id("demoBills")), credits: v.array(v.object({ creditId: v.id("demoCredits"), amountCents: v.number() })) },
+  args: { ...agent, requestKey: v.string(), billIds: v.array(v.id("demoBills")), billAmounts: v.optional(v.array(v.object({ billId: v.id("demoBills"), amountCents: v.number() }))), executionDate: v.optional(v.string()), credits: v.array(v.object({ creditId: v.id("demoCredits"), amountCents: v.number() })) },
   handler: requestPaymentCommand,
 });
 

@@ -6,6 +6,7 @@ import { releaseReservations, reserveObligations } from "./reservations";
 import { assertReservedObligations } from "./executionConfig";
 import { commandRequestHash, buildIncreaseRequestBody, type BankCommand, type BankScope, type UnsentProviderCheck } from "../../../src/payments/contracts";
 import { assertCanCancel, assertReleasableUnsent, assertSnapshotCurrent, safeSumCents } from "../../../src/payments/domain/rules";
+import { businessDateSchema } from "../../../src/payments/domain/validation";
 const safeSum = safeSumCents;
 const dollars = (n: number) => { if (!Number.isSafeInteger(n) || n <= 0) throw new Error("Amount must be positive integer USD cents"); };
 
@@ -28,12 +29,18 @@ export async function versionForApproval(ctx: MutationCtx, scope: Doc<"demoConfi
   await assertReservedObligations(ctx, p, config);
   return p;
 }
-export async function requestPaymentCommand(ctx: MutationCtx, args: { scope: BankScope; seatId: string; token: string; requestKey: string; billIds: Id<"demoBills">[]; credits: { creditId: Id<"demoCredits">; amountCents: number }[] }) {
+export async function requestPaymentCommand(ctx: MutationCtx, args: { scope: BankScope; seatId: string; token: string; requestKey: string; billIds: Id<"demoBills">[]; billAmounts?: { billId: Id<"demoBills">; amountCents: number }[]; executionDate?: string; credits: { creditId: Id<"demoCredits">; amountCents: number }[] }) {
     const { config } = await requirePaymentSeat(ctx, args, ["payments"]);
     if (!args.requestKey.trim() || !args.billIds.length || new Set(args.billIds).size !== args.billIds.length || new Set(args.credits.map(c => c.creditId)).size !== args.credits.length) throw new Error("Distinct bills/credits and request key required");
+    if (args.executionDate !== undefined) businessDateSchema.parse(args.executionDate);
+    const selectedAmounts = args.billAmounts?.slice().sort((a,b) => a.billId.localeCompare(b.billId));
+    if (selectedAmounts) {
+      if (selectedAmounts.length !== args.billIds.length || new Set(selectedAmounts.map(b => b.billId)).size !== selectedAmounts.length || selectedAmounts.some(b => !args.billIds.includes(b.billId))) throw new Error("Explicit amounts must cover each requested bill exactly once");
+      selectedAmounts.forEach(b => dollars(b.amountCents));
+    }
     const existing = await ctx.db.query("demoVersions").withIndex("by_key", q => q.eq("scope.runId", args.scope.runId).eq("requestKey", args.requestKey)).unique();
     if (existing) {
-      if (existing.requestedBy !== args.seatId || canonical(existing.snapshot.bills.map(b => b.billId)) !== canonical([...args.billIds].sort()) || canonical(existing.snapshot.credits) !== canonical([...args.credits].sort((a,b) => a.creditId.localeCompare(b.creditId)))) throw new Error("Payment idempotency conflict");
+      if (existing.snapshot.schedule?.executionDate !== args.executionDate || canonical(existing.requestedBillAmounts ?? null) !== canonical(selectedAmounts ?? null) || existing.requestedBy !== args.seatId || canonical(existing.snapshot.bills.map(b => b.billId)) !== canonical([...args.billIds].sort()) || canonical(existing.snapshot.credits) !== canonical([...args.credits].sort((a,b) => a.creditId.localeCompare(b.creditId)))) throw new Error("Payment idempotency conflict");
       return { versionId: existing._id, snapshotHash: existing.snapshotHash };
     }
     const bills = [];
@@ -43,7 +50,9 @@ export async function requestPaymentCommand(ctx: MutationCtx, args: { scope: Ban
       const linkedCase = await ctx.db.query("apCaseRecords").withIndex("by_bill", q => q.eq("scope.runId", args.scope.runId).eq("billId", id)).unique();
       if (linkedCase && (linkedCase.businessStatus !== "approved" || linkedCase.documentStatus !== "reviewed" || !linkedCase.fieldReviewId)) throw new Error("AP evidence review and business approval required before payment");
       if (b.status !== "approved" || b.flags.length || b.reservedVersionId || b.vendor !== config.beneficiary.vendor) throw new Error("Bill is not available for payment");
-      const amountCents = b.approvedCents! - b.paidCents; dollars(amountCents);
+      const outstanding = b.approvedCents! - b.paidCents;
+      const amountCents = selectedAmounts?.find(item => item.billId === id)?.amountCents ?? outstanding; dollars(amountCents);
+      if (!Number.isSafeInteger(outstanding) || amountCents > outstanding) throw new Error("Payment allocation exceeds approved outstanding bill");
       bills.push({ billId: id, version: b.version, amountCents });
     }
     const credits = [...args.credits].sort((a,b) => a.creditId.localeCompare(b.creditId));
@@ -54,9 +63,9 @@ export async function requestPaymentCommand(ctx: MutationCtx, args: { scope: Ban
       if (c.vendor !== config.beneficiary.vendor || c.amountCents - c.reservedCents - c.consumedCents < item.amountCents) throw new Error("Credit unavailable");
     }
     const amountCents = safeSum(bills.map(b => b.amountCents)) - safeSum(credits.map(c => c.amountCents)); dollars(amountCents);
-    const snapshot = { scope: args.scope, bills, credits, amountCents, currency: "USD" as const, destination: { externalAccountId: config.beneficiary.externalAccountId, version: config.beneficiary.version }, policyVersion: config.policyVersion };
+    const snapshot = { scope: args.scope, bills, credits, amountCents, currency: "USD" as const, destination: { externalAccountId: config.beneficiary.externalAccountId, version: config.beneficiary.version }, policyVersion: config.policyVersion, ...(args.executionDate !== undefined ? { schedule: { executionDate: args.executionDate, timeZone: "UTC" as const } } : {}) };
     const snapshotHash = await sha256Hex(canonical(snapshot));
-    const versionId = await ctx.db.insert("demoVersions", { scope: args.scope, snapshot, snapshotHash, requestedBy: args.seatId, requestKey: args.requestKey, status: "awaiting_approval", approvals: [], reservations: "none", createdAt: Date.now() });
+    const versionId = await ctx.db.insert("demoVersions", { scope: args.scope, snapshot, snapshotHash, requestedBy: args.seatId, requestKey: args.requestKey, ...(selectedAmounts ? { requestedBillAmounts: selectedAmounts } : {}), status: "awaiting_approval", approvals: [], reservations: "none", createdAt: Date.now() });
     await reserveObligations(ctx, versionId);
     return { versionId, snapshotHash };
 }
