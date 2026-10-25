@@ -1,0 +1,288 @@
+{
+  "status": "PASS",
+  "runId": "ap97-i3-20261025",
+  "caseId": "kd74wbhvrp0y8tr74pt603pj6x8gzv2y",
+  "runtimeCommit": "e1147850f98882630653b98b988e30e86a399143",
+  "runtimeBaseline": "433511e",
+  "harnessSha256": "9d45e327e2162119fb54e144b73f104f5faf6d113728401d97e05a436d2ef59e",
+  "browserUICommit": "996e930",
+  "integratedHarnessCommit": "39bcf93",
+  "scope": {
+    "organizationId": "ap97-i3-synthetic-company",
+    "runId": "ap97-i3-20261025",
+    "provider": "fake",
+    "environment": "local",
+    "accountId": "ap97-i3-usd-operating"
+  },
+  "provenance": "Local cached-parser HTTP and real child-process FakeBank rehearsal; not real login, live bank/QBO or practitioner acceptance",
+  "expectedFileSha256": "b00045993cc010124e14b7d61e3014a3eda2ceb0fbe7638dd92845fdc4fe281e",
+  "manifestSha256": "dc4507fd7e28184e493d0326d71d3c19b1f3e9a9a5ef8690e2e9fa1b3cec791f",
+  "phases": [
+    {
+      "phase": "exception",
+      "status": "passed",
+      "startedAt": "2026-10-25T11:08:13.644Z",
+      "completedAt": "2026-10-25T11:08:14.755Z",
+      "privateEvidenceSha256": "7cac5b0701e317782106362275ead0bfa79f3d9472ccc5bad70e4acbb3e358ad"
+    },
+    {
+      "phase": "prepare",
+      "status": "passed",
+      "startedAt": "2026-10-25T11:09:22.537Z",
+      "completedAt": "2026-10-25T11:09:23.739Z",
+      "privateEvidenceSha256": "61c6b07b36bbbfc0b79af0ca3416723b0dd3490d9c360063bc90d6bb214daa48"
+    },
+    {
+      "phase": "fault",
+      "status": "passed",
+      "startedAt": "2026-10-25T11:09:40.844Z",
+      "completedAt": "2026-10-25T11:09:41.147Z",
+      "privateEvidenceSha256": "9346e810c60cf0cceb69eec10c2977210764a2bdcc4d1713a617cafd8d3a2506"
+    },
+    {
+      "phase": "recover",
+      "status": "passed",
+      "startedAt": "2026-10-25T11:09:49.785Z",
+      "completedAt": "2026-10-25T11:10:12.605Z",
+      "privateEvidenceSha256": "0da10620168056bc0e6d389ffd26c7d92aa77bd822fb11e8553faea5a215808e"
+    },
+    {
+      "phase": "verify",
+      "status": "passed",
+      "startedAt": "2026-10-25T11:10:15.052Z",
+      "completedAt": "2026-10-25T11:10:16.008Z",
+      "privateEvidenceSha256": "fa3a309189994748cd67a1ae4683eac071790c91dc5d09e5fe58818d1095614e"
+    }
+  ],
+  "lineage": {
+    "originalHashes": [
+      {
+        "kind": "invoice",
+        "sha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83"
+      },
+      {
+        "kind": "purchase_order",
+        "sha256": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7"
+      },
+      {
+        "kind": "receipt",
+        "sha256": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2"
+      },
+      {
+        "kind": "contract",
+        "sha256": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883"
+      }
+    ],
+    "billId": "p578we5h2hax0zsfhp5xf08es18gy0r8",
+    "recognitionJournalId": "s97cbt48b9hcrn7ra4xtg9056n8gy4yn",
+    "paymentVersionId": "qd7bnxh90yaw6d41bsvv3apjph8gy353",
+    "commandId": "p979110s0zhrsf6n60k212h2xn8gz8x0",
+    "frozenCommandSha256": "37003fdb7576a5fb3faf949c4a303d9e8fd43db6a98c1c63da65c794d4a7fcac",
+    "providerTransferId": "transfer_f96c1173f62a7494bf159327",
+    "bankTransactionId": "txn_6bcd47346f2fa8effb9599a2",
+    "settlementJournalId": "s975kw97g4z0exqqr98affrrex8gy8wv"
+  },
+  "counts": {
+    "cases": 1,
+    "caseRevisions": 2,
+    "sourceRevisions": 5,
+    "currentSourceBindings": 4,
+    "bill": 1,
+    "paymentVersions": 1,
+    "commands": 1,
+    "transfers": 1,
+    "bankPostedDebits": 1,
+    "recognitionJournals": 1,
+    "settlementJournals": 1
+  },
+  "bankCalls": {
+    "createTransfer": 1,
+    "lookupTransfer": 1,
+    "deliverNotifications": 1,
+    "listTransactions": 3,
+    "getTransfer": 3,
+    "getTransaction": 3
+  },
+  "finalAmounts": {
+    "invoicedCents": 67860,
+    "acceptedCents": 67860,
+    "disputedCents": 0,
+    "creditedCents": 0,
+    "instructedCents": 67860,
+    "settledCents": 67860,
+    "outstandingCents": 0
+  },
+  "finalStates": {
+    "document": "reviewed",
+    "business": "approved",
+    "accounting": "recognized",
+    "authorization": "authorized",
+    "execution": "settled",
+    "reconciliation": "matched"
+  },
+  "journals": [
+    {
+      "entryId": "s97cbt48b9hcrn7ra4xtg9056n8gy4yn",
+      "kind": "recognition",
+      "date": "2026-10-19",
+      "lines": [
+        {
+          "account": "5000",
+          "debit": 19250,
+          "credit": 0
+        },
+        {
+          "account": "5000",
+          "debit": 17100,
+          "credit": 0
+        },
+        {
+          "account": "5000",
+          "debit": 20670,
+          "credit": 0
+        },
+        {
+          "account": "5000",
+          "debit": 10840,
+          "credit": 0
+        },
+        {
+          "account": "2000",
+          "debit": 0,
+          "credit": 67860
+        }
+      ],
+      "bankTransactionId": null
+    },
+    {
+      "entryId": "s975kw97g4z0exqqr98affrrex8gy8wv",
+      "kind": "settlement",
+      "date": "2026-10-25",
+      "lines": [
+        {
+          "account": "2000",
+          "debit": 67860,
+          "credit": 0
+        },
+        {
+          "account": "1000",
+          "debit": 0,
+          "credit": 67860
+        }
+      ],
+      "bankTransactionId": "txn_6bcd47346f2fa8effb9599a2"
+    }
+  ],
+  "exceptionsInitially": [
+    {
+      "code": "missing_receipt",
+      "status": "open",
+      "blocking": true
+    },
+    {
+      "code": "missing_receipt",
+      "status": "open",
+      "blocking": true
+    },
+    {
+      "code": "missing_receipt",
+      "status": "open",
+      "blocking": true
+    },
+    {
+      "code": "missing_receipt",
+      "status": "open",
+      "blocking": true
+    }
+  ],
+  "noFutureReceiptLeak": true,
+  "originalFieldsComparedPerPhase": 22,
+  "originalDownloads": [
+    {
+      "sourceId": "source-a6c745ac1f33d32ab142f8da420ba82a",
+      "revision": 2,
+      "sha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83",
+      "byteLength": 2869
+    },
+    {
+      "sourceId": "source-180bd875e03024fafe18732710e829f4",
+      "revision": 1,
+      "sha256": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7",
+      "byteLength": 3022
+    },
+    {
+      "sourceId": "source-a585c8f5e45a2ff962e94b56280d35ce",
+      "revision": 1,
+      "sha256": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2",
+      "byteLength": 2908
+    },
+    {
+      "sourceId": "source-63539752792e6afbdd2fcecc4444a371",
+      "revision": 1,
+      "sha256": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883",
+      "byteLength": 3022
+    }
+  ],
+  "negativeChecks": {
+    "missingReceiptBillStatus": 409,
+    "missingReceiptPaymentStatus": 409,
+    "newRevisionBeforeReviewStatus": 409,
+    "newRevisionBeforeBillStatus": 409,
+    "stalePaymentAuthorizationStatus": 409,
+    "conflictingReplayStatus": 409
+  },
+  "crash": {
+    "signal": "SIGKILL",
+    "exitCode": null,
+    "acceptedCommandSha256": "37003fdb7576a5fb3faf949c4a303d9e8fd43db6a98c1c63da65c794d4a7fcac",
+    "execution": "in_flight",
+    "posting": "unposted",
+    "paidCents": 0,
+    "bankTransactions": 0
+  },
+  "recovery": {
+    "child": {
+      "lookupCommandSha256": "37003fdb7576a5fb3faf949c4a303d9e8fd43db6a98c1c63da65c794d4a7fcac",
+      "createTransferCalls": 0,
+      "recoveredTransferId": "transfer_f96c1173f62a7494bf159327",
+      "exitCode": 0,
+      "signal": null
+    },
+    "totalRecoveryPhaseMs": 22748,
+    "generatedNotifications": 2,
+    "deliveredNotifications": 0,
+    "first": {
+      "posted": 1,
+      "errors": []
+    },
+    "repeated": [
+      {
+        "posted": 0,
+        "errors": []
+      },
+      {
+        "posted": 0,
+        "errors": []
+      }
+    ]
+  },
+  "parserProviderCalls": 0,
+  "cachedOriginalJobs": 4,
+  "cachedReferencedArtifacts": 13,
+  "externalFinancialWrites": 0,
+  "realHumanApproval": false,
+  "practitionerSignoff": false,
+  "browserInitialFailure": "APAuthGate restricted local_simulation to5193; fixed by exact dev-only5195 scope check at996e930; original failing state not treated as pass",
+  "validation": {
+    "authAndOriginTestsPassed": 22,
+    "typechecks": [
+      "application",
+      "backend",
+      "tests"
+    ],
+    "build": "PASS with existing >500kB advisory",
+    "design": "0 FAIL / 0 WARN / 1 ANSWERED",
+    "independentReview": "verifier14 read-only at996e930; no actionable issue; actual browser check required and completed",
+    "portability": "upstream95a8693 preserved as0a24e71; targeted2 tests pass"
+  }
+}

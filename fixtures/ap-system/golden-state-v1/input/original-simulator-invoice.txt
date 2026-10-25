@@ -1,0 +1,13 @@
+GOLDEN STATE PRODUCE CO.
+Accounts Receivable  ar@gsproduce.example
+INVOICE                                   Invoice #: INV-1001
+Bill To: Sweetgreen - Hayes Valley (sf-hayes-valley)
+Invoice Date: 2026-10-19     Due Date: 2026-11-02
+Delivery: DLV-sf-hayes-valley-20261019-GOL
+SKU           DESCRIPTION                         QTY      UNIT      AMOUNT
+KALE-24       Organic Kale, 24ct case               5     38.50      192.50
+ROM-CS        Romaine Hearts, case                  4     42.75      171.00
+AVO-48        Hass Avocados, 48ct                   3     68.90      206.70
+TOM-25        Heirloom Tomatoes, 25lb               2     54.20      108.40
+                                                      TOTAL DUE      678.60
+Remit to: Pacific Western Bank  acct ****4417

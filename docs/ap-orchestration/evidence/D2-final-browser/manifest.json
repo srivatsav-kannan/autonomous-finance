@@ -1,0 +1,70 @@
+{
+  "scope": "Synthetic E03/E04 browser fixtures and persisted local I2 with simulated identities; no Auth0 subject or private provider files copied",
+  "images": [
+    {
+      "file": "e03-contact-desktop-light.jpg",
+      "sha256": "cb022b9af3bf0c18b93311580e3fee221c8c2f8a75fb569696fea87456f48b96",
+      "bytes": 80406
+    },
+    {
+      "file": "e03-contact-desktop-dark.jpg",
+      "sha256": "bb4f24323171ae410afb21834653921fdf36fdba22090f0f5aeb81c548fc5025",
+      "bytes": 79362
+    },
+    {
+      "file": "e03-contact-mobile-light.jpg",
+      "sha256": "14a0868de7641c26df868ec9d9defe966125acafa4a7312c717d3787316cd7c5",
+      "bytes": 38844
+    },
+    {
+      "file": "e03-contact-mobile-dark.jpg",
+      "sha256": "854e0df6bc654f8e8e731c876e30efed6633f5e370fb14cf78f6f7b4f79e2be4",
+      "bytes": 36722
+    },
+    {
+      "file": "e04-allocation-invalid-desktop-light.jpg",
+      "sha256": "a59ff849be1b806147dc16239a354c98f17bfddb33f5766f105bbbfd43d610a9",
+      "bytes": 67865
+    },
+    {
+      "file": "e04-allocation-valid-desktop-light.jpg",
+      "sha256": "28389b37b7c30f0c434972e8d9ea2e4b89ba2494aab3b25169731b9b33cefaff",
+      "bytes": 58635
+    },
+    {
+      "file": "e04-allocation-mobile-light-fixed.jpg",
+      "sha256": "12a885dee2a43b3cbdd6958a2d5b1fbed967c6bcabdb66f329a7234d5a38ec74",
+      "bytes": 40977
+    },
+    {
+      "file": "e04-allocation-mobile-dark-fixed.jpg",
+      "sha256": "67d12a07d0e0ec5fb3af48a4b901280273fa366287bf84cb46271ea79a827ee9",
+      "bytes": 38352
+    },
+    {
+      "file": "e04-review-blank-desktop.jpg",
+      "sha256": "db3fe5acaf94d2d3bc36cce67c1d5e05a1e87717e682ba35e6ed73342019ecec",
+      "bytes": 60627
+    },
+    {
+      "file": "e04-accrual-explicit-desktop.jpg",
+      "sha256": "a085169fb07e7526d2337da778ff4ef5823dd6ab3913c1c28e444e55260bae1f",
+      "bytes": 70719
+    },
+    {
+      "file": "i2-timing-desktop.jpg",
+      "sha256": "4ec0699132dbf324d4d0d7a7a682a6ad1220f1ad0fbeb381c218e7cbf7e3d578",
+      "bytes": 127309
+    },
+    {
+      "file": "i2-timing-mobile.jpg",
+      "sha256": "2a8b894ad0600ed8f7117911276f621bf761eda12e848cfe9e642bff823d4a7d",
+      "bytes": 44096
+    },
+    {
+      "file": "i2-timing-basis-mobile.jpg",
+      "sha256": "0a8345b532762e2e246118b6a579e72d21a3c71c257465d3ec826c03667709f6",
+      "bytes": 41441
+    }
+  ]
+}

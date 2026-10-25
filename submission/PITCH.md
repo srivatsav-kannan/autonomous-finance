@@ -1,96 +1,109 @@
-# Live judging plan
+# Autonomous Finance — three-minute team pitch
 
-## How judging works (from the organizers' email)
+Based on the [current AP narrative](../docs/DEMO.md) and [issue #97](https://github.com/srivatsav-kannan/autonomous-finance/issues/97). Read only the blockquotes aloud. Screen directions and evidence notes are for the team.
 
-- The whole team is at the Palace of Fine Arts by **9:30 AM**, and at our assigned table by **10:30 AM**.
-- Judging runs **10:30 AM to 12:30 PM**. We have to be at the table the whole time. If a judge comes and we're not there, we don't get judged.
-- At least 3 judges will come by. Each one has **5 minutes max**, so plan a **3-minute pitch** and about 2 minutes of questions.
-- A **live demo is required**. We also need a **video of the demo saved on the laptop** in case something breaks.
-- Up to 3 teams share a table, so keep the laptop and voices contained.
+**One story:** original evidence → reviewed obligation → separate payment authorization → recovery → reconciled accounting.
 
-Roles below are a suggestion. Swap names if you want, but keep one person on the keyboard during each part.
+| Time | Speaker | Responsibility |
+| --- | --- | --- |
+| 0:00–0:55 | **Srivatsav** | The problem, product and source evidence. |
+| 0:55–1:55 | **Arav** | Business review, approval boundaries and the failure scenario. |
+| 1:55–3:00 | **JJ** | Recovery result, accounting and the ambition. |
 
-- **Srivatsav:** opens, shows the CFO inbox and "ask why", answers the "is this real?" and "too ambitious?" questions.
-- **Arav:** drives the laptop for the payment and fraud demo, answers security and controls questions.
-- **JJ:** shows the rest of the department and the numbers, answers eval and benchmark questions.
+**Arav operates the laptop throughout.** Keep the recorded I2 case open for live navigation. Its documents and reviewer identities are synthetic, and its bank is local FakeBank. Use the separate recovery test's saved evidence at the marked handoff; a labeled recording can replace that evidence once prepared. Do not click a new financial approval during this script.
 
-## Before 10:30 (about 15 minutes)
+## 0:00–0:55 — Srivatsav: why this work matters
 
-Run these from `autonomous-finance/`, each in its own terminal:
+*Screen: I2's original Golden State invoice and case. Arav highlights a source-backed line, then opens its PO and receipt. Leave any unresolved source location visibly unresolved.*
 
-```bash
-npm run backend                                                   # terminal 1, leave running
-npm run backend:configure                                         # once, after the backend is up
-npm run gateway                                                   # terminal 2, leave running
-npm run console                                                   # terminal 3, leave running
-npm run world -- --run demo --stores 3 --days 14 --pace 3000 --close   # terminal 4, finishes in about a minute
-npm run agents -- --run demo                                      # terminal 5, leave running all morning
-```
+> Before a company pays a supplier, someone has to connect what was ordered, what arrived, what is owed, and who can approve it. Then they have to prove what happened to the money.
+>
+> We're building Autonomous Finance to carry that work through one traceable accounts payable case, with agents preparing the work and people retaining the decisions their policy requires.
+>
+> This example uses synthetic documents and a local bank simulator. LlamaParse reads the files; our adapter links reviewable fields to their sources. You can inspect the invoice, purchase order and receipt together, with uncertainty visible.
+>
+> Arav will show how evidence becomes a controlled decision.
 
-The agents need to keep running so the Control room still works after the 14 days are over. We tested this at 1 AM on a finished run: the fraud email was blocked within seconds.
+## 0:55–1:55 — Arav: a decision is not permission to pay
 
-Open these browser tabs, in this order:
-1. `http://localhost:5173/ap-demo`
-2. `http://localhost:5173/?view=control#demo` (Control room)
-3. `http://localhost:5173/?view=inbox#demo` (Inbox)
-4. `http://localhost:5173/?view=flow#demo` (Finance flow)
-5. `http://localhost:5173/?view=evals#scenario-check` (a scored run with the model on: 13 of 13)
+*Screen: I2's accepted/disputed amounts and recorded review stages. Then show its recognition journal and separate $100 payment authorization. Keep the amount card below visible; there is no need to read every number.*
 
-Also have ready:
-- the demo video on the desktop
-- the latest green CI run on GitHub, as backup proof for the crash recovery
+> Here, review accepted part of the invoice and kept the rest in dispute. The original claim stays intact. An agent's calculation alone cannot authorize a reduced payment.
+>
+> Reviewing fields, approving the bill and authorizing payment are separate decisions. Bill approval records the payable. Payment authorization binds an exact amount and destination, and the requester cannot approve its own payment.
+>
+> This case received a separately authorized one-hundred-dollar payment. The remaining accepted balance is still owed.
 
-## Before each judge (Arav, about 1 minute)
+*At about 1:40, switch to the recovery evidence. Label it **Separate local recovery test**; it is not the I2 case. If using a clip, mute its audio and label any accelerated wait.*
 
-The payment crash demo is used up after each judge, so set up a fresh one:
+> Now, a separate failure test: the bank accepts the request, but the response is lost before the worker records the result. The outcome stays unknown.
+>
+> JJ, show how it recovers.
 
-```bash
-npm run demo:local -- --browser-approval --lease-wait-seconds 40   # terminal 6. Ctrl-C the previous one first.
-```
+## 1:55–3:00 — JJ: prove the outcome, then show the ambition
 
-It prints `awaiting_browser_approval` and the path to `browser-session.json`. Then:
-1. Open that file.
-2. In the `/ap-demo` tab, paste the `scope` and `jwt` from it.
-3. Click **Connect and load review** and tick **Reload this view every 3 seconds**.
-4. Stop at the approval checkbox. Don't approve until the judge is watching.
+*Screen: recovery evidence showing the original operation and transfer, then return to I2's settlement journal, AP-to-GL comparison and close blockers.*
 
-## The 3-minute pitch
+> Recovery reuses the saved operation. In this test, it produced one transfer, one bank debit and one settlement posting.
+>
+> Back in our AP case, settlement reduces the payable and cash; it doesn't expense the purchase again. The AP subledger and general ledger agree. Unresolved close requirements remain visible. The audit trail connects the bank result to the approval and original evidence.
+>
+> Our next step is a shared workflow where agents request missing evidence, resume the same case, and propose reusable rules from reviewed corrections. Those rules must be approved and tested before reuse.
+>
+> That's Autonomous Finance: for every payment, a clear answer to what we owe, why we owe it, who authorized it, and what happened next.
 
-| Time | Who | Screen | What to do | What to say (roughly) |
-|---|---|---|---|---|
-| 0:00 | Srivatsav | none | Face the judge. | "Finance agents today are a model driving a spreadsheet or a browser. Those tools were made for people. For an agent they're slow, and they don't check anything. A spreadsheet will let you approve your own payment. So we built a ledger for agents instead. Our agents run accounts payable for a restaurant chain modeled on Sweetgreen, and the human CFO only makes the management calls. Arav will show you." |
-| 0:25 | Arav | `/ap-demo` | Point at the amount, the vendor and who requested it. Tick the box and approve. | "This is the CFO's screen. A $660 payment to Golden State Produce. The agent that asked for it isn't allowed to approve it, so I do." |
-| 0:40 | Arav | terminal 6 | Point at the line that says the bank accepted and the worker was killed. | "The bank just took the payment, and we killed the worker before it could write that down. This is where most systems pay twice or lose track of the money. A new worker takes over in 40 seconds. While we wait…" |
-| 0:50 | Arav | Control room, then Inbox | Click **Phishing bank-change email**. Wait about 10 seconds. Open the Inbox item "Blocked a suspected fraud attempt against Bay Farms Protein LLC". | "This is an email from a fake domain asking us to send money to a new bank account. It even says 'ignore previous instructions' to the AI. The payments agent blocked it: the domain doesn't match, it's talking to the AI, and the callback to the number we have on file didn't confirm. Even if an agent got fooled, the database won't change bank details without a human." |
-| 1:20 | Arav | `/ap-demo`, terminal 6 | Show `settled / posted / matched` and the terminal's `bankTransfers: 1`, `paymentJournalEntries: 1`. | "The new worker asked the bank about the original payment instead of sending another one. One transfer, one entry in the books." |
-| 1:35 | Srivatsav | Control room | Type "Why did you hold INV-1002?" and click Ask. Switch tabs while it thinks. | "You can ask the agents why they did anything." |
-| 1:40 | Srivatsav | Inbox | Open "Approve $50,949.23 to Embarcadero Realty Partners". Don't approve it, so it's there for the next judge. | "This is all the CFO sees: the decisions that need a person, like this rent payment, with the bills and bank details attached. Everything else the agents handle." |
-| 1:55 | Srivatsav | Control room | Show the answer. | "The answer: a short shipment. Golden State billed 6 cases of kale and we received 4, so the controller paid $77 less. And it links to the exact records where that was decided." |
-| 2:10 | JJ | Finance flow | Point across the stages. | "It's not just AP. The same system runs cash, revenue, payroll, leases and the month-end close. If AP moves at agent speed but close still waits on people in spreadsheets, AP just waits on them." |
-| 2:25 | JJ | Evals | Point at 13/13 and the books table. | "We tested it. We plant 13 errors in 14 days of Sweetgreen-sized activity, with an answer key the agents never see. They catch all 13 on every seed, the books come out right, and a run costs about 5 cents. We gave the same model spreadsheet tools on the same work: 71 tool calls instead of 12, twice as slow, four times the cost, and it missed an error. On 15 public finance benchmark tasks, our agents scored 93% and the same model on its own scored 84%." |
-| 2:55 | Srivatsav | none | Wrap up. | "That's Autonomous Finance. Happy to take questions." |
+## The amount card — I2 only
 
-If we're running long, cut the "ask why" part (1:35 and 1:55) first.
+| Original invoice | Accepted | Disputed | Paid | Accepted AP outstanding |
+| ---: | ---: | ---: | ---: | ---: |
+| $678.60 | $285.60 | $393.00 | $100.00 | $185.60 |
 
-## Questions, and who answers them
+The $185.60 excludes the separately disputed $393.00. This is a partially paid case, not a fully cleared invoice. Its recorded AP-to-GL difference is $0, with six close blockers remaining. [I2 evidence](../docs/ap-orchestration/evidence/I2-business-flow.md)
 
-**Srivatsav**
-- **"Is this real data?"** "The company is simulated, but it's calibrated to Sweetgreen's public filing: revenue, store count, payables, leases. The benchmarks are public datasets other people wrote."
-- **"Isn't this too ambitious?"** "We went deep on accounts payable: invoice formats, matching, fraud, approvals, and paying exactly once. The other parts run in the same system because a fast AP team that hands off to a slow close process still ends up waiting."
-- **"Who would use this?"** "A finance team at a multi-location business, where AP is high volume and mostly routine, but the mistakes are expensive."
+Do not substitute I1's fully paid $678.60 case, the mockups' illustrative $662.90 invoice, or another run's bank/journal IDs while narrating these amounts.
 
-**Arav**
-- **"What if the model is wrong?"** "The model never moves money. Every write goes through the database, and it checks the math, the evidence and who's allowed to do it. If the numbers don't add up, the write is rejected and a person gets asked."
-- **"Prompt injection?"** "Documents are treated as data. You saw the fraud email get blocked. And even a fooled agent can't change bank details, because that needs a human who didn't propose the change."
-- **"How do you stop double payments?"** "We save the exact request and its key before sending, and only one worker can hold a payment at a time. On a crash, the new worker asks the bank about the original. CI kills a worker mid-payment on every pull request."
+## Rehearsal and screen setup
 
-**JJ**
-- **"Did you plant the errors yourselves?"** "Yes, and the agents never see the answer key. That's why we also ran public benchmarks other people wrote."
-- **"Why several agents instead of one?"** "Separation of duties, the same reason companies split it between people. On the public tasks, the controller's review fixed both answers the model got wrong on its own."
-- **"What does it cost?"** "About 5 cents for 14 days of 3 stores. 92% of tasks are plain code, and the model is only called for new invoice formats and judgment calls."
+Target a calm **125–135 spoken words per minute**, with the remaining time for clicks and handoffs. The time slots are rehearsal targets, not a measured recording. Rehearse once with a stopwatch and the actual tabs.
 
-## If something breaks
+Before each judge:
 
-- **The crash demo stalls or errors:** skip it. Say "this runs on every pull request in CI" and show the green CI run. Then go on with the fraud email.
-- **The model is slow or the wifi is down:** skip "ask why". The fraud email still works, because the domain check and callback don't need the model. If the whole demo is down, play the video.
-- **A tab shows an error:** refresh it. If the console is stuck, restart `npm run console`. The data lives in the backend, so nothing is lost.
+1. Open I2's source review, recorded business/payment approvals, and accounting/reconciliation views. Test the source highlight and keep the provider/identity labels visible. Navigate the persisted case live; describe its approvals in the past tense.
+2. Open the [independent recovery report](../docs/ap-orchestration/evidence/V2.md) at its lost-response scenario and result. It verifies state/recovery using `convex-test` and SQLite FakeBank; it is not a video of a live worker being killed. If using an actual worker-crash recording, identify that separate run and its evidence. Avoid an unrehearsed live lease wait in the three-minute slot.
+3. Prepare the bank/settlement links and AP-to-GL comparison before JJ's turn. Return to I2 explicitly after the separate failure test.
+4. Save a backup recording locally before presenting. A recording or a screenshot should be identified as such; a UI design mockup is not a completed feature.
+5. Keep [DEMO.md](../docs/DEMO.md) ready for the longer accounting explanation, extra scenarios and technical questions. It covers all thirteen requested accounting terms; do not rush through that glossary in the opening pitch.
+
+For an optional live crash demonstration outside this script, follow the [isolated recovery runbook](../docs/ap-demo/README.md#browser-approval-then-crash-recovery-one-flow-for-judges). That flow uses a local test identity and changes its backend's auth configuration. Keep it separate from the active Auth0/QuickBooks environment.
+
+**If running late:** Srivatsav can omit “You can inspect the invoice, purchase order and receipt together, with uncertainty visible.” JJ can omit “The AP subledger and general ledger agree. Unresolved close requirements remain visible.” Preserve the simulation label, separate-test transition and final sentence.
+
+**If a screen stalls:** say, “This view isn't loading; I'll show the saved verification for this case.” Use the matching report or prepared recording. Do not call a stalled payment successful or replace an unknown operation with a new payment.
+
+## Two-minute Q&A — who takes what
+
+| Owner | Question | Short answer |
+| --- | --- | --- |
+| **Srivatsav** | Who is this for? | “Finance teams handling supplier invoices across locations, where evidence, approvals and payment outcomes need to stay connected.” |
+| **Srivatsav** | What is new here? | “The obligation stays connected across documents, review, authorization, bank execution and accounting. We can explain both why work moved forward and why it stopped. Shared work and reviewed learning are the next layer.” |
+| **Srivatsav** | Is this production-ready or self-learning today? | “We have verified supported local AP paths and are completing external integration and broader evaluation. Autonomous follow-up, historical onboarding and correction-to-rule learning have separate acceptance work.” |
+| **Arav** | What if the model is wrong? | “Fields stay reviewable against their sources. Backend checks enforce the supported arithmetic, authority, version and payment boundaries. Business correctness also needs explicit policy and review.” |
+| **Arav** | Do you guarantee exactly once? | “We verify the outcome under a specified failure: one intended transfer, one posted bank debit and one settlement effect. That is a tested invariant, not a universal network guarantee.” |
+| **Arav** | Why not automatically short-pay a discrepancy? | “A proposed adjustment isn't authority. The company must have an applicable policy or an authorized decision, and the disputed amount and original evidence remain visible.” |
+| **JJ** | How good is the parser? | “On two new synthetic supplier layouts in native and scan versions, the repaired adapter recovered all 104 checked fields across four files. Source locations passed for 102, with two explicitly unresolved. This used cached real provider results; it isn't a broad production benchmark.” |
+| **JJ** | Are Auth0, QuickBooks and Increase live? | “Real Auth0 login and scoped case access are verified. QuickBooks sandbox connection and reference mappings are verified separately. At the evidence snapshot used here, accounting transaction write/readback and Increase transfer execution were still pending.” |
+| **JJ** | What does it cost? | “We're prioritizing correct outcomes and useful automation. The old simulator's cost numbers don't estimate this document, review and payment workflow.” |
+
+The external-integration answer follows the evidence snapshot in [DEMO.md](../docs/DEMO.md). Before changing it, check the [capability matrix](../docs/ap-orchestration/CAPABILITIES.md) and the named provider's actual transaction evidence. Configuration or login alone does not prove accounting synchronization or payment execution.
+
+## Organizer logistics — retained from the previous pitch
+
+The team's recorded organizer instructions are: arrive at the Palace of Fine Arts by **9:30 AM**, be at the assigned table by **10:30 AM**, and remain there for judging **10:30 AM–12:30 PM**. Expect at least three judges, with **five minutes maximum per judge**. Plan three minutes for this pitch and two for questions. A live demo is required, with a backup video saved on the laptop. Up to three teams share a table.
+
+## Evidence at hand
+
+- [I2: partial acceptance, independent approvals, payment and outstanding AP](../docs/ap-orchestration/evidence/I2-business-flow.md)
+- [V2: independent negative and recovery verification](../docs/ap-orchestration/evidence/V2.md)
+- [Parser repair: 104 checked fields, 102 accepted source locations](../docs/ap-orchestration/evidence/V7-parser-repair.md)
+- [Actual Auth0 login and scoped workspace access](../docs/ap-orchestration/evidence/C2-auth0-live.md)
+- [QuickBooks sandbox reference mappings](../docs/ap-orchestration/evidence/C4-live-mappings.md)

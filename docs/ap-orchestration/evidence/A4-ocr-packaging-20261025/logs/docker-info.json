@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/docker",
+    "--host",
+    "unix:///Users/junjiexiong/.colima/default/docker.sock",
+    "info",
+    "--format",
+    "{{json .OSType}} {{json .Architecture}} {{json .OperatingSystem}} {{json .KernelVersion}}"
+  ],
+  "startedUtc": "2026-10-25T10:44:16.218466+00:00",
+  "durationSeconds": 0.186,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "logs/docker-info.stdout",
+  "stderr": "logs/docker-info.stderr"
+}

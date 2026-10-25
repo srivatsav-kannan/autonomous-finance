@@ -1,0 +1,1751 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.78kB done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/debian:bookworm-slim
+#2 DONE 1.4s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [build 1/6] FROM docker.io/library/debian:bookworm-slim@sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8
+#4 resolve docker.io/library/debian:bookworm-slim@sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8 0.0s done
+#4 sha256:41b2195c355367079ebad200f9591fe3c2cb886c3b1e67abaaf2090dc11c04d9 0B / 28.14MB 0.2s
+#4 sha256:41b2195c355367079ebad200f9591fe3c2cb886c3b1e67abaaf2090dc11c04d9 8.39MB / 28.14MB 0.5s
+#4 sha256:41b2195c355367079ebad200f9591fe3c2cb886c3b1e67abaaf2090dc11c04d9 19.92MB / 28.14MB 0.6s
+#4 sha256:41b2195c355367079ebad200f9591fe3c2cb886c3b1e67abaaf2090dc11c04d9 28.14MB / 28.14MB 0.9s done
+#4 extracting sha256:41b2195c355367079ebad200f9591fe3c2cb886c3b1e67abaaf2090dc11c04d9
+#4 extracting sha256:41b2195c355367079ebad200f9591fe3c2cb886c3b1e67abaaf2090dc11c04d9 0.9s done
+#4 DONE 1.8s
+
+#5 [stage-1 2/4] RUN apt-get update && apt-get install -y --no-install-recommends liblept5 libgomp1 libarchive13 libcurl4 poppler-utils ca-certificates python3 python3-pil && rm -rf /var/lib/apt/lists/*
+#5 0.521 Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+#5 0.551 Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+#5 0.562 Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]
+#5 0.663 Get:4 http://deb.debian.org/debian bookworm/main arm64 Packages [8689 kB]
+#5 1.110 Get:5 http://deb.debian.org/debian bookworm-updates/main arm64 Packages [6936 B]
+#5 1.110 Get:6 http://deb.debian.org/debian-security bookworm-security/main arm64 Packages [355 kB]
+#5 1.784 Fetched 9293 kB in 1s (6973 kB/s)
+#5 1.784 Reading package lists...
+#5 2.096 Reading package lists...
+#5 2.405 Building dependency tree...
+#5 2.490 Reading state information...
+#5 2.593 The following additional packages will be installed:
+#5 2.593   fontconfig-config fonts-dejavu-core libbrotli1 libbsd0 libcairo2 libdeflate0
+#5 2.593   libexpat1 libfontconfig1 libfreetype6 libfribidi0 libgdbm-compat4 libgdbm6
+#5 2.593   libgif7 libglib2.0-0 libgraphite2-3 libgssapi-krb5-2 libharfbuzz0b libicu72
+#5 2.593   libimagequant0 libjbig0 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3
+#5 2.593   libkrb5support0 liblcms2-2 libldap-2.5-0 liblerc4 libncursesw6 libnghttp2-14
+#5 2.593   libnsl2 libnspr4 libnss3 libopenjp2-7 libperl5.36 libpixman-1-0 libpng16-16
+#5 2.593   libpoppler126 libpsl5 libpython3-stdlib libpython3.11-minimal
+#5 2.593   libpython3.11-stdlib libraqm0 libreadline8 librtmp1 libsasl2-2
+#5 2.593   libsasl2-modules-db libsqlite3-0 libssh2-1 libssl3 libtiff6 libtirpc-common
+#5 2.593   libtirpc3 libwebp7 libwebpdemux2 libwebpmux3 libx11-6 libx11-data libxau6
+#5 2.593   libxcb-render0 libxcb-shm0 libxcb1 libxdmcp6 libxext6 libxml2 libxrender1
+#5 2.594   mailcap media-types mime-support openssl perl perl-modules-5.36
+#5 2.594   python3-minimal python3.11 python3.11-minimal readline-common
+#5 2.594 Suggested packages:
+#5 2.594   lrzip gdbm-l10n low-memory-monitor krb5-doc krb5-user liblcms2-utils
+#5 2.594   sensible-utils perl-doc libterm-readline-gnu-perl
+#5 2.594   | libterm-readline-perl-perl make libtap-harness-archive-perl python3-doc
+#5 2.594   python3-tk python3-venv python-pil-doc python3.11-venv python3.11-doc
+#5 2.594   binutils binfmt-support readline-doc
+#5 2.594 Recommended packages:
+#5 2.594   libglib2.0-data shared-mime-info xdg-user-dirs krb5-locales libldap-common
+#5 2.594   libgpm2 poppler-data publicsuffix libsasl2-modules bzip2 file xz-utils
+#5 2.594   netbase python3-olefile
+#5 2.847 The following NEW packages will be installed:
+#5 2.847   ca-certificates fontconfig-config fonts-dejavu-core libarchive13 libbrotli1
+#5 2.847   libbsd0 libcairo2 libcurl4 libdeflate0 libexpat1 libfontconfig1 libfreetype6
+#5 2.847   libfribidi0 libgdbm-compat4 libgdbm6 libgif7 libglib2.0-0 libgomp1
+#5 2.847   libgraphite2-3 libgssapi-krb5-2 libharfbuzz0b libicu72 libimagequant0
+#5 2.847   libjbig0 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0
+#5 2.847   liblcms2-2 libldap-2.5-0 liblept5 liblerc4 libncursesw6 libnghttp2-14
+#5 2.848   libnsl2 libnspr4 libnss3 libopenjp2-7 libperl5.36 libpixman-1-0 libpng16-16
+#5 2.848   libpoppler126 libpsl5 libpython3-stdlib libpython3.11-minimal
+#5 2.848   libpython3.11-stdlib libraqm0 libreadline8 librtmp1 libsasl2-2
+#5 2.848   libsasl2-modules-db libsqlite3-0 libssh2-1 libssl3 libtiff6 libtirpc-common
+#5 2.848   libtirpc3 libwebp7 libwebpdemux2 libwebpmux3 libx11-6 libx11-data libxau6
+#5 2.848   libxcb-render0 libxcb-shm0 libxcb1 libxdmcp6 libxext6 libxml2 libxrender1
+#5 2.848   mailcap media-types mime-support openssl perl perl-modules-5.36
+#5 2.848   poppler-utils python3 python3-minimal python3-pil python3.11
+#5 2.848   python3.11-minimal readline-common
+#5 2.878 0 upgraded, 84 newly installed, 0 to remove and 1 not upgraded.
+#5 2.878 Need to get 43.7 MB of archives.
+#5 2.878 After this operation, 173 MB of additional disk space will be used.
+#5 2.878 Get:1 http://deb.debian.org/debian-security bookworm-security/main arm64 perl-modules-5.36 all 5.36.0-7+deb12u4 [2817 kB]
+#5 3.147 Get:2 http://deb.debian.org/debian bookworm/main arm64 libgdbm6 arm64 1.23-3 [70.9 kB]
+#5 3.152 Get:3 http://deb.debian.org/debian bookworm/main arm64 libgdbm-compat4 arm64 1.23-3 [48.0 kB]
+#5 3.161 Get:4 http://deb.debian.org/debian-security bookworm-security/main arm64 libperl5.36 arm64 5.36.0-7+deb12u4 [4002 kB]
+#5 3.274 Get:5 http://deb.debian.org/debian-security bookworm-security/main arm64 perl arm64 5.36.0-7+deb12u4 [239 kB]
+#5 3.303 Get:6 http://deb.debian.org/debian-security bookworm-security/main arm64 libssl3 arm64 3.0.22-1~deb12u1 [1828 kB]
+#5 3.355 Get:7 http://deb.debian.org/debian-security bookworm-security/main arm64 libpython3.11-minimal arm64 3.11.2-6+deb12u9 [814 kB]
+#5 3.386 Get:8 http://deb.debian.org/debian-security bookworm-security/main arm64 libexpat1 arm64 2.5.0-1+deb12u5 [91.7 kB]
+#5 3.386 Get:9 http://deb.debian.org/debian-security bookworm-security/main arm64 python3.11-minimal arm64 3.11.2-6+deb12u9 [1862 kB]
+#5 3.439 Get:10 http://deb.debian.org/debian bookworm/main arm64 python3-minimal arm64 3.11.2-1+b1 [26.3 kB]
+#5 3.440 Get:11 http://deb.debian.org/debian bookworm/main arm64 media-types all 10.0.0 [26.1 kB]
+#5 3.440 Get:12 http://deb.debian.org/debian bookworm/main arm64 mailcap all 3.70+nmu1 [32.0 kB]
+#5 3.440 Get:13 http://deb.debian.org/debian bookworm/main arm64 mime-support all 3.66 [10.9 kB]
+#5 3.440 Get:14 http://deb.debian.org/debian bookworm/main arm64 libncursesw6 arm64 6.4-4 [122 kB]
+#5 3.442 Get:15 http://deb.debian.org/debian bookworm/main arm64 libkrb5support0 arm64 1.20.1-2+deb12u5 [32.6 kB]
+#5 3.442 Get:16 http://deb.debian.org/debian bookworm/main arm64 libk5crypto3 arm64 1.20.1-2+deb12u5 [79.9 kB]
+#5 3.443 Get:17 http://deb.debian.org/debian bookworm/main arm64 libkeyutils1 arm64 1.6.3-2 [8844 B]
+#5 3.443 Get:18 http://deb.debian.org/debian bookworm/main arm64 libkrb5-3 arm64 1.20.1-2+deb12u5 [316 kB]
+#5 3.456 Get:19 http://deb.debian.org/debian bookworm/main arm64 libgssapi-krb5-2 arm64 1.20.1-2+deb12u5 [124 kB]
+#5 3.457 Get:20 http://deb.debian.org/debian bookworm/main arm64 libtirpc-common all 1.3.3+ds-1 [14.0 kB]
+#5 3.457 Get:21 http://deb.debian.org/debian bookworm/main arm64 libtirpc3 arm64 1.3.3+ds-1 [80.9 kB]
+#5 3.461 Get:22 http://deb.debian.org/debian bookworm/main arm64 libnsl2 arm64 1.3.0-2 [36.9 kB]
+#5 3.465 Get:23 http://deb.debian.org/debian bookworm/main arm64 readline-common all 8.2-1.3 [69.0 kB]
+#5 3.621 Get:24 http://deb.debian.org/debian bookworm/main arm64 libreadline8 arm64 8.2-1.3 [155 kB]
+#5 3.632 Get:25 http://deb.debian.org/debian bookworm/main arm64 libsqlite3-0 arm64 3.40.1-2+deb12u2 [786 kB]
+#5 3.683 Get:26 http://deb.debian.org/debian-security bookworm-security/main arm64 libpython3.11-stdlib arm64 3.11.2-6+deb12u9 [1750 kB]
+#5 3.746 Get:27 http://deb.debian.org/debian-security bookworm-security/main arm64 python3.11 arm64 3.11.2-6+deb12u9 [575 kB]
+#5 3.759 Get:28 http://deb.debian.org/debian bookworm/main arm64 libpython3-stdlib arm64 3.11.2-1+b1 [9296 B]
+#5 3.759 Get:29 http://deb.debian.org/debian bookworm/main arm64 python3 arm64 3.11.2-1+b1 [26.3 kB]
+#5 3.771 Get:30 http://deb.debian.org/debian-security bookworm-security/main arm64 openssl arm64 3.0.22-1~deb12u1 [1410 kB]
+#5 3.804 Get:31 http://deb.debian.org/debian-security bookworm-security/main arm64 ca-certificates all 20250419~deb12u2 [161 kB]
+#5 3.813 Get:32 http://deb.debian.org/debian bookworm/main arm64 fonts-dejavu-core all 2.37-6 [1068 kB]
+#5 3.851 Get:33 http://deb.debian.org/debian bookworm/main arm64 fontconfig-config arm64 2.14.1-4 [315 kB]
+#5 3.856 Get:34 http://deb.debian.org/debian bookworm/main arm64 libicu72 arm64 72.1-3+deb12u1 [9202 kB]
+#5 4.281 Get:35 http://deb.debian.org/debian bookworm/main arm64 libxml2 arm64 2.9.14+dfsg-1.3~deb12u6 [620 kB]
+#5 4.350 Get:36 http://deb.debian.org/debian-security bookworm-security/main arm64 libarchive13 arm64 3.6.2-1+deb12u5 [318 kB]
+#5 4.390 Get:37 http://deb.debian.org/debian-security bookworm-security/main arm64 libbrotli1 arm64 1.0.9-2+deb12u1 [267 kB]
+#5 4.405 Get:38 http://deb.debian.org/debian bookworm/main arm64 libbsd0 arm64 0.11.7-2 [115 kB]
+#5 4.416 Get:39 http://deb.debian.org/debian-security bookworm-security/main arm64 libpng16-16 arm64 1.6.39-2+deb12u6 [271 kB]
+#5 4.429 Get:40 http://deb.debian.org/debian bookworm/main arm64 libfreetype6 arm64 2.12.1+dfsg-5+deb12u4 [368 kB]
+#5 4.452 Get:41 http://deb.debian.org/debian bookworm/main arm64 libfontconfig1 arm64 2.14.1-4 [381 kB]
+#5 4.467 Get:42 http://deb.debian.org/debian bookworm/main arm64 libpixman-1-0 arm64 0.42.2-1 [470 kB]
+#5 4.484 Get:43 http://deb.debian.org/debian bookworm/main arm64 libxau6 arm64 1:1.0.9-1 [19.7 kB]
+#5 4.494 Get:44 http://deb.debian.org/debian bookworm/main arm64 libxdmcp6 arm64 1:1.1.2-3 [25.4 kB]
+#5 4.506 Get:45 http://deb.debian.org/debian bookworm/main arm64 libxcb1 arm64 1.15-1 [143 kB]
+#5 4.668 Get:46 http://deb.debian.org/debian bookworm/main arm64 libx11-data all 2:1.8.4-2+deb12u2 [292 kB]
+#5 4.683 Get:47 http://deb.debian.org/debian bookworm/main arm64 libx11-6 arm64 2:1.8.4-2+deb12u2 [735 kB]
+#5 4.712 Get:48 http://deb.debian.org/debian bookworm/main arm64 libxcb-render0 arm64 1.15-1 [115 kB]
+#5 4.722 Get:49 http://deb.debian.org/debian bookworm/main arm64 libxcb-shm0 arm64 1.15-1 [106 kB]
+#5 4.735 Get:50 http://deb.debian.org/debian bookworm/main arm64 libxext6 arm64 2:1.3.4-1+b1 [51.7 kB]
+#5 4.747 Get:51 http://deb.debian.org/debian bookworm/main arm64 libxrender1 arm64 1:0.9.10-1.1 [32.0 kB]
+#5 4.761 Get:52 http://deb.debian.org/debian bookworm/main arm64 libcairo2 arm64 1.16.0-7 [527 kB]
+#5 4.775 Get:53 http://deb.debian.org/debian bookworm/main arm64 libsasl2-modules-db arm64 2.1.28+dfsg-10 [20.8 kB]
+#5 4.782 Get:54 http://deb.debian.org/debian bookworm/main arm64 libsasl2-2 arm64 2.1.28+dfsg-10 [58.0 kB]
+#5 4.796 Get:55 http://deb.debian.org/debian bookworm/main arm64 libldap-2.5-0 arm64 2.5.13+dfsg-5 [171 kB]
+#5 4.809 Get:56 http://deb.debian.org/debian bookworm/main arm64 libnghttp2-14 arm64 1.52.0-1+deb12u3 [69.0 kB]
+#5 4.818 Get:57 http://deb.debian.org/debian bookworm/main arm64 libpsl5 arm64 0.21.2-1 [58.6 kB]
+#5 4.834 Get:58 http://deb.debian.org/debian bookworm/main arm64 librtmp1 arm64 2.4+20151223.gitfa8646d.1-2+b2 [59.4 kB]
+#5 4.846 Get:59 http://deb.debian.org/debian-security bookworm-security/main arm64 libssh2-1 arm64 1.10.0-3+deb12u1 [169 kB]
+#5 4.862 Get:60 http://deb.debian.org/debian bookworm/main arm64 libcurl4 arm64 7.88.1-10+deb12u15 [367 kB]
+#5 4.876 Get:61 http://deb.debian.org/debian bookworm/main arm64 libdeflate0 arm64 1.14-1 [54.3 kB]
+#5 4.889 Get:62 http://deb.debian.org/debian bookworm/main arm64 libfribidi0 arm64 1.0.8-2.1 [64.9 kB]
+#5 4.902 Get:63 http://deb.debian.org/debian bookworm/main arm64 libgif7 arm64 5.2.1-2.5+deb12u1 [42.6 kB]
+#5 4.914 Get:64 http://deb.debian.org/debian bookworm/main arm64 libglib2.0-0 arm64 2.74.6-2+deb12u9 [1316 kB]
+#5 4.955 Get:65 http://deb.debian.org/debian bookworm/main arm64 libgomp1 arm64 12.2.0-14+deb12u1 [104 kB]
+#5 4.964 Get:66 http://deb.debian.org/debian bookworm/main arm64 libgraphite2-3 arm64 1.3.14-1+deb12u1 [68.7 kB]
+#5 4.974 Get:67 http://deb.debian.org/debian bookworm/main arm64 libharfbuzz0b arm64 6.0.0+dfsg-3 [1914 kB]
+#5 5.028 Get:68 http://deb.debian.org/debian bookworm/main arm64 libimagequant0 arm64 2.17.0-1 [31.3 kB]
+#5 5.048 Get:69 http://deb.debian.org/debian bookworm/main arm64 libjbig0 arm64 2.1-6.1 [30.0 kB]
+#5 5.198 Get:70 http://deb.debian.org/debian bookworm/main arm64 libjpeg62-turbo arm64 1:2.1.5-2 [171 kB]
+#5 5.212 Get:71 http://deb.debian.org/debian bookworm/main arm64 liblcms2-2 arm64 2.14-2+deb12u1 [144 kB]
+#5 5.226 Get:72 http://deb.debian.org/debian bookworm/main arm64 libopenjp2-7 arm64 2.5.0-2+deb12u3 [176 kB]
+#5 5.239 Get:73 http://deb.debian.org/debian bookworm/main arm64 liblerc4 arm64 4.0.0+ds-2 [138 kB]
+#5 5.254 Get:74 http://deb.debian.org/debian bookworm/main arm64 libwebp7 arm64 1.2.4-0.2+deb12u1 [260 kB]
+#5 5.269 Get:75 http://deb.debian.org/debian bookworm/main arm64 libtiff6 arm64 4.5.0-6+deb12u4 [301 kB]
+#5 5.283 Get:76 http://deb.debian.org/debian bookworm/main arm64 libwebpmux3 arm64 1.2.4-0.2+deb12u1 [109 kB]
+#5 5.296 Get:77 http://deb.debian.org/debian bookworm/main arm64 liblept5 arm64 1.82.0-3+b3 [973 kB]
+#5 5.328 Get:78 http://deb.debian.org/debian bookworm/main arm64 libnspr4 arm64 2:4.35-1 [105 kB]
+#5 5.342 Get:79 http://deb.debian.org/debian-security bookworm-security/main arm64 libnss3 arm64 2:3.87.1-1+deb12u4 [1216 kB]
+#5 5.381 Get:80 http://deb.debian.org/debian-security bookworm-security/main arm64 libpoppler126 arm64 22.12.0-2+deb12u3 [1753 kB]
+#5 5.426 Get:81 http://deb.debian.org/debian bookworm/main arm64 libraqm0 arm64 0.7.0-4.1 [10.4 kB]
+#5 5.435 Get:82 http://deb.debian.org/debian bookworm/main arm64 libwebpdemux2 arm64 1.2.4-0.2+deb12u1 [99.3 kB]
+#5 5.448 Get:83 http://deb.debian.org/debian-security bookworm-security/main arm64 poppler-utils arm64 22.12.0-2+deb12u3 [177 kB]
+#5 5.465 Get:84 http://deb.debian.org/debian bookworm/main arm64 python3-pil arm64 9.4.0-1.1+deb12u1 [452 kB]
+#5 5.571 debconf: delaying package configuration, since apt-utils is not installed
+#5 5.581 Fetched 43.7 MB in 3s (16.7 MB/s)
+#5 5.591 Selecting previously unselected package perl-modules-5.36.
+#5 5.591 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 6090 files and directories currently installed.)
+#5 5.595 Preparing to unpack .../0-perl-modules-5.36_5.36.0-7+deb12u4_all.deb ...
+#5 5.596 Unpacking perl-modules-5.36 (5.36.0-7+deb12u4) ...
+#5 5.780 Selecting previously unselected package libgdbm6:arm64.
+#5 5.781 Preparing to unpack .../1-libgdbm6_1.23-3_arm64.deb ...
+#5 5.783 Unpacking libgdbm6:arm64 (1.23-3) ...
+#5 5.795 Selecting previously unselected package libgdbm-compat4:arm64.
+#5 5.796 Preparing to unpack .../2-libgdbm-compat4_1.23-3_arm64.deb ...
+#5 5.797 Unpacking libgdbm-compat4:arm64 (1.23-3) ...
+#5 5.829 Selecting previously unselected package libperl5.36:arm64.
+#5 5.830 Preparing to unpack .../3-libperl5.36_5.36.0-7+deb12u4_arm64.deb ...
+#5 5.832 Unpacking libperl5.36:arm64 (5.36.0-7+deb12u4) ...
+#5 6.070 Selecting previously unselected package perl.
+#5 6.071 Preparing to unpack .../4-perl_5.36.0-7+deb12u4_arm64.deb ...
+#5 6.074 Unpacking perl (5.36.0-7+deb12u4) ...
+#5 6.100 Selecting previously unselected package libssl3:arm64.
+#5 6.101 Preparing to unpack .../5-libssl3_3.0.22-1~deb12u1_arm64.deb ...
+#5 6.103 Unpacking libssl3:arm64 (3.0.22-1~deb12u1) ...
+#5 6.191 Selecting previously unselected package libpython3.11-minimal:arm64.
+#5 6.192 Preparing to unpack .../6-libpython3.11-minimal_3.11.2-6+deb12u9_arm64.deb ...
+#5 6.193 Unpacking libpython3.11-minimal:arm64 (3.11.2-6+deb12u9) ...
+#5 6.247 Selecting previously unselected package libexpat1:arm64.
+#5 6.248 Preparing to unpack .../7-libexpat1_2.5.0-1+deb12u5_arm64.deb ...
+#5 6.249 Unpacking libexpat1:arm64 (2.5.0-1+deb12u5) ...
+#5 6.267 Selecting previously unselected package python3.11-minimal.
+#5 6.268 Preparing to unpack .../8-python3.11-minimal_3.11.2-6+deb12u9_arm64.deb ...
+#5 6.271 Unpacking python3.11-minimal (3.11.2-6+deb12u9) ...
+#5 6.374 Setting up libssl3:arm64 (3.0.22-1~deb12u1) ...
+#5 6.376 Setting up libpython3.11-minimal:arm64 (3.11.2-6+deb12u9) ...
+#5 6.380 Setting up libexpat1:arm64 (2.5.0-1+deb12u5) ...
+#5 6.383 Setting up python3.11-minimal (3.11.2-6+deb12u9) ...
+#5 6.705 Selecting previously unselected package python3-minimal.
+#5 6.705 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 8429 files and directories currently installed.)
+#5 6.708 Preparing to unpack .../00-python3-minimal_3.11.2-1+b1_arm64.deb ...
+#5 6.709 Unpacking python3-minimal (3.11.2-1+b1) ...
+#5 6.718 Selecting previously unselected package media-types.
+#5 6.718 Preparing to unpack .../01-media-types_10.0.0_all.deb ...
+#5 6.719 Unpacking media-types (10.0.0) ...
+#5 6.729 Selecting previously unselected package mailcap.
+#5 6.730 Preparing to unpack .../02-mailcap_3.70+nmu1_all.deb ...
+#5 6.731 Unpacking mailcap (3.70+nmu1) ...
+#5 6.740 Selecting previously unselected package mime-support.
+#5 6.741 Preparing to unpack .../03-mime-support_3.66_all.deb ...
+#5 6.742 Unpacking mime-support (3.66) ...
+#5 6.750 Selecting previously unselected package libncursesw6:arm64.
+#5 6.750 Preparing to unpack .../04-libncursesw6_6.4-4_arm64.deb ...
+#5 6.751 Unpacking libncursesw6:arm64 (6.4-4) ...
+#5 6.767 Selecting previously unselected package libkrb5support0:arm64.
+#5 6.768 Preparing to unpack .../05-libkrb5support0_1.20.1-2+deb12u5_arm64.deb ...
+#5 6.769 Unpacking libkrb5support0:arm64 (1.20.1-2+deb12u5) ...
+#5 6.786 Selecting previously unselected package libk5crypto3:arm64.
+#5 6.787 Preparing to unpack .../06-libk5crypto3_1.20.1-2+deb12u5_arm64.deb ...
+#5 6.796 Unpacking libk5crypto3:arm64 (1.20.1-2+deb12u5) ...
+#5 6.809 Selecting previously unselected package libkeyutils1:arm64.
+#5 6.810 Preparing to unpack .../07-libkeyutils1_1.6.3-2_arm64.deb ...
+#5 6.811 Unpacking libkeyutils1:arm64 (1.6.3-2) ...
+#5 6.820 Selecting previously unselected package libkrb5-3:arm64.
+#5 6.821 Preparing to unpack .../08-libkrb5-3_1.20.1-2+deb12u5_arm64.deb ...
+#5 6.821 Unpacking libkrb5-3:arm64 (1.20.1-2+deb12u5) ...
+#5 6.884 Selecting previously unselected package libgssapi-krb5-2:arm64.
+#5 6.885 Preparing to unpack .../09-libgssapi-krb5-2_1.20.1-2+deb12u5_arm64.deb ...
+#5 6.886 Unpacking libgssapi-krb5-2:arm64 (1.20.1-2+deb12u5) ...
+#5 6.900 Selecting previously unselected package libtirpc-common.
+#5 6.901 Preparing to unpack .../10-libtirpc-common_1.3.3+ds-1_all.deb ...
+#5 6.902 Unpacking libtirpc-common (1.3.3+ds-1) ...
+#5 6.911 Selecting previously unselected package libtirpc3:arm64.
+#5 6.911 Preparing to unpack .../11-libtirpc3_1.3.3+ds-1_arm64.deb ...
+#5 6.912 Unpacking libtirpc3:arm64 (1.3.3+ds-1) ...
+#5 6.925 Selecting previously unselected package libnsl2:arm64.
+#5 6.926 Preparing to unpack .../12-libnsl2_1.3.0-2_arm64.deb ...
+#5 6.926 Unpacking libnsl2:arm64 (1.3.0-2) ...
+#5 6.937 Selecting previously unselected package readline-common.
+#5 6.938 Preparing to unpack .../13-readline-common_8.2-1.3_all.deb ...
+#5 6.939 Unpacking readline-common (8.2-1.3) ...
+#5 6.952 Selecting previously unselected package libreadline8:arm64.
+#5 6.953 Preparing to unpack .../14-libreadline8_8.2-1.3_arm64.deb ...
+#5 6.954 Unpacking libreadline8:arm64 (8.2-1.3) ...
+#5 6.971 Selecting previously unselected package libsqlite3-0:arm64.
+#5 6.972 Preparing to unpack .../15-libsqlite3-0_3.40.1-2+deb12u2_arm64.deb ...
+#5 6.973 Unpacking libsqlite3-0:arm64 (3.40.1-2+deb12u2) ...
+#5 7.013 Selecting previously unselected package libpython3.11-stdlib:arm64.
+#5 7.014 Preparing to unpack .../16-libpython3.11-stdlib_3.11.2-6+deb12u9_arm64.deb ...
+#5 7.015 Unpacking libpython3.11-stdlib:arm64 (3.11.2-6+deb12u9) ...
+#5 7.117 Selecting previously unselected package python3.11.
+#5 7.118 Preparing to unpack .../17-python3.11_3.11.2-6+deb12u9_arm64.deb ...
+#5 7.119 Unpacking python3.11 (3.11.2-6+deb12u9) ...
+#5 7.139 Selecting previously unselected package libpython3-stdlib:arm64.
+#5 7.139 Preparing to unpack .../18-libpython3-stdlib_3.11.2-1+b1_arm64.deb ...
+#5 7.140 Unpacking libpython3-stdlib:arm64 (3.11.2-1+b1) ...
+#5 7.150 Setting up python3-minimal (3.11.2-1+b1) ...
+#5 7.217 Selecting previously unselected package python3.
+#5 7.217 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 8961 files and directories currently installed.)
+#5 7.220 Preparing to unpack .../00-python3_3.11.2-1+b1_arm64.deb ...
+#5 7.222 Unpacking python3 (3.11.2-1+b1) ...
+#5 7.232 Selecting previously unselected package openssl.
+#5 7.233 Preparing to unpack .../01-openssl_3.0.22-1~deb12u1_arm64.deb ...
+#5 7.234 Unpacking openssl (3.0.22-1~deb12u1) ...
+#5 7.303 Selecting previously unselected package ca-certificates.
+#5 7.303 Preparing to unpack .../02-ca-certificates_20250419~deb12u2_all.deb ...
+#5 7.304 Unpacking ca-certificates (20250419~deb12u2) ...
+#5 7.324 Selecting previously unselected package fonts-dejavu-core.
+#5 7.324 Preparing to unpack .../03-fonts-dejavu-core_2.37-6_all.deb ...
+#5 7.325 Unpacking fonts-dejavu-core (2.37-6) ...
+#5 7.402 Selecting previously unselected package fontconfig-config.
+#5 7.403 Preparing to unpack .../04-fontconfig-config_2.14.1-4_arm64.deb ...
+#5 7.444 Unpacking fontconfig-config (2.14.1-4) ...
+#5 7.462 Selecting previously unselected package libicu72:arm64.
+#5 7.462 Preparing to unpack .../05-libicu72_72.1-3+deb12u1_arm64.deb ...
+#5 7.464 Unpacking libicu72:arm64 (72.1-3+deb12u1) ...
+#5 7.836 Selecting previously unselected package libxml2:arm64.
+#5 7.837 Preparing to unpack .../06-libxml2_2.9.14+dfsg-1.3~deb12u6_arm64.deb ...
+#5 7.838 Unpacking libxml2:arm64 (2.9.14+dfsg-1.3~deb12u6) ...
+#5 7.880 Selecting previously unselected package libarchive13:arm64.
+#5 7.880 Preparing to unpack .../07-libarchive13_3.6.2-1+deb12u5_arm64.deb ...
+#5 7.881 Unpacking libarchive13:arm64 (3.6.2-1+deb12u5) ...
+#5 7.906 Selecting previously unselected package libbrotli1:arm64.
+#5 7.906 Preparing to unpack .../08-libbrotli1_1.0.9-2+deb12u1_arm64.deb ...
+#5 7.907 Unpacking libbrotli1:arm64 (1.0.9-2+deb12u1) ...
+#5 7.931 Selecting previously unselected package libbsd0:arm64.
+#5 7.931 Preparing to unpack .../09-libbsd0_0.11.7-2_arm64.deb ...
+#5 7.932 Unpacking libbsd0:arm64 (0.11.7-2) ...
+#5 7.944 Selecting previously unselected package libpng16-16:arm64.
+#5 7.945 Preparing to unpack .../10-libpng16-16_1.6.39-2+deb12u6_arm64.deb ...
+#5 7.946 Unpacking libpng16-16:arm64 (1.6.39-2+deb12u6) ...
+#5 7.963 Selecting previously unselected package libfreetype6:arm64.
+#5 7.964 Preparing to unpack .../11-libfreetype6_2.12.1+dfsg-5+deb12u4_arm64.deb ...
+#5 7.964 Unpacking libfreetype6:arm64 (2.12.1+dfsg-5+deb12u4) ...
+#5 7.991 Selecting previously unselected package libfontconfig1:arm64.
+#5 7.992 Preparing to unpack .../12-libfontconfig1_2.14.1-4_arm64.deb ...
+#5 7.993 Unpacking libfontconfig1:arm64 (2.14.1-4) ...
+#5 8.008 Selecting previously unselected package libpixman-1-0:arm64.
+#5 8.009 Preparing to unpack .../13-libpixman-1-0_0.42.2-1_arm64.deb ...
+#5 8.011 Unpacking libpixman-1-0:arm64 (0.42.2-1) ...
+#5 8.030 Selecting previously unselected package libxau6:arm64.
+#5 8.030 Preparing to unpack .../14-libxau6_1%3a1.0.9-1_arm64.deb ...
+#5 8.031 Unpacking libxau6:arm64 (1:1.0.9-1) ...
+#5 8.039 Selecting previously unselected package libxdmcp6:arm64.
+#5 8.040 Preparing to unpack .../15-libxdmcp6_1%3a1.1.2-3_arm64.deb ...
+#5 8.041 Unpacking libxdmcp6:arm64 (1:1.1.2-3) ...
+#5 8.050 Selecting previously unselected package libxcb1:arm64.
+#5 8.050 Preparing to unpack .../16-libxcb1_1.15-1_arm64.deb ...
+#5 8.051 Unpacking libxcb1:arm64 (1.15-1) ...
+#5 8.063 Selecting previously unselected package libx11-data.
+#5 8.063 Preparing to unpack .../17-libx11-data_2%3a1.8.4-2+deb12u2_all.deb ...
+#5 8.064 Unpacking libx11-data (2:1.8.4-2+deb12u2) ...
+#5 8.087 Selecting previously unselected package libx11-6:arm64.
+#5 8.088 Preparing to unpack .../18-libx11-6_2%3a1.8.4-2+deb12u2_arm64.deb ...
+#5 8.089 Unpacking libx11-6:arm64 (2:1.8.4-2+deb12u2) ...
+#5 8.171 Selecting previously unselected package libxcb-render0:arm64.
+#5 8.171 Preparing to unpack .../19-libxcb-render0_1.15-1_arm64.deb ...
+#5 8.173 Unpacking libxcb-render0:arm64 (1.15-1) ...
+#5 8.194 Selecting previously unselected package libxcb-shm0:arm64.
+#5 8.194 Preparing to unpack .../20-libxcb-shm0_1.15-1_arm64.deb ...
+#5 8.196 Unpacking libxcb-shm0:arm64 (1.15-1) ...
+#5 8.219 Selecting previously unselected package libxext6:arm64.
+#5 8.220 Preparing to unpack .../21-libxext6_2%3a1.3.4-1+b1_arm64.deb ...
+#5 8.221 Unpacking libxext6:arm64 (2:1.3.4-1+b1) ...
+#5 8.230 Selecting previously unselected package libxrender1:arm64.
+#5 8.231 Preparing to unpack .../22-libxrender1_1%3a0.9.10-1.1_arm64.deb ...
+#5 8.232 Unpacking libxrender1:arm64 (1:0.9.10-1.1) ...
+#5 8.241 Selecting previously unselected package libcairo2:arm64.
+#5 8.242 Preparing to unpack .../23-libcairo2_1.16.0-7_arm64.deb ...
+#5 8.243 Unpacking libcairo2:arm64 (1.16.0-7) ...
+#5 8.278 Selecting previously unselected package libsasl2-modules-db:arm64.
+#5 8.278 Preparing to unpack .../24-libsasl2-modules-db_2.1.28+dfsg-10_arm64.deb ...
+#5 8.279 Unpacking libsasl2-modules-db:arm64 (2.1.28+dfsg-10) ...
+#5 8.289 Selecting previously unselected package libsasl2-2:arm64.
+#5 8.290 Preparing to unpack .../25-libsasl2-2_2.1.28+dfsg-10_arm64.deb ...
+#5 8.292 Unpacking libsasl2-2:arm64 (2.1.28+dfsg-10) ...
+#5 8.312 Selecting previously unselected package libldap-2.5-0:arm64.
+#5 8.312 Preparing to unpack .../26-libldap-2.5-0_2.5.13+dfsg-5_arm64.deb ...
+#5 8.313 Unpacking libldap-2.5-0:arm64 (2.5.13+dfsg-5) ...
+#5 8.359 Selecting previously unselected package libnghttp2-14:arm64.
+#5 8.359 Preparing to unpack .../27-libnghttp2-14_1.52.0-1+deb12u3_arm64.deb ...
+#5 8.361 Unpacking libnghttp2-14:arm64 (1.52.0-1+deb12u3) ...
+#5 8.374 Selecting previously unselected package libpsl5:arm64.
+#5 8.375 Preparing to unpack .../28-libpsl5_0.21.2-1_arm64.deb ...
+#5 8.376 Unpacking libpsl5:arm64 (0.21.2-1) ...
+#5 8.388 Selecting previously unselected package librtmp1:arm64.
+#5 8.388 Preparing to unpack .../29-librtmp1_2.4+20151223.gitfa8646d.1-2+b2_arm64.deb ...
+#5 8.389 Unpacking librtmp1:arm64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+#5 8.401 Selecting previously unselected package libssh2-1:arm64.
+#5 8.402 Preparing to unpack .../30-libssh2-1_1.10.0-3+deb12u1_arm64.deb ...
+#5 8.403 Unpacking libssh2-1:arm64 (1.10.0-3+deb12u1) ...
+#5 8.422 Selecting previously unselected package libcurl4:arm64.
+#5 8.423 Preparing to unpack .../31-libcurl4_7.88.1-10+deb12u15_arm64.deb ...
+#5 8.424 Unpacking libcurl4:arm64 (7.88.1-10+deb12u15) ...
+#5 8.461 Selecting previously unselected package libdeflate0:arm64.
+#5 8.461 Preparing to unpack .../32-libdeflate0_1.14-1_arm64.deb ...
+#5 8.463 Unpacking libdeflate0:arm64 (1.14-1) ...
+#5 8.478 Selecting previously unselected package libfribidi0:arm64.
+#5 8.478 Preparing to unpack .../33-libfribidi0_1.0.8-2.1_arm64.deb ...
+#5 8.479 Unpacking libfribidi0:arm64 (1.0.8-2.1) ...
+#5 8.491 Selecting previously unselected package libgif7:arm64.
+#5 8.492 Preparing to unpack .../34-libgif7_5.2.1-2.5+deb12u1_arm64.deb ...
+#5 8.494 Unpacking libgif7:arm64 (5.2.1-2.5+deb12u1) ...
+#5 8.506 Selecting previously unselected package libglib2.0-0:arm64.
+#5 8.507 Preparing to unpack .../35-libglib2.0-0_2.74.6-2+deb12u9_arm64.deb ...
+#5 8.508 Unpacking libglib2.0-0:arm64 (2.74.6-2+deb12u9) ...
+#5 8.634 Selecting previously unselected package libgomp1:arm64.
+#5 8.635 Preparing to unpack .../36-libgomp1_12.2.0-14+deb12u1_arm64.deb ...
+#5 8.636 Unpacking libgomp1:arm64 (12.2.0-14+deb12u1) ...
+#5 8.650 Selecting previously unselected package libgraphite2-3:arm64.
+#5 8.651 Preparing to unpack .../37-libgraphite2-3_1.3.14-1+deb12u1_arm64.deb ...
+#5 8.652 Unpacking libgraphite2-3:arm64 (1.3.14-1+deb12u1) ...
+#5 8.665 Selecting previously unselected package libharfbuzz0b:arm64.
+#5 8.665 Preparing to unpack .../38-libharfbuzz0b_6.0.0+dfsg-3_arm64.deb ...
+#5 8.666 Unpacking libharfbuzz0b:arm64 (6.0.0+dfsg-3) ...
+#5 8.704 Selecting previously unselected package libimagequant0:arm64.
+#5 8.705 Preparing to unpack .../39-libimagequant0_2.17.0-1_arm64.deb ...
+#5 8.706 Unpacking libimagequant0:arm64 (2.17.0-1) ...
+#5 8.717 Selecting previously unselected package libjbig0:arm64.
+#5 8.718 Preparing to unpack .../40-libjbig0_2.1-6.1_arm64.deb ...
+#5 8.719 Unpacking libjbig0:arm64 (2.1-6.1) ...
+#5 8.735 Selecting previously unselected package libjpeg62-turbo:arm64.
+#5 8.735 Preparing to unpack .../41-libjpeg62-turbo_1%3a2.1.5-2_arm64.deb ...
+#5 8.736 Unpacking libjpeg62-turbo:arm64 (1:2.1.5-2) ...
+#5 8.753 Selecting previously unselected package liblcms2-2:arm64.
+#5 8.754 Preparing to unpack .../42-liblcms2-2_2.14-2+deb12u1_arm64.deb ...
+#5 8.756 Unpacking liblcms2-2:arm64 (2.14-2+deb12u1) ...
+#5 8.774 Selecting previously unselected package libopenjp2-7:arm64.
+#5 8.775 Preparing to unpack .../43-libopenjp2-7_2.5.0-2+deb12u3_arm64.deb ...
+#5 8.776 Unpacking libopenjp2-7:arm64 (2.5.0-2+deb12u3) ...
+#5 8.795 Selecting previously unselected package liblerc4:arm64.
+#5 8.795 Preparing to unpack .../44-liblerc4_4.0.0+ds-2_arm64.deb ...
+#5 8.796 Unpacking liblerc4:arm64 (4.0.0+ds-2) ...
+#5 8.812 Selecting previously unselected package libwebp7:arm64.
+#5 8.813 Preparing to unpack .../45-libwebp7_1.2.4-0.2+deb12u1_arm64.deb ...
+#5 8.815 Unpacking libwebp7:arm64 (1.2.4-0.2+deb12u1) ...
+#5 8.835 Selecting previously unselected package libtiff6:arm64.
+#5 8.835 Preparing to unpack .../46-libtiff6_4.5.0-6+deb12u4_arm64.deb ...
+#5 8.835 Unpacking libtiff6:arm64 (4.5.0-6+deb12u4) ...
+#5 8.855 Selecting previously unselected package libwebpmux3:arm64.
+#5 8.855 Preparing to unpack .../47-libwebpmux3_1.2.4-0.2+deb12u1_arm64.deb ...
+#5 8.857 Unpacking libwebpmux3:arm64 (1.2.4-0.2+deb12u1) ...
+#5 8.872 Selecting previously unselected package liblept5:arm64.
+#5 8.873 Preparing to unpack .../48-liblept5_1.82.0-3+b3_arm64.deb ...
+#5 8.874 Unpacking liblept5:arm64 (1.82.0-3+b3) ...
+#5 8.977 Selecting previously unselected package libnspr4:arm64.
+#5 8.978 Preparing to unpack .../49-libnspr4_2%3a4.35-1_arm64.deb ...
+#5 8.979 Unpacking libnspr4:arm64 (2:4.35-1) ...
+#5 8.992 Selecting previously unselected package libnss3:arm64.
+#5 8.993 Preparing to unpack .../50-libnss3_2%3a3.87.1-1+deb12u4_arm64.deb ...
+#5 8.994 Unpacking libnss3:arm64 (2:3.87.1-1+deb12u4) ...
+#5 9.067 Selecting previously unselected package libpoppler126:arm64.
+#5 9.067 Preparing to unpack .../51-libpoppler126_22.12.0-2+deb12u3_arm64.deb ...
+#5 9.068 Unpacking libpoppler126:arm64 (22.12.0-2+deb12u3) ...
+#5 9.178 Selecting previously unselected package libraqm0:arm64.
+#5 9.178 Preparing to unpack .../52-libraqm0_0.7.0-4.1_arm64.deb ...
+#5 9.180 Unpacking libraqm0:arm64 (0.7.0-4.1) ...
+#5 9.202 Selecting previously unselected package libwebpdemux2:arm64.
+#5 9.203 Preparing to unpack .../53-libwebpdemux2_1.2.4-0.2+deb12u1_arm64.deb ...
+#5 9.204 Unpacking libwebpdemux2:arm64 (1.2.4-0.2+deb12u1) ...
+#5 9.244 Selecting previously unselected package poppler-utils.
+#5 9.245 Preparing to unpack .../54-poppler-utils_22.12.0-2+deb12u3_arm64.deb ...
+#5 9.246 Unpacking poppler-utils (22.12.0-2+deb12u3) ...
+#5 9.271 Selecting previously unselected package python3-pil:arm64.
+#5 9.271 Preparing to unpack .../55-python3-pil_9.4.0-1.1+deb12u1_arm64.deb ...
+#5 9.273 Unpacking python3-pil:arm64 (9.4.0-1.1+deb12u1) ...
+#5 9.315 Setting up media-types (10.0.0) ...
+#5 9.320 Setting up libgraphite2-3:arm64 (1.3.14-1+deb12u1) ...
+#5 9.323 Setting up liblcms2-2:arm64 (2.14-2+deb12u1) ...
+#5 9.328 Setting up libpixman-1-0:arm64 (0.42.2-1) ...
+#5 9.333 Setting up libxau6:arm64 (1:1.0.9-1) ...
+#5 9.337 Setting up libkeyutils1:arm64 (1.6.3-2) ...
+#5 9.339 Setting up libpsl5:arm64 (0.21.2-1) ...
+#5 9.343 Setting up libicu72:arm64 (72.1-3+deb12u1) ...
+#5 9.346 Setting up liblerc4:arm64 (4.0.0+ds-2) ...
+#5 9.350 Setting up libglib2.0-0:arm64 (2.74.6-2+deb12u9) ...
+#5 9.354 No schema files found: doing nothing.
+#5 9.356 Setting up libtirpc-common (1.3.3+ds-1) ...
+#5 9.362 Setting up libbrotli1:arm64 (1.0.9-2+deb12u1) ...
+#5 9.364 Setting up libsqlite3-0:arm64 (3.40.1-2+deb12u2) ...
+#5 9.367 Setting up libnghttp2-14:arm64 (1.52.0-1+deb12u3) ...
+#5 9.370 Setting up libdeflate0:arm64 (1.14-1) ...
+#5 9.373 Setting up libgomp1:arm64 (12.2.0-14+deb12u1) ...
+#5 9.375 Setting up libjbig0:arm64 (2.1-6.1) ...
+#5 9.378 Setting up libkrb5support0:arm64 (1.20.1-2+deb12u5) ...
+#5 9.381 Setting up libsasl2-modules-db:arm64 (2.1.28+dfsg-10) ...
+#5 9.388 Setting up perl-modules-5.36 (5.36.0-7+deb12u4) ...
+#5 9.392 Setting up libjpeg62-turbo:arm64 (1:2.1.5-2) ...
+#5 9.444 Setting up libx11-data (2:1.8.4-2+deb12u2) ...
+#5 9.452 Setting up libnspr4:arm64 (2:4.35-1) ...
+#5 9.458 Setting up librtmp1:arm64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+#5 9.462 Setting up libfribidi0:arm64 (1.0.8-2.1) ...
+#5 9.465 Setting up libimagequant0:arm64 (2.17.0-1) ...
+#5 9.468 Setting up libpng16-16:arm64 (1.6.39-2+deb12u6) ...
+#5 9.471 Setting up fonts-dejavu-core (2.37-6) ...
+#5 9.483 Setting up libncursesw6:arm64 (6.4-4) ...
+#5 9.486 Setting up libk5crypto3:arm64 (1.20.1-2+deb12u5) ...
+#5 9.488 Setting up libsasl2-2:arm64 (2.1.28+dfsg-10) ...
+#5 9.490 Setting up libwebp7:arm64 (1.2.4-0.2+deb12u1) ...
+#5 9.494 Setting up libgif7:arm64 (5.2.1-2.5+deb12u1) ...
+#5 9.496 Setting up libtiff6:arm64 (4.5.0-6+deb12u4) ...
+#5 9.502 Setting up libopenjp2-7:arm64 (2.5.0-2+deb12u3) ...
+#5 9.506 Setting up libssh2-1:arm64 (1.10.0-3+deb12u1) ...
+#5 9.512 Setting up libkrb5-3:arm64 (1.20.1-2+deb12u5) ...
+#5 9.517 Setting up openssl (3.0.22-1~deb12u1) ...
+#5 9.521 Setting up libwebpmux3:arm64 (1.2.4-0.2+deb12u1) ...
+#5 9.524 Setting up libbsd0:arm64 (0.11.7-2) ...
+#5 9.528 Setting up readline-common (8.2-1.3) ...
+#5 9.532 Setting up libxml2:arm64 (2.9.14+dfsg-1.3~deb12u6) ...
+#5 9.535 Setting up libgdbm6:arm64 (1.23-3) ...
+#5 9.537 Setting up libxdmcp6:arm64 (1:1.1.2-3) ...
+#5 9.540 Setting up libxcb1:arm64 (1.15-1) ...
+#5 9.546 Setting up libarchive13:arm64 (3.6.2-1+deb12u5) ...
+#5 9.548 Setting up libxcb-render0:arm64 (1.15-1) ...
+#5 9.550 Setting up fontconfig-config (2.14.1-4) ...
+#5 9.587 debconf: unable to initialize frontend: Dialog
+#5 9.587 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#5 9.587 debconf: falling back to frontend: Readline
+#5 9.590 debconf: unable to initialize frontend: Readline
+#5 9.590 debconf: (This frontend requires a controlling tty.)
+#5 9.590 debconf: falling back to frontend: Teletype
+#5 9.652 Setting up libwebpdemux2:arm64 (1.2.4-0.2+deb12u1) ...
+#5 9.656 Setting up libreadline8:arm64 (8.2-1.3) ...
+#5 9.659 Setting up libnss3:arm64 (2:3.87.1-1+deb12u4) ...
+#5 9.661 Setting up libxcb-shm0:arm64 (1.15-1) ...
+#5 9.664 Setting up libldap-2.5-0:arm64 (2.5.13+dfsg-5) ...
+#5 9.666 Setting up liblept5:arm64 (1.82.0-3+b3) ...
+#5 9.668 Setting up ca-certificates (20250419~deb12u2) ...
+#5 9.702 debconf: unable to initialize frontend: Dialog
+#5 9.702 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#5 9.702 debconf: falling back to frontend: Readline
+#5 9.704 debconf: unable to initialize frontend: Readline
+#5 9.704 debconf: (This frontend requires a controlling tty.)
+#5 9.704 debconf: falling back to frontend: Teletype
+#5 9.956 Updating certificates in /etc/ssl/certs...
+#5 ...
+
+#6 [build 2/6] RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl cmake g++ make pkg-config libleptonica-dev && rm -rf /var/lib/apt/lists/*
+#6 0.523 Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+#6 0.551 Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+#6 0.570 Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]
+#6 0.664 Get:4 http://deb.debian.org/debian bookworm/main arm64 Packages [8689 kB]
+#6 1.097 Get:5 http://deb.debian.org/debian bookworm-updates/main arm64 Packages [6936 B]
+#6 1.097 Get:6 http://deb.debian.org/debian-security bookworm-security/main arm64 Packages [355 kB]
+#6 1.767 Fetched 9293 kB in 1s (7057 kB/s)
+#6 1.767 Reading package lists...
+#6 2.078 Reading package lists...
+#6 2.393 Building dependency tree...
+#6 2.490 Reading state information...
+#6 2.584 The following additional packages will be installed:
+#6 2.584   binutils binutils-aarch64-linux-gnu binutils-common cmake-data cpp cpp-12
+#6 2.584   g++-12 gcc gcc-12 libarchive13 libasan8 libatomic1 libbinutils libbrotli1
+#6 2.584   libc-dev-bin libc6-dev libcc1-0 libcrypt-dev libctf-nobfd0 libctf0 libcurl4
+#6 2.584   libdeflate0 libexpat1 libgcc-12-dev libgif7 libgomp1 libgprofng0
+#6 2.584   libgssapi-krb5-2 libhwasan0 libicu72 libisl23 libitm1 libjansson4 libjbig0
+#6 2.584   libjpeg62-turbo libjsoncpp25 libk5crypto3 libkeyutils1 libkrb5-3
+#6 2.584   libkrb5support0 libldap-2.5-0 liblept5 liblerc4 liblsan0 libmpc3 libmpfr6
+#6 2.584   libncursesw6 libnghttp2-14 libnsl-dev libnsl2 libopenjp2-7 libpkgconf3
+#6 2.584   libpng16-16 libproc2-0 libpsl5 librhash0 librtmp1 libsasl2-2
+#6 2.584   libsasl2-modules-db libssh2-1 libssl3 libstdc++-12-dev libtiff6
+#6 2.584   libtirpc-common libtirpc-dev libtirpc3 libtsan2 libubsan1 libuv1 libwebp7
+#6 2.584   libwebpmux3 libxml2 linux-libc-dev openssl pkgconf pkgconf-bin procps
+#6 2.584   rpcsvc-proto
+#6 2.585 Suggested packages:
+#6 2.585   binutils-doc cmake-doc cmake-format elpa-cmake-mode ninja-build cpp-doc
+#6 2.585   gcc-12-locales cpp-12-doc gcc-12-doc gcc-multilib manpages-dev autoconf
+#6 2.585   automake libtool flex bison gdb gcc-doc lrzip glibc-doc krb5-doc krb5-user
+#6 2.585   libstdc++-12-doc make-doc
+#6 2.585 Recommended packages:
+#6 2.585   manpages manpages-dev libc-devtools krb5-locales libldap-common libgpm2
+#6 2.585   publicsuffix libsasl2-modules psmisc
+#6 2.822 The following NEW packages will be installed:
+#6 2.822   binutils binutils-aarch64-linux-gnu binutils-common ca-certificates cmake
+#6 2.822   cmake-data cpp cpp-12 curl g++ g++-12 gcc gcc-12 libarchive13 libasan8
+#6 2.822   libatomic1 libbinutils libbrotli1 libc-dev-bin libc6-dev libcc1-0
+#6 2.822   libcrypt-dev libctf-nobfd0 libctf0 libcurl4 libdeflate0 libexpat1
+#6 2.822   libgcc-12-dev libgif7 libgomp1 libgprofng0 libgssapi-krb5-2 libhwasan0
+#6 2.822   libicu72 libisl23 libitm1 libjansson4 libjbig0 libjpeg62-turbo libjsoncpp25
+#6 2.822   libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap-2.5-0 liblept5
+#6 2.822   libleptonica-dev liblerc4 liblsan0 libmpc3 libmpfr6 libncursesw6
+#6 2.822   libnghttp2-14 libnsl-dev libnsl2 libopenjp2-7 libpkgconf3 libpng16-16
+#6 2.822   libproc2-0 libpsl5 librhash0 librtmp1 libsasl2-2 libsasl2-modules-db
+#6 2.822   libssh2-1 libssl3 libstdc++-12-dev libtiff6 libtirpc-common libtirpc-dev
+#6 2.822   libtirpc3 libtsan2 libubsan1 libuv1 libwebp7 libwebpmux3 libxml2
+#6 2.822   linux-libc-dev make openssl pkg-config pkgconf pkgconf-bin procps
+#6 2.822   rpcsvc-proto
+#6 2.857 0 upgraded, 85 newly installed, 0 to remove and 1 not upgraded.
+#6 2.857 Need to get 86.6 MB of archives.
+#6 2.857 After this operation, 353 MB of additional disk space will be used.
+#6 2.857 Get:1 http://deb.debian.org/debian bookworm/main arm64 libncursesw6 arm64 6.4-4 [122 kB]
+#6 2.876 Get:2 http://deb.debian.org/debian bookworm/main arm64 libproc2-0 arm64 2:4.0.2-3 [60.1 kB]
+#6 2.892 Get:3 http://deb.debian.org/debian bookworm/main arm64 procps arm64 2:4.0.2-3 [698 kB]
+#6 2.929 Get:4 http://deb.debian.org/debian-security bookworm-security/main arm64 libssl3 arm64 3.0.22-1~deb12u1 [1828 kB]
+#6 3.163 Get:5 http://deb.debian.org/debian-security bookworm-security/main arm64 openssl arm64 3.0.22-1~deb12u1 [1410 kB]
+#6 3.202 Get:6 http://deb.debian.org/debian-security bookworm-security/main arm64 ca-certificates all 20250419~deb12u2 [161 kB]
+#6 3.217 Get:7 http://deb.debian.org/debian bookworm/main arm64 binutils-common arm64 2.40-2 [2487 kB]
+#6 3.304 Get:8 http://deb.debian.org/debian bookworm/main arm64 libbinutils arm64 2.40-2 [645 kB]
+#6 3.328 Get:9 http://deb.debian.org/debian bookworm/main arm64 libctf-nobfd0 arm64 2.40-2 [144 kB]
+#6 3.330 Get:10 http://deb.debian.org/debian bookworm/main arm64 libctf0 arm64 2.40-2 [79.2 kB]
+#6 3.334 Get:11 http://deb.debian.org/debian bookworm/main arm64 libgprofng0 arm64 2.40-2 [680 kB]
+#6 3.349 Get:12 http://deb.debian.org/debian bookworm/main arm64 libjansson4 arm64 2.14-2 [40.2 kB]
+#6 3.358 Get:13 http://deb.debian.org/debian bookworm/main arm64 binutils-aarch64-linux-gnu arm64 2.40-2 [2637 kB]
+#6 3.473 Get:14 http://deb.debian.org/debian bookworm/main arm64 binutils arm64 2.40-2 [64.9 kB]
+#6 3.632 Get:15 http://deb.debian.org/debian bookworm/main arm64 libicu72 arm64 72.1-3+deb12u1 [9202 kB]
+#6 4.279 Get:16 http://deb.debian.org/debian bookworm/main arm64 libxml2 arm64 2.9.14+dfsg-1.3~deb12u6 [620 kB]
+#6 4.328 Get:17 http://deb.debian.org/debian-security bookworm-security/main arm64 libarchive13 arm64 3.6.2-1+deb12u5 [318 kB]
+#6 4.351 Get:18 http://deb.debian.org/debian-security bookworm-security/main arm64 libbrotli1 arm64 1.0.9-2+deb12u1 [267 kB]
+#6 4.359 Get:19 http://deb.debian.org/debian bookworm/main arm64 libkrb5support0 arm64 1.20.1-2+deb12u5 [32.6 kB]
+#6 4.362 Get:20 http://deb.debian.org/debian bookworm/main arm64 libk5crypto3 arm64 1.20.1-2+deb12u5 [79.9 kB]
+#6 4.366 Get:21 http://deb.debian.org/debian bookworm/main arm64 libkeyutils1 arm64 1.6.3-2 [8844 B]
+#6 4.373 Get:22 http://deb.debian.org/debian bookworm/main arm64 libkrb5-3 arm64 1.20.1-2+deb12u5 [316 kB]
+#6 4.381 Get:23 http://deb.debian.org/debian bookworm/main arm64 libgssapi-krb5-2 arm64 1.20.1-2+deb12u5 [124 kB]
+#6 4.388 Get:24 http://deb.debian.org/debian bookworm/main arm64 libsasl2-modules-db arm64 2.1.28+dfsg-10 [20.8 kB]
+#6 4.388 Get:25 http://deb.debian.org/debian bookworm/main arm64 libsasl2-2 arm64 2.1.28+dfsg-10 [58.0 kB]
+#6 4.398 Get:26 http://deb.debian.org/debian bookworm/main arm64 libldap-2.5-0 arm64 2.5.13+dfsg-5 [171 kB]
+#6 4.402 Get:27 http://deb.debian.org/debian bookworm/main arm64 libnghttp2-14 arm64 1.52.0-1+deb12u3 [69.0 kB]
+#6 4.402 Get:28 http://deb.debian.org/debian bookworm/main arm64 libpsl5 arm64 0.21.2-1 [58.6 kB]
+#6 4.405 Get:29 http://deb.debian.org/debian bookworm/main arm64 librtmp1 arm64 2.4+20151223.gitfa8646d.1-2+b2 [59.4 kB]
+#6 4.408 Get:30 http://deb.debian.org/debian-security bookworm-security/main arm64 libssh2-1 arm64 1.10.0-3+deb12u1 [169 kB]
+#6 4.426 Get:31 http://deb.debian.org/debian bookworm/main arm64 libcurl4 arm64 7.88.1-10+deb12u15 [367 kB]
+#6 4.441 Get:32 http://deb.debian.org/debian-security bookworm-security/main arm64 libexpat1 arm64 2.5.0-1+deb12u5 [91.7 kB]
+#6 4.443 Get:33 http://deb.debian.org/debian bookworm/main arm64 libjsoncpp25 arm64 1.9.5-4 [72.3 kB]
+#6 4.445 Get:34 http://deb.debian.org/debian bookworm/main arm64 librhash0 arm64 1.4.3-3 [131 kB]
+#6 4.461 Get:35 http://deb.debian.org/debian bookworm/main arm64 libuv1 arm64 1.44.2-1+deb12u1 [130 kB]
+#6 4.473 Get:36 http://deb.debian.org/debian bookworm/main arm64 cmake-data all 3.25.1-1 [2026 kB]
+#6 4.712 Get:37 http://deb.debian.org/debian bookworm/main arm64 cmake arm64 3.25.1-1 [6806 kB]
+#6 4.955 Get:38 http://deb.debian.org/debian bookworm/main arm64 libisl23 arm64 0.25-1.1 [610 kB]
+#6 4.985 Get:39 http://deb.debian.org/debian bookworm/main arm64 libmpfr6 arm64 4.2.0-1 [600 kB]
+#6 5.013 Get:40 http://deb.debian.org/debian bookworm/main arm64 libmpc3 arm64 1.3.1-1 [49.2 kB]
+#6 5.015 Get:41 http://deb.debian.org/debian bookworm/main arm64 cpp-12 arm64 12.2.0-14+deb12u1 [8228 kB]
+#6 5.538 Get:42 http://deb.debian.org/debian bookworm/main arm64 cpp arm64 4:12.2.0-3 [6832 B]
+#6 5.547 Get:43 http://deb.debian.org/debian bookworm/main arm64 curl arm64 7.88.1-10+deb12u15 [310 kB]
+#6 5.556 Get:44 http://deb.debian.org/debian bookworm/main arm64 libcc1-0 arm64 12.2.0-14+deb12u1 [37.7 kB]
+#6 5.564 Get:45 http://deb.debian.org/debian bookworm/main arm64 libgomp1 arm64 12.2.0-14+deb12u1 [104 kB]
+#6 5.715 Get:46 http://deb.debian.org/debian bookworm/main arm64 libitm1 arm64 12.2.0-14+deb12u1 [24.0 kB]
+#6 5.715 Get:47 http://deb.debian.org/debian bookworm/main arm64 libatomic1 arm64 12.2.0-14+deb12u1 [9568 B]
+#6 5.726 Get:48 http://deb.debian.org/debian bookworm/main arm64 libasan8 arm64 12.2.0-14+deb12u1 [2096 kB]
+#6 5.879 Get:49 http://deb.debian.org/debian bookworm/main arm64 liblsan0 arm64 12.2.0-14+deb12u1 [926 kB]
+#6 5.925 Get:50 http://deb.debian.org/debian bookworm/main arm64 libtsan2 arm64 12.2.0-14+deb12u1 [2178 kB]
+#6 6.013 Get:51 http://deb.debian.org/debian bookworm/main arm64 libubsan1 arm64 12.2.0-14+deb12u1 [862 kB]
+#6 6.055 Get:52 http://deb.debian.org/debian bookworm/main arm64 libhwasan0 arm64 12.2.0-14+deb12u1 [999 kB]
+#6 6.247 Get:53 http://deb.debian.org/debian bookworm/main arm64 libgcc-12-dev arm64 12.2.0-14+deb12u1 [956 kB]
+#6 6.315 Get:54 http://deb.debian.org/debian bookworm/main arm64 gcc-12 arm64 12.2.0-14+deb12u1 [16.3 MB]
+#6 7.032 Get:55 http://deb.debian.org/debian bookworm/main arm64 gcc arm64 4:12.2.0-3 [5244 B]
+#6 7.032 Get:56 http://deb.debian.org/debian bookworm/main arm64 libc-dev-bin arm64 2.36-9+deb12u14 [47.2 kB]
+#6 7.032 Get:57 http://deb.debian.org/debian-security bookworm-security/main arm64 linux-libc-dev arm64 6.1.190-1 [2385 kB]
+#6 7.104 Get:58 http://deb.debian.org/debian bookworm/main arm64 libcrypt-dev arm64 1:4.4.33-2 [121 kB]
+#6 7.108 Get:59 http://deb.debian.org/debian bookworm/main arm64 libtirpc-common all 1.3.3+ds-1 [14.0 kB]
+#6 7.108 Get:60 http://deb.debian.org/debian bookworm/main arm64 libtirpc3 arm64 1.3.3+ds-1 [80.9 kB]
+#6 7.111 Get:61 http://deb.debian.org/debian bookworm/main arm64 libnsl2 arm64 1.3.0-2 [36.9 kB]
+#6 7.122 Get:62 http://deb.debian.org/debian bookworm/main arm64 libtirpc-dev arm64 1.3.3+ds-1 [194 kB]
+#6 7.124 Get:63 http://deb.debian.org/debian bookworm/main arm64 libnsl-dev arm64 1.3.0-2 [66.1 kB]
+#6 7.124 Get:64 http://deb.debian.org/debian bookworm/main arm64 rpcsvc-proto arm64 1.4.3-1 [59.7 kB]
+#6 7.137 Get:65 http://deb.debian.org/debian bookworm/main arm64 libc6-dev arm64 2.36-9+deb12u14 [1436 kB]
+#6 7.389 Get:66 http://deb.debian.org/debian bookworm/main arm64 libstdc++-12-dev arm64 12.2.0-14+deb12u1 [2007 kB]
+#6 7.454 Get:67 http://deb.debian.org/debian bookworm/main arm64 g++-12 arm64 12.2.0-14+deb12u1 [9072 kB]
+#6 7.889 Get:68 http://deb.debian.org/debian bookworm/main arm64 g++ arm64 4:12.2.0-3 [1336 B]
+#6 7.889 Get:69 http://deb.debian.org/debian bookworm/main arm64 libdeflate0 arm64 1.14-1 [54.3 kB]
+#6 7.890 Get:70 http://deb.debian.org/debian bookworm/main arm64 libgif7 arm64 5.2.1-2.5+deb12u1 [42.6 kB]
+#6 7.891 Get:71 http://deb.debian.org/debian bookworm/main arm64 libjbig0 arm64 2.1-6.1 [30.0 kB]
+#6 7.899 Get:72 http://deb.debian.org/debian bookworm/main arm64 libjpeg62-turbo arm64 1:2.1.5-2 [171 kB]
+#6 7.913 Get:73 http://deb.debian.org/debian bookworm/main arm64 libopenjp2-7 arm64 2.5.0-2+deb12u3 [176 kB]
+#6 7.924 Get:74 http://deb.debian.org/debian-security bookworm-security/main arm64 libpng16-16 arm64 1.6.39-2+deb12u6 [271 kB]
+#6 7.943 Get:75 http://deb.debian.org/debian bookworm/main arm64 liblerc4 arm64 4.0.0+ds-2 [138 kB]
+#6 7.954 Get:76 http://deb.debian.org/debian bookworm/main arm64 libwebp7 arm64 1.2.4-0.2+deb12u1 [260 kB]
+#6 7.964 Get:77 http://deb.debian.org/debian bookworm/main arm64 libtiff6 arm64 4.5.0-6+deb12u4 [301 kB]
+#6 7.969 Get:78 http://deb.debian.org/debian bookworm/main arm64 libwebpmux3 arm64 1.2.4-0.2+deb12u1 [109 kB]
+#6 7.976 Get:79 http://deb.debian.org/debian bookworm/main arm64 liblept5 arm64 1.82.0-3+b3 [973 kB]
+#6 8.112 Get:80 http://deb.debian.org/debian bookworm/main arm64 libleptonica-dev arm64 1.82.0-3+b3 [1501 kB]
+#6 8.167 Get:81 http://deb.debian.org/debian bookworm/main arm64 libpkgconf3 arm64 1.8.1-1 [35.3 kB]
+#6 8.169 Get:82 http://deb.debian.org/debian bookworm/main arm64 make arm64 4.3-4.1 [391 kB]
+#6 8.185 Get:83 http://deb.debian.org/debian bookworm/main arm64 pkgconf-bin arm64 1.8.1-1 [28.9 kB]
+#6 8.185 Get:84 http://deb.debian.org/debian bookworm/main arm64 pkgconf arm64 1.8.1-1 [25.9 kB]
+#6 8.186 Get:85 http://deb.debian.org/debian bookworm/main arm64 pkg-config arm64 1.8.1-1 [13.7 kB]
+#6 8.250 debconf: delaying package configuration, since apt-utils is not installed
+#6 8.260 Fetched 86.6 MB in 5s (16.2 MB/s)
+#6 8.269 Selecting previously unselected package libncursesw6:arm64.
+#6 8.269 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 6090 files and directories currently installed.)
+#6 8.272 Preparing to unpack .../00-libncursesw6_6.4-4_arm64.deb ...
+#6 8.274 Unpacking libncursesw6:arm64 (6.4-4) ...
+#6 8.290 Selecting previously unselected package libproc2-0:arm64.
+#6 8.291 Preparing to unpack .../01-libproc2-0_2%3a4.0.2-3_arm64.deb ...
+#6 8.292 Unpacking libproc2-0:arm64 (2:4.0.2-3) ...
+#6 8.313 Selecting previously unselected package procps.
+#6 8.313 Preparing to unpack .../02-procps_2%3a4.0.2-3_arm64.deb ...
+#6 8.318 Unpacking procps (2:4.0.2-3) ...
+#6 8.369 Selecting previously unselected package libssl3:arm64.
+#6 8.370 Preparing to unpack .../03-libssl3_3.0.22-1~deb12u1_arm64.deb ...
+#6 8.371 Unpacking libssl3:arm64 (3.0.22-1~deb12u1) ...
+#6 8.468 Selecting previously unselected package openssl.
+#6 8.469 Preparing to unpack .../04-openssl_3.0.22-1~deb12u1_arm64.deb ...
+#6 8.470 Unpacking openssl (3.0.22-1~deb12u1) ...
+#6 8.544 Selecting previously unselected package ca-certificates.
+#6 8.545 Preparing to unpack .../05-ca-certificates_20250419~deb12u2_all.deb ...
+#6 8.546 Unpacking ca-certificates (20250419~deb12u2) ...
+#6 8.570 Selecting previously unselected package binutils-common:arm64.
+#6 8.570 Preparing to unpack .../06-binutils-common_2.40-2_arm64.deb ...
+#6 8.573 Unpacking binutils-common:arm64 (2.40-2) ...
+#6 8.734 Selecting previously unselected package libbinutils:arm64.
+#6 8.734 Preparing to unpack .../07-libbinutils_2.40-2_arm64.deb ...
+#6 8.735 Unpacking libbinutils:arm64 (2.40-2) ...
+#6 8.780 Selecting previously unselected package libctf-nobfd0:arm64.
+#6 8.780 Preparing to unpack .../08-libctf-nobfd0_2.40-2_arm64.deb ...
+#6 8.781 Unpacking libctf-nobfd0:arm64 (2.40-2) ...
+#6 8.798 Selecting previously unselected package libctf0:arm64.
+#6 8.798 Preparing to unpack .../09-libctf0_2.40-2_arm64.deb ...
+#6 8.799 Unpacking libctf0:arm64 (2.40-2) ...
+#6 8.814 Selecting previously unselected package libgprofng0:arm64.
+#6 8.815 Preparing to unpack .../10-libgprofng0_2.40-2_arm64.deb ...
+#6 8.819 Unpacking libgprofng0:arm64 (2.40-2) ...
+#6 8.865 Selecting previously unselected package libjansson4:arm64.
+#6 8.865 Preparing to unpack .../11-libjansson4_2.14-2_arm64.deb ...
+#6 8.866 Unpacking libjansson4:arm64 (2.14-2) ...
+#6 8.949 Selecting previously unselected package binutils-aarch64-linux-gnu.
+#6 8.949 Preparing to unpack .../12-binutils-aarch64-linux-gnu_2.40-2_arm64.deb ...
+#6 8.952 Unpacking binutils-aarch64-linux-gnu (2.40-2) ...
+#6 9.175 Selecting previously unselected package binutils.
+#6 9.176 Preparing to unpack .../13-binutils_2.40-2_arm64.deb ...
+#6 9.177 Unpacking binutils (2.40-2) ...
+#6 9.201 Selecting previously unselected package libicu72:arm64.
+#6 9.202 Preparing to unpack .../14-libicu72_72.1-3+deb12u1_arm64.deb ...
+#6 9.203 Unpacking libicu72:arm64 (72.1-3+deb12u1) ...
+#6 9.638 Selecting previously unselected package libxml2:arm64.
+#6 9.639 Preparing to unpack .../15-libxml2_2.9.14+dfsg-1.3~deb12u6_arm64.deb ...
+#6 9.643 Unpacking libxml2:arm64 (2.9.14+dfsg-1.3~deb12u6) ...
+#6 9.684 Selecting previously unselected package libarchive13:arm64.
+#6 9.685 Preparing to unpack .../16-libarchive13_3.6.2-1+deb12u5_arm64.deb ...
+#6 9.686 Unpacking libarchive13:arm64 (3.6.2-1+deb12u5) ...
+#6 9.789 Selecting previously unselected package libbrotli1:arm64.
+#6 9.790 Preparing to unpack .../17-libbrotli1_1.0.9-2+deb12u1_arm64.deb ...
+#6 9.792 Unpacking libbrotli1:arm64 (1.0.9-2+deb12u1) ...
+#6 9.824 Selecting previously unselected package libkrb5support0:arm64.
+#6 9.825 Preparing to unpack .../18-libkrb5support0_1.20.1-2+deb12u5_arm64.deb ...
+#6 9.826 Unpacking libkrb5support0:arm64 (1.20.1-2+deb12u5) ...
+#6 9.838 Selecting previously unselected package libk5crypto3:arm64.
+#6 9.838 Preparing to unpack .../19-libk5crypto3_1.20.1-2+deb12u5_arm64.deb ...
+#6 9.840 Unpacking libk5crypto3:arm64 (1.20.1-2+deb12u5) ...
+#6 9.857 Selecting previously unselected package libkeyutils1:arm64.
+#6 9.858 Preparing to unpack .../20-libkeyutils1_1.6.3-2_arm64.deb ...
+#6 9.859 Unpacking libkeyutils1:arm64 (1.6.3-2) ...
+#6 9.873 Selecting previously unselected package libkrb5-3:arm64.
+#6 9.873 Preparing to unpack .../21-libkrb5-3_1.20.1-2+deb12u5_arm64.deb ...
+#6 9.874 Unpacking libkrb5-3:arm64 (1.20.1-2+deb12u5) ...
+#6 9.906 Selecting previously unselected package libgssapi-krb5-2:arm64.
+#6 9.908 Preparing to unpack .../22-libgssapi-krb5-2_1.20.1-2+deb12u5_arm64.deb ...
+#6 9.909 Unpacking libgssapi-krb5-2:arm64 (1.20.1-2+deb12u5) ...
+#6 9.925 Selecting previously unselected package libsasl2-modules-db:arm64.
+#6 9.925 Preparing to unpack .../23-libsasl2-modules-db_2.1.28+dfsg-10_arm64.deb ...
+#6 9.926 Unpacking libsasl2-modules-db:arm64 (2.1.28+dfsg-10) ...
+#6 9.936 Selecting previously unselected package libsasl2-2:arm64.
+#6 9.936 Preparing to unpack .../24-libsasl2-2_2.1.28+dfsg-10_arm64.deb ...
+#6 9.937 Unpacking libsasl2-2:arm64 (2.1.28+dfsg-10) ...
+#6 9.948 Selecting previously unselected package libldap-2.5-0:arm64.
+#6 9.949 Preparing to unpack .../25-libldap-2.5-0_2.5.13+dfsg-5_arm64.deb ...
+#6 9.950 Unpacking libldap-2.5-0:arm64 (2.5.13+dfsg-5) ...
+#6 9.972 Selecting previously unselected package libnghttp2-14:arm64.
+#6 9.973 Preparing to unpack .../26-libnghttp2-14_1.52.0-1+deb12u3_arm64.deb ...
+#6 9.977 Unpacking libnghttp2-14:arm64 (1.52.0-1+deb12u3) ...
+#6 9.989 Selecting previously unselected package libpsl5:arm64.
+#6 9.989 Preparing to unpack .../27-libpsl5_0.21.2-1_arm64.deb ...
+#6 9.990 Unpacking libpsl5:arm64 (0.21.2-1) ...
+#6 10.00 Selecting previously unselected package librtmp1:arm64.
+#6 10.00 Preparing to unpack .../28-librtmp1_2.4+20151223.gitfa8646d.1-2+b2_arm64.deb ...
+#6 10.01 Unpacking librtmp1:arm64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+#6 10.02 Selecting previously unselected package libssh2-1:arm64.
+#6 10.02 Preparing to unpack .../29-libssh2-1_1.10.0-3+deb12u1_arm64.deb ...
+#6 10.02 Unpacking libssh2-1:arm64 (1.10.0-3+deb12u1) ...
+#6 10.04 Selecting previously unselected package libcurl4:arm64.
+#6 10.04 Preparing to unpack .../30-libcurl4_7.88.1-10+deb12u15_arm64.deb ...
+#6 10.04 Unpacking libcurl4:arm64 (7.88.1-10+deb12u15) ...
+#6 10.07 Selecting previously unselected package libexpat1:arm64.
+#6 10.07 Preparing to unpack .../31-libexpat1_2.5.0-1+deb12u5_arm64.deb ...
+#6 10.08 Unpacking libexpat1:arm64 (2.5.0-1+deb12u5) ...
+#6 10.10 Selecting previously unselected package libjsoncpp25:arm64.
+#6 10.10 Preparing to unpack .../32-libjsoncpp25_1.9.5-4_arm64.deb ...
+#6 10.10 Unpacking libjsoncpp25:arm64 (1.9.5-4) ...
+#6 10.12 Selecting previously unselected package librhash0:arm64.
+#6 10.12 Preparing to unpack .../33-librhash0_1.4.3-3_arm64.deb ...
+#6 10.12 Unpacking librhash0:arm64 (1.4.3-3) ...
+#6 10.14 Selecting previously unselected package libuv1:arm64.
+#6 10.14 Preparing to unpack .../34-libuv1_1.44.2-1+deb12u1_arm64.deb ...
+#6 10.14 Unpacking libuv1:arm64 (1.44.2-1+deb12u1) ...
+#6 10.17 Selecting previously unselected package cmake-data.
+#6 10.17 Preparing to unpack .../35-cmake-data_3.25.1-1_all.deb ...
+#6 10.17 Unpacking cmake-data (3.25.1-1) ...
+#6 ...
+
+#5 [stage-1 2/4] RUN apt-get update && apt-get install -y --no-install-recommends liblept5 libgomp1 libarchive13 libcurl4 poppler-utils ca-certificates python3 python3-pil && rm -rf /var/lib/apt/lists/*
+#5 10.19 148 added, 0 removed; done.
+#5 10.20 Setting up libfreetype6:arm64 (2.12.1+dfsg-5+deb12u4) ...
+#5 10.20 Setting up libgssapi-krb5-2:arm64 (1.20.1-2+deb12u5) ...
+#5 10.20 Setting up libgdbm-compat4:arm64 (1.23-3) ...
+#5 10.21 Setting up libcurl4:arm64 (7.88.1-10+deb12u15) ...
+#5 10.21 Setting up libx11-6:arm64 (2:1.8.4-2+deb12u2) ...
+#5 10.21 Setting up libharfbuzz0b:arm64 (6.0.0+dfsg-3) ...
+#5 10.21 Setting up libfontconfig1:arm64 (2.14.1-4) ...
+#5 10.22 Setting up libperl5.36:arm64 (5.36.0-7+deb12u4) ...
+#5 10.22 Setting up libtirpc3:arm64 (1.3.3+ds-1) ...
+#5 10.22 Setting up libxrender1:arm64 (1:0.9.10-1.1) ...
+#5 10.22 Setting up libxext6:arm64 (2:1.3.4-1+b1) ...
+#5 10.23 Setting up libcairo2:arm64 (1.16.0-7) ...
+#5 10.23 Setting up perl (5.36.0-7+deb12u4) ...
+#5 10.23 Setting up libraqm0:arm64 (0.7.0-4.1) ...
+#5 10.23 Setting up libpoppler126:arm64 (22.12.0-2+deb12u3) ...
+#5 10.24 Setting up libnsl2:arm64 (1.3.0-2) ...
+#5 10.24 Setting up poppler-utils (22.12.0-2+deb12u3) ...
+#5 10.24 Setting up mailcap (3.70+nmu1) ...
+#5 10.25 Setting up mime-support (3.66) ...
+#5 10.25 Setting up libpython3.11-stdlib:arm64 (3.11.2-6+deb12u9) ...
+#5 10.25 Setting up libpython3-stdlib:arm64 (3.11.2-1+b1) ...
+#5 10.26 Setting up python3.11 (3.11.2-6+deb12u9) ...
+#5 10.77 Setting up python3 (3.11.2-1+b1) ...
+#5 10.78 running python rtupdate hooks for python3.11...
+#5 10.78 running python post-rtupdate hooks for python3.11...
+#5 10.82 Setting up python3-pil:arm64 (9.4.0-1.1+deb12u1) ...
+#5 10.95 Processing triggers for libc-bin (2.36-9+deb12u14) ...
+#5 10.96 Processing triggers for ca-certificates (20250419~deb12u2) ...
+#5 10.96 Updating certificates in /etc/ssl/certs...
+#5 11.11 0 added, 0 removed; done.
+#5 11.11 Running hooks in /etc/ca-certificates/update.d...
+#5 11.12 done.
+#5 DONE 11.2s
+
+#6 [build 2/6] RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl cmake g++ make pkg-config libleptonica-dev && rm -rf /var/lib/apt/lists/*
+#6 10.41 Selecting previously unselected package cmake.
+#6 10.41 Preparing to unpack .../36-cmake_3.25.1-1_arm64.deb ...
+#6 10.45 Unpacking cmake (3.25.1-1) ...
+#6 10.83 Selecting previously unselected package libisl23:arm64.
+#6 10.83 Preparing to unpack .../37-libisl23_0.25-1.1_arm64.deb ...
+#6 10.83 Unpacking libisl23:arm64 (0.25-1.1) ...
+#6 10.88 Selecting previously unselected package libmpfr6:arm64.
+#6 10.88 Preparing to unpack .../38-libmpfr6_4.2.0-1_arm64.deb ...
+#6 10.88 Unpacking libmpfr6:arm64 (4.2.0-1) ...
+#6 10.90 Selecting previously unselected package libmpc3:arm64.
+#6 10.90 Preparing to unpack .../39-libmpc3_1.3.1-1_arm64.deb ...
+#6 10.90 Unpacking libmpc3:arm64 (1.3.1-1) ...
+#6 10.91 Selecting previously unselected package cpp-12.
+#6 10.91 Preparing to unpack .../40-cpp-12_12.2.0-14+deb12u1_arm64.deb ...
+#6 10.91 Unpacking cpp-12 (12.2.0-14+deb12u1) ...
+#6 11.28 Selecting previously unselected package cpp.
+#6 11.28 Preparing to unpack .../41-cpp_4%3a12.2.0-3_arm64.deb ...
+#6 11.28 Unpacking cpp (4:12.2.0-3) ...
+#6 11.29 Selecting previously unselected package curl.
+#6 11.29 Preparing to unpack .../42-curl_7.88.1-10+deb12u15_arm64.deb ...
+#6 11.29 Unpacking curl (7.88.1-10+deb12u15) ...
+#6 11.31 Selecting previously unselected package libcc1-0:arm64.
+#6 11.31 Preparing to unpack .../43-libcc1-0_12.2.0-14+deb12u1_arm64.deb ...
+#6 11.31 Unpacking libcc1-0:arm64 (12.2.0-14+deb12u1) ...
+#6 11.34 Selecting previously unselected package libgomp1:arm64.
+#6 11.34 Preparing to unpack .../44-libgomp1_12.2.0-14+deb12u1_arm64.deb ...
+#6 11.34 Unpacking libgomp1:arm64 (12.2.0-14+deb12u1) ...
+#6 11.35 Selecting previously unselected package libitm1:arm64.
+#6 11.35 Preparing to unpack .../45-libitm1_12.2.0-14+deb12u1_arm64.deb ...
+#6 11.35 Unpacking libitm1:arm64 (12.2.0-14+deb12u1) ...
+#6 11.36 Selecting previously unselected package libatomic1:arm64.
+#6 11.36 Preparing to unpack .../46-libatomic1_12.2.0-14+deb12u1_arm64.deb ...
+#6 11.36 Unpacking libatomic1:arm64 (12.2.0-14+deb12u1) ...
+#6 11.37 Selecting previously unselected package libasan8:arm64.
+#6 11.37 Preparing to unpack .../47-libasan8_12.2.0-14+deb12u1_arm64.deb ...
+#6 11.37 Unpacking libasan8:arm64 (12.2.0-14+deb12u1) ...
+#6 11.48 Selecting previously unselected package liblsan0:arm64.
+#6 11.48 Preparing to unpack .../48-liblsan0_12.2.0-14+deb12u1_arm64.deb ...
+#6 11.48 Unpacking liblsan0:arm64 (12.2.0-14+deb12u1) ...
+#6 11.53 Selecting previously unselected package libtsan2:arm64.
+#6 11.53 Preparing to unpack .../49-libtsan2_12.2.0-14+deb12u1_arm64.deb ...
+#6 11.53 Unpacking libtsan2:arm64 (12.2.0-14+deb12u1) ...
+#6 11.65 Selecting previously unselected package libubsan1:arm64.
+#6 11.65 Preparing to unpack .../50-libubsan1_12.2.0-14+deb12u1_arm64.deb ...
+#6 11.65 Unpacking libubsan1:arm64 (12.2.0-14+deb12u1) ...
+#6 11.70 Selecting previously unselected package libhwasan0:arm64.
+#6 11.70 Preparing to unpack .../51-libhwasan0_12.2.0-14+deb12u1_arm64.deb ...
+#6 11.70 Unpacking libhwasan0:arm64 (12.2.0-14+deb12u1) ...
+#6 11.76 Selecting previously unselected package libgcc-12-dev:arm64.
+#6 11.77 Preparing to unpack .../52-libgcc-12-dev_12.2.0-14+deb12u1_arm64.deb ...
+#6 11.77 Unpacking libgcc-12-dev:arm64 (12.2.0-14+deb12u1) ...
+#6 11.84 Selecting previously unselected package gcc-12.
+#6 11.84 Preparing to unpack .../53-gcc-12_12.2.0-14+deb12u1_arm64.deb ...
+#6 11.84 Unpacking gcc-12 (12.2.0-14+deb12u1) ...
+#6 12.32 Selecting previously unselected package gcc.
+#6 12.32 Preparing to unpack .../54-gcc_4%3a12.2.0-3_arm64.deb ...
+#6 12.32 Unpacking gcc (4:12.2.0-3) ...
+#6 12.34 Selecting previously unselected package libc-dev-bin.
+#6 12.34 Preparing to unpack .../55-libc-dev-bin_2.36-9+deb12u14_arm64.deb ...
+#6 12.34 Unpacking libc-dev-bin (2.36-9+deb12u14) ...
+#6 12.35 Selecting previously unselected package linux-libc-dev:arm64.
+#6 12.35 Preparing to unpack .../56-linux-libc-dev_6.1.190-1_arm64.deb ...
+#6 12.35 Unpacking linux-libc-dev:arm64 (6.1.190-1) ...
+#6 12.43 Selecting previously unselected package libcrypt-dev:arm64.
+#6 12.43 Preparing to unpack .../57-libcrypt-dev_1%3a4.4.33-2_arm64.deb ...
+#6 12.43 Unpacking libcrypt-dev:arm64 (1:4.4.33-2) ...
+#6 12.45 Selecting previously unselected package libtirpc-common.
+#6 12.45 Preparing to unpack .../58-libtirpc-common_1.3.3+ds-1_all.deb ...
+#6 12.45 Unpacking libtirpc-common (1.3.3+ds-1) ...
+#6 12.46 Selecting previously unselected package libtirpc3:arm64.
+#6 12.46 Preparing to unpack .../59-libtirpc3_1.3.3+ds-1_arm64.deb ...
+#6 12.46 Unpacking libtirpc3:arm64 (1.3.3+ds-1) ...
+#6 12.47 Selecting previously unselected package libnsl2:arm64.
+#6 12.47 Preparing to unpack .../60-libnsl2_1.3.0-2_arm64.deb ...
+#6 12.47 Unpacking libnsl2:arm64 (1.3.0-2) ...
+#6 12.48 Selecting previously unselected package libtirpc-dev:arm64.
+#6 12.48 Preparing to unpack .../61-libtirpc-dev_1.3.3+ds-1_arm64.deb ...
+#6 12.48 Unpacking libtirpc-dev:arm64 (1.3.3+ds-1) ...
+#6 12.50 Selecting previously unselected package libnsl-dev:arm64.
+#6 12.50 Preparing to unpack .../62-libnsl-dev_1.3.0-2_arm64.deb ...
+#6 12.50 Unpacking libnsl-dev:arm64 (1.3.0-2) ...
+#6 12.51 Selecting previously unselected package rpcsvc-proto.
+#6 12.51 Preparing to unpack .../63-rpcsvc-proto_1.4.3-1_arm64.deb ...
+#6 12.51 Unpacking rpcsvc-proto (1.4.3-1) ...
+#6 12.53 Selecting previously unselected package libc6-dev:arm64.
+#6 12.53 Preparing to unpack .../64-libc6-dev_2.36-9+deb12u14_arm64.deb ...
+#6 12.53 Unpacking libc6-dev:arm64 (2.36-9+deb12u14) ...
+#6 12.61 Selecting previously unselected package libstdc++-12-dev:arm64.
+#6 12.61 Preparing to unpack .../65-libstdc++-12-dev_12.2.0-14+deb12u1_arm64.deb ...
+#6 12.62 Unpacking libstdc++-12-dev:arm64 (12.2.0-14+deb12u1) ...
+#6 12.74 Selecting previously unselected package g++-12.
+#6 12.74 Preparing to unpack .../66-g++-12_12.2.0-14+deb12u1_arm64.deb ...
+#6 12.75 Unpacking g++-12 (12.2.0-14+deb12u1) ...
+#6 13.15 Selecting previously unselected package g++.
+#6 13.15 Preparing to unpack .../67-g++_4%3a12.2.0-3_arm64.deb ...
+#6 13.15 Unpacking g++ (4:12.2.0-3) ...
+#6 13.16 Selecting previously unselected package libdeflate0:arm64.
+#6 13.16 Preparing to unpack .../68-libdeflate0_1.14-1_arm64.deb ...
+#6 13.16 Unpacking libdeflate0:arm64 (1.14-1) ...
+#6 13.17 Selecting previously unselected package libgif7:arm64.
+#6 13.17 Preparing to unpack .../69-libgif7_5.2.1-2.5+deb12u1_arm64.deb ...
+#6 13.17 Unpacking libgif7:arm64 (5.2.1-2.5+deb12u1) ...
+#6 13.19 Selecting previously unselected package libjbig0:arm64.
+#6 13.19 Preparing to unpack .../70-libjbig0_2.1-6.1_arm64.deb ...
+#6 13.19 Unpacking libjbig0:arm64 (2.1-6.1) ...
+#6 13.20 Selecting previously unselected package libjpeg62-turbo:arm64.
+#6 13.20 Preparing to unpack .../71-libjpeg62-turbo_1%3a2.1.5-2_arm64.deb ...
+#6 13.20 Unpacking libjpeg62-turbo:arm64 (1:2.1.5-2) ...
+#6 13.22 Selecting previously unselected package libopenjp2-7:arm64.
+#6 13.22 Preparing to unpack .../72-libopenjp2-7_2.5.0-2+deb12u3_arm64.deb ...
+#6 13.22 Unpacking libopenjp2-7:arm64 (2.5.0-2+deb12u3) ...
+#6 13.23 Selecting previously unselected package libpng16-16:arm64.
+#6 13.24 Preparing to unpack .../73-libpng16-16_1.6.39-2+deb12u6_arm64.deb ...
+#6 13.24 Unpacking libpng16-16:arm64 (1.6.39-2+deb12u6) ...
+#6 13.25 Selecting previously unselected package liblerc4:arm64.
+#6 13.26 Preparing to unpack .../74-liblerc4_4.0.0+ds-2_arm64.deb ...
+#6 13.26 Unpacking liblerc4:arm64 (4.0.0+ds-2) ...
+#6 13.27 Selecting previously unselected package libwebp7:arm64.
+#6 13.27 Preparing to unpack .../75-libwebp7_1.2.4-0.2+deb12u1_arm64.deb ...
+#6 13.27 Unpacking libwebp7:arm64 (1.2.4-0.2+deb12u1) ...
+#6 13.29 Selecting previously unselected package libtiff6:arm64.
+#6 13.29 Preparing to unpack .../76-libtiff6_4.5.0-6+deb12u4_arm64.deb ...
+#6 13.29 Unpacking libtiff6:arm64 (4.5.0-6+deb12u4) ...
+#6 13.31 Selecting previously unselected package libwebpmux3:arm64.
+#6 13.31 Preparing to unpack .../77-libwebpmux3_1.2.4-0.2+deb12u1_arm64.deb ...
+#6 13.31 Unpacking libwebpmux3:arm64 (1.2.4-0.2+deb12u1) ...
+#6 13.33 Selecting previously unselected package liblept5:arm64.
+#6 13.33 Preparing to unpack .../78-liblept5_1.82.0-3+b3_arm64.deb ...
+#6 13.33 Unpacking liblept5:arm64 (1.82.0-3+b3) ...
+#6 13.38 Selecting previously unselected package libleptonica-dev.
+#6 13.38 Preparing to unpack .../79-libleptonica-dev_1.82.0-3+b3_arm64.deb ...
+#6 13.38 Unpacking libleptonica-dev (1.82.0-3+b3) ...
+#6 13.46 Selecting previously unselected package libpkgconf3:arm64.
+#6 13.46 Preparing to unpack .../80-libpkgconf3_1.8.1-1_arm64.deb ...
+#6 13.46 Unpacking libpkgconf3:arm64 (1.8.1-1) ...
+#6 13.47 Selecting previously unselected package make.
+#6 13.47 Preparing to unpack .../81-make_4.3-4.1_arm64.deb ...
+#6 13.47 Unpacking make (4.3-4.1) ...
+#6 13.50 Selecting previously unselected package pkgconf-bin.
+#6 13.50 Preparing to unpack .../82-pkgconf-bin_1.8.1-1_arm64.deb ...
+#6 13.50 Unpacking pkgconf-bin (1.8.1-1) ...
+#6 13.51 Selecting previously unselected package pkgconf:arm64.
+#6 13.51 Preparing to unpack .../83-pkgconf_1.8.1-1_arm64.deb ...
+#6 13.52 Unpacking pkgconf:arm64 (1.8.1-1) ...
+#6 13.52 Selecting previously unselected package pkg-config:arm64.
+#6 13.52 Preparing to unpack .../84-pkg-config_1.8.1-1_arm64.deb ...
+#6 13.53 Unpacking pkg-config:arm64 (1.8.1-1) ...
+#6 13.54 Setting up libexpat1:arm64 (2.5.0-1+deb12u5) ...
+#6 13.54 Setting up libkeyutils1:arm64 (1.6.3-2) ...
+#6 13.54 Setting up libpsl5:arm64 (0.21.2-1) ...
+#6 13.54 Setting up libicu72:arm64 (72.1-3+deb12u1) ...
+#6 13.54 Setting up liblerc4:arm64 (4.0.0+ds-2) ...
+#6 13.55 Setting up libtirpc-common (1.3.3+ds-1) ...
+#6 13.55 Setting up libbrotli1:arm64 (1.0.9-2+deb12u1) ...
+#6 13.55 Setting up binutils-common:arm64 (2.40-2) ...
+#6 13.55 Setting up libssl3:arm64 (3.0.22-1~deb12u1) ...
+#6 13.55 Setting up libnghttp2-14:arm64 (1.52.0-1+deb12u3) ...
+#6 13.56 Setting up libdeflate0:arm64 (1.14-1) ...
+#6 13.56 Setting up linux-libc-dev:arm64 (6.1.190-1) ...
+#6 13.56 Setting up libctf-nobfd0:arm64 (2.40-2) ...
+#6 13.56 Setting up libgomp1:arm64 (12.2.0-14+deb12u1) ...
+#6 13.56 Setting up libjbig0:arm64 (2.1-6.1) ...
+#6 13.56 Setting up libjansson4:arm64 (2.14-2) ...
+#6 13.57 Setting up libkrb5support0:arm64 (1.20.1-2+deb12u5) ...
+#6 13.57 Setting up libsasl2-modules-db:arm64 (2.1.28+dfsg-10) ...
+#6 13.57 Setting up libpkgconf3:arm64 (1.8.1-1) ...
+#6 13.58 Setting up libuv1:arm64 (1.44.2-1+deb12u1) ...
+#6 13.58 Setting up rpcsvc-proto (1.4.3-1) ...
+#6 13.58 Setting up libjpeg62-turbo:arm64 (1:2.1.5-2) ...
+#6 13.59 Setting up make (4.3-4.1) ...
+#6 13.59 Setting up libmpfr6:arm64 (4.2.0-1) ...
+#6 13.60 Setting up librtmp1:arm64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+#6 13.60 Setting up libproc2-0:arm64 (2:4.0.2-3) ...
+#6 13.61 Setting up libpng16-16:arm64 (1.6.39-2+deb12u6) ...
+#6 13.61 Setting up libmpc3:arm64 (1.3.1-1) ...
+#6 13.61 Setting up libatomic1:arm64 (12.2.0-14+deb12u1) ...
+#6 13.61 Setting up libjsoncpp25:arm64 (1.9.5-4) ...
+#6 13.62 Setting up pkgconf-bin (1.8.1-1) ...
+#6 13.62 Setting up libncursesw6:arm64 (6.4-4) ...
+#6 13.62 Setting up libk5crypto3:arm64 (1.20.1-2+deb12u5) ...
+#6 13.62 Setting up libsasl2-2:arm64 (2.1.28+dfsg-10) ...
+#6 13.63 Setting up libwebp7:arm64 (1.2.4-0.2+deb12u1) ...
+#6 13.64 Setting up libubsan1:arm64 (12.2.0-14+deb12u1) ...
+#6 13.64 Setting up libgif7:arm64 (5.2.1-2.5+deb12u1) ...
+#6 13.64 Setting up libhwasan0:arm64 (12.2.0-14+deb12u1) ...
+#6 13.65 Setting up librhash0:arm64 (1.4.3-3) ...
+#6 13.65 Setting up libcrypt-dev:arm64 (1:4.4.33-2) ...
+#6 13.66 Setting up libtiff6:arm64 (4.5.0-6+deb12u4) ...
+#6 13.69 Setting up libasan8:arm64 (12.2.0-14+deb12u1) ...
+#6 13.69 Setting up procps (2:4.0.2-3) ...
+#6 13.71 Setting up libopenjp2-7:arm64 (2.5.0-2+deb12u3) ...
+#6 13.72 Setting up libssh2-1:arm64 (1.10.0-3+deb12u1) ...
+#6 13.72 Setting up cmake-data (3.25.1-1) ...
+#6 13.73 Setting up libkrb5-3:arm64 (1.20.1-2+deb12u5) ...
+#6 13.74 Setting up libtsan2:arm64 (12.2.0-14+deb12u1) ...
+#6 13.74 Setting up libbinutils:arm64 (2.40-2) ...
+#6 13.74 Setting up libisl23:arm64 (0.25-1.1) ...
+#6 13.75 Setting up libc-dev-bin (2.36-9+deb12u14) ...
+#6 13.76 Setting up openssl (3.0.22-1~deb12u1) ...
+#6 13.76 Setting up libwebpmux3:arm64 (1.2.4-0.2+deb12u1) ...
+#6 13.76 Setting up libxml2:arm64 (2.9.14+dfsg-1.3~deb12u6) ...
+#6 13.76 Setting up libcc1-0:arm64 (12.2.0-14+deb12u1) ...
+#6 13.77 Setting up liblsan0:arm64 (12.2.0-14+deb12u1) ...
+#6 13.77 Setting up libitm1:arm64 (12.2.0-14+deb12u1) ...
+#6 13.77 Setting up libctf0:arm64 (2.40-2) ...
+#6 13.77 Setting up cpp-12 (12.2.0-14+deb12u1) ...
+#6 13.78 Setting up libarchive13:arm64 (3.6.2-1+deb12u5) ...
+#6 13.78 Setting up libldap-2.5-0:arm64 (2.5.13+dfsg-5) ...
+#6 13.78 Setting up liblept5:arm64 (1.82.0-3+b3) ...
+#6 13.78 Setting up pkgconf:arm64 (1.8.1-1) ...
+#6 13.79 Setting up ca-certificates (20250419~deb12u2) ...
+#6 13.82 debconf: unable to initialize frontend: Dialog
+#6 13.82 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#6 13.82 debconf: falling back to frontend: Readline
+#6 13.82 debconf: unable to initialize frontend: Readline
+#6 13.82 debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC contains: /etc/perl /usr/local/lib/aarch64-linux-gnu/perl/5.36.0 /usr/local/share/perl/5.36.0 /usr/lib/aarch64-linux-gnu/perl5/5.36 /usr/share/perl5 /usr/lib/aarch64-linux-gnu/perl-base /usr/lib/aarch64-linux-gnu/perl/5.36 /usr/share/perl/5.36 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 7.)
+#6 13.82 debconf: falling back to frontend: Teletype
+#6 14.01 Updating certificates in /etc/ssl/certs...
+#6 14.27 148 added, 0 removed; done.
+#6 14.28 Setting up libleptonica-dev (1.82.0-3+b3) ...
+#6 14.28 Setting up libgprofng0:arm64 (2.40-2) ...
+#6 14.28 Setting up libgcc-12-dev:arm64 (12.2.0-14+deb12u1) ...
+#6 14.28 Setting up libgssapi-krb5-2:arm64 (1.20.1-2+deb12u5) ...
+#6 14.28 Setting up pkg-config:arm64 (1.8.1-1) ...
+#6 14.29 Setting up cpp (4:12.2.0-3) ...
+#6 14.29 Setting up libcurl4:arm64 (7.88.1-10+deb12u15) ...
+#6 14.29 Setting up curl (7.88.1-10+deb12u15) ...
+#6 14.30 Setting up libtirpc3:arm64 (1.3.3+ds-1) ...
+#6 14.30 Setting up binutils-aarch64-linux-gnu (2.40-2) ...
+#6 14.31 Setting up binutils (2.40-2) ...
+#6 14.32 Setting up libtirpc-dev:arm64 (1.3.3+ds-1) ...
+#6 14.34 Setting up gcc-12 (12.2.0-14+deb12u1) ...
+#6 14.35 Setting up libnsl2:arm64 (1.3.0-2) ...
+#6 14.38 Setting up cmake (3.25.1-1) ...
+#6 14.39 Setting up gcc (4:12.2.0-3) ...
+#6 14.42 Setting up libnsl-dev:arm64 (1.3.0-2) ...
+#6 14.51 Setting up libc6-dev:arm64 (2.36-9+deb12u14) ...
+#6 14.59 Setting up libstdc++-12-dev:arm64 (12.2.0-14+deb12u1) ...
+#6 14.61 Setting up g++-12 (12.2.0-14+deb12u1) ...
+#6 14.61 Setting up g++ (4:12.2.0-3) ...
+#6 14.61 update-alternatives: using /usr/bin/g++ to provide /usr/bin/c++ (c++) in auto mode
+#6 14.61 Processing triggers for libc-bin (2.36-9+deb12u14) ...
+#6 14.62 Processing triggers for ca-certificates (20250419~deb12u2) ...
+#6 14.63 Updating certificates in /etc/ssl/certs...
+#6 14.96 0 added, 0 removed; done.
+#6 14.96 Running hooks in /etc/ca-certificates/update.d...
+#6 14.96 done.
+#6 DONE 15.2s
+
+#7 [build 3/6] WORKDIR /build
+#7 DONE 0.0s
+
+#8 [build 4/6] RUN curl -fsSL https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.5.2.tar.gz -o tesseract.tar.gz && echo '6235ea0dae45ea137f59c09320406f5888383741924d98855bd2ce0d16b54f21  tesseract.tar.gz' | sha256sum -c - && tar -xzf tesseract.tar.gz
+#8 1.020 tesseract.tar.gz: OK
+#8 DONE 1.1s
+
+#9 [build 5/6] RUN cmake -S tesseract-5.5.2 -B out -DCMAKE_BUILD_TYPE=Release -DBUILD_TRAINING_TOOLS=OFF -DBUILD_TESTS=OFF && cmake --build out -j2 && cmake --install out
+#9 0.131 -- The C compiler identification is GNU 12.2.0
+#9 0.166 -- The CXX compiler identification is GNU 12.2.0
+#9 0.172 -- Detecting C compiler ABI info
+#9 0.211 -- Detecting C compiler ABI info - done
+#9 0.215 -- Check for working C compiler: /usr/bin/cc - skipped
+#9 0.215 -- Detecting C compile features
+#9 0.216 -- Detecting C compile features - done
+#9 0.218 -- Detecting CXX compiler ABI info
+#9 0.263 -- Detecting CXX compiler ABI info - done
+#9 0.267 -- Check for working CXX compiler: /usr/bin/c++ - skipped
+#9 0.268 -- Detecting CXX compile features
+#9 0.268 -- Detecting CXX compile features - done
+#9 0.268 -- Configuring tesseract version 5.5.2...
+#9 0.538 -- IPO / LTO supported
+#9 0.538 -- CMAKE_SYSTEM_PROCESSOR=<aarch64>
+#9 0.538 -- LTO build is not supported on arm/RBPi.
+#9 0.539 -- ccache not found, disabling ccache support
+#9 0.541 -- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1") 
+#9 0.542 -- Could NOT find Leptonica (missing: Leptonica_DIR)
+#9 0.542 -- Checking for module 'lept>=1.74'
+#9 0.546 --   Found lept, version 1.82.0
+#9 0.557 -- Found leptonica version: 1.82.0
+#9 0.651 -- Leptonica was build with TIFF support.
+#9 0.653 -- Could NOT find TIFF (missing: TIFF_LIBRARY TIFF_INCLUDE_DIR) 
+#9 0.654 -- Checking for module 'libtiff-4'
+#9 0.655 --   Package 'libtiff-4', required by 'virtual:world', not found
+#9 0.656 -- Could NOT find LibArchive (missing: LibArchive_LIBRARY LibArchive_INCLUDE_DIR) 
+#9 0.656 -- Checking for module 'libarchive'
+#9 0.657 --   Package 'libarchive', required by 'virtual:world', not found
+#9 0.663 -- Could NOT find CURL (missing: CURL_LIBRARY CURL_INCLUDE_DIR) 
+#9 0.663 -- Checking for module 'libcurl'
+#9 0.664 --   Package 'libcurl', required by 'virtual:world', not found
+#9 0.667 -- Looking for feenableexcept
+#9 0.708 -- Looking for feenableexcept - found
+#9 0.709 -- 
+#9 0.709 -- General configuration for Tesseract 5.5.2
+#9 0.709 -- --------------------------------------------------------
+#9 0.709 -- Build type: Release 64 bits
+#9 0.709 -- Compiler: GNU
+#9 0.709 -- Compiler version: 12.2.0
+#9 0.709 -- Used standard: C++20
+#9 0.709 -- CXX compiler options:  -O3 -DNDEBUG
+#9 0.709 -- Compile definitions = CMAKE_BUILD;HAVE_CONFIG_H
+#9 0.709 -- Linker options:  
+#9 0.709 -- Install directory: /usr/local
+#9 0.709 -- HAVE_AVX: FALSE
+#9 0.709 -- HAVE_AVX2: FALSE
+#9 0.709 -- HAVE_AVX512F: FALSE
+#9 0.709 -- HAVE_FMA: FALSE
+#9 0.709 -- HAVE_SSE4_1: FALSE
+#9 0.709 -- MARCH_NATIVE_OPT: OFF
+#9 0.709 -- HAVE_NEON: TRUE
+#9 0.709 -- Link-time optimization: FALSE
+#9 0.709 -- --------------------------------------------------------
+#9 0.709 -- Build with sw [SW_BUILD]: OFF
+#9 0.709 -- Build with openmp support [OPENMP_BUILD]: OFF
+#9 0.709 -- Build with libarchive support [HAVE_LIBARCHIVE]: 
+#9 0.709 -- Build with libcurl support [HAVE_LIBCURL]: 
+#9 0.709 -- Enable float for LSTM [FAST_FLOAT]: ON
+#9 0.709 -- Enable optimization for host CPU (could break HW compatibility) [ENABLE_NATIVE]: OFF
+#9 0.709 -- Disable disable graphics (ScrollView) [GRAPHICS_DISABLED]: OFF
+#9 0.709 -- Disable the legacy OCR engine [DISABLED_LEGACY_ENGINE]: OFF
+#9 0.709 -- Build training tools [BUILD_TRAINING_TOOLS]: OFF
+#9 0.709 -- Build tests [BUILD_TESTS]: OFF
+#9 0.709 -- Use system ICU Library [USE_SYSTEM_ICU]: OFF
+#9 0.709 -- Install tesseract configs [INSTALL_CONFIGS]: ON
+#9 0.709 -- --------------------------------------------------------
+#9 0.709 -- Modern build optimizations:
+#9 0.709 -- Unity build [ENABLE_UNITY_BUILD]: OFF
+#9 0.709 -- Precompiled headers [ENABLE_PRECOMPILED_HEADERS]: ON
+#9 0.709 -- ccache [ENABLE_CCACHE]: OFF
+#9 0.709 -- Ninja job pools [ENABLE_NINJA_POOL]: Disabled (not using Ninja)
+#9 0.709 -- --------------------------------------------------------
+#9 0.709 -- 
+#9 0.712 -- Precompiled headers enabled for libtesseract (excluding architecture-specific files)
+#9 0.713 -- Configuring done
+#9 0.731 -- Generating done
+#9 0.732 -- Build files have been written to: /build/out
+#9 0.770 [  0%] Building CXX object CMakeFiles/libtesseract.dir/cmake_pch.hxx.gch
+#9 0.770 [  1%] Building CXX object CMakeFiles/libtesseract.dir/src/arch/dotproduct.cpp.o
+#9 0.791 [  1%] Building CXX object CMakeFiles/libtesseract.dir/src/arch/dotproductneon.cpp.o
+#9 0.951 [  2%] Building CXX object CMakeFiles/libtesseract.dir/src/arch/intsimdmatrixneon.cpp.o
+#9 1.559 [  3%] Building CXX object CMakeFiles/libtesseract.dir/src/api/altorenderer.cpp.o
+#9 1.559 [  3%] Building CXX object CMakeFiles/libtesseract.dir/src/api/baseapi.cpp.o
+#9 1.852 [  3%] Building CXX object CMakeFiles/libtesseract.dir/src/api/capi.cpp.o
+#9 2.286 [  4%] Building CXX object CMakeFiles/libtesseract.dir/src/api/hocrrenderer.cpp.o
+#9 3.111 [  4%] Building CXX object CMakeFiles/libtesseract.dir/src/api/lstmboxrenderer.cpp.o
+#9 3.623 In file included from /usr/include/c++/12/string:40,
+#9 3.623                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 3.623                  from <command-line>:
+#9 3.623 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 3.623     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 3.623     inlined from 'void tesseract::AddBoxToLSTM(int, int, int, int, int, std::string&)' at /build/tesseract-5.5.2/src/api/lstmboxrenderer.cpp:33:15:
+#9 3.623 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 3.623   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 3.623       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 3.623 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 3.623     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 3.623     inlined from 'void tesseract::AddBoxToLSTM(int, int, int, int, int, std::string&)' at /build/tesseract-5.5.2/src/api/lstmboxrenderer.cpp:34:15:
+#9 3.623 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 3.623   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 3.623       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 3.623 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 3.623     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 3.623     inlined from 'void tesseract::AddBoxToLSTM(int, int, int, int, int, std::string&)' at /build/tesseract-5.5.2/src/api/lstmboxrenderer.cpp:35:15:
+#9 3.623 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 3.623   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 3.623       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 3.623 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 3.623     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 3.623     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 3.623     inlined from 'void tesseract::AddBoxToLSTM(int, int, int, int, int, std::string&)' at /build/tesseract-5.5.2/src/api/lstmboxrenderer.cpp:36:15:
+#9 3.623 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 3.623   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 3.623       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 3.671 [  5%] Building CXX object CMakeFiles/libtesseract.dir/src/api/pagerenderer.cpp.o
+#9 3.767 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 3.767     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 3.767     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 3.767     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 3.767     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 3.767     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 3.767     inlined from 'char* tesseract::TessBaseAPI::GetLSTMBoxText(int)' at /build/tesseract-5.5.2/src/api/lstmboxrenderer.cpp:76:25:
+#9 3.767 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 3.767   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 3.767       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 3.876 [  5%] Building CXX object CMakeFiles/libtesseract.dir/src/api/pdfrenderer.cpp.o
+#9 4.828 [  6%] Building CXX object CMakeFiles/libtesseract.dir/src/api/renderer.cpp.o
+#9 5.035 [  6%] Building CXX object CMakeFiles/libtesseract.dir/src/api/wordstrboxrenderer.cpp.o
+#9 5.609 In file included from /usr/include/c++/12/string:40,
+#9 5.609                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 5.609                  from <command-line>:
+#9 5.609 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 5.609     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 5.609     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 5.609     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 5.609     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 5.609     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 5.609     inlined from 'char* tesseract::TessBaseAPI::GetWordStrBoxText(int)' at /build/tesseract-5.5.2/src/api/wordstrboxrenderer.cpp:63:30:
+#9 5.609 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 5.609   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 5.609       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 5.610 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 5.610     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 5.610     inlined from 'char* tesseract::TessBaseAPI::GetWordStrBoxText(int)' at /build/tesseract-5.5.2/src/api/wordstrboxrenderer.cpp:64:30:
+#9 5.610 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 5.610   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 5.610       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 5.610 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 5.610     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 5.610     inlined from 'char* tesseract::TessBaseAPI::GetWordStrBoxText(int)' at /build/tesseract-5.5.2/src/api/wordstrboxrenderer.cpp:65:30:
+#9 5.610 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 5.610   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 5.610       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 5.610 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 5.610     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 5.610     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 5.610     inlined from 'char* tesseract::TessBaseAPI::GetWordStrBoxText(int)' at /build/tesseract-5.5.2/src/api/wordstrboxrenderer.cpp:66:30:
+#9 5.610 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 5.610   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 5.610       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 5.738 [  7%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/adaptions.cpp.o
+#9 6.237 [  7%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/applybox.cpp.o
+#9 6.267 [  8%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/control.cpp.o
+#9 7.604 [  8%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/docqual.cpp.o
+#9 8.477 [  8%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/equationdetect.cpp.o
+#9 8.744 [  9%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/fixspace.cpp.o
+#9 9.876 [  9%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/fixxht.cpp.o
+#9 10.34 [ 10%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/linerec.cpp.o
+#9 10.44 [ 10%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/ltrresultiterator.cpp.o
+#9 11.10 [ 11%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/mutableiterator.cpp.o
+#9 11.11 [ 11%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/osdetect.cpp.o
+#9 11.19 [ 12%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/output.cpp.o
+#9 11.81 [ 12%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/pageiterator.cpp.o
+#9 11.82 [ 13%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/pagesegmain.cpp.o
+#9 12.40 [ 13%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/pagewalk.cpp.o
+#9 12.43 [ 14%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/par_control.cpp.o
+#9 12.88 [ 14%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/paragraphs.cpp.o
+#9 13.07 [ 14%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/paramsd.cpp.o
+#9 15.10 [ 15%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/pgedit.cpp.o
+#9 15.97 [ 15%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/recogtraining.cpp.o
+#9 16.08 [ 16%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/reject.cpp.o
+#9 16.61 [ 16%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/resultiterator.cpp.o
+#9 16.86 [ 17%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/superscript.cpp.o
+#9 17.45 [ 17%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/tessbox.cpp.o
+#9 17.45 [ 18%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/tessedit.cpp.o
+#9 17.87 [ 18%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/tesseractclass.cpp.o
+#9 18.23 [ 19%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/tessvars.cpp.o
+#9 18.29 [ 19%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/tfacepp.cpp.o
+#9 19.12 [ 20%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/thresholder.cpp.o
+#9 19.36 [ 20%] Building CXX object CMakeFiles/libtesseract.dir/src/ccmain/werdit.cpp.o
+#9 19.42 [ 20%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/blamer.cpp.o
+#9 19.71 [ 21%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/blobbox.cpp.o
+#9 20.26 [ 21%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/blobs.cpp.o
+#9 20.29 In file included from /usr/include/c++/12/string:40,
+#9 20.29                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 20.29                  from <command-line>:
+#9 20.29 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 20.29     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 20.29     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 20.29     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 20.29     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 20.29     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 20.29     inlined from 'void tesseract::BlamerBundle::SetupCorrectSegmentation(const tesseract::TWERD*, bool)' at /build/tesseract-5.5.2/src/ccstruct/blamer.cpp:425:22:
+#9 20.29 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 20.29   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 20.29       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 20.68 [ 22%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/blread.cpp.o
+#9 20.89 [ 22%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/boxread.cpp.o
+#9 20.98 [ 23%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/boxword.cpp.o
+#9 21.24 In file included from /usr/include/c++/12/string:40,
+#9 21.24                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 21.24                  from <command-line>:
+#9 21.24 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 21.24     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 21.24     inlined from 'void tesseract::MakeBoxFileStr(const char*, const TBOX&, int, std::string&)' at /build/tesseract-5.5.2/src/ccstruct/boxread.cpp:282:18:
+#9 21.24 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 21.24   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 21.24       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 21.24 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 21.24     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 21.24     inlined from 'void tesseract::MakeBoxFileStr(const char*, const TBOX&, int, std::string&)' at /build/tesseract-5.5.2/src/ccstruct/boxread.cpp:283:18:
+#9 21.24 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 21.24   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 21.24       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 21.24 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 21.24     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 21.24     inlined from 'void tesseract::MakeBoxFileStr(const char*, const TBOX&, int, std::string&)' at /build/tesseract-5.5.2/src/ccstruct/boxread.cpp:284:18:
+#9 21.24 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 21.24   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 21.24       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 21.24 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 21.24     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 21.24     inlined from 'void tesseract::MakeBoxFileStr(const char*, const TBOX&, int, std::string&)' at /build/tesseract-5.5.2/src/ccstruct/boxread.cpp:285:18:
+#9 21.24 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 21.24   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 21.24       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 21.24 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 21.24     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 21.24     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 21.24     inlined from 'void tesseract::MakeBoxFileStr(const char*, const TBOX&, int, std::string&)' at /build/tesseract-5.5.2/src/ccstruct/boxread.cpp:286:18:
+#9 21.24 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 21.24   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 21.24       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 21.41 [ 23%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/ccstruct.cpp.o
+#9 21.49 [ 24%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/coutln.cpp.o
+#9 21.62 [ 24%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/detlinefit.cpp.o
+#9 22.05 [ 25%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/dppoint.cpp.o
+#9 22.15 [ 25%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/fontinfo.cpp.o
+#9 22.18 [ 26%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/image.cpp.o
+#9 22.28 [ 26%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/imagedata.cpp.o
+#9 23.03 [ 27%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/linlsq.cpp.o
+#9 23.16 [ 27%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/matrix.cpp.o
+#9 23.67 [ 27%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/mod128.cpp.o
+#9 23.77 [ 28%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/normalis.cpp.o
+#9 23.78 [ 28%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/ocrblock.cpp.o
+#9 24.27 [ 29%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/ocrpara.cpp.o
+#9 24.30 [ 29%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/ocrrow.cpp.o
+#9 24.38 [ 30%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/otsuthr.cpp.o
+#9 24.53 [ 30%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/pageres.cpp.o
+#9 24.61 [ 31%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/params_training_featdef.cpp.o
+#9 24.69 [ 31%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/pdblock.cpp.o
+#9 24.98 [ 32%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/points.cpp.o
+#9 25.11 [ 32%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/polyaprx.cpp.o
+#9 25.38 [ 33%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/polyblk.cpp.o
+#9 25.69 [ 33%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/quadlsq.cpp.o
+#9 25.84 [ 33%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/quspline.cpp.o
+#9 26.04 [ 34%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/ratngs.cpp.o
+#9 26.13 [ 34%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/rect.cpp.o
+#9 26.35 In file included from /usr/include/c++/12/string:40,
+#9 26.35                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 26.35                  from <command-line>:
+#9 26.35 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 26.35     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 26.35     inlined from 'void tesseract::TBOX::print_to_str(std::string&) const' at /build/tesseract-5.5.2/src/ccstruct/rect.cpp:179:14:
+#9 26.35 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 26.35   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 26.35       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 26.35 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 26.35     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 26.35     inlined from 'void tesseract::TBOX::print_to_str(std::string&) const' at /build/tesseract-5.5.2/src/ccstruct/rect.cpp:180:14:
+#9 26.35 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 26.35   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 26.35       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 26.35 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 26.35     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 26.35     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 26.35     inlined from 'void tesseract::TBOX::print_to_str(std::string&) const' at /build/tesseract-5.5.2/src/ccstruct/rect.cpp:182:14:
+#9 26.35 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 26.35   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 26.35       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 26.43 [ 35%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/rejctmap.cpp.o
+#9 26.64 [ 35%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/seam.cpp.o
+#9 26.73 [ 36%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/split.cpp.o
+#9 26.88 [ 36%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/statistc.cpp.o
+#9 26.99 [ 37%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/stepblob.cpp.o
+#9 27.26 [ 37%] Building CXX object CMakeFiles/libtesseract.dir/src/ccstruct/werd.cpp.o
+#9 27.42 [ 38%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/ambigs.cpp.o
+#9 27.83 [ 38%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/bitvector.cpp.o
+#9 27.88 [ 39%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/ccutil.cpp.o
+#9 28.05 [ 39%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/errcode.cpp.o
+#9 28.20 [ 39%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/indexmapbidi.cpp.o
+#9 28.36 [ 40%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/params.cpp.o
+#9 28.53 [ 40%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/scanutils.cpp.o
+#9 28.68 [ 41%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/serialis.cpp.o
+#9 28.70 In file included from /usr/include/c++/12/string:40,
+#9 28.70                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 28.70                  from <command-line>:
+#9 28.70 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 28.70     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 28.70     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 28.70     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::assign(const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1647:19,
+#9 28.70     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator=(const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:815:28,
+#9 28.70     inlined from 'static bool tesseract::ParamUtils::GetParamAsString(const char*, const tesseract::ParamsVectors*, std::string*)' at /build/tesseract-5.5.2/src/ccutil/params.cpp:148:32:
+#9 28.70 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 28.70   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 28.70       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 28.80 [ 41%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/tessdatamanager.cpp.o
+#9 28.94 [ 42%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/tprintf.cpp.o
+#9 29.12 [ 42%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/unichar.cpp.o
+#9 29.13 [ 43%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/unicharcompress.cpp.o
+#9 29.32 [ 43%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/unicharmap.cpp.o
+#9 29.42 [ 44%] Building CXX object CMakeFiles/libtesseract.dir/src/ccutil/unicharset.cpp.o
+#9 29.63 In file included from /usr/include/c++/12/string:40,
+#9 29.63                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 29.63                  from <command-line>:
+#9 29.63 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 29.63     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 29.63     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 29.63     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 29.63     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 29.63     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 29.63     inlined from 'std::string tesseract::UnicharCompress::GetEncodingAsString(const tesseract::UNICHARSET&) const' at /build/tesseract-5.5.2/src/ccutil/unicharcompress.cpp:349:23:
+#9 29.63 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 29.63   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 29.63       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 30.13 [ 44%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/adaptive.cpp.o
+#9 30.61 [ 45%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/adaptmatch.cpp.o
+#9 30.66 [ 45%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/blobclass.cpp.o
+#9 31.29 [ 45%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/classify.cpp.o
+#9 32.84 [ 46%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/cluster.cpp.o
+#9 33.42 [ 46%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/clusttool.cpp.o
+#9 33.76 [ 47%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/cutoffs.cpp.o
+#9 33.83 [ 47%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/featdefs.cpp.o
+#9 34.03 In file included from /usr/include/c++/12/string:40,
+#9 34.03                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 34.03                  from <command-line>:
+#9 34.03 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 34.03     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 34.03     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 34.03     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 34.03     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 34.03     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 34.03     inlined from 'void tesseract::WriteCharDescription(const FEATURE_DEFS_STRUCT&, CHAR_DESC_STRUCT*, std::string&)' at /build/tesseract-5.5.2/src/classify/featdefs.cpp:118:14:
+#9 34.03 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 34.03   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 34.03       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 34.09 [ 48%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/float2int.cpp.o
+#9 34.16 [ 48%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/fpoint.cpp.o
+#9 34.24 [ 49%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/intfeaturespace.cpp.o
+#9 34.45 [ 49%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/intfx.cpp.o
+#9 34.56 [ 50%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/intmatcher.cpp.o
+#9 34.92 [ 50%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/intproto.cpp.o
+#9 35.19 [ 51%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/kdtree.cpp.o
+#9 35.52 [ 51%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/mf.cpp.o
+#9 35.71 [ 52%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/mfoutline.cpp.o
+#9 35.78 [ 52%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/mfx.cpp.o
+#9 36.06 [ 52%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/normfeat.cpp.o
+#9 36.07 [ 53%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/normmatch.cpp.o
+#9 36.30 [ 53%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/ocrfeatures.cpp.o
+#9 36.48 [ 54%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/outfeat.cpp.o
+#9 36.54 In file included from /usr/include/c++/12/string:40,
+#9 36.54                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 36.54                  from <command-line>:
+#9 36.54 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 36.54     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 36.54     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 36.54     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 36.54     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 36.54     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 36.54     inlined from 'void tesseract::WriteFeature(FEATURE, std::string&)' at /build/tesseract-5.5.2/src/classify/ocrfeatures.cpp:116:16,
+#9 36.54     inlined from 'void tesseract::WriteFeatureSet(FEATURE_SET, std::string&)' at /build/tesseract-5.5.2/src/classify/ocrfeatures.cpp:134:19:
+#9 36.54 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 36.54   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 36.54       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 36.60 [ 54%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/picofeat.cpp.o
+#9 36.84 [ 55%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/protos.cpp.o
+#9 37.02 [ 55%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/shapeclassifier.cpp.o
+#9 37.23 [ 56%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/shapetable.cpp.o
+#9 37.39 [ 56%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/tessclassifier.cpp.o
+#9 37.77 [ 57%] Building CXX object CMakeFiles/libtesseract.dir/src/classify/trainingsample.cpp.o
+#9 38.11 In file included from /usr/include/c++/12/string:40,
+#9 38.11                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 38.11                  from <command-line>:
+#9 38.11 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 38.11     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 38.11     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 38.11     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 38.11     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 38.11     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 38.11     inlined from 'std::string tesseract::ShapeTable::DebugStr(unsigned int) const' at /build/tesseract-5.5.2/src/classify/shapetable.cpp:316:23:
+#9 38.11 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 38.11   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 38.11       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 38.11 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 38.11     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 38.11     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 38.11     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 38.11     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 38.11     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 38.11     inlined from 'std::string tesseract::ShapeTable::DebugStr(unsigned int) const' at /build/tesseract-5.5.2/src/classify/shapetable.cpp:320:25:
+#9 38.11 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 38.11   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 38.11       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 38.19 [ 57%] Building CXX object CMakeFiles/libtesseract.dir/src/cutil/oldlist.cpp.o
+#9 38.29 [ 58%] Building CXX object CMakeFiles/libtesseract.dir/src/dict/context.cpp.o
+#9 38.62 [ 58%] Building CXX object CMakeFiles/libtesseract.dir/src/dict/dawg.cpp.o
+#9 38.64 [ 58%] Building CXX object CMakeFiles/libtesseract.dir/src/dict/dawg_cache.cpp.o
+#9 39.04 [ 59%] Building CXX object CMakeFiles/libtesseract.dir/src/dict/dict.cpp.o
+#9 39.27 [ 59%] Building CXX object CMakeFiles/libtesseract.dir/src/dict/hyphen.cpp.o
+#9 39.65 [ 60%] Building CXX object CMakeFiles/libtesseract.dir/src/dict/permdawg.cpp.o
+#9 40.22 [ 60%] Building CXX object CMakeFiles/libtesseract.dir/src/dict/stopper.cpp.o
+#9 40.37 [ 61%] Building CXX object CMakeFiles/libtesseract.dir/src/dict/trie.cpp.o
+#9 40.91 [ 61%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/convolve.cpp.o
+#9 41.41 In file included from /usr/include/c++/12/string:40,
+#9 41.41                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 41.41                  from <command-line>:
+#9 41.41 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 41.41     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 41.41     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 41.41     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 41.41     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 41.41     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 41.41     inlined from 'virtual std::string tesseract::Convolve::spec() const' at /build/tesseract-5.5.2/src/lstm/convolve.h:40:16:
+#9 41.41 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 41.41   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 41.41       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 41.51 [ 62%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/fullyconnected.cpp.o
+#9 41.84 [ 62%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/functions.cpp.o
+#9 41.95 [ 63%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/input.cpp.o
+#9 42.30 [ 63%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/lstm.cpp.o
+#9 42.47 [ 64%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/lstmrecognizer.cpp.o
+#9 43.39 [ 64%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/maxpool.cpp.o
+#9 43.69 [ 64%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/network.cpp.o
+#9 43.69 [ 65%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/networkio.cpp.o
+#9 43.98 [ 65%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/parallel.cpp.o
+#9 44.33 In file included from /usr/include/c++/12/string:40,
+#9 44.33                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 44.33                  from <command-line>:
+#9 44.33 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 44.33     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 44.33     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 44.33     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 44.33     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 44.33     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 44.33     inlined from 'virtual std::string tesseract::Parallel::spec() const' at /build/tesseract-5.5.2/src/lstm/parallel.h:52:21:
+#9 44.33 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 44.33   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 44.33       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 44.58 [ 66%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/plumbing.cpp.o
+#9 44.71 [ 66%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/recodebeam.cpp.o
+#9 44.86 In file included from /usr/include/c++/12/string:40,
+#9 44.86                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 44.86                  from <command-line>:
+#9 44.86 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 44.86     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 44.86     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 44.86     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 44.86     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 44.86     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 44.86     inlined from 'void tesseract::Plumbing::EnumerateLayers(const std::string*, std::vector<std::__cxx11::basic_string<char> >&) const' at /build/tesseract-5.5.2/src/lstm/plumbing.cpp:150:23:
+#9 44.86 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 44.86   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 44.86       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 44.92 [ 67%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/reconfig.cpp.o
+#9 45.15 In file included from /usr/include/c++/12/string:40,
+#9 45.15                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 45.15                  from <command-line>:
+#9 45.15 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 45.15     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 45.15     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 45.15     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:2171:19,
+#9 45.15     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::insert(size_type, const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1928:22,
+#9 45.15     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&) [with _CharT = char; _Traits = char_traits<char>; _Alloc = allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:3541:36,
+#9 45.15     inlined from 'virtual std::string tesseract::Reconfig::spec() const' at /build/tesseract-5.5.2/src/lstm/reconfig.h:42:16:
+#9 45.15 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 45.15   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 45.15       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 45.20 [ 67%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/reversed.cpp.o
+#9 45.65 [ 68%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/series.cpp.o
+#9 46.17 [ 68%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/stridemap.cpp.o
+#9 46.33 [ 69%] Building CXX object CMakeFiles/libtesseract.dir/src/lstm/weightmatrix.cpp.o
+#9 46.44 [ 69%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/alignedblob.cpp.o
+#9 46.94 [ 70%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/baselinedetect.cpp.o
+#9 47.19 [ 70%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/bbgrid.cpp.o
+#9 47.53 [ 70%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/blkocc.cpp.o
+#9 47.85 [ 71%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/blobgrid.cpp.o
+#9 47.87 [ 71%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/ccnontextdetect.cpp.o
+#9 48.14 [ 72%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/cjkpitch.cpp.o
+#9 48.35 [ 72%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/colfind.cpp.o
+#9 49.06 [ 73%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/colpartition.cpp.o
+#9 49.52 [ 73%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/colpartitiongrid.cpp.o
+#9 50.44 [ 74%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/colpartitionset.cpp.o
+#9 50.77 [ 74%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/devanagari_processing.cpp.o
+#9 51.01 [ 75%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/drawtord.cpp.o
+#9 51.15 [ 75%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/edgblob.cpp.o
+#9 51.29 [ 76%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/edgloop.cpp.o
+#9 51.47 [ 76%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/equationdetectbase.cpp.o
+#9 51.54 [ 77%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/fpchop.cpp.o
+#9 51.68 [ 77%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/gap_map.cpp.o
+#9 51.95 [ 77%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/imagefind.cpp.o
+#9 52.04 [ 78%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/linefind.cpp.o
+#9 52.56 [ 78%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/makerow.cpp.o
+#9 52.80 [ 79%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/oldbasel.cpp.o
+#9 53.60 [ 79%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/pithsync.cpp.o
+#9 54.02 [ 80%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/pitsync1.cpp.o
+#9 54.21 [ 80%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/scanedg.cpp.o
+#9 54.39 [ 81%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/sortflts.cpp.o
+#9 54.51 [ 81%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/strokewidth.cpp.o
+#9 54.52 [ 82%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/tabfind.cpp.o
+#9 57.23 [ 82%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/tablefind.cpp.o
+#9 57.34 [ 83%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/tablerecog.cpp.o
+#9 58.50 [ 83%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/tabvector.cpp.o
+#9 59.02 [ 83%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/textlineprojection.cpp.o
+#9 60.22 [ 84%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/textord.cpp.o
+#9 60.43 [ 84%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/topitch.cpp.o
+#9 62.23 [ 85%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/tordmain.cpp.o
+#9 62.47 [ 85%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/tospace.cpp.o
+#9 64.09 [ 86%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/tovars.cpp.o
+#9 64.42 [ 86%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/underlin.cpp.o
+#9 64.63 [ 87%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/wordseg.cpp.o
+#9 66.09 [ 87%] Building CXX object CMakeFiles/libtesseract.dir/src/textord/workingpartset.cpp.o
+#9 66.83 [ 88%] Building CXX object CMakeFiles/libtesseract.dir/src/viewer/scrollview.cpp.o
+#9 67.73 [ 88%] Building CXX object CMakeFiles/libtesseract.dir/src/viewer/svmnode.cpp.o
+#9 68.13 [ 89%] Building CXX object CMakeFiles/libtesseract.dir/src/viewer/svutil.cpp.o
+#9 69.03 [ 89%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/associate.cpp.o
+#9 69.26 [ 89%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/chop.cpp.o
+#9 70.22 [ 90%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/chopper.cpp.o
+#9 70.41 [ 90%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/drawfx.cpp.o
+#9 70.63 [ 91%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/findseam.cpp.o
+#9 71.19 [ 91%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/gradechop.cpp.o
+#9 71.59 [ 92%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/language_model.cpp.o
+#9 71.73 [ 92%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/lm_consistency.cpp.o
+#9 72.05 [ 93%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/lm_pain_points.cpp.o
+#9 72.19 In file included from /usr/include/c++/12/string:40,
+#9 72.19                  from /build/out/CMakeFiles/libtesseract.dir/cmake_pch.hxx:6,
+#9 72.19                  from <command-line>:
+#9 72.19 In static member function 'static constexpr std::char_traits<char>::char_type* std::char_traits<char>::copy(char_type*, const char_type*, std::size_t)',
+#9 72.19     inlined from 'static constexpr void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_S_copy(_CharT*, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:423:21,
+#9 72.19     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_replace(size_type, size_type, const _CharT*, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.tcc:532:22,
+#9 72.19     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::assign(const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:1647:19,
+#9 72.19     inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator=(const _CharT*) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/12/bits/basic_string.h:815:28,
+#9 72.19     inlined from 'void tesseract::LanguageModel::InitForWord(const tesseract::WERD_CHOICE*, bool, float, float)' at /build/tesseract-5.5.2/src/wordrec/language_model.cpp:150:24:
+#9 72.19 /usr/include/c++/12/bits/char_traits.h:431:56: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' specified bound between 9223372036854775810 and 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+#9 72.19   431 |         return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+#9 72.19       |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+#9 72.55 [ 93%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/lm_state.cpp.o
+#9 72.84 [ 94%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/outlines.cpp.o
+#9 72.94 [ 94%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/params_model.cpp.o
+#9 73.25 [ 95%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/pieces.cpp.o
+#9 73.32 [ 95%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/plotedges.cpp.o
+#9 73.52 [ 95%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/render.cpp.o
+#9 74.04 [ 96%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/segsearch.cpp.o
+#9 74.07 [ 96%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/tface.cpp.o
+#9 74.49 [ 97%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/wordclass.cpp.o
+#9 74.58 [ 97%] Building CXX object CMakeFiles/libtesseract.dir/src/wordrec/wordrec.cpp.o
+#9 74.86 [ 97%] Building CXX object CMakeFiles/libtesseract.dir/src/arch/simddetect.cpp.o
+#9 75.05 [ 98%] Building CXX object CMakeFiles/libtesseract.dir/src/arch/intsimdmatrix.cpp.o
+#9 75.24 [ 98%] Linking CXX static library libtesseract.a
+#9 75.32 [ 98%] Built target libtesseract
+#9 75.33 [100%] Building CXX object CMakeFiles/tesseract.dir/src/tesseract.cpp.o
+#9 76.58 [100%] Linking CXX executable bin/tesseract
+#9 76.68 [100%] Built target tesseract
+#9 76.69 -- Install configuration: "Release"
+#9 76.70 -- Installing: /usr/local/lib/pkgconfig/tesseract.pc
+#9 76.70 -- Installing: /usr/local/bin/tesseract
+#9 76.70 -- Installing: /usr/local/lib/libtesseract.a
+#9 76.71 -- Installing: /usr/local/lib/cmake/tesseract/TesseractTargets.cmake
+#9 76.71 -- Installing: /usr/local/lib/cmake/tesseract/TesseractTargets-release.cmake
+#9 76.71 -- Up-to-date: /usr/local/lib/cmake
+#9 76.71 -- Up-to-date: /usr/local/lib/cmake/tesseract
+#9 76.71 -- Installing: /usr/local/lib/cmake/tesseract/TesseractConfig.cmake
+#9 76.71 -- Installing: /usr/local/lib/cmake/tesseract/TesseractConfigVersion.cmake
+#9 76.71 -- Installing: /usr/local/include/tesseract/baseapi.h
+#9 76.71 -- Installing: /usr/local/include/tesseract/capi.h
+#9 76.71 -- Installing: /usr/local/include/tesseract/renderer.h
+#9 76.71 -- Installing: /usr/local/include/tesseract/version.h
+#9 76.71 -- Installing: /usr/local/include/tesseract/ltrresultiterator.h
+#9 76.71 -- Installing: /usr/local/include/tesseract/pageiterator.h
+#9 76.71 -- Installing: /usr/local/include/tesseract/resultiterator.h
+#9 76.71 -- Installing: /usr/local/include/tesseract/osdetect.h
+#9 76.71 -- Installing: /usr/local/include/tesseract/publictypes.h
+#9 76.71 -- Installing: /usr/local/include/tesseract/ocrclass.h
+#9 76.71 -- Installing: /usr/local/include/tesseract/export.h
+#9 76.71 -- Installing: /usr/local/include/tesseract/unichar.h
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/alto
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/ambigs.train
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/api_config
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/bazaar
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/bigram
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/box.train
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/box.train.stderr
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/digits
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/get.images
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/hocr
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/inter
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/kannada
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/linebox
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/logfile
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/lstm.train
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/lstmbox
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/lstmdebug
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/makebox
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/page
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/pdf
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/quiet
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/rebox
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/strokewidth
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/tsv
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/txt
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/unlv
+#9 76.71 -- Installing: /usr/local/share/tessdata/configs/wordstrbox
+#9 76.71 -- Installing: /usr/local/share/tessdata/tessconfigs/batch
+#9 76.71 -- Installing: /usr/local/share/tessdata/tessconfigs/batch.nochop
+#9 76.71 -- Installing: /usr/local/share/tessdata/tessconfigs/matdemo
+#9 76.71 -- Installing: /usr/local/share/tessdata/tessconfigs/msdemo
+#9 76.71 -- Installing: /usr/local/share/tessdata/tessconfigs/nobatch
+#9 76.71 -- Installing: /usr/local/share/tessdata/tessconfigs/segdemo
+#9 DONE 76.7s
+
+#10 [build 6/6] RUN mkdir -p /usr/local/share/tessdata && curl -fsSL https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/eng.traineddata -o /usr/local/share/tessdata/eng.traineddata && echo '7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2  /usr/local/share/tessdata/eng.traineddata' | sha256sum -c -
+#10 0.570 /usr/local/share/tessdata/eng.traineddata: OK
+#10 DONE 0.6s
+
+#11 [stage-1 3/4] COPY --from=build /usr/local /usr/local
+#11 DONE 0.0s
+
+#12 [stage-1 4/4] RUN ldconfig && tesseract --version && echo '7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2  /usr/local/share/tessdata/eng.traineddata' | sha256sum -c -
+#12 0.080 tesseract 5.5.2
+#12 0.080  leptonica-1.82.0
+#12 0.080   libgif 5.2.1 : libjpeg 6b (libjpeg-turbo 2.1.2) : libpng 1.6.39 : libtiff 4.5.0 : zlib 1.2.13 : libwebp 1.2.4 : libopenjp2 2.5.0
+#12 0.080  Found NEON
+#12 0.093 /usr/local/share/tessdata/eng.traineddata: OK
+#12 DONE 0.1s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 3.7s done
+#13 exporting manifest sha256:0e2c231231700f461f611eb0ea36e0bb68e2e513f3fd82308fe4124a722763d6 done
+#13 exporting config sha256:0c6eaabbae0d9e819bce73fa30ae5072fa9c2568c3ff7c3a820c602889f69102 done
+#13 exporting attestation manifest sha256:04f4ab57e538372cf0fca36451556eb82796df6e3bda45c650635b4b905815ef done
+#13 exporting manifest list sha256:09c398f49cc16a60d0e7888b3939505d60f5482264ea0e86bb4374034352d9c7 done
+#13 naming to docker.io/library/ap97-ocr-smoke-6tn3tag:ed372a4 done
+#13 unpacking to docker.io/library/ap97-ocr-smoke-6tn3tag:ed372a4
+#13 unpacking to docker.io/library/ap97-ocr-smoke-6tn3tag:ed372a4 0.7s done
+#13 DONE 4.5s

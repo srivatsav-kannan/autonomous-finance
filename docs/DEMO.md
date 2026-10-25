@@ -1,139 +1,142 @@
-# Demo plan
+# Demo: from supplier evidence to an accountable payment
 
-Cal Hacks 13.0, Hyphenate track. Devpost is due Sunday Oct 25 at 9:00 AM PT; judges visit tables 10:30 AM–12:30 PM. The structure follows JJ's demo outline (the four Hyphenate questions); every number comes from [RESULTS.md](RESULTS.md).
+Cal Hacks 13.0 · Hyphenate track · Narrative updated for [issue #97](https://github.com/srivatsav-kannan/autonomous-finance/issues/97).
 
-> **For judging day, use [submission/PITCH.md](../submission/PITCH.md).** It has the 3-minute, three-person script that matches the organizers' format (5 minutes per judge, at least 3 judges, live demo plus a local video). This file keeps the runbook details, scenario menu and video shot list.
+**Positioning:** Autonomous Finance carries an accounts payable case from the original supplier documents through review, authorized payment and reconciliation, with evidence explaining each decision.
 
-## Seat line
+This is the current AP narrative. Use [the synchronized three-person pitch](../submission/PITCH.md) for the timed English script, speaker handoffs and screen cues. This document provides the fuller walkthrough and evidence boundaries. Current implementation evidence takes precedence over the issue's original planning baseline.
 
-> We fill the AP clerk, payments and controller seats at a 281-restaurant chain. The same kernel also runs cash, revenue, payroll, leases and close.
+## The opening
 
-The first sentence is the pitch. The second is the reveal, and we say it after AP has landed, not before.
+> A supplier sends an invoice. Before anyone pays it, the finance team has to establish what was ordered, what arrived, what the company actually owes, and who can authorize the payment. Then it has to prove what happened at the bank and in the books.
+>
+> We're building Autonomous Finance to carry that work forward as one traceable AP case. Agents prepare and explain the work. The system enforces the controls, and people retain the decisions their company policy requires.
 
-## Framing
+**The question to keep answering on screen:** “Why do we owe this amount, who approved it, and what happened to the money?”
 
-Hyphenate's booth asked whether this is too ambitious. So we lead with accounts payable and go deep: bills in every format, a fraudulent bank change, a human approving the big payment, a payment that survives a crash, and "why did you hold this?". That's the track's own AP example, end to end.
+Start with the original document and the business decision. Reveal the infrastructure when it explains why the decision is trustworthy. The larger ambition is a finance system that maintains context across documents, people, time and failures; AP is the first workflow in which we are proving it.
 
-Then the reveal: the rest of the department runs in the same run. Our reason is pace. An AP agent that's fast but hands off to humans working in spreadsheets for cash and close just waits on them. So the whole function runs on tools built for agents, and we measured that against an agent forced to use a spreadsheet.
+## The story: one obligation, several distinct decisions
 
-## The four questions
+**Original documents → reviewed facts → accepted obligation → authorized payment → bank evidence → reconciled accounting.**
 
-| Hyphenate question | Live (2:00) | Video (2:30) |
-|---|---|---|
-| **Real:** is it realistic, does it work? | 1:25–1:45 | 0:30–1:05, 2:15–2:30 |
-| **Hire:** would you hire it, with what access? | 0:10–0:25 | 1:05–1:35 |
-| **New:** is anything new? | 1:45–2:00 | 1:55–2:15 |
-| **Moment:** catches, recovers or defends | 0:25–1:25 | 0:00–0:15, 1:35–1:55 |
+An invoice is the supplier's claim. The PO records the order, the receipt records delivery, and the approved supplier master supplies the payment destination. A model's interpretation cannot replace those authorities.
 
-## Before judges arrive
+The strongest current business example is the [I2 partial-payment case](ap-orchestration/evidence/I2-business-flow.md):
 
-Run from `autonomous-finance/`, about 10 minutes before. One backend per checkout.
+| Record | Amount | Meaning |
+| --- | ---: | --- |
+| Original Golden State invoice | $678.60 | What the supplier billed; the original stays intact. |
+| Explicitly accepted portion | $285.60 | The obligation accepted through the recorded business review. |
+| Disputed portion | $393.00 | Still unresolved; it was not silently erased or declared forgiven. |
+| Settled payment | $100.00 | A separately authorized partial payment through local FakeBank. |
+| Accepted AP still outstanding | $185.60 | The unpaid portion of the recognized payable. |
+
+Use these amounts together only for I2. The separate [I1 clean case](ap-orchestration/evidence/I1-integrated.md) recognizes and settles $678.60, leaving $0 outstanding. The issue's proposed UI mockups use an illustrative $662.90 invoice; those images are design concepts, not evidence from either run.
+
+## Three-minute live narrative
+
+Keep one operator on the laptop. A second presenter can explain the accounting and reliability evidence. Use the recorded I2 case for the business walkthrough; it has simulated human identities and local FakeBank execution. Show actual Auth0 access separately if needed. Do not present an already-recorded decision as a new approval.
+
+| Time | Show | Say |
+| --- | --- | --- |
+| 0:00–0:25 | Original invoice beside the case. | “A supplier sends a $678.60 invoice. Paying it correctly means connecting the document to what was ordered, what arrived, and who can approve it. This case keeps those records together.” |
+| 0:25–0:50 | Click an extracted line to highlight its source. Open the linked PO and receipt. | “LlamaParse reads the document; our adapter turns the result into reviewable fields. You can inspect where a value came from. If a location is uncertain, we keep that uncertainty visible. Reading the invoice doesn't authorize it.” |
+| 0:50–1:20 | I2's original, accepted and disputed amounts; recorded approval stages. | “Here, the authorized review accepted $285.60 and left $393 in dispute. The original invoice hasn't changed. The system records the decision and its evidence. It doesn't assume the agent has permission to pay less just because it calculated a difference.” |
+| 1:20–1:45 | Recognition journal, then the separate $100 payment approval. | “Approving the bill records what we owe. Authorizing payment is another decision, tied to an exact amount and destination. We paid $100, so $185.60 remains in the AP subledger. The requester cannot approve its own payment.” |
+| 1:45–2:15 | A labeled recording of the payment engine's crash/recovery test, with original operation and recovered transfer. | “Now the failure test: the bank accepts a request, but the response is lost and the worker crashes. The outcome stays unknown. Recovery reuses the saved operation instead of inventing another payment. In this test, that produced one transfer, one bank debit and one settlement posting.” |
+| 2:15–2:40 | Return to I2: bank evidence, settlement journal, AP-to-GL check and remaining close blockers. | “We can trace the payment back to its approval and documents. Recording settlement reduces AP and cash; it doesn't expense the purchase again. The AP subledger and general ledger agree, while unresolved close requirements remain visible.” |
+| 2:40–3:00 | Case history and the next-step roadmap. | “That's the foundation: carry the obligation forward, preserve the evidence, and recover without losing control. Next, we're extending the shared agent-and-human work queue and turning reviewed corrections into scoped, testable precedents.” |
+
+The new [I3 same-case laptop walkthrough](ap-orchestration/I3-RUNBOOK.md) now verifies one uploaded case from missing-receipt hold through later receipt, actual worker SIGKILL and settled reconciliation. Use its recorded phases or a fresh isolated rehearsal for that complete story. Keep it distinct from the I2 partial-payment narrative.
+
+The recovery clip is a **separate local verification**, not a claim that I2 crashed. If replacing it with a live run, use the isolated runbook below and allow the real lease wait. Only call the entire sequence one live case after rehearsing and recording that exact source-to-crash-to-reconciliation run.
+
+**Two-minute cut:** shorten the source and accounting explanation, retain the approval boundary and recovery proof, and finish on outstanding AP. **Five-minute version:** add the duplicate upload, actual Auth0 workspace access, and the accounting walkthrough below. Use a separate labeled case for any additional exception.
+
+## What to highlight, and why it matters
+
+The issue's hard parts should each have a concrete on-screen answer:
+
+| Hard part | The visible answer | Current boundary |
+| --- | --- | --- |
+| Sources disagree | Original invoice, ordered/received quantities, accepted/disputed amounts, resolution evidence. | A discrepancy needs an authorized resolution. A note saying “Vendor notified” does not prove communication occurred. |
+| Time matters | Source revisions, approval history, due/scheduled dates, unpaid balance and close blockers. | I2 verified a future-date payment produced no transfer before its date. This is not a months-long production study. |
+| People and agents share work | Distinct field review, business review and payment authorization; owner and next permitted action. | The new AP agent-runner/shared-follow-up loop is a separate acceptance item. API calls under agent credentials alone do not prove autonomous orchestration. |
+| Access has limits | Exact reviewed version, amount and destination; backend rejection of prohibited approvals. | I2 identities are simulated. Real Auth0 login and scoped case access have separate evidence. |
+| Decisions remain accountable | Source version → decision → approval → payment → bank record → journal. | A complete field-level transition-diff system and correction-to-precedent learning need their own verification. |
+
+For the duplicate moment, show the same file delivered again under a new name. The [I1 replay check](ap-orchestration/evidence/I1-integrated.md) preserved the existing case and economic records while recording the additional delivery. Say: “A new delivery doesn't become a new debt.”
+
+## Accounting walkthrough for the longer demo
+
+Use the terms where the audience can see the relevant records, rather than reading a glossary.
+
+1. **System of record:** show which source is authoritative for each fact: supplier master for the approved destination, receipt for delivery, ledger for posted accounting, and verified bank records for execution. The invoice does not override all of them.
+2. **Chart of accounts, journal entry and double-entry bookkeeping:** open I2's recognition entry. Its reviewed allocations debit account 5000 by $285.60 in total and credit AP 2000 by $285.60. This is the fixture's declared treatment; other purchases may be inventory, assets or prepayments. Balanced debits and credits are necessary, but do not by themselves prove correct coding or period.
+3. **Subledger and general ledger:** show the supplier's $185.60 unpaid accepted balance, then the matching AP control-account balance. Name this AP-subledger-to-GL reconciliation. It is distinct from matching a bank transaction to a payment.
+4. **Internal controls and segregation of duties:** point to the independent payment authorization and its exact snapshot. A change to material payment terms requires renewed review; an unknown bank outcome cannot simply be replaced with another payment.
+5. **Controller and materiality:** explain the Controller's responsibility for accounting accuracy and exception/close review. A software controller role is not an independent human professional. Show the explicit matching tolerance where applicable; it is not a substitute for audit materiality and never excuses unauthorized payment or suspicious bank changes.
+6. **Reconciliation, period close and audit trail:** show the $100 settlement entry, debit AP / credit cash, and its bank evidence. I2's AP-to-GL difference is $0, but six close blockers remained in the recorded check. Agreement on one balance does not mean the period is ready to close. Trace one posting backward to the source and decision.
+
+## Proof card: what we can substantiate now
+
+Evidence snapshot: 25 October 2026, inspected at integration revision `764701b7400561313f22a18b1f70fe45dc9f5283`. Each report below retains its own tested revision and scope. These are separate verification runs, not one cumulative production score. Recheck the [capability matrix](ap-orchestration/CAPABILITIES.md) before presenting newly completed integration work.
+
+| Claim | Measured evidence | Label on screen |
+| --- | --- | --- |
+| Original documents connect to an AP outcome | I1: four original PDFs preserved; field review, bill recognition and payment authorization separated; one transfer, one bank debit, one recognition journal and one settlement journal. Renamed delivery did not duplicate the obligation. [Report](ap-orchestration/evidence/I1-integrated.md) | Synthetic business documents · local FakeBank · simulated human authority |
+| Partial acceptance and payment retain the right balances | I2: $678.60 invoiced; $285.60 accepted; $393 disputed; $100 paid; $185.60 accepted AP outstanding. AP subledger and GL agree; six close blockers remain. [Report](ap-orchestration/evidence/I2-business-flow.md) | Separate recorded local integration case |
+| Parser output is reviewable beyond one layout | Two new synthetic supplier layouts, native and scan variants: 4/4 complete candidates; 104/104 checked fields; 102/104 accepted source locations, with two explicitly unresolved. Independent repair verification replayed the original cached provider results. [Report](ap-orchestration/evidence/V7-parser-repair.md) | Four controlled files · not a blind or representative production benchmark |
+| Failure recovery preserves the authorized operation | Independently verified local negative/recovery paths; retain the exact test/run and observed economic counts. [V2 evidence](ap-orchestration/evidence/V2.md), [recovery runbook](ap-demo/README.md) | Local FakeBank failure test · separate from I2 |
+| A real person can enter the scoped workspace | Actual Auth0 login, explicit workspace binding and authenticated case/original preview verified. [Report](ap-orchestration/evidence/C2-auth0-live.md) | Real identity-provider login · this report does not establish a human-approved external transaction |
+| QuickBooks sandbox connectivity and mappings work | OAuth/read-only connection and eight reference-record writes verified: one vendor, six accounts and one Class. Replay created no new records. [Report](ap-orchestration/evidence/C4-live-mappings.md) | Accounting transaction write/readback still pending at this evidence snapshot |
+
+Increase sandbox access/resource reads are separate from transfer execution; no live transfer is established by this snapshot. The format work includes a declared XML profile and measured image/TIFF cases, not every document format. Packaged OCR build and the bounded two-scan runtime smoke have passed; this does not establish full application OCR integration or production accuracy. See the [packaging report](ap-orchestration/evidence/A4-ocr-packaging-review.md). Broader real-document evaluation and practitioner review remain separate open gates.
+
+The older simulator and public-task comparisons remain in [RESULTS.md](RESULTS.md). Use them only with their original sample definitions and denominators. They are supplementary evidence, not the headline proof for the new AP workflow. Cost savings and reduced human workload need their own measurements.
+
+## Ambition: the next layer of the product
+
+> We want the system to carry a finance team's work across time: request missing evidence, resume the same case when it arrives, learn proposed practices from reviewed history, and make every change explainable.
+
+The [workshop follow-up in #97](https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396167295) proposes concrete future experiments:
+
+- **Shared work:** a running agent requests a missing receipt, assigns the follow-up, waits, and resumes the same case after an authorized person supplies it.
+- **Explainable change:** saved transitions show the relevant before/after values, actor, reason, evidence and policy version, including denied actions.
+- **Reviewed learning:** a human correction becomes a proposed, narrowly scoped precedent. An authorized reviewer approves it; a later qualifying case uses it; an out-of-scope counterexample does not.
+- **History-based onboarding:** historical documents and final decisions support proposed company practices. Past behavior does not automatically create policy or payment authority.
+
+These are separately proposed extensions with suggested acceptance tests; they are not additions to the adopted frozen delivery scope without an explicit scope decision. An older parser-spec proposal or a seeded company memory does not establish that the new AP system learns from every correction. The existing wider finance simulator can illustrate the direction after AP is clear; it does not establish department-wide production readiness.
+
+## Before presenting
+
+1. Select the primary case and verify its source, amounts and provider/identity labels. Keep I1, I2, the Auth0 case and recovery run visibly distinct.
+2. Prepare the original document, business review, approval history, journal and reconciliation tabs for that case. Rehearse the actual navigation and source highlight; a proposed UI mockup is not a product screenshot.
+3. Open the linked recovery evidence or save a recording locally. If using a live failure run, reserve enough time for the lease and verify the final IDs/counts before the audience arrives.
+4. Check the latest Auth0/QBO/Increase evidence. Promote a pending integration claim only after its named external write/readback or execution gate passes. Successful login alone is insufficient.
+5. Keep a local video of the same verified workflow. Label recordings, simulated identities, FakeBank, sped-up waits and any design concepts. Do not include tokens, private provider responses or credentials.
+
+### Optional live crash demonstration
+
+The established [browser-approval recovery runbook](ap-demo/README.md#browser-approval-then-crash-recovery-one-flow-for-judges) remains useful on its **own isolated local backend**:
 
 ```bash
-npm run backend                                   # terminal 1, leave running
-npm run backend:configure                         # once the backend is up
-npm run gateway                                   # terminal 2, human seat on :8787
-npm run console                                   # terminal 3, http://localhost:5173
-npm run world -- --run demo --stores 3 --days 14 --pace 20000 --close   # terminal 4
-npm run agents -- --run demo                      # terminal 5
+npm run demo:local -- --browser-approval --lease-wait-seconds 40
 ```
 
-- **Pace:** at `--pace 20000` (a simulated day every 20 seconds), start the world about 4 minutes before the judge arrives. By then the inbox has decisions and the team has learned a parser.
-- **Crash run, before each judge:** in terminal 6 start `npm run demo:local -- --browser-approval --lease-wait-seconds 40`. It seeds a payment (about $660 to Golden State Produce), prints `awaiting_browser_approval` and the path to `browser-session.json`, then waits up to 10 minutes. Paste that file's `scope` and `jwt` into `/ap-demo`, click **Connect and load review** and tick **Reload this view every 3 seconds**. Stop at the approval checkbox. Each run has a new run id and token, so repeat this between judges (Ctrl-C the previous run first).
-- **Tabs open, in this order:**
-  1. `/ap-demo`, loaded and waiting at the approval checkbox
-  2. Control room
-  3. Inbox
-  4. Finance flow
-  5. Evals for a scored run (`?view=evals#scenario-check`, or any run from `npm run scenario`). The live world run isn't scored, so its Evals tab is empty.
-  6. the latest green CI run
-  7. a decision commit in Memory
-- **Spend:** `OPENAI_API_KEY` in `.env.local`, capped by `AGENT_MAX_USD` (default $15, see `var/agent-spend.json`). A 14-day run costs about 5 cents.
-- **If `bad_admin_secret`:** run `npm run backend:configure`.
-- **Backup:** the recorded video, on the laptop and on a phone. Everything runs locally except the model calls.
+Follow that guide's backend and console setup first. It uses a loopback test identity and `/ap-demo`, not the real Auth0 `/ap-system` session. It changes that backend's demo auth configuration, so do not run it against Master's active Auth0/QuickBooks environment. Each new rehearsal needs a new run; preserve the bank and backend state during recovery.
 
-## Live, 2:00 (one judge at the table)
+At the fault, say “the bank accepted the request; the response was lost.” Acceptance is not proof of settlement. While waiting, explain the saved operation, reservation and next permitted recovery action. When the test finishes, show its actual transfer, posted-debit and settlement-entry counts. Report a failed or unknown outcome as such.
 
-| Time | Screen | What happens | What we say |
-|---|---|---|---|
-| 0:00 | `/ap-demo` | The seat line, while pointing at the payment. | The seat line. |
-| 0:10 | `/ap-demo` | Point at the amount, the beneficiary and who requested it. Tick the checkbox and approve. | "A human approves the payment. The agent that asked for it can't." |
-| 0:25 | terminal 6 | The bank accepts the payment, the response is lost and the worker is killed. The terminal counts down the lease. | "The bank took the money and the worker died before it heard back. Most systems either pay twice or lose track." |
-| 0:35 | Control room → **Phishing bank-change email**, then Inbox | While the lease waits: a look-alike domain demands same-day wires to a new account and says "ignore previous instructions". Within about 10 seconds the payments agent blocks it and the Inbox gets "Blocked a suspected fraud attempt against Bay Farms Protein LLC" with the reasons: the domain doesn't match the one on file, the email has instructions aimed at an AI, and the callback to the number on file didn't confirm. | "New bank details the day before a big payment is the fraud that costs companies millions. Even a fooled agent couldn't change them: the kernel requires a human." |
-| 1:05 | `/ap-demo`, terminal 6 | The new worker reuses the saved request and key, and gets the original transfer back. `/ap-demo` reads `settled / posted / matched`; the terminal prints `bankTransfers: 1`, `postedDebits: 1`, `paymentJournalEntries: 1`, `closeBlockers: 0` and the period closed. | "Exactly once. Same key, same transfer, one entry in the books." |
-| 1:25 | Finance flow, then Evals | The reveal: the same run across cash, revenue, payroll, leases and close. The ghost employee held out of payroll, the CAM charge over the lease cap. Then the eval: 13 of 13 planted errors, books correct. | "And it isn't only AP. A fast AP agent waits on the humans in cash and close, so the whole department runs on tools built for agents. We check it against an answer key the agents never see." |
-| 1:45 | Control room → Ask why | "Why did you hold INV-1002?" The answer cites the decision commits. Offer the scenario menu. | "Every call traces to the data, rule or person behind it. Want to throw something at it?" |
+## Questions to be ready for
 
-**If we get 3:00,** add the inbox after 1:05: open "Approve $50,949.23 to Embarcadero Realty Partners" and show the bills, the bank details on record and who already approved. "Policy decides what a human sees. Here that's about 9 decisions per 100 events."
+- **“Is this real data?”** The connected business cases use authored synthetic documents. LlamaParse and Auth0 were exercised against real services. FakeBank simulates bank execution. QuickBooks sandbox mappings are verified separately; real company source packets and practitioner review are still needed.
+- **“Does the agent decide to pay less?”** It can propose a treatment. The accepted amount must follow explicit company policy or an authorized decision. The supplier's original claim and unresolved disputed balance remain visible.
+- **“What if the model is wrong?”** Extracted fields remain inspectable. Backend controls enforce the supported arithmetic, authority, version and payment boundaries. Domain judgment still needs policy, review and outcome evaluation; balanced books alone do not prove correctness.
+- **“What is novel?”** The product ties evidence, business decisions, authorization and recovery to the same obligation. We can inspect why it moved forward, why it stopped, and what financial effects actually happened. Shared work and reviewed learning extend that foundation.
+- **“Do you guarantee exactly once?”** In the specified local failure test, recovery reused the authorized operation and produced one intended transfer, one bank debit and one settlement effect. That is an observed invariant under the tested provider protocol, not a universal network guarantee.
+- **“Can it run the entire finance department?”** The broader simulator explores that direction. The present product work is an AP system with explicit supported paths and verification gates. Full enterprise deployment, every accounting policy and autonomous onboarding are not established by this demo.
+- **“What does it cost?”** We are prioritizing correct outcomes, useful automation and review latency. The older simulator's cost figures are not an estimate for this document/OCR/approval workflow.
 
-## Scenario menu (judge's choice)
-
-Each trigger takes under 30 seconds.
-
-| Judge says | Trigger | What they see |
-|---|---|---|
-| "A vendor changes bank details before a big payment" | Control room → **Phishing bank-change email** | Refused and escalated. In the eval, `remit_change_fraud` is blocked and the decoy `legit_remit_change` passes after a callback. |
-| "Same invoice arrives twice" | Control room → **Resend an invoice through the portal** | Rejected as a duplicate. The decoy (same amount, different delivery) still pays. |
-| "Money leaves and nobody knows why" | Control room → **Unknown wire out of operating** | Parked in suspense and escalated to a human; close is blocked until it's resolved. |
-| "The bank never confirms" | the crash run | The new worker gets the original transfer back; one entry. |
-| "An agent approves its own request" | `npm run controls` (22 cases, about 10 s) | `self-approval` and `answer-own-ask` are refused and logged. |
-| "A format you've never seen" | Memory → the parser proposal | The model read it once, the integrations engineer wrote a parser spec, the controller re-ran its tests and merged it. |
-| "Why did you do X?" | Control room → Ask why, or `npm run ask -- "…"` | Answer with citations. |
-| "Close the month" | Control room → **Close the period** | Blocked while anything is unresolved; otherwise the controller and the human sign. |
-
-## Video, about 2:30
-
-Burn in captions, zoom on amounts and IDs, and label every sped-up wait. About 350 words of voiceover.
-
-| Time | Question | Shot |
-|---|---|---|
-| 0:00–0:15 | Moment | Cold open: the bank accepts, the worker is killed, a new worker pays exactly once. |
-| 0:15–0:30 | — | Title card with the seat line. |
-| 0:30–1:05 | Real | Sweetgreen, simulated from its FY2025 10-K. 64 invoices, 21 in formats our code can't read, 13 planted errors, 3 look-alikes, and an answer key the agents never see. Live activity as bills arrive; the parser proposal in Memory. |
-| 1:05–1:35 | Hire | Seats and limits. The AP clerk can't approve its own bill, and the kernel blocks the bank-detail change. The CFO's inbox has 5 decisions. |
-| 1:35–1:55 | Moment | The crash replay: saved key, the lease wait (labeled "sped up 40 s"), polling, one posting, two-signature close. |
-| 1:55–2:15 | New | Each seat has its own identity and limits; `git blame` on a number goes to the decision commit. Then the reveal: Finance flow across the department. |
-| 2:15–2:30 | Real | The proof card below, and a green CI run of the crash recovery. |
-
-## Proof card
-
-From [RESULTS.md](RESULTS.md), OpenAI `gpt-6.1-sol`:
-
-| | Result |
-|---|---|
-| Simulated company, 4 seeds × 3 stores × 14 days | 13 of 13 planted errors caught on every seed ($3,774–$3,986 at risk), 3 of 3 look-alikes left alone, 0 false alarms, 64 of 64 invoices read, books correct on every account |
-| Cost and time per run | $0.04–0.05, 71–82 s |
-| Same model, kernel tools vs spreadsheet tools, 11 tasks | 12 vs 71 tool calls, 45 vs 94 s, $0.12 vs $0.48, 4 of 4 vs 3 of 4 planted errors caught |
-| 156 bookkeeping operations, 18 bad ones injected, no model | Kernel: all 18 stopped. Spreadsheet: 8 flagged after the fact, 10 never caught |
-| 15 public benchmark tasks (APEX, DABstep, Invoice Sandbox, FinBalance) | Our team 93.3% (14 of 15) vs the same model alone 84.0% (12 of 15), at about 1.7× the cost |
-| Control tests | 22 of 22 hold |
-| Payment through a worker crash | 1 transfer, 1 journal entry, runs in CI on every PR |
-
-## Rehearsal notes (Oct 24, 11:45 PM, on main)
-
-Ran the whole script on the latest main with the model on:
-- World plus agents: the 14 days finished in about 5 minutes at `--pace 20000`, with 225 tasks done, 0 failed, 152 journal entries and 5 human decisions.
-- **Fraud email:** blocked in under 10 seconds, with all three reasons.
-- **Ask why on INV-1002:** cites the hold and the controller's commit (short shipment, $77.00; approved $763.20).
-- **Inbox, $50,949.23 to Embarcadero:** approved from the drawer. The drawer shows 0 supporting evidence records, so point at "From your team" and the payment details instead.
-- **Crash run:** approved in the browser, worker killed after the bank accepted, recovered after 40 s with 1 transfer, 1 posted debit and 1 journal entry; the period closed.
-- **The main run kept working** after the crash run rebound the human login.
-- The inbox also has a fraud item from the world's own planted error (Golden State Produce). The one you inject from the Control room is Bay Farms Protein.
-
-Timing risk: the crash run takes about 60 seconds from approval to the proof (40 s lease plus dispatch). If the judge cuts us off, the fraud email and the inbox carry the story without it.
-
-## Real versus simulated
-
-Say this plainly when asked.
-- **Real:** the kernel and its controls, the agents and their model calls, the public benchmark data, all timings and costs.
-- **Simulated:** the company, its vendors, staff and bank feed, and the bank in the payment demo (a local simulator). The Increase sandbox adapter is built and contract-tested but not run live.
-
-## Q&A prep
-
-- **"Is this too ambitious?"** The demo is AP, and AP is complete: formats, matching, fraud, approvals, exactly-once payment and recovery. The other seats run in the same run because a fast AP agent otherwise waits on humans in cash and close.
-- **"What if the model is wrong?"** The model never moves money. The kernel checks arithmetic, evidence, duplicates and authority on every write; wrong numbers are refused and anything unclear goes to a human.
-- **"Prompt injection?"** Documents are data. The fraud email shows the agent flagging the injected text, and even a fooled agent can't change bank details: that needs a human who didn't propose the change.
-- **"Did you plant the errors?"** Yes, and the agents never see the answer key. The public benchmarks are other people's tasks.
-- **"Why several agents, not one?"** Segregation of duties: the requester can't approve, the proposer can't merge. On the public tasks, the controller's review fixed two answers the model got wrong alone.
-- **"What does it cost?"** About 5 cents for 14 days of 3 stores. Most tasks are plain code; the model reads new formats and handles judgment calls.
-- **"Who's accountable?"** Every action is logged with the seat that took it, and any number traces to its decision commit.
+**Closing line:** “For every payment, we want a clear answer: what we owe, why we owe it, who authorized it, and what happened next.”

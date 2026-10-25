@@ -1,0 +1,6 @@
+time="2026-10-25T03:43:46-07:00" level=info msg="starting colima"
+time="2026-10-25T03:43:46-07:00" level=info msg="runtime: docker"
+time="2026-10-25T03:43:47-07:00" level=info msg="starting ..." context=vm
+time="2026-10-25T03:44:06-07:00" level=info msg="provisioning ..." context=docker
+time="2026-10-25T03:44:08-07:00" level=info msg="starting ..." context=docker
+time="2026-10-25T03:44:09-07:00" level=info msg=done

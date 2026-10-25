@@ -1,0 +1,262 @@
+{
+  "runtime": "800e299b904f3bac7120ecda6db1d42d21093fd7",
+  "repairSource": "d4701411c4c1fcab6eaff03130e2fac5ea9deb39",
+  "baselineReportCommit": "6cf4dcb",
+  "originalSuite": {
+    "total": 54,
+    "passed": 54,
+    "failed": 0,
+    "rawPath": "/private/tmp/ap97-v8-e03-repair.json",
+    "rawSha256": "62c700b1d5644938b389ebea131a753ee43ed2b8e68f91806431ba9d3fb38cb8",
+    "assertions": [
+      {
+        "name": "routes only proposals through controller credentials and all reviews/history through the current human",
+        "status": "passed"
+      },
+      {
+        "name": "enforces auth/session/origin and strict operation shapes without accepting browser authority",
+        "status": "passed"
+      },
+      {
+        "name": "starts registration, verification and final decisions without preselected evidence, dates or confirmation",
+        "status": "passed"
+      },
+      {
+        "name": "binds proposals to the current supplier/contact and requires explicit supersession for restoration",
+        "status": "passed"
+      },
+      {
+        "name": "excludes invoice/credit originals and same-hash relabeling from evidence pickers",
+        "status": "passed"
+      },
+      {
+        "name": "keeps rejection holds, approval recertification and no-transfer implications explicit",
+        "status": "passed"
+      },
+      {
+        "name": "uses authenticated endpoints and validates operation bodies before any request",
+        "status": "passed"
+      },
+      {
+        "name": "uses exact synthetic evidence bytes and separates verification, escalation and final approval stages",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement replaces contact only, requires a fresh supplier callback/approval, and preserves immutable source and supplier history",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement cannot replace a contact through the legacy supplier proposal",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement requires source provenance and source-bound phone before a replacement",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rejects an invoice phone source even when the original bytes are renamed as a contract",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement requires an explicit escalation policy and an independent escalation review when old channel is unavailable",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement requires independent reestablishment when replacement declares the old channel unavailable",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement requires old-channel confirmation for available contacts and explicit restoration",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rejects review and final approval by the source recorder, including a subject alias of the same seat",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rechecks retained second before activation",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rechecks retained verifier before activation",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rechecks retained escalation before activation",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rechecks retained second after replacement and supplier recertification",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rechecks retained verifier after replacement and supplier recertification",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rechecks retained escalation after replacement and supplier recertification",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rechecks retained governor after replacement and supplier recertification",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rejects stale policy-bound reviews and preserves a superseding repair path",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement keeps rejection held until an explicitly reviewed restoration, retaining both proposal histories",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement returns exact replays, rejects changed payloads, and serializes competing proposals",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement holds new dispatch without agent cancellation; a human decision cancels the unsent operation",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement preserves possibly sent command, destination, key and reservations across human replacement",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement revalidates replacement roles after a policy group change without rewriting the prior decision",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement blocks a supplier proposal verified before the contact change from activating after replacement",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rechecks distinct verifier and final approver seats even if subject aliases differ",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rejects stale hashes and future claimed reviews",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement preserves possible-send recovery after replacement with the original operation",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement requires case recertification against the new supplier revision without creating a second bill or recognition",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement rejects a contact mutation request containing a bank destination or an unprivileged proposer",
+        "status": "passed"
+      },
+      {
+        "name": "E03 governed trusted contact replacement requires authenticated scoped humans for the safe review projection",
+        "status": "passed"
+      },
+      {
+        "name": "carries each request-bound synthetic identity through real HTTP/service/Convex-test contact mutations; no browser authority overrides",
+        "status": "passed"
+      },
+      {
+        "name": "presents the only allowed verification method for each immutable old-channel/resolution combination",
+        "status": "passed"
+      },
+      {
+        "name": "withholds review controls for stale contact/revision/policy state and cannot silently supersede a current proposal",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery rejects old-channel confirmation for a replacement explicitly declaring that channel unavailable",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery requires the extra unavailable-channel review and rejects a subject alias for the existing verifier",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery keeps source recorder and verifier distinct even with different authenticated subject strings",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery rechecks retained current human second at final approval without changing any financial state",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery rechecks retained current human verifier at final approval without changing any financial state",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery rechecks retained current human escalation at final approval without changing any financial state",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery rejects wrong scope, stale hash and a cross-supplier contact without replacing the existing hold",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery rejects a retained contact whose source has moved outside scope, with proposal insertion rolled back",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery requires fresh reviews after policy supersession; old exact replay cannot authorize the new proposal",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery uses the newly governed contact as the next proposal basis even before supplier recertification",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery blocks authorization of a preexisting unapproved request while retaining its reservation and immutable snapshot",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery holds a queued unsent payment without sending, then releases it only after fresh retain-current approval",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery recovers an accepted lost-response transfer after contact replacement with exactly one original operation and settlement",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery requires both recovered old-channel confirmation and escalation when retain-current still declares prior unavailability",
+        "status": "passed"
+      },
+      {
+        "name": "V8 independent E03 authority and recovery rechecks replacement source-recorder authority at future payment gates after supplier and case recertification",
+        "status": "passed"
+      }
+    ]
+  },
+  "historicalReviewProbes": {
+    "total": 3,
+    "passed": 0,
+    "failed": 3,
+    "rawPath": "/private/tmp/ap97-v8-e03-retained-review.json",
+    "rawSha256": "da120dc4536c66dc588124a5497c3a06579ce8c1625fffb883dc18eea8aff29c",
+    "assertions": [
+      {
+        "name": "does not promote a pre-repair contradictory unavailable-channel verification into current authority",
+        "status": "failed",
+        "failure": "Error: promise resolved \"{ changeId: '00010045apSupplierConta\u2026' }\" instead of rejecting"
+      },
+      {
+        "name": "does not approve a complete but contradictory pre-repair contact review",
+        "status": "failed",
+        "failure": "Error: promise resolved \"{ \u2026(2) }\" instead of rejecting"
+      },
+      {
+        "name": "does not reuse approved pre-repair contradictory review at future supplier authority gates",
+        "status": "failed",
+        "failure": "Error: promise resolved \"{ revision: 2, \u2026(1) }\" instead of rejecting"
+      }
+    ]
+  },
+  "typechecks": {
+    "root": "pass",
+    "backend": "pass",
+    "tests": "pass"
+  },
+  "originalTestFilesUnchanged": true,
+  "historicalTestSha256": "3cd98360d9c2a567b0aa3c64724f9edf15674cb204e6e1316b22713e066eedda",
+  "reviewType": "Independent synthetic engineering review; no known live affected records"
+}

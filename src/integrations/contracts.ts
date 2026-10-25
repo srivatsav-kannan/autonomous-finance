@@ -19,6 +19,8 @@ export type BankCommand = {
   approvalVersion: string;
   idempotencyKey: string;
   requestHash: string;
+  /** Local accounting authority digest; never sent as a bank instruction. */
+  accountingBindingHash?: string;
   /** Exact saved HTTP body, mandatory for Increase; included in requestHash. */
   providerRequest?: string;
 };

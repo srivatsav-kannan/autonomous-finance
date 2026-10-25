@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/docker",
+    "--host",
+    "unix:///Users/junjiexiong/.colima/default/docker.sock",
+    "buildx",
+    "version"
+  ],
+  "startedUtc": "2026-10-25T10:44:16.479456+00:00",
+  "durationSeconds": 0.126,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "logs/buildx-version.stdout",
+  "stderr": "logs/buildx-version.stderr"
+}

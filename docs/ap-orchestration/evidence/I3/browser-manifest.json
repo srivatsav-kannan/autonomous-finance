@@ -1,0 +1,86 @@
+{
+  "uiCommit": "996e930",
+  "runtimeCommit": "e1147850f98882630653b98b988e30e86a399143",
+  "caseId": "kd74wbhvrp0y8tr74pt603pj6x8gzv2y",
+  "browser": "CUA in-app browser",
+  "viewport": "1280x720 laptop viewport (scrollbar reduces content width)",
+  "provider": "local FakeBank",
+  "identity": "explicitly simulated operator",
+  "files": [
+    {
+      "path": "01-missing-receipt.png",
+      "sha256": "1948469bda8a8e5415cf24257aedf47524be5a13a752bf71d032f2716e144776",
+      "bytes": 71930
+    },
+    {
+      "path": "01-missing-receipt.txt",
+      "sha256": "0ee9dfb86204073c96ecd157dc3dc5dd40d6a952089ead2245e5e9c6dc579c00",
+      "bytes": 14410
+    },
+    {
+      "path": "02-authorized-unexecuted.png",
+      "sha256": "887245cc75374303f729d3a067fc079186d74a799bccc2f1b85b5e440d890e01",
+      "bytes": 66862
+    },
+    {
+      "path": "02-authorized-unexecuted.txt",
+      "sha256": "9144a5e848f701a41516e2638517433b4e247fb710a33f65dcf0519d65b9bfa6",
+      "bytes": 10441
+    },
+    {
+      "path": "03-worker-killed.png",
+      "sha256": "75c801499bf04132964d2bc8fb711c89ff9858659346e34fd4cc4f883d1da499",
+      "bytes": 67413
+    },
+    {
+      "path": "03-worker-killed.txt",
+      "sha256": "9e6e90c41393c6e3870cf454cac05da88a89fd9bf4a2a7b9f32122fc7cdb3aa4",
+      "bytes": 10450
+    },
+    {
+      "path": "04-settled.png",
+      "sha256": "5624f9131a915676c0833db03e52df8dac56dc40a105acc29de630ec7e8f8c8e",
+      "bytes": 60377
+    },
+    {
+      "path": "04-settled.txt",
+      "sha256": "ba735a9fad27beeafefb154456f467eaa318f4341bf63b23001d97a70f858be8",
+      "bytes": 11213
+    },
+    {
+      "path": "05-journals.png",
+      "sha256": "dea1315dcc2e1d448122f6fa73b3d35946c9be229f2c903510e597daa207479d",
+      "bytes": 52379
+    },
+    {
+      "path": "06-history.png",
+      "sha256": "18a4225b733a5f035737fa4c38977f0bce28bf5d467aec91f2dcf1f9f58385e5",
+      "bytes": 61192
+    },
+    {
+      "path": "06-history.txt",
+      "sha256": "13ba70311ed9418ae772708a434214d88a2b98f21aa6c1ee621bc6d9b5d6f1fe",
+      "bytes": 11139
+    },
+    {
+      "path": "07-native-source.png",
+      "sha256": "c4709c1bff6c294f79af3c41f61dcc82b3d40007cdd0f84c6a9dc00a75e036ba",
+      "bytes": 58586
+    },
+    {
+      "path": "07-native-source.txt",
+      "sha256": "8085ad865aede7a2034176b5a939db2cbb5c1fd86013517220a430a4892729ba",
+      "bytes": 15515
+    },
+    {
+      "path": "08-unresolved-source.png",
+      "sha256": "5c32751013522154be1cd8d10eb52c8e08737dd9ed606526ae3593a03b6d7fb6",
+      "bytes": 65087
+    },
+    {
+      "path": "08-unresolved-source.txt",
+      "sha256": "c97957bea053c6a77be2be21b8e5571666abc2c850c055754618e4c1b9552995",
+      "bytes": 15661
+    }
+  ]
+}

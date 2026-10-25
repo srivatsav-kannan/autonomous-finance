@@ -1,0 +1,222 @@
+Browser tab: 9, Title: "Accounts payable · Autonomous Finance", URL: "http://127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system&apView=history".
+1 AXWebArea Accounts payable · Autonomous Finance, URL: 127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system&apView=history
+	2 container root
+		3 link Description: Skip to content, Value: 127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system&apView=history#main
+		4 container
+			5 heading Autonomous Finance, Value: 1
+				6 text Autonomous
+				7 text Finance
+			8 text Accounts payable Evidence and obligations
+			9 container Console views
+				10 text Workspace
+				11 button Accounts payable
+				12 button Invoices
+				13 button Inbox
+				14 button Bank & cash
+				15 button Finance flow
+				16 button Team
+				17 button Live activity
+				18 button Ledger
+				19 button Memory
+				20 button Evals
+				21 button Control room
+			22 text Human finance lead You oversee. Agents operate.
+		23 container
+			24 text Workspace Accounts payable Local FakeBank ap97-i3-20261025
+		25 container main
+			26 container Local multi-human simulation
+				27 text Local multi-human simulation / FakeBank
+				28 text These are distinct simulated human seats on an isolated local backend. This is not an Auth0 login, a real person’s approval or an external bank authorization.
+				29 container
+					30 text Simulated human
+					31 pop up button (collapsed, settable) Simulated human, Value: I3 simulated operator, Secondary Actions: Expand
+						32 menu
+							33 Choose a simulated actor
+							34 (selected) I3 simulated operator
+				35 container
+					36 text Acting as  I3 simulated operator . Group membership, distinct-person quorum and stale-evidence checks still apply.
+			37 container Accounts payable workspace
+				38 heading Accounts payable, Value: 2
+					39 text Accounts payable
+				40 text Inspect the obligation, its approvals and the outcome.
+				41 button Refresh
+				42 button (collapsed) Upload documents, Secondary Actions: Expand
+				43 container Workspace sections
+					44 checkbox Cases, Value: 1
+					45 checkbox Payment runs, Value: 0
+					46 checkbox Policy & suppliers, Value: 0
+					47 checkbox Period close, Value: 0
+				77 container Workspace operational metrics
+					78 definition list
+						79 container Cases needing attention
+							80 text Cases needing attention
+						81 container
+							82 text 0 of  1  cases in this run
+						83 container Approved outstanding
+							84 text Approved outstanding
+						85 container
+							86 text $0.00 Across 1 unique invoices
+						87 container Execution needs review
+							88 text Execution needs review
+						89 container
+							90 text 0 Inspect bank evidence before retrying
+					91 text Recognizing a bill records the obligation. Applied supplier credits reduce what is owed; a verified cash settlement records money leaving the bank. QuickBooks synchronization is a separate, receipt-backed operation.
+					92 button (collapsed) Extraction, source coverage and recorded trace counts, Secondary Actions: Expand
+						93 text Extraction, source coverage and recorded trace counts
+					94 button (collapsed) Operational durations and waiting ages, Secondary Actions: Expand
+						95 text Operational durations and waiting ages
+				67 container AP cases
+					68 search text field (settable) Search AP cases
+					69 container
+						70 text Show
+						71 pop up button (collapsed, settable) Description: Filter AP cases, Value: All, Secondary Actions: Expand
+							72 menu
+								73 (selected) All
+								74 Needs attention
+								75 Approved
+								76 Settled
+					96 content list
+						97 checkbox Golden State Produce Co. INV-1001 $678.60 Approved Settled, Value: 1
+							98 text Golden State Produce Co.
+							99 text INV-1001
+							100 text $678.60
+							101 text Approved
+							102 text Settled
+					103 container
+						104 text 1  of  1  cases shown
+				105 container
+					106 heading INV-1001, Value: 3
+						107 text INV-1001
+					108 text Golden State Produce Co. Local FakeBank Simulated human identity
+				109 container
+					110 text Case  kd74wbhvrp0y8tr74pt603pj6x8gzv2y  / Revision  2  /  Document provenance varies; inspect originals
+				111 definition list
+					112 container Document review
+						113 text Document review
+					114 text Reviewed
+					115 container Bill decision
+						116 text Bill decision
+					117 text Approved
+					118 container Accounting
+						119 text Accounting
+					120 text Recognized
+					121 container Payment authorization
+						122 text Payment authorization
+					123 text Authorized
+					124 container Bank execution
+						125 text Bank execution
+					126 text Settled
+					127 container Reconciliation
+						128 text Reconciliation
+					129 text Matched
+				130 definition list
+					131 container Invoiced
+						132 text Invoiced
+					133 text $678.60
+					134 container Accepted
+						135 text Accepted
+					136 text $678.60
+					137 container Outstanding
+						138 text Outstanding
+					139 text $0.00
+				140 button (collapsed) Disputed, credited and payment amounts, Secondary Actions: Expand
+					141 text Disputed, credited and payment amounts
+				142 container Case sections
+					143 checkbox Source & fields, Value: 0
+					144 checkbox Matching, Value: 0
+					145 checkbox Accounting, Value: 0
+					146 checkbox History, Value: 1
+				293 container
+					294 heading Recorded decisions, Value: 3
+						295 text Recorded decisions
+					296 content list
+						297 container
+							298 text Field review :  Approved 10/25/2026, 4:08:14 AM Explicit synthetic I3 original comparison; not practitioner approval https://ap-demo.invalid|ap97-i3-operator  /  Human  / Candidate revision  1 Authority:  configured_human_cfo . Policy:  golden-state-ap-v1 .
+							299 button (collapsed) Reviewed source bindings, Secondary Actions: Expand
+								300 text Reviewed source bindings
+						301 container
+							302 text Field review :  Approved 10/25/2026, 4:09:23 AM Explicit synthetic I3 original comparison; not practitioner approval https://ap-demo.invalid|ap97-i3-operator  /  Human  / Candidate revision  2 Authority:  configured_human_cfo . Policy:  golden-state-ap-v1 .
+							303 button (collapsed) Reviewed source bindings, Secondary Actions: Expand
+								304 text Reviewed source bindings
+						305 container
+							306 text Bill approval :  Approved 10/25/2026, 4:09:23 AM Explicit synthetic I3 original comparison; not practitioner approval https://ap-demo.invalid|ap97-i3-operator  /  Human  / Candidate revision  2 Authority:  configured_human_cfo . Policy:  golden-state-ap-v1 .
+							307 button (collapsed) Reviewed source bindings, Secondary Actions: Expand
+								308 text Reviewed source bindings
+					309 heading Audit timeline, Value: 4
+						310 text Audit timeline
+					311 content list
+						312 container
+							313 text Source revision 10/25/2026, 4:08:14 AM Source case revision 1 retained i3-ap
+							314 button (collapsed) Linked records, Secondary Actions: Expand
+								315 text Linked records
+						316 container
+							317 text Source delivery 10/25/2026, 4:08:14 AM Received invoice.pdf i3-ap
+							318 button (collapsed) Linked records, Secondary Actions: Expand
+								319 text Linked records
+						320 container
+							321 text Source delivery 10/25/2026, 4:08:14 AM Received purchase-order.pdf i3-ap
+							322 button (collapsed) Linked records, Secondary Actions: Expand
+								323 text Linked records
+						324 container
+							325 text Source delivery 10/25/2026, 4:08:14 AM Received contract.pdf i3-ap
+							326 button (collapsed) Linked records, Secondary Actions: Expand
+								327 text Linked records
+						328 container
+							329 text Field review 10/25/2026, 4:08:14 AM Explicit synthetic I3 original comparison; not practitioner approval https://ap-demo.invalid|ap97-i3-operator
+							330 button (collapsed) Linked records, Secondary Actions: Expand
+								331 text Linked records
+						332 container
+							333 text Source revision 10/25/2026, 4:09:23 AM Source case revision 2 retained i3-ap
+							334 button (collapsed) Linked records, Secondary Actions: Expand
+								335 text Linked records
+						336 container
+							337 text Source delivery 10/25/2026, 4:09:23 AM Received invoice.pdf i3-ap
+							338 button (collapsed) Linked records, Secondary Actions: Expand
+								339 text Linked records
+						340 container
+							341 text Source delivery 10/25/2026, 4:09:23 AM Received purchase-order.pdf i3-ap
+							342 button (collapsed) Linked records, Secondary Actions: Expand
+								343 text Linked records
+						344 container
+							345 text Source delivery 10/25/2026, 4:09:23 AM Received receipt.pdf i3-ap
+							346 button (collapsed) Linked records, Secondary Actions: Expand
+								347 text Linked records
+						348 container
+							349 text Source delivery 10/25/2026, 4:09:23 AM Received contract.pdf i3-ap
+							350 button (collapsed) Linked records, Secondary Actions: Expand
+								351 text Linked records
+						352 container
+							353 text Field review 10/25/2026, 4:09:23 AM Explicit synthetic I3 original comparison; not practitioner approval https://ap-demo.invalid|ap97-i3-operator
+							354 button (collapsed) Linked records, Secondary Actions: Expand
+								355 text Linked records
+						356 container
+							357 text Bill approval 10/25/2026, 4:09:23 AM Explicit synthetic I3 original comparison; not practitioner approval https://ap-demo.invalid|ap97-i3-operator
+							358 button (collapsed) Linked records, Secondary Actions: Expand
+								359 text Linked records
+						360 container
+							361 text Source delivery 10/25/2026, 4:10:15 AM Received renamed-invoice.pdf i3-ap
+							362 button (collapsed) Linked records, Secondary Actions: Expand
+								363 text Linked records
+						364 container
+							365 text Source delivery 10/25/2026, 4:10:15 AM Received renamed-purchase-order.pdf i3-ap
+							366 button (collapsed) Linked records, Secondary Actions: Expand
+								367 text Linked records
+						368 container
+							369 text Source delivery 10/25/2026, 4:10:15 AM Received renamed-receipt.pdf i3-ap
+							370 button (collapsed) Linked records, Secondary Actions: Expand
+								371 text Linked records
+						372 container
+							373 text Source delivery 10/25/2026, 4:10:15 AM Received renamed-contract.pdf i3-ap
+							374 button (collapsed) Linked records, Secondary Actions: Expand
+								375 text Linked records
+					376 button (collapsed) Case and snapshot identifiers, Secondary Actions: Expand
+						377 text Case and snapshot identifiers
+				286 container Case review actions
+					287 heading Review this revision, Value: 3
+						288 text Review this revision
+					289 text Your decision binds the current sources and amounts. Backend authority and stale-revision checks apply.
+					290 container
+						291 text Bill approved.  Payment authorization: Authorized.
+					292 text Payment release requires the exact amount, verified beneficiary, funding account and independent authorization. Review the proposal under Accounting.
+
+The focused UI element is 146 checkbox History, Value: 1

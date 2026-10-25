@@ -1,0 +1,223 @@
+{
+  "status": "PASS",
+  "scope": "OCR runtime packaging on two controlled single-page synthetic scans only",
+  "sourceCommit": "ed372a40570d714b5b893c6e4e86e25f2427bc80",
+  "imageId": "sha256:09c398f49cc16a60d0e7888b3939505d60f5482264ea0e86bb4374034352d9c7",
+  "platformManifestDigest": "sha256:0e2c231231700f461f611eb0ea36e0bb68e2e513f3fd82308fe4124a722763d6",
+  "imageConfigDigest": "sha256:0c6eaabbae0d9e819bce73fa30ae5072fa9c2568c3ff7c3a820c602889f69102",
+  "baseImageDigest": "sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8",
+  "imageTag": "ap97-ocr-smoke-6tn3tag:ed372a4",
+  "imageArchitecture": "arm64",
+  "imageOs": "linux",
+  "imageSizeBytes": 93834958,
+  "hostArchitecture": "arm64",
+  "client": {
+    "Platform": {
+      "Name": "Docker Engine - Community"
+    },
+    "Version": "29.9.2",
+    "ApiVersion": "1.54",
+    "DefaultAPIVersion": "1.56",
+    "GitCommit": "a82e528901",
+    "GoVersion": "go1.27.3",
+    "Os": "darwin",
+    "Arch": "arm64",
+    "BuildTime": "Tue Oct 20 11:24:07 2026",
+    "Context": "default"
+  },
+  "server": {
+    "Platform": {
+      "Name": "Docker Engine - Community"
+    },
+    "Version": "29.5.2",
+    "ApiVersion": "1.54",
+    "MinAPIVersion": "1.40",
+    "Os": "linux",
+    "Arch": "arm64",
+    "Components": [
+      {
+        "Name": "Engine",
+        "Version": "29.5.2",
+        "Details": {
+          "ApiVersion": "1.54",
+          "Arch": "arm64",
+          "BuildTime": "Wed May 20 14:39:25 2026",
+          "Experimental": "false",
+          "GitCommit": "568f755",
+          "GoVersion": "go1.26.3",
+          "KernelVersion": "6.8.0-117-generic",
+          "MinAPIVersion": "1.40",
+          "Module": "github.com/moby/moby/v2",
+          "ModuleVersion": "v2.0.0+unknown",
+          "Os": "linux"
+        }
+      },
+      {
+        "Name": "containerd",
+        "Version": "v2.2.4",
+        "Details": {
+          "GitCommit": "193637f7ee8ae5f5aa5248f49e7baa3e6164966e"
+        }
+      },
+      {
+        "Name": "runc",
+        "Version": "1.3.5",
+        "Details": {
+          "GitCommit": "v1.3.5-0-g488fc13e"
+        }
+      },
+      {
+        "Name": "docker-init",
+        "Version": "0.19.0",
+        "Details": {
+          "GitCommit": "de40ad0"
+        }
+      }
+    ],
+    "GitCommit": "568f755",
+    "GoVersion": "go1.26.3",
+    "KernelVersion": "6.8.0-117-generic",
+    "BuildTime": "2026-05-20T14:39:25.000000000+00:00"
+  },
+  "colimaVersion": "0.10.3",
+  "endpoint": "unix:///Users/junjiexiong/.colima/default/docker.sock",
+  "currentContext": "default",
+  "contextSelection": "per-command --host; colima context is registered but inactive",
+  "build": {
+    "argv": [
+      "/opt/homebrew/bin/docker",
+      "--host",
+      "unix:///Users/junjiexiong/.colima/default/docker.sock",
+      "build",
+      "--progress",
+      "plain",
+      "--tag",
+      "ap97-ocr-smoke-6tn3tag:ed372a4",
+      "--iidfile",
+      "/private/tmp/ap97-ocr-20261025-6tn3tag_/image-id.txt",
+      "--file",
+      "/private/tmp/ap97-ocr-20261025-6tn3tag_/source/src/ap-system/ingestion/runtime/Dockerfile",
+      "/private/tmp/ap97-ocr-20261025-6tn3tag_/source/src/ap-system/ingestion/runtime"
+    ],
+    "startedUtc": "2026-10-25T10:44:23.402752+00:00",
+    "durationSeconds": 102.012,
+    "exitCode": 0,
+    "timedOut": false,
+    "stdout": "logs/image-build.stdout",
+    "stderr": "logs/image-build.stderr"
+  },
+  "smoke": {
+    "argv": [
+      "/opt/homebrew/bin/docker",
+      "--host",
+      "unix:///Users/junjiexiong/.colima/default/docker.sock",
+      "start",
+      "--attach",
+      "3883b8a9c32810b38d6ead27c73a47a8f51b4082b47638c7c9a4b9c8113b0ffa"
+    ],
+    "startedUtc": "2026-10-25T10:46:32.442065+00:00",
+    "durationSeconds": 1.204,
+    "exitCode": 0,
+    "timedOut": false,
+    "stdout": "logs/smoke-run-2.stdout",
+    "stderr": "logs/smoke-run-2.stderr"
+  },
+  "containerState": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-25T10:46:32.562490081Z",
+    "FinishedAt": "2026-10-25T10:46:33.695264092Z"
+  },
+  "results": [
+    {
+      "sourceId": "harbor-thread-scan",
+      "sourceSha256": "fa814b53d96635afc6c7fc08e02eec91df5a656c9024d72b2a5949b4248090a5",
+      "page": 1,
+      "rasterDimensions": [
+        1584,
+        1224
+      ],
+      "rasterSha256": "a4cd4ae8b9496db4029c76a74fd3e3829550c69a22c540602cde17944fb860e5",
+      "rawTsvSha256": "721a892111f2165253c19d81c7e76cbea2580b59435781ea7362b43a1282dcc8",
+      "wordCount": 123
+    },
+    {
+      "sourceId": "copper-valve-scan",
+      "sourceSha256": "741c0bc7adfcb6fccffe404f8dc4096a31e55fbe8f76b18fef5f5807586495f6",
+      "page": 1,
+      "rasterDimensions": [
+        1224,
+        1584
+      ],
+      "rasterSha256": "437663ed24d4fac0ab6a7748beb75bda7b632be9334ea3c09d7d4a9865db85bc",
+      "rawTsvSha256": "070cbf8969ba1c0fd889306965cb5407e6db8b628c99919e5cdf630879aa042c",
+      "wordCount": 135
+    }
+  ],
+  "runtime": {
+    "status": "packaging_smoke_pass",
+    "architecture": "aarch64",
+    "pythonVersion": "3.11.2",
+    "tesseract": "tesseract 5.5.2",
+    "traineddataSha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+    "results": [
+      {
+        "sourceId": "harbor-thread-scan",
+        "sourceSha256": "fa814b53d96635afc6c7fc08e02eec91df5a656c9024d72b2a5949b4248090a5",
+        "page": 1,
+        "rasterDimensions": [
+          1584,
+          1224
+        ],
+        "rasterSha256": "a4cd4ae8b9496db4029c76a74fd3e3829550c69a22c540602cde17944fb860e5",
+        "rawTsvSha256": "721a892111f2165253c19d81c7e76cbea2580b59435781ea7362b43a1282dcc8",
+        "wordCount": 123
+      },
+      {
+        "sourceId": "copper-valve-scan",
+        "sourceSha256": "741c0bc7adfcb6fccffe404f8dc4096a31e55fbe8f76b18fef5f5807586495f6",
+        "page": 1,
+        "rasterDimensions": [
+          1224,
+          1584
+        ],
+        "rasterSha256": "437663ed24d4fac0ab6a7748beb75bda7b632be9334ea3c09d7d4a9865db85bc",
+        "rawTsvSha256": "070cbf8969ba1c0fd889306965cb5407e6db8b628c99919e5cdf630879aa042c",
+        "wordCount": 135
+      }
+    ],
+    "accuracyEvaluated": false,
+    "providerCalls": 0
+  },
+  "failureHistory": [
+    {
+      "step": "smoke-create",
+      "exitCode": 1,
+      "status": "FAILED",
+      "ocrExecuted": false,
+      "cause": "Host /private/tmp is not shared into the existing Colima VM",
+      "resolution": "Byte-identical snapshot staged under existing home share; no VM configuration change"
+    }
+  ],
+  "notRun": [
+    "Full application ingestion / parseUpload",
+    "Extraction accuracy evaluation",
+    "Exact word grounding evaluation",
+    "Multipage or rotated document coverage",
+    "Production readiness"
+  ],
+  "sourceIntegrityVerifiedAfterRun": true,
+  "existingContainersBefore": 0,
+  "remainingContainersAfter": 0,
+  "projectFilesEdited": false,
+  "commitsPushesMergesIssueComments": false,
+  "sharedSourcePath": "/Users/junjiexiong/.ap97-ocr-smoke-6tn3tag/source",
+  "artifactsRoot": "/private/tmp/ap97-ocr-20261025-6tn3tag_"
+}

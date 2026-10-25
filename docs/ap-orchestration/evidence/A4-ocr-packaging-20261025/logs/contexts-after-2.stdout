@@ -1,0 +1,2 @@
+{"Current":false,"Description":"colima","DockerEndpoint":"unix:///Users/junjiexiong/.colima/default/docker.sock","Error":"","Name":"colima"}
+{"Current":true,"Description":"Current DOCKER_HOST based configuration","DockerEndpoint":"unix:///var/run/docker.sock","Error":"","Name":"default"}

@@ -1,0 +1,13 @@
+# Root desktop tax and receipt review
+
+Checked 25 October 2026 with CUA using the integration Vite fixture on port 5194. The browser measured 1280 pixels wide. Only laptop/desktop acceptance is in scope following the user instruction; earlier mobile evidence is retained as history. Shared production components render explicitly synthetic records; fixture requests are intercepted and never reach a backend or provider.
+
+Tax fact entry begins with blank jurisdiction, date, taxable basis, source citations, amounts and review confirmation. Choosing printed tax amount without a rate does not manufacture a rate. Review displays the separately derived 85.00 base from 77.00 net plus 10.00 freight minus 2.00 discount, 8.50 tax and 93.50 gross. The review remains pending with blank reason, unchecked confirmation and disabled decision. Light and dark views were inspected.
+
+The tax-adjustment panel requires explicit original selection. Selecting UI-1042 and the accounting date shows 8.50 remaining tax and a current-policy target of 4.25; the target field remains blank. Original cost attribution, exact movements, independent eligibility support, reason and confirmation remain explicit. Opening an eligibility item does not assert that a source was checked. No adjustment was proposed or approved. Light and dark layouts were inspected.
+
+Historical receipt review exercised unknown with reads allowed, unknown with reads denied, and prepared with reads allowed. Historical preview/submission remain unavailable; saved original authorization remains inspectable. Unknown exposes recovery only with explicit read capability. One synthetic recovery click reached the fixture verify route and returned its deliberate 409/no-provider result; the receipt stayed unknown. This verifies UI dispatch only, not external recovery. V14 separately tests backend/adapter GET-only recovery.
+
+Prepared never exposes recovery. CUA found generic guidance incorrectly inviting verification for a prepared receipt. The small production copy correction 7a67840 now says it was not submitted and that there is no external record to verify. It also explains unavailable read access for unknown/succeeded states. Button and authority logic did not change. The corrected prepared view was rechecked.
+
+Screenshots before that copy correction retain the earlier text; only e01-tax-prepared-dark-fixed.jpg represents the final prepared guidance. Images and hashes are in [manifest](D2-tax-desktop/manifest.json). No invoice field attestation, bill approval, real login token, bank payment, QBO transaction or practitioner review was performed in these fixtures. The actual Auth0 INV-1001 remained awaiting user review in a separate Chrome tab.

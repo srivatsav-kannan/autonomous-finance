@@ -1,0 +1,307 @@
+{
+  "version": "ap-v14-independent-verification-v1",
+  "runtimeCommit": "1a5dc708ef0de26fbd1f2f7f82c33f49a914ae28",
+  "independentTests": 25,
+  "ownerRegressionTests": 30,
+  "totalTests": 55,
+  "passed": 55,
+  "failed": 0,
+  "skipped": 0,
+  "rawReportSha256": "1e281136854e4086192a1fac0a9317e2fa22f68d3fc5b9322ebc8d8f877ea507",
+  "checks": {
+    "typecheck": "PASS",
+    "typecheckBackend": "PASS",
+    "typecheckTests": "PASS"
+  },
+  "network": "synthetic provider transport only; loopback HTTP server for request authorization",
+  "sourceHashes": {
+    "tests/ap-system/v14-tax-receipt-independent.test.ts": "515e6f3c815738df983432a98014e313247b2299ff21248907376607950f93db",
+    "tests/ap-system/v14-tax-ui-transport.test.tsx": "ca7392b58c201429947c22a1c4f3cfa71701a19a20db3f4bf9efe7bf11ff37d8",
+    "src/ap-system/quickbooks/close-sync.ts": "b542df5ab6edc9d3b3b511e43c9aad2c403d9c526168aae4ae85247575e81fb2",
+    "src/ap-system/quickbooks/close-recovery.ts": "1f366854642221b64907e0b84e6020127a7f4877bc59ad0c737e169bad82c3e0",
+    "src/ap-system/quickbooks/close-runtime.ts": "b4a134afcb77d7f21608c8e2a19adcc1be22f9b70062f09d4812f17eec082f79",
+    "src/ap-system/quickbooks/client.ts": "8a95a653ca12c59334869fceb23e2f3a73c471825587fead8d21fdf37ea67d9a",
+    "convex/apAccountingReceiptAccess.ts": "56328295a6d7c9094f31d0a10c60b1c93d67cc5c815479cd692dad4aa9dabd59",
+    "src/ap-system/server.ts": "dfe4aaa811395bf5e3cfca82744523648c1e1ab5b32a735e1bf0dccee8375a69",
+    "console/src/APSystemCloseQuickBooks.tsx": "8920f504074c28bb74fdc38ef38595ad40576cf9a79f569d9dc209eb004e819f",
+    "console/src/APSystemQuickBooks.tsx": "cd4fd537802e727c39891f7370190be4c4a1d99bbc322f10c1db7865d5966f42",
+    "console/src/apAuthSession.ts": "1c0ade8958daf6ed4154e2145f35420d24abf26e18fbe4202f4505dac1e9c070"
+  },
+  "results": [
+    {
+      "file": "tests/ap-system-close-qbo-ui.test.tsx",
+      "name": "period accounting explicit review offers approved posted journals without inventing a case link or exporting pending proposals",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-qbo-ui.test.tsx",
+      "name": "period accounting explicit review states local external synchronization is unsupported, without hiding configured plan review",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-qbo-ui.test.tsx",
+      "name": "period accounting explicit review uses immutable action or application selectors and keeps case-less accrual semantics",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-qbo-ui.test.tsx",
+      "name": "period accounting explicit review sends only validated selectors and exact approved plan hash after explicit API calls",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-qbo-ui.test.tsx",
+      "name": "offers posted tax actions and describes tax journals without claiming a bank return",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-qbo-ui.test.tsx",
+      "name": "keeps historical receipts readable while forbidding fresh preview or submission even with contradictory write flags",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-qbo-ui.test.tsx",
+      "name": "offers readback recovery only for explicitly enabled sent or unknown receipts, never prepared requests",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-transport.test.ts",
+      "name": "period close request authority retains only the full exact source loaded through the current human, then invokes the scoped agent",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-transport.test.ts",
+      "name": "period close request authority rejects a source metadata substitution and inaccessible source before any agent mutation",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-transport.test.ts",
+      "name": "period close request authority separates current human reads/votes from controller proposals and fails closed without that controller",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-transport.test.ts",
+      "name": "period close request authority requires the HTTP session and rejects browser file metadata, caller identity and invalid periods",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-transport.test.ts",
+      "name": "blocks local close synchronization and validates exact HTTP selectors before service invocation",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system-close-transport.test.ts",
+      "name": "queries current cost state with the request human and server scope only",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-close-runtime.test.ts",
+      "name": "checks current human close authority even when credentials are absent, with no provider calls",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-close-runtime.test.ts",
+      "name": "derives preview from approved backend journal and rejects stale hashes and local external writes",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-close.test.ts",
+      "name": "approved B4 journals to QBO mock protocol exports case-less accrual then exact partial reversal by either selector with stable identity",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-close.test.ts",
+      "name": "approved B4 journals to QBO mock protocol holds missing class or original external history and rejects stale current authority",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-close.test.ts",
+      "name": "approved B4 journals to QBO mock protocol recovers a lost create response under the same identity without a second post",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-close.test.ts",
+      "name": "approved B4 journals to QBO mock protocol preserves exact approved cost reclassification dimensions and forbids cash/AP substitution",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-close.test.ts",
+      "name": "maps approved per-line JE location, preserves null liability location and verifies exact readback",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-close.test.ts",
+      "name": "holds project JE rather than replacing vendor Entity or writing read-only billability",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-tax.test.ts",
+      "name": "approved tax reclassification QBO adapter replicates only exact noncash tax journal lines, preserving original Bill, dimensions and immutable authority",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-tax.test.ts",
+      "name": "approved tax reclassification QBO adapter holds absent or mismatched tax-account mapping without provider access",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-tax.test.ts",
+      "name": "approved tax reclassification QBO adapter rejects unrelated source/original, altered authority, cash/AP/accrual substitution and cross-dimension moves",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-tax.test.ts",
+      "name": "approved tax reclassification QBO adapter retains the explicit unsupported project-entity/billability hold",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-tax.test.ts",
+      "name": "approved tax reclassification QBO adapter rechecks current approval immediately before a new POST",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-tax.test.ts",
+      "name": "approved tax reclassification QBO adapter recovers a sent unknown request after policy retirement with no new POST, mapping read or replacement authorizer",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-tax.test.ts",
+      "name": "approved tax reclassification QBO adapter keeps unknown not-found evidence pending and rejects prepared records, forgery and changing recovery identity",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-tax.test.ts",
+      "name": "approved tax reclassification QBO adapter denies missing, retired and cross-scope human receipt access",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/quickbooks-tax.test.ts",
+      "name": "approved tax reclassification QBO adapter wires explicit verify to saved tax recovery after current policy retirement and missing current mappings",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes derives the exact reviewed noncash USD transfer and freezes original approval plus submitting identity",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes rejects same-account netting and reversed pair order before contacting QBO",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes rejects aliases collapsing tax and expense into one QBO account",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes checks the original Bill payload hash and currency, even when unrelated current mapping is valid",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes recovers concurrently only through GET and preserves every frozen field and original local Bill",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes keeps sent receipt unchanged on missing envelope",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes keeps sent receipt unchanged on malformed rows",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes keeps sent receipt unchanged on incomplete count",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes rejects duplicate exact records rather than choosing one",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes rejects provider-added or removed financial dimensions without writing a successful receipt",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes unknown-not-found remains unknown on repeated recovery without minting a replacement request",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes never recovers an ineligible prepared operation",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes never recovers an ineligible rejected operation",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes never recovers an ineligible conflict operation",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes rejects stale, future, cross-environment and swapped-action access before token use",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes rechecks a still-identical reader's journal authority after acquiring the lock",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes rejects an altered approved action and altered posted journal in the real authenticated backend read",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes retiring original authorizer does not substitute the new active read-only operator into the receipt",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes exposes historical status without token acquisition and denies new preview/submit with valid mappings present",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-receipt-independent.test.ts",
+      "name": "V14 independent tax receipt and authority probes halts new submission if the current submitter changes between preview and final authority check",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-ui-transport.test.tsx",
+      "name": "V14 historical UI authority dominates all contradictory configuration, grant and write flags",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-ui-transport.test.tsx",
+      "name": "V14 receipt action states never turn a prepared, rejected or conflicted record into recovery",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-ui-transport.test.tsx",
+      "name": "V14 browser recovery sends only the action selector and current session, never a receipt or authorizer",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-ui-transport.test.tsx",
+      "name": "V14 changing login while the browser obtains a token prevents recovery dispatch",
+      "status": "passed"
+    },
+    {
+      "file": "tests/ap-system/v14-tax-ui-transport.test.tsx",
+      "name": "V14 HTTP recovery reauthenticates the current subject and refuses stale cookies or caller-controlled authority",
+      "status": "passed"
+    }
+  ]
+}

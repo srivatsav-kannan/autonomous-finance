@@ -1,0 +1,649 @@
+{
+  "schema": "heldout-parser-acceptance-v1",
+  "evaluationKeyRead": false,
+  "authoringFactsRead": false,
+  "independentScoring": "pending V; adapter-reported evidence labels are not accuracy claims",
+  "initial": {
+    "mode": "initial",
+    "startedAt": "2026-10-25T10:23:55.443Z",
+    "codeSha": "6a0294197208fc891e715ea556d1a9b5e9f40aab",
+    "manifestSha256": "1ddd6649ebfe444f7dda837d221afd5679f5b318015323655fce690a8b61091d",
+    "contextSha256": "a8dba5194523ba9dac7967d8927d881d652006333170ef482ddc85d3108d7123",
+    "parserVersion": "2026-09-28",
+    "ocr": {
+      "traineddataPath": "/opt/homebrew/share/tessdata/eng.traineddata",
+      "tesseractPath": "/opt/homebrew/bin/tesseract",
+      "pdfinfoPath": "/opt/homebrew/bin/pdfinfo",
+      "pdftoppmPath": "/opt/homebrew/bin/pdftoppm",
+      "timeoutMs": 20000,
+      "maxPages": 8
+    },
+    "traineddataSha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+    "readsEvaluation": false,
+    "readsAuthoring": false,
+    "completedAt": "2026-10-25T10:25:01.197Z",
+    "results": [
+      {
+        "source": "harbor-thread-native",
+        "sourceSha256": "0d8993129e04f666f715018040106dc518c1a42f41f77587293180b4ed4df1c5",
+        "localCaseKey": "heldout-v1-harbor-thread-native-intake-1",
+        "storageDirectory": "harbor-thread-native",
+        "intakeSha256": "c8985d21ad37436c190e480f658abaea8c6d6fa888edc879e6433a67d07ee63c",
+        "errorCode": null,
+        "candidatePresent": false,
+        "extractionStatus": "incomplete",
+        "reasons": [
+          "unparsed_line_row_page_1_row_3",
+          "unparsed_line_row_page_1_row_7",
+          "missing_invoiceNumber",
+          "missing_invoiceDate",
+          "missing_currency",
+          "missing_or_ambiguous_freightCents",
+          "unsupported_or_missing_currency"
+        ],
+        "pageStatus": [
+          {
+            "page": 1,
+            "status": "complete",
+            "reason": null
+          }
+        ],
+        "evidenceCount": 17,
+        "contentStatus": {
+          "supported": 17
+        },
+        "geometryStatus": {
+          "derived": 1,
+          "native": 16
+        },
+        "geometryMethods": {
+          "local_ocr_exact": 1,
+          "native": 16
+        },
+        "unresolved": [],
+        "processors": [
+          {
+            "provider": "tesseract",
+            "model": "eng",
+            "version": "5.5.2",
+            "configHash": "0289956a93ccf3dfc6ef8c0e5c87a2980e91952fd05bbc82e1588f1d9a5ac1f8",
+            "jobId": null,
+            "resolvedVersion": "5.5.2",
+            "implementationVersion": "ap-local-ocr-v1",
+            "configArtifact": {
+              "ref": "artifacts/0289956a93ccf3dfc6ef8c0e5c87a2980e91952fd05bbc82e1588f1d9a5ac1f8.json",
+              "sha256": "0289956a93ccf3dfc6ef8c0e5c87a2980e91952fd05bbc82e1588f1d9a5ac1f8"
+            },
+            "rawArtifact": {
+              "ref": "artifacts/573c22939f2eb8dae1d6b9524749e0f54638c4f36b9b72014ffe4a3de807597b.json",
+              "sha256": "573c22939f2eb8dae1d6b9524749e0f54638c4f36b9b72014ffe4a3de807597b"
+            },
+            "tokenArtifact": {
+              "ref": "artifacts/a72242d0b1a458726be1d16de6d018ba998f4bf242a503a90fbf1fedcb2a710a.json",
+              "sha256": "a72242d0b1a458726be1d16de6d018ba998f4bf242a503a90fbf1fedcb2a710a"
+            },
+            "rasterArtifact": {
+              "ref": "artifacts/15dc2cc146a4efde1282eab3da039f560761d439612dcf06889faebd82bc04eb.json",
+              "sha256": "15dc2cc146a4efde1282eab3da039f560761d439612dcf06889faebd82bc04eb"
+            },
+            "traineddata": {
+              "language": "eng",
+              "version": "tessdata-fast-87416418657359cb625c412a48b6e1d6d41c29bd",
+              "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+            }
+          },
+          {
+            "provider": "llamaparse",
+            "model": "agentic_plus",
+            "version": "2026-09-28",
+            "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+            "jobId": "pjb-1nlym1ei1hzbz3rp3fbn32orxsgn",
+            "resolvedVersion": null,
+            "implementationVersion": "ap-ingestion-v1",
+            "configArtifact": {
+              "ref": "artifacts/93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84.json",
+              "sha256": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84"
+            },
+            "rawArtifact": {
+              "ref": "artifacts/32a4ab2e6a8e8c5d17a69961220026c9ed6c844432131c80667ba1da289e9ef2.jsonl",
+              "sha256": "32a4ab2e6a8e8c5d17a69961220026c9ed6c844432131c80667ba1da289e9ef2"
+            },
+            "tokenArtifact": {
+              "ref": "artifacts/2a0946a4ee3390495749edceadc3d29ccfcab9d49c75bcb198590bbfdd49c974.jsonl",
+              "sha256": "2a0946a4ee3390495749edceadc3d29ccfcab9d49c75bcb198590bbfdd49c974"
+            },
+            "rasterArtifact": null,
+            "traineddata": null
+          }
+        ],
+        "posts": 1,
+        "reads": 11,
+        "jobs": [
+          {
+            "jobId": "pjb-1nlym1ei1hzbz3rp3fbn32orxsgn",
+            "status": "complete",
+            "sourceSha256": "0d8993129e04f666f715018040106dc518c1a42f41f77587293180b4ed4df1c5",
+            "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+            "resultArtifact": {
+              "ref": "artifacts/0dff5f1b91bb32e92854fc96a68ce6df1d0776053be20f048b42aed436f276ac.json",
+              "sha256": "0dff5f1b91bb32e92854fc96a68ce6df1d0776053be20f048b42aed436f276ac"
+            },
+            "groundedArtifact": {
+              "ref": "artifacts/32a4ab2e6a8e8c5d17a69961220026c9ed6c844432131c80667ba1da289e9ef2.jsonl",
+              "sha256": "32a4ab2e6a8e8c5d17a69961220026c9ed6c844432131c80667ba1da289e9ef2"
+            },
+            "wordsArtifact": {
+              "ref": "artifacts/2a0946a4ee3390495749edceadc3d29ccfcab9d49c75bcb198590bbfdd49c974.jsonl",
+              "sha256": "2a0946a4ee3390495749edceadc3d29ccfcab9d49c75bcb198590bbfdd49c974"
+            },
+            "processor": {
+              "provider": "llamaparse",
+              "model": "agentic_plus",
+              "version": "2026-09-28",
+              "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+              "jobId": "pjb-1nlym1ei1hzbz3rp3fbn32orxsgn",
+              "resolvedVersion": null,
+              "implementationVersion": "ap-ingestion-v1",
+              "configArtifact": {
+                "ref": "artifacts/93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84.json",
+                "sha256": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84"
+              },
+              "rawArtifact": {
+                "ref": "artifacts/32a4ab2e6a8e8c5d17a69961220026c9ed6c844432131c80667ba1da289e9ef2.jsonl",
+                "sha256": "32a4ab2e6a8e8c5d17a69961220026c9ed6c844432131c80667ba1da289e9ef2"
+              },
+              "tokenArtifact": {
+                "ref": "artifacts/2a0946a4ee3390495749edceadc3d29ccfcab9d49c75bcb198590bbfdd49c974.jsonl",
+                "sha256": "2a0946a4ee3390495749edceadc3d29ccfcab9d49c75bcb198590bbfdd49c974"
+              },
+              "rasterArtifact": null,
+              "traineddata": null
+            }
+          }
+        ],
+        "replayMatch": null
+      },
+      {
+        "source": "harbor-thread-scan",
+        "sourceSha256": "fa814b53d96635afc6c7fc08e02eec91df5a656c9024d72b2a5949b4248090a5",
+        "localCaseKey": "heldout-v1-harbor-thread-scan-intake-1",
+        "storageDirectory": "harbor-thread-scan",
+        "intakeSha256": "fbd09dfaa6579ac008705ef3fbc1cb16a268b5d2333b943283b4970f7fd5e96b",
+        "errorCode": null,
+        "candidatePresent": false,
+        "extractionStatus": "incomplete",
+        "reasons": [
+          "unparsed_line_row_page_1_row_3",
+          "unparsed_line_row_page_1_row_7",
+          "missing_or_ambiguous_freightCents"
+        ],
+        "pageStatus": [
+          {
+            "page": 1,
+            "status": "complete",
+            "reason": null
+          }
+        ],
+        "evidenceCount": 22,
+        "contentStatus": {
+          "supported": 22
+        },
+        "geometryStatus": {
+          "derived": 2,
+          "native": 20
+        },
+        "geometryMethods": {
+          "local_ocr_exact": 2,
+          "native": 20
+        },
+        "unresolved": [],
+        "processors": [
+          {
+            "provider": "tesseract",
+            "model": "eng",
+            "version": "5.5.2",
+            "configHash": "0c78dd3d6926ed49a5f287e2d1b13b7e907a70968c9b44ae60f16f6a75c0a99a",
+            "jobId": null,
+            "resolvedVersion": "5.5.2",
+            "implementationVersion": "ap-local-ocr-v1",
+            "configArtifact": {
+              "ref": "artifacts/0c78dd3d6926ed49a5f287e2d1b13b7e907a70968c9b44ae60f16f6a75c0a99a.json",
+              "sha256": "0c78dd3d6926ed49a5f287e2d1b13b7e907a70968c9b44ae60f16f6a75c0a99a"
+            },
+            "rawArtifact": {
+              "ref": "artifacts/f97cdb505794568589d72b6af9541746236bbcfe6326ac8c92273616751f6baa.json",
+              "sha256": "f97cdb505794568589d72b6af9541746236bbcfe6326ac8c92273616751f6baa"
+            },
+            "tokenArtifact": {
+              "ref": "artifacts/229b1f90cc9975fe71811764902ce17c79409997ba5cdc8cff67dbfeba4c6802.json",
+              "sha256": "229b1f90cc9975fe71811764902ce17c79409997ba5cdc8cff67dbfeba4c6802"
+            },
+            "rasterArtifact": {
+              "ref": "artifacts/a3730ad3f862c28bad6c32184b49b9b1cc04221eba9222761eaa729bdc6641ab.json",
+              "sha256": "a3730ad3f862c28bad6c32184b49b9b1cc04221eba9222761eaa729bdc6641ab"
+            },
+            "traineddata": {
+              "language": "eng",
+              "version": "tessdata-fast-87416418657359cb625c412a48b6e1d6d41c29bd",
+              "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+            }
+          },
+          {
+            "provider": "llamaparse",
+            "model": "agentic_plus",
+            "version": "2026-09-28",
+            "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+            "jobId": "pjb-zq7o00kwnudqtebmhu7cvime3kwr",
+            "resolvedVersion": null,
+            "implementationVersion": "ap-ingestion-v1",
+            "configArtifact": {
+              "ref": "artifacts/93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84.json",
+              "sha256": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84"
+            },
+            "rawArtifact": {
+              "ref": "artifacts/de768f5f9ca8c3c1e7c5c895734a1bfecc799ac07a5799f321b8148c0a59a91a.jsonl",
+              "sha256": "de768f5f9ca8c3c1e7c5c895734a1bfecc799ac07a5799f321b8148c0a59a91a"
+            },
+            "tokenArtifact": {
+              "ref": "artifacts/77687855de05bed57a4e3b723e8b48a46963246c82da62f55c6577c03aa80acb.jsonl",
+              "sha256": "77687855de05bed57a4e3b723e8b48a46963246c82da62f55c6577c03aa80acb"
+            },
+            "rasterArtifact": null,
+            "traineddata": null
+          }
+        ],
+        "posts": 1,
+        "reads": 11,
+        "jobs": [
+          {
+            "jobId": "pjb-zq7o00kwnudqtebmhu7cvime3kwr",
+            "status": "complete",
+            "sourceSha256": "fa814b53d96635afc6c7fc08e02eec91df5a656c9024d72b2a5949b4248090a5",
+            "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+            "resultArtifact": {
+              "ref": "artifacts/16f63476e74297a83de3fe44fdf77b3106adeaefb1304aa90968757470273ad5.json",
+              "sha256": "16f63476e74297a83de3fe44fdf77b3106adeaefb1304aa90968757470273ad5"
+            },
+            "groundedArtifact": {
+              "ref": "artifacts/de768f5f9ca8c3c1e7c5c895734a1bfecc799ac07a5799f321b8148c0a59a91a.jsonl",
+              "sha256": "de768f5f9ca8c3c1e7c5c895734a1bfecc799ac07a5799f321b8148c0a59a91a"
+            },
+            "wordsArtifact": {
+              "ref": "artifacts/77687855de05bed57a4e3b723e8b48a46963246c82da62f55c6577c03aa80acb.jsonl",
+              "sha256": "77687855de05bed57a4e3b723e8b48a46963246c82da62f55c6577c03aa80acb"
+            },
+            "processor": {
+              "provider": "llamaparse",
+              "model": "agentic_plus",
+              "version": "2026-09-28",
+              "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+              "jobId": "pjb-zq7o00kwnudqtebmhu7cvime3kwr",
+              "resolvedVersion": null,
+              "implementationVersion": "ap-ingestion-v1",
+              "configArtifact": {
+                "ref": "artifacts/93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84.json",
+                "sha256": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84"
+              },
+              "rawArtifact": {
+                "ref": "artifacts/de768f5f9ca8c3c1e7c5c895734a1bfecc799ac07a5799f321b8148c0a59a91a.jsonl",
+                "sha256": "de768f5f9ca8c3c1e7c5c895734a1bfecc799ac07a5799f321b8148c0a59a91a"
+              },
+              "tokenArtifact": {
+                "ref": "artifacts/77687855de05bed57a4e3b723e8b48a46963246c82da62f55c6577c03aa80acb.jsonl",
+                "sha256": "77687855de05bed57a4e3b723e8b48a46963246c82da62f55c6577c03aa80acb"
+              },
+              "rasterArtifact": null,
+              "traineddata": null
+            }
+          }
+        ],
+        "replayMatch": null
+      },
+      {
+        "source": "copper-valve-native",
+        "sourceSha256": "dc323890c0c20082c1f6bcfd402b0365009d4e0147b36299835129cf39c96791",
+        "localCaseKey": "heldout-v1-copper-valve-native-intake-1",
+        "storageDirectory": "copper-valve-native",
+        "intakeSha256": "f87331b163f290f33c7db0f15ad4db56db4ec977884dc06c28d241b46b5312e6",
+        "errorCode": null,
+        "candidatePresent": false,
+        "extractionStatus": "incomplete",
+        "reasons": [
+          "missing_invoiceDate"
+        ],
+        "pageStatus": [
+          {
+            "page": 1,
+            "status": "complete",
+            "reason": null
+          }
+        ],
+        "evidenceCount": 27,
+        "contentStatus": {
+          "supported": 27
+        },
+        "geometryStatus": {
+          "derived": 2,
+          "native": 24,
+          "unresolved": 1
+        },
+        "geometryMethods": {
+          "local_ocr_exact": 1,
+          "native": 24,
+          "none": 1,
+          "raw_word_exact": 1
+        },
+        "unresolved": [
+          {
+            "fieldPath": "currency",
+            "reason": "local_ocr_ambiguous"
+          }
+        ],
+        "processors": [
+          {
+            "provider": "llamaparse",
+            "model": "agentic_plus",
+            "version": "2026-09-28",
+            "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+            "jobId": "pjb-tt0fw9l5c54lcb0uxsqxvm1g4du7",
+            "resolvedVersion": null,
+            "implementationVersion": "ap-ingestion-v1",
+            "configArtifact": {
+              "ref": "artifacts/93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84.json",
+              "sha256": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84"
+            },
+            "rawArtifact": {
+              "ref": "artifacts/22935650dc5c8e0e02a564db2ca9d1266d2f858890acc0c0220807c4b0316db6.jsonl",
+              "sha256": "22935650dc5c8e0e02a564db2ca9d1266d2f858890acc0c0220807c4b0316db6"
+            },
+            "tokenArtifact": {
+              "ref": "artifacts/b8d3892d75a4e372d83bb8a955aa889781918fbb451749aa717342dc82efa9b8.jsonl",
+              "sha256": "b8d3892d75a4e372d83bb8a955aa889781918fbb451749aa717342dc82efa9b8"
+            },
+            "rasterArtifact": null,
+            "traineddata": null
+          },
+          {
+            "provider": "tesseract",
+            "model": "eng",
+            "version": "5.5.2",
+            "configHash": "5d0728ee024dc9b2fd1be81c42c8e50398eac8830d401e8c7e13702c046bcd9f",
+            "jobId": null,
+            "resolvedVersion": "5.5.2",
+            "implementationVersion": "ap-local-ocr-v1",
+            "configArtifact": {
+              "ref": "artifacts/5d0728ee024dc9b2fd1be81c42c8e50398eac8830d401e8c7e13702c046bcd9f.json",
+              "sha256": "5d0728ee024dc9b2fd1be81c42c8e50398eac8830d401e8c7e13702c046bcd9f"
+            },
+            "rawArtifact": {
+              "ref": "artifacts/4e390f7ce982493c47b9bad1808f3379e5af7d81f0e2cdf42fb18c336647708c.json",
+              "sha256": "4e390f7ce982493c47b9bad1808f3379e5af7d81f0e2cdf42fb18c336647708c"
+            },
+            "tokenArtifact": {
+              "ref": "artifacts/a903f550a7b5de80299fb612364ffbc93f542ffa01d45dbf2c9f5da067ec3d3e.json",
+              "sha256": "a903f550a7b5de80299fb612364ffbc93f542ffa01d45dbf2c9f5da067ec3d3e"
+            },
+            "rasterArtifact": {
+              "ref": "artifacts/6a2932dfd45c85a1a65424b12b7d039b81f97b53e325280e68e84770ae6c8f16.json",
+              "sha256": "6a2932dfd45c85a1a65424b12b7d039b81f97b53e325280e68e84770ae6c8f16"
+            },
+            "traineddata": {
+              "language": "eng",
+              "version": "tessdata-fast-87416418657359cb625c412a48b6e1d6d41c29bd",
+              "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+            }
+          }
+        ],
+        "posts": 1,
+        "reads": 12,
+        "jobs": [
+          {
+            "jobId": "pjb-tt0fw9l5c54lcb0uxsqxvm1g4du7",
+            "status": "complete",
+            "sourceSha256": "dc323890c0c20082c1f6bcfd402b0365009d4e0147b36299835129cf39c96791",
+            "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+            "resultArtifact": {
+              "ref": "artifacts/da8e7daf1cce3012dfb6d7ff1576b8dc19a87befcb9604711ba78ae58c2899f1.json",
+              "sha256": "da8e7daf1cce3012dfb6d7ff1576b8dc19a87befcb9604711ba78ae58c2899f1"
+            },
+            "groundedArtifact": {
+              "ref": "artifacts/22935650dc5c8e0e02a564db2ca9d1266d2f858890acc0c0220807c4b0316db6.jsonl",
+              "sha256": "22935650dc5c8e0e02a564db2ca9d1266d2f858890acc0c0220807c4b0316db6"
+            },
+            "wordsArtifact": {
+              "ref": "artifacts/b8d3892d75a4e372d83bb8a955aa889781918fbb451749aa717342dc82efa9b8.jsonl",
+              "sha256": "b8d3892d75a4e372d83bb8a955aa889781918fbb451749aa717342dc82efa9b8"
+            },
+            "processor": {
+              "provider": "llamaparse",
+              "model": "agentic_plus",
+              "version": "2026-09-28",
+              "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+              "jobId": "pjb-tt0fw9l5c54lcb0uxsqxvm1g4du7",
+              "resolvedVersion": null,
+              "implementationVersion": "ap-ingestion-v1",
+              "configArtifact": {
+                "ref": "artifacts/93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84.json",
+                "sha256": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84"
+              },
+              "rawArtifact": {
+                "ref": "artifacts/22935650dc5c8e0e02a564db2ca9d1266d2f858890acc0c0220807c4b0316db6.jsonl",
+                "sha256": "22935650dc5c8e0e02a564db2ca9d1266d2f858890acc0c0220807c4b0316db6"
+              },
+              "tokenArtifact": {
+                "ref": "artifacts/b8d3892d75a4e372d83bb8a955aa889781918fbb451749aa717342dc82efa9b8.jsonl",
+                "sha256": "b8d3892d75a4e372d83bb8a955aa889781918fbb451749aa717342dc82efa9b8"
+              },
+              "rasterArtifact": null,
+              "traineddata": null
+            }
+          }
+        ],
+        "replayMatch": null
+      },
+      {
+        "source": "copper-valve-scan",
+        "sourceSha256": "741c0bc7adfcb6fccffe404f8dc4096a31e55fbe8f76b18fef5f5807586495f6",
+        "localCaseKey": "heldout-v1-copper-valve-scan-intake-1",
+        "storageDirectory": "copper-valve-scan",
+        "intakeSha256": "4d0a76c5d05300a277593da25c8da89da1ff9979eac1b64e478592d3892e06e4",
+        "errorCode": null,
+        "candidatePresent": false,
+        "extractionStatus": "incomplete",
+        "reasons": [
+          "missing_supported_line_table"
+        ],
+        "pageStatus": [
+          {
+            "page": 1,
+            "status": "complete",
+            "reason": null
+          }
+        ],
+        "evidenceCount": 11,
+        "contentStatus": {
+          "supported": 11
+        },
+        "geometryStatus": {
+          "derived": 2,
+          "native": 8,
+          "unresolved": 1
+        },
+        "geometryMethods": {
+          "local_ocr_exact": 1,
+          "native": 8,
+          "none": 1,
+          "raw_word_exact": 1
+        },
+        "unresolved": [
+          {
+            "fieldPath": "currency",
+            "reason": "local_ocr_ambiguous"
+          }
+        ],
+        "processors": [
+          {
+            "provider": "llamaparse",
+            "model": "agentic_plus",
+            "version": "2026-09-28",
+            "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+            "jobId": "pjb-wcbhik64edfeucm5fm32x3ab7sz5",
+            "resolvedVersion": null,
+            "implementationVersion": "ap-ingestion-v1",
+            "configArtifact": {
+              "ref": "artifacts/93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84.json",
+              "sha256": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84"
+            },
+            "rawArtifact": {
+              "ref": "artifacts/3d4ba7a043d39a773a7cd66399c4aa1a2d55886280f76ec4d95685d9ef0a3b6f.jsonl",
+              "sha256": "3d4ba7a043d39a773a7cd66399c4aa1a2d55886280f76ec4d95685d9ef0a3b6f"
+            },
+            "tokenArtifact": {
+              "ref": "artifacts/0670a3aa20aebaaf14ce8d9f1b1f841694d0876d8746db0c6cf27a5b42cb5783.jsonl",
+              "sha256": "0670a3aa20aebaaf14ce8d9f1b1f841694d0876d8746db0c6cf27a5b42cb5783"
+            },
+            "rasterArtifact": null,
+            "traineddata": null
+          },
+          {
+            "provider": "tesseract",
+            "model": "eng",
+            "version": "5.5.2",
+            "configHash": "2b7f4bff0b4a9aeab5318ae5d14740755ff632f1de550624af22c52633346442",
+            "jobId": null,
+            "resolvedVersion": "5.5.2",
+            "implementationVersion": "ap-local-ocr-v1",
+            "configArtifact": {
+              "ref": "artifacts/2b7f4bff0b4a9aeab5318ae5d14740755ff632f1de550624af22c52633346442.json",
+              "sha256": "2b7f4bff0b4a9aeab5318ae5d14740755ff632f1de550624af22c52633346442"
+            },
+            "rawArtifact": {
+              "ref": "artifacts/8b3350c1880d163628605a40a28491b4000e7692a0be395b523abb09b67bc2de.json",
+              "sha256": "8b3350c1880d163628605a40a28491b4000e7692a0be395b523abb09b67bc2de"
+            },
+            "tokenArtifact": {
+              "ref": "artifacts/45028386d8ad3235735f4d44b63e47ef684d3c6f3f81577fa15fb7b55d0e7ffe.json",
+              "sha256": "45028386d8ad3235735f4d44b63e47ef684d3c6f3f81577fa15fb7b55d0e7ffe"
+            },
+            "rasterArtifact": {
+              "ref": "artifacts/e3dfe457ba2272bc2790bdf5f1e91c2025c858315a8ce6d440618b8cdabd78bb.json",
+              "sha256": "e3dfe457ba2272bc2790bdf5f1e91c2025c858315a8ce6d440618b8cdabd78bb"
+            },
+            "traineddata": {
+              "language": "eng",
+              "version": "tessdata-fast-87416418657359cb625c412a48b6e1d6d41c29bd",
+              "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+            }
+          }
+        ],
+        "posts": 1,
+        "reads": 11,
+        "jobs": [
+          {
+            "jobId": "pjb-wcbhik64edfeucm5fm32x3ab7sz5",
+            "status": "complete",
+            "sourceSha256": "741c0bc7adfcb6fccffe404f8dc4096a31e55fbe8f76b18fef5f5807586495f6",
+            "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+            "resultArtifact": {
+              "ref": "artifacts/ab917a788d796b4b01b05013de1828cea5688d008fdd2630dcd82613bec26206.json",
+              "sha256": "ab917a788d796b4b01b05013de1828cea5688d008fdd2630dcd82613bec26206"
+            },
+            "groundedArtifact": {
+              "ref": "artifacts/3d4ba7a043d39a773a7cd66399c4aa1a2d55886280f76ec4d95685d9ef0a3b6f.jsonl",
+              "sha256": "3d4ba7a043d39a773a7cd66399c4aa1a2d55886280f76ec4d95685d9ef0a3b6f"
+            },
+            "wordsArtifact": {
+              "ref": "artifacts/0670a3aa20aebaaf14ce8d9f1b1f841694d0876d8746db0c6cf27a5b42cb5783.jsonl",
+              "sha256": "0670a3aa20aebaaf14ce8d9f1b1f841694d0876d8746db0c6cf27a5b42cb5783"
+            },
+            "processor": {
+              "provider": "llamaparse",
+              "model": "agentic_plus",
+              "version": "2026-09-28",
+              "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+              "jobId": "pjb-wcbhik64edfeucm5fm32x3ab7sz5",
+              "resolvedVersion": null,
+              "implementationVersion": "ap-ingestion-v1",
+              "configArtifact": {
+                "ref": "artifacts/93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84.json",
+                "sha256": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84"
+              },
+              "rawArtifact": {
+                "ref": "artifacts/3d4ba7a043d39a773a7cd66399c4aa1a2d55886280f76ec4d95685d9ef0a3b6f.jsonl",
+                "sha256": "3d4ba7a043d39a773a7cd66399c4aa1a2d55886280f76ec4d95685d9ef0a3b6f"
+              },
+              "tokenArtifact": {
+                "ref": "artifacts/0670a3aa20aebaaf14ce8d9f1b1f841694d0876d8746db0c6cf27a5b42cb5783.jsonl",
+                "sha256": "0670a3aa20aebaaf14ce8d9f1b1f841694d0876d8746db0c6cf27a5b42cb5783"
+              },
+              "rasterArtifact": null,
+              "traineddata": null
+            }
+          }
+        ],
+        "replayMatch": null
+      }
+    ]
+  },
+  "offlineReplay": {
+    "codeSha": "6a0294197208fc891e715ea556d1a9b5e9f40aab",
+    "startedAt": "2026-10-25T10:25:04.139Z",
+    "completedAt": "2026-10-25T10:25:07.077Z",
+    "results": [
+      {
+        "source": "harbor-thread-native",
+        "intakeSha256": "c8985d21ad37436c190e480f658abaea8c6d6fa888edc879e6433a67d07ee63c",
+        "replayMatch": true,
+        "posts": 0,
+        "reads": 0
+      },
+      {
+        "source": "harbor-thread-scan",
+        "intakeSha256": "fbd09dfaa6579ac008705ef3fbc1cb16a268b5d2333b943283b4970f7fd5e96b",
+        "replayMatch": true,
+        "posts": 0,
+        "reads": 0
+      },
+      {
+        "source": "copper-valve-native",
+        "intakeSha256": "f87331b163f290f33c7db0f15ad4db56db4ec977884dc06c28d241b46b5312e6",
+        "replayMatch": true,
+        "posts": 0,
+        "reads": 0
+      },
+      {
+        "source": "copper-valve-scan",
+        "intakeSha256": "4d0a76c5d05300a277593da25c8da89da1ff9979eac1b64e478592d3892e06e4",
+        "replayMatch": true,
+        "posts": 0,
+        "reads": 0
+      }
+    ]
+  },
+  "integrity": [
+    {
+      "source": "harbor-thread-native",
+      "verifiedArtifacts": 18,
+      "byteIdenticalReplay": true,
+      "httpTraceSha256": "aea9f63e70d44fb3fbf154eef5ac3b0d87212b6d6ad7bee087892e510f18733c"
+    },
+    {
+      "source": "harbor-thread-scan",
+      "verifiedArtifacts": 17,
+      "byteIdenticalReplay": true,
+      "httpTraceSha256": "927ddd17f2f16364d3065cd20d1d6c025f221699aa9b04a55f50a444c69d8fed"
+    },
+    {
+      "source": "copper-valve-native",
+      "verifiedArtifacts": 17,
+      "byteIdenticalReplay": true,
+      "httpTraceSha256": "863bd4952abc53a865687b4dc82f912ec83618a8d7dcfbfacd4023be5975c293"
+    },
+    {
+      "source": "copper-valve-scan",
+      "verifiedArtifacts": 17,
+      "byteIdenticalReplay": true,
+      "httpTraceSha256": "85f953183d25d1d3796787f297da9afc9d1a1244322efa6b709c0d6aadf7ef0a"
+    }
+  ]
+}

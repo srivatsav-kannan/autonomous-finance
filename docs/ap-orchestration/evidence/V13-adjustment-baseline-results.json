@@ -1,0 +1,662 @@
+{
+  "review": "V13 immutable tax adjustment and credit coupling extension baseline",
+  "runtime": "3ee360d747e14a45cd9e39ac0a2f22d76d1d2b77",
+  "verificationHead": "b7f9c0faf015247b64bb081b85f2a839d32fb41b",
+  "priorTestCommit": "f02eee1407bea55e2c4f9328f98bbac8103b0266",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "classification": "independent agent engineering review",
+  "raw": {
+    "path": "/private/tmp/ap97-v13-extension-baseline.json",
+    "sha256": "c484aaf70563abad3eaf655844f41b5d36496da10a3b4a5a12c26f4433a5315e"
+  },
+  "results": {
+    "all": {
+      "passed": 97,
+      "failed": 2,
+      "total": 99
+    },
+    "originalIndependent": {
+      "passed": 20,
+      "failed": 1,
+      "total": 21
+    },
+    "newAdjustmentIndependent": {
+      "passed": 10,
+      "failed": 1,
+      "total": 11
+    },
+    "ownerRegression": {
+      "passed": 67,
+      "failed": 0,
+      "total": 67
+    }
+  },
+  "testSha256": {
+    "tests/ap-system/v13-tax-fixture.ts": "91b200c2c34dbb9a2bd44ebaef769704056f5760751eaf9d499238f7642c64dd",
+    "tests/ap-system/v13-tax-independent.test.ts": "8894c63d16478751cad384e725c63cdc27b8709ffb1e8198c1b281c9c0ef44e6",
+    "tests/ap-system/v13-adjustment-fixture.ts": "593bac11e56d2c2dba5814ceaec072a659cbb207ecdf95baf0bbfd7f9522ab0e",
+    "tests/ap-system/v13-tax-adjustment.test.ts": "201b41e37284825d1598228280aa4fd25082929064b620054f5efe319b762acd"
+  },
+  "priorAssertionsUnchanged": true,
+  "suites": [
+    {
+      "file": "tests/ap-system/tax-adjustments.test.ts",
+      "kind": "owner regression",
+      "assertions": [
+        {
+          "name": "immutable governed remaining-tax eligibility correction posts a separate correction and couples later credits to current remaining tax buckets",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction requires positive original-line attribution before increasing formerly embedded recovery",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction reviews embedded remaining tax after prior credits and a cost reclassification without rewriting either",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction supports a reviewed zero recovery target without new AP or cash",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction rejects wrong_target before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction rejects cash before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction rejects invoice_evidence before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction rejects stale_source before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction rejects wrong_original before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction rejects over_capacity before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction rejects closed_period before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction rechecks changed accounting state and current distinct reviewers at the final vote",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction holds an unsupported disabled policy without inferring eligibility",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction holds an unsupported jurisdiction policy without inferring eligibility",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction serializes competing final votes and exposes only authenticated tax inventory",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction rejects double use of a tax cent through an intermediate movement destination",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction uses cumulative latest-adjustment rounding for repeated one-cent credits",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction detects tampered posted corrections rather than trusting a saved approval",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "immutable governed remaining-tax eligibility correction reserves tax-bearing cost against ordinary reclassification and checks explicit reversal proportions",
+          "status": "passed",
+          "failure": null
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/tax-business.test.ts",
+      "kind": "owner regression",
+      "assertions": [
+        {
+          "name": "E01 governed recoverable tax requires an independent tax stage for exclusive amounts and posts cost/tax/AP once",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax requires an independent tax stage for inclusive amounts and posts cost/tax/AP once",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax allows stated tax without inventing a rate, with exact partial recovery",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax holds missing_claim before journal creation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax holds missing_policy before journal creation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax holds wrong_account before journal creation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax holds inflated_recovery before journal creation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax holds stale_source before journal creation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax holds future_tax_point before journal creation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax reverses tax-only and then net return amounts from their separate original pools",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax conserves partial-recovery rounding across two returns",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax rejects cost reclassification into or out of the original tax receivable",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax rechecks cumulative tax capacity at competing final votes",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax preserves tax shares through a reviewed cost correction and a later tax-only credit",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax rejects a same-seat tax reviewer alias at final approval",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax rejects a tax decision prepared under a superseded policy",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "E01 governed recoverable tax preserves approved department on tax and payable through successive credits",
+          "status": "passed",
+          "failure": null
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/tax-header.test.ts",
+      "kind": "owner regression",
+      "assertions": [
+        {
+          "name": "explicit original and accepted header tax basis posts supported tax and header amounts (partial=false)",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit original and accepted header tax basis posts supported tax and header amounts (partial=true)",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit original and accepted header tax basis holds missing_policy without posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit original and accepted header tax basis holds missing_shares without posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit original and accepted header tax basis holds wrong_total without posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit original and accepted header tax basis holds stale_evidence without posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit original and accepted header tax basis holds computed_as_printed without posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit original and accepted header tax basis holds inflated_base without posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit original and accepted header tax basis reverses distinct header shares cumulatively instead of quantity-only tax",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit original and accepted header tax basis holds a quantity-only tax reduction and cumulative header overuse",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit original and accepted header tax basis requires explicit zero header shares on historical retries and separates derived facts",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "keeps explicit excluded header treatment out of the base and prevents negative bases",
+          "status": "passed",
+          "failure": null
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/tax-policy.test.ts",
+      "kind": "owner regression",
+      "assertions": [
+        {
+          "name": "explicit synthetic recoverable-tax rules checks exclusive source arithmetic and exact allocations",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules checks inclusive source arithmetic and exact allocations",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules accepts a stated amount only when allowed and carries no invented rate",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules holds a made-up rate and an unapproved jurisdiction/date",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules rejects changed revision in tax evidence",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules rejects changed hash in tax evidence",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules rejects changed quote in tax evidence",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules rejects changed page in tax evidence",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules requires distinct retained eligibility support, not an invoice asserting its own eligibility",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules retains partial recoverability without treating all tax as a receivable",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules uses exact half-up integers at ties and does not tolerate fractional cent evidence",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules allocates cumulative credit rounding without over-reversing original tax",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules binds every tax fact to the actual invoice original, not another uploaded invoice",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules rejects 1000 as the configured tax receivable",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules rejects 2000 as the configured tax receivable",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules rejects 5000 as the configured tax receivable",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules rejects missing as the configured tax receivable",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules requires a configured tax treatment and real approval group",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "explicit synthetic recoverable-tax rules rejects ambiguous policy dates or rounding rules at the contract boundary",
+          "status": "passed",
+          "failure": null
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v13-tax-adjustment.test.ts",
+      "kind": "adjustment independent",
+      "assertions": [
+        {
+          "name": "attributes only remaining embedded tax after prior tax consumption and cost reclassification, then reverses exact current buckets",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "serializes a final tax-adjustment vote against a final supplier-credit vote without double consuming the shared state",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "keeps cumulative recovery rounding anchored to the latest approved adjustment across separate one-cent credits",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects wrong approval in a tax correction without changing AP, cash or prior journals",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects stale tax hash in a tax correction without changing AP, cash or prior journals",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects stale cost hash in a tax correction without changing AP, cash or prior journals",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects cash destination in a tax correction without changing AP, cash or prior journals",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects wrong source coordinates in a tax correction without changing AP, cash or prior journals",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects intermediate reuse in a tax correction without changing AP, cash or prior journals",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "requires authenticated scoped tax state reads",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects byte-identical invoice material as adjustment eligibility even when separately stored as other",
+          "status": "failed",
+          "failure": "Error: promise resolved \"{ \u2026(4) }\" instead of rejecting"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v13-tax-independent.test.ts",
+      "kind": "original independent",
+      "assertions": [
+        {
+          "name": "posts two independently attributed header bases, rounds recovery per line, then reverses exact remaining shares",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "holds original freight duplicated before recognizing a two-line tax obligation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "holds accepted freight duplicated before recognizing a two-line tax obligation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "holds discount not conserved before recognizing a two-line tax obligation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "holds aggregate recovery substituted before recognizing a two-line tax obligation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "holds quantity-only tax before recognizing a two-line tax obligation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "cannot borrow an unused header share from a different original line for a credit",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "keeps stated rate null through partial recognition and separate tax-only then merchandise reversal",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "conserves original recovery after a one-cent tax-only credit and two cumulative merchandise credits",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects invoice asserts eligibility before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects stale eligibility revision before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects eligibility quotation changed before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects tax facts from eligibility before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects tax citation wrong invoice before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects rate invented for stated claim before posting",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "requires a distinct current tax reviewer after financial votes and retains that requirement for payment",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "rejects retained financial voter retirement before the separate final tax vote",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "atomically rechecks competing tax-only capacity and lets only the exact remainder follow the winning approval",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "keeps a partial tax receivable outside cost reclassification capacity even after a supplier tax credit",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "uses integer half-up tax and cumulative recovery without fractional-cent drift near safe integer boundaries",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "name": "does not let a byte-identical relabeled invoice masquerade as separate eligibility evidence",
+          "status": "failed",
+          "failure": "Error: promise resolved \"{ amountCents: 8470, \u2026(3) }\" instead of rejecting"
+        }
+      ]
+    }
+  ],
+  "typechecks": {
+    "root": "passed",
+    "convex": "passed",
+    "tests": "passed"
+  },
+  "findings": [
+    {
+      "id": "V13-F1",
+      "priority": "P2",
+      "status": "open at extension baseline",
+      "manifestations": [
+        "initial business proposal accepts byte-identical renamed invoice as separate eligibility support",
+        "post-recognition tax-adjustment proposal accepts byte-identical renamed invoice separately stored as other"
+      ],
+      "extensionFile": "convex/lib/apSystem/taxAdjustments.ts",
+      "extensionLines": [
+        515,
+        528
+      ],
+      "observed": "Actual public duplicate ingestion stores relabeled original. Actual apClose:propose resolves instead of rejecting tax_eligibility_evidence.",
+      "limit": "Proposal acceptance, not automatic posting or payment; distinct financial and tax review remain required."
+    }
+  ],
+  "independentArithmetic": {
+    "priorCreditAndReclassification": {
+      "originalTax": 770,
+      "originalRecovery": 285,
+      "priorTaxCredit": 100,
+      "priorRecoveryCredit": 37,
+      "remainingTax": 670,
+      "remainingRecovery": 248,
+      "reclassifiedCost": 8122,
+      "attributedEmbeddedTax": 422,
+      "afterAdjustment": {
+        "inventory": 7700,
+        "recoverableTax": 670,
+        "APCredit": 8370
+      },
+      "subsequentNetCredits": [
+        3850,
+        3850
+      ],
+      "subsequentTaxCredits": [
+        285,
+        385
+      ],
+      "finalBalances": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "latestAdjustmentRounding": {
+      "basisTax": 770,
+      "basisRecovery": 290,
+      "taxCredits": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "recoveryCredits": [
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "remainingTax": 765,
+      "remainingRecovery": 288,
+      "remainingAPCredit": 8465
+    },
+    "concurrentFinalVotes": {
+      "submitted": 2,
+      "succeeded": 1,
+      "journalCount": 2,
+      "paymentCommands": 0
+    }
+  },
+  "limits": [
+    "Synthetic documents and humans in isolated convex-test; no real tax policy or practitioner sign-off.",
+    "No UI, QBO tax export, live backend, provider or credential validation.",
+    "Single-winner concurrency exercises convex-test transaction semantics; not a load test.",
+    "Root repair is pending and not included; frozen failures retained."
+  ]
+}

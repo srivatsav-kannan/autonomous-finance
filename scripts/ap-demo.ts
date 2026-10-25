@@ -81,7 +81,7 @@ const fundingTransactions: BankTransaction[] = [];
 if (sandboxProvider) {
   // Operator-selected transaction IDs and amounts are an explicit classification, not a filter
   // that hides other account activity. Every other statement transaction remains a close blocker.
-  const approvals = z.array(z.object({ transactionId: z.string().regex(/^transaction_[a-zA-Z0-9]+$/), amountCents: z.number().int().positive() }).strict()).min(1).parse(JSON.parse(process.env.AP_SANDBOX_FUNDING!));
+  const approvals = z.array(z.object({ transactionId: z.string().regex(/^(?:sandbox_)?transaction_[a-zA-Z0-9]+$/), amountCents: z.number().int().positive() }).strict()).min(1).parse(JSON.parse(process.env.AP_SANDBOX_FUNDING!));
   if (new Set(approvals.map(a=>a.transactionId)).size !== approvals.length) throw new Error("Funding transaction IDs must be distinct");
   for (const approval of approvals) {
     const transaction = await sandboxProvider.getTransaction(scope, approval.transactionId);

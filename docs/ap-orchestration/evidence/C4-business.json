@@ -1,0 +1,30 @@
+{
+  "baseline": "d6e8ee2751ed2d16a8b5f1ff33f75ce736edb42a",
+  "firstIncrement": "39f72bd7b7d61629773890a6d5f65a640aa4be99",
+  "spec": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "tests": {
+    "passed": 61,
+    "failed": 0,
+    "files": 8
+  },
+  "typechecks": [
+    "root:PASS",
+    "convex:PASS",
+    "tests:PASS"
+  ],
+  "externalWrites": "NOT_RUN",
+  "credentialsLoaded": false,
+  "sourceHashes": {
+    "convex/apAccountingExport.ts": "f88d2812e6e2b873b3f36367ce14f521bb520a6b0d32295eca905c70773050a5",
+    "convex/lib/apSystem/accountingCredits.ts": "34694a4ac6e607ee188ad728a098dc585bcf3ea1962486db2210d602093ea66a",
+    "src/ap-system/quickbooks/types.ts": "c475b1ea9742517f01fa1262da8676fbc06675f5ebfc87e8e44c3a42097c0c92",
+    "src/ap-system/quickbooks/plans.ts": "1bf885a429a2b444cca102deedcc304c76bd168d31625629f4aa1f0304f55ab4",
+    "src/ap-system/quickbooks/sync.ts": "4591301f6312ab9e30ef28be9efb071ec8dc4fd439496009bf355bf007565645",
+    "tests/ap-system/quickbooks-business-fixture.ts": "0683a9fa1e6617431920a3211328be84b914a78f1cfbf039fa9daba0c1d4d6db",
+    "tests/ap-system/quickbooks-business.test.ts": "b84f6c674d9ff822c96993164ada27ad70b891e24f095cecf2a0ee0424683e85",
+    "tests/ap-system/quickbooks-business-protocol.test.ts": "5ec53b9205324bdbacfcbdcbd4ed75e8cfa1dc6b84e5df3271e484a99e3f4933",
+    "tests/ap-system/quickbooks-protocol.test.ts": "4bcec981f021bf49cb44ccc254342965f7112be6f242a18692d5941bedb84aa2",
+    "tests/ap-system/quickbooks-export.test.ts": "97713353da4d6574b63733fe4352787a07654cd01b436726a3b7e7a759afff3b",
+    "docs/ap-orchestration/evidence/C4-business.md": "0f0d0427df9fbcf2d03b99493585e7c9d38fb3cac46bb35cdc97b9f2903d0760"
+  }
+}

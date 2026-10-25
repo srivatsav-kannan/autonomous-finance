@@ -1,0 +1,201 @@
+{
+  "checkedAt": "2026-10-25T10:39:41.471Z",
+  "code": "e6b8fcf",
+  "runtime": "actual persisted I2 / explicitly simulated humans / local FakeBank",
+  "caseStateUnchanged": true,
+  "metrics": {
+    "asOf": 1792924781434,
+    "cases": [
+      {
+        "caseId": "k175gds0dypbgeknejs2henw5h8gysw8",
+        "revision": 1,
+        "samples": [
+          {
+            "elapsedMs": 188802,
+            "endedAt": 1792922108867,
+            "id": "document-review",
+            "label": "Current document to approved review",
+            "metric": "document_to_review",
+            "reason": "Current revision retained to its first approved field review; server event clock.",
+            "references": [
+              "k57e008spcdn7w4rfbgd9jnm8x8gzq9h",
+              "k175gds0dypbgeknejs2henw5h8gysw8:field:b295634f-c001-4468-a368-0318e1f7beae"
+            ],
+            "revision": 1,
+            "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+            "startedAt": 1792921920065,
+            "state": "completed"
+          },
+          {
+            "elapsedMs": 98846,
+            "endedAt": 1792922207713,
+            "id": "review-post",
+            "label": "Approved review to recognition",
+            "metric": "review_to_post",
+            "reason": "First approved field review to the posted recognition journal for this same source revision.",
+            "references": [
+              "k175gds0dypbgeknejs2henw5h8gysw8:field:b295634f-c001-4468-a368-0318e1f7beae",
+              "r979g69xn1zq8a6yfryaybst3s8gzvw1"
+            ],
+            "revision": 1,
+            "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+            "startedAt": 1792922108867,
+            "state": "completed"
+          },
+          {
+            "elapsedMs": 188802,
+            "endedAt": 1792922108867,
+            "id": "field-wait",
+            "label": "Initial field-review queue",
+            "metric": "human_wait",
+            "reason": "Current revision retained in the review queue to the first human field decision, including an evidence request or rejection.",
+            "references": [
+              "k57e008spcdn7w4rfbgd9jnm8x8gzq9h",
+              "k175gds0dypbgeknejs2henw5h8gysw8:field:b295634f-c001-4468-a368-0318e1f7beae"
+            ],
+            "revision": 1,
+            "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+            "startedAt": 1792921920065,
+            "state": "completed"
+          },
+          {
+            "elapsedMs": 93098,
+            "endedAt": 1792922207713,
+            "id": "business:jd77cpnwwck6dgqv3jzztxp3t58gzprf",
+            "label": "Business approval queue",
+            "metric": "human_wait",
+            "reason": "Business proposal creation to its completed human route, including rejection; this is queue elapsed time, not active labor.",
+            "references": [
+              "jd77cpnwwck6dgqv3jzztxp3t58gzprf"
+            ],
+            "revision": 1,
+            "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+            "startedAt": 1792922114615,
+            "state": "completed"
+          },
+          {
+            "elapsedMs": 15780,
+            "endedAt": 1792922260910,
+            "id": "pd7c2tkw1kr2wfrj75924fzq2x8gyzcz:approval",
+            "label": "Payment authorization queue",
+            "metric": "human_wait",
+            "paymentRunIds": [],
+            "paymentSnapshotHash": "a49510196aa3efee4eb0136f3dee3bbe7f9b2c5cea86b752dba92d08caecbca2",
+            "paymentVersionId": "pd7c2tkw1kr2wfrj75924fzq2x8gyzcz",
+            "reason": "Frozen payment proposal creation to its human authorization or proven cancellation; scheduling time is not human waiting.",
+            "references": [
+              "pd7c2tkw1kr2wfrj75924fzq2x8gyzcz",
+              "pd7c2tkw1kr2wfrj75924fzq2x8gyzcz:human-approval"
+            ],
+            "revision": 1,
+            "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+            "startedAt": 1792922245130,
+            "state": "completed"
+          },
+          {
+            "elapsedMs": null,
+            "endedAt": null,
+            "id": "pd7c2tkw1kr2wfrj75924fzq2x8gyzcz:outcome",
+            "label": "Dispatched payment to resolved outcome",
+            "metric": "unresolved_payment_age",
+            "paymentRunIds": [],
+            "paymentSnapshotHash": "a49510196aa3efee4eb0136f3dee3bbe7f9b2c5cea86b752dba92d08caecbca2",
+            "paymentVersionId": "pd7c2tkw1kr2wfrj75924fzq2x8gyzcz",
+            "reason": "No recorded dispatch claim: the proposal has not started this clock.",
+            "references": [
+              "pd7c2tkw1kr2wfrj75924fzq2x8gyzcz"
+            ],
+            "revision": 1,
+            "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+            "startedAt": null,
+            "state": "not_started"
+          },
+          {
+            "elapsedMs": 17802,
+            "endedAt": 1792922317516,
+            "id": "pd74q7njr5bqjzmy5a72jagtg58gykwp:approval",
+            "label": "Payment authorization queue",
+            "metric": "human_wait",
+            "paymentRunIds": [],
+            "paymentSnapshotHash": "a49510196aa3efee4eb0136f3dee3bbe7f9b2c5cea86b752dba92d08caecbca2",
+            "paymentVersionId": "pd74q7njr5bqjzmy5a72jagtg58gykwp",
+            "reason": "Frozen payment proposal creation to its human authorization or proven cancellation; scheduling time is not human waiting.",
+            "references": [
+              "pd74q7njr5bqjzmy5a72jagtg58gykwp",
+              "j570gw438xaggk8ngh3bf97mxx8gyj0y"
+            ],
+            "revision": 1,
+            "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+            "startedAt": 1792922299714,
+            "state": "completed"
+          },
+          {
+            "elapsedMs": null,
+            "endedAt": null,
+            "id": "pd74q7njr5bqjzmy5a72jagtg58gykwp:outcome",
+            "label": "Dispatched payment to resolved outcome",
+            "metric": "unresolved_payment_age",
+            "paymentRunIds": [],
+            "paymentSnapshotHash": "a49510196aa3efee4eb0136f3dee3bbe7f9b2c5cea86b752dba92d08caecbca2",
+            "paymentVersionId": "pd74q7njr5bqjzmy5a72jagtg58gykwp",
+            "reason": "No recorded dispatch claim: the proposal has not started this clock.",
+            "references": [
+              "pd74q7njr5bqjzmy5a72jagtg58gykwp"
+            ],
+            "revision": 1,
+            "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+            "startedAt": null,
+            "state": "not_started"
+          },
+          {
+            "elapsedMs": 7301,
+            "endedAt": 1792922343046,
+            "id": "pd7c8g9q8na2hgnj9wdkaygb4x8gy7fv:approval",
+            "label": "Payment authorization queue",
+            "metric": "human_wait",
+            "paymentRunIds": [],
+            "paymentSnapshotHash": "55c71c84b19f4f4dada5466f5bf7672e122900e6437cdeee218012cf79b1817e",
+            "paymentVersionId": "pd7c8g9q8na2hgnj9wdkaygb4x8gy7fv",
+            "reason": "Frozen payment proposal creation to its human authorization or proven cancellation; scheduling time is not human waiting.",
+            "references": [
+              "pd7c8g9q8na2hgnj9wdkaygb4x8gy7fv",
+              "pd7c8g9q8na2hgnj9wdkaygb4x8gy7fv:human-approval"
+            ],
+            "revision": 1,
+            "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+            "startedAt": 1792922335745,
+            "state": "completed"
+          },
+          {
+            "elapsedMs": 116,
+            "endedAt": 1792922349698,
+            "id": "pd7c8g9q8na2hgnj9wdkaygb4x8gy7fv:outcome",
+            "label": "Dispatched payment to resolved outcome",
+            "metric": "unresolved_payment_age",
+            "paymentRunIds": [],
+            "paymentSnapshotHash": "55c71c84b19f4f4dada5466f5bf7672e122900e6437cdeee218012cf79b1817e",
+            "paymentVersionId": "pd7c8g9q8na2hgnj9wdkaygb4x8gy7fv",
+            "reason": "First recorded dispatch claim to the verified posted-and-matched outcome or proven release. A claim means submission may have started, not that the provider received it. Unsent scheduled proposals do not start this clock.",
+            "references": [
+              "pd7c8g9q8na2hgnj9wdkaygb4x8gy7fv",
+              "n9717vva268cpam8rb102tn2p18gy8x0",
+              "p975ekgram2jsqyqewe9dqcf2x8gy19x"
+            ],
+            "revision": 1,
+            "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+            "startedAt": 1792922349582,
+            "state": "completed"
+          }
+        ],
+        "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68"
+      }
+    ],
+    "scope": {
+      "accountId": "ap97-b3-usd-operating",
+      "environment": "local",
+      "organizationId": "ap97-b3-synthetic-company",
+      "provider": "fake",
+      "runId": "ap97-b3-live-20261025"
+    }
+  }
+}

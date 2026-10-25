@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/docker",
+    "--host",
+    "unix:///Users/junjiexiong/.colima/default/docker.sock",
+    "image",
+    "inspect",
+    "sha256:09c398f49cc16a60d0e7888b3939505d60f5482264ea0e86bb4374034352d9c7",
+    "--format",
+    "{{json .}}"
+  ],
+  "startedUtc": "2026-10-25T10:46:09.452183+00:00",
+  "durationSeconds": 0.035,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "logs/image-inspect.stdout",
+  "stderr": "logs/image-inspect.stderr"
+}

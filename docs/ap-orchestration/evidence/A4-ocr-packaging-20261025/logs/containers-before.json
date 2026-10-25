@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/docker",
+    "--host",
+    "unix:///Users/junjiexiong/.colima/default/docker.sock",
+    "ps",
+    "-a",
+    "--no-trunc",
+    "--format",
+    "{{.ID}} {{.Image}} {{.Status}}"
+  ],
+  "startedUtc": "2026-10-25T10:44:16.433901+00:00",
+  "durationSeconds": 0.018,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "logs/containers-before.stdout",
+  "stderr": "logs/containers-before.stderr"
+}

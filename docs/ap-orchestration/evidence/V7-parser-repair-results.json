@@ -1,0 +1,533 @@
+{
+  "runtimePatch": "c2201a42f13368e9a9e0028363f9193c9120569e",
+  "verificationCodeHead": "02068068907806cffb8f5cf75f5e6b10344ecff8",
+  "originalDerivationSha256": "5ebaeb9b6d64e272ba7284b80cb64c0c8adc6839f73617b700a41942e9632f12",
+  "baselineScoreSha256": "006916d56c4016dd917854e53d052b65e267ae845b73f8766c1d425547d8db5a",
+  "repairScoreSha256": "b3a43fb680b83f42514338ca70607ae29b0d2f5bf2287e1971db2ff9e3060996",
+  "scorerSha256": "7d4d4c856534335d1ef1daadebfa597a1088b21bbe44ebda0b9aaa33fe868d19",
+  "independentReplayHarnessSha256": "144cc640791ea372f696b0547397e72ebce2b1985929978cc5913fcaaf35762d",
+  "independentReplay": {
+    "root": "/private/tmp/ap97-v7-cached-qasA3M",
+    "networkCalls": 0,
+    "result": [
+      {
+        "source": "harbor-thread-native",
+        "hash": "6806a6ce3e9f1e5ac8e02c5b5feace230a3c1debd5ceb28711053a36ff9941fe",
+        "ownerReplayByteIdentical": true,
+        "candidate": true
+      },
+      {
+        "source": "harbor-thread-scan",
+        "hash": "cf5ed0c0bd8dc17db37220da00be9131fe90c1eaaaf9e6844a23de3b86140ca2",
+        "ownerReplayByteIdentical": true,
+        "candidate": true
+      },
+      {
+        "source": "copper-valve-native",
+        "hash": "2b20ddc8e506bff5310d7a4e12283a0f2e017d3745d8d67d9a4e334a3c0f0781",
+        "ownerReplayByteIdentical": true,
+        "candidate": true
+      },
+      {
+        "source": "copper-valve-scan",
+        "hash": "5629a146bb34be67070402f3439bf3e8dc2dadcc3f389c3b3cff63044fe33843",
+        "ownerReplayByteIdentical": true,
+        "candidate": true
+      }
+    ]
+  },
+  "unchangedBaselineWithAdaptedScorer": true,
+  "independentOutputScoreMatchesSuppliedOutputScore": true,
+  "artifactsVerified": 69,
+  "cachedProviderJobs": 4,
+  "checks": [
+    {
+      "path": "/private/tmp/ap97-v7-mapper-checks.json",
+      "sha256": "238f633729bce3bea5cf6caae9101fede68cc53c93f172a98a8eef16a41d7d1c",
+      "total": 92,
+      "passed": 92,
+      "failed": 0,
+      "tests": [
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping separates adjacent header labels without borrowing the due date",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping does not infer invoice date from a due date",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping holds conflicting repeated Invoice Date, including optional fields",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping holds conflicting repeated Due Date, including optional fields",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping holds ambiguous/invalid invoice date 09/10/2026",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping holds ambiguous/invalid invoice date 2026-02-30",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping holds ambiguous/invalid invoice date 2026-09-10 Due 2026-10-10",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping holds an explicitly malformed due date rather than dropping it as optional",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping uses exact financial labels, ignoring prose and total-due semantics",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping preserves a conflict when prose is explicitly supplied as the labeled amount",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping accepts equivalent exact monetary spellings and rejects conflicting values",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping reads sparse HTML rows and inline metadata without inventing values",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "explicit header/value mapping does not cross another labeled cell to find a value",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "column mapping and explicit footers maps reordered columns below a common spanning title",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "column mapping and explicit footers accepts a standalone title and repeated identical column header",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "column mapping and explicit footers does not strip different prefix text from each column",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "column mapping and explicit footers rejects duplicate aliases instead of choosing the first column",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "column mapping and explicit footers rejects duplicate aliases instead of choosing the first column",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "column mapping and explicit footers holds extra unsupported populated columns",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "column mapping and explicit footers recognizes one exact summary pair at any sparse column positions with labeled notes",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "column mapping and explicit footers does not discard an economic row whose SKU is TOTAL",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "column mapping and explicit footers holds a purported footer with unlabeled leftover economic content",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "column mapping and explicit footers holds changed column order mid-table",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic rejects non-exact money 12,34.00",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic rejects non-exact money 1e2",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic rejects non-exact money 0.001",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic rejects non-exact money -1.00",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic rejects non-exact money 9007199254740993.00",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic rejects non-exact money 4.00 USD?",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic keeps fractional quantities exact without rounding a fractional cent",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic maps reconciled freight/discount to explicit trusted coding",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic holds a line amount mismatch even if the document total is self-consistent",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic holds a subtotal inconsistent with the retained line amounts",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic holds total inconsistency Grand Total: USD 4.49",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic holds total inconsistency Grand Total: USD 4.51",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/document-mapping.test.ts",
+          "name": "exact document arithmetic never infers a missing discount from total subtraction",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/extraction.test.ts",
+          "name": "extracts the actual saved provider result, not the evaluator answer file",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/extraction.test.ts",
+          "name": "does not confer supplier identity from context when printed supplier differs",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/extraction.test.ts",
+          "name": "preserves fields but cannot create a candidate when required content or pages are missing",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/extraction.test.ts",
+          "name": "maps actual PO and receipt tables to invoice line identities",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/extraction.test.ts",
+          "name": "keeps overflow and missing money out of normalized amounts",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/extraction.test.ts",
+          "name": "rejects packet bounds before writing or calling providers",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/extraction.test.ts",
+          "name": "rejects a mismatched original page frame instead of highlighting a wrong field",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/extraction.test.ts",
+          "name": "does not silently drop an unreadable line while publishing a complete candidate",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/extraction.test.ts",
+          "name": "returns explicit unresolved geometry when the provider has no usable page frame",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/extraction.test.ts",
+          "name": "does not substitute remaining balance or total due for the original document total",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding uses valid native geometry before fallbacks",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding derives raw-word geometry with source token IDs",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding rejects character correction and repeated exact text",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding does not align across pages",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding falls back to attributed local OCR",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding preserves explicit failed/unavailable OCR reason",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding keeps multiline matches in separate regions",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding aligns each provider line uniquely even when an adjacent amount interrupts reading order",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding rejects multiline alignment in reverse source order",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding rejects rotated and invalid-frame grounding",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding does not accept coarse rectangles as precise native geometry",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "exact grounding requires explicit source revision and complete page coverage",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "multiline native table cells prefers exact separate line regions over a broad enclosing cell box",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "multiline native table cells does not use an enclosing cell box when line geometry is missing",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/grounding.test.ts",
+          "name": "multiline native table cells refuses incomplete or wrongly bound line spans",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/ocr.test.ts",
+          "name": "rejects changed original bytes before rendering the rehydrated source",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/ocr.test.ts",
+          "name": "distinguishes unavailable renderer and bounded process timeout",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/ocr.test.ts",
+          "name": "fails closed for unconfigured, unavailable or unpinned traineddata",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/ocr.test.ts",
+          "name": "maps actual TSV word tokens into the declared original page frame",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/pages.test.ts",
+          "name": "requires complete, ordered and unique provider page identities",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/pages.test.ts",
+          "name": "rejects native and raw geometry whose artifact page frame does not match",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/pages.test.ts",
+          "name": "maps native and raw image coordinates to actual original pixels",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/pages.test.ts",
+          "name": "never accepts geometry from an incomplete/reordered source result",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/provider.test.ts",
+          "name": "resumes a known provider job after timeout and reuses immutable completed artifacts",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/provider.test.ts",
+          "name": "never resubmits an ambiguous upload and does not expose provider text",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/provider.test.ts",
+          "name": "rejects mutable latest parser version",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "maps explicit positive line/header taxes, fractional quantity and source paths with no geometry invention",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "matches namespace URIs rather than relying on producer-chosen prefixes",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "does not assign trusted supplier ID to an unmatched extracted legal name",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds unknown profile",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds wrong version",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds namespace spoof",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds duplicate invoice ID",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds duplicate line ID",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds tax mismatch",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds line amount mismatch",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds currency mismatch",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds nonunit price base",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds unsupported tax subtotal",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds missing content",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "retains source and holds overflow",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "fails closed for DTD without provider access",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "fails closed for external stylesheet without provider access",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "fails closed for malformed without provider access",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "fails closed for oversized without provider access",
+          "status": "passed"
+        },
+        {
+          "file": "src/ap-system/ingestion/xml.test.ts",
+          "name": "does not double-decode or strip markup from an XML supplier value",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "/private/tmp/ap97-v7-mapper-format-check.json",
+      "sha256": "01e6d465132313c9e8e6578021d6518459a1be60303fb8e4e4e3e3e81ed05506",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "tests": [
+        {
+          "file": "tests/ap-system/formats-policy.test.ts",
+          "name": "a correctly parsed native-path tax XML remains held without approved supplier, PO and receiving authority",
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "typechecks": {
+    "root": "PASS",
+    "backend": "PASS",
+    "tests": "PASS"
+  }
+}

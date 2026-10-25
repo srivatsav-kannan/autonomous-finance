@@ -1,0 +1,158 @@
+{
+  "baseline": "7b0f6444bf79ec914c0c7d0a4af1444af092c49c",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "stage": "frozen independent derivation before reading evaluation key or authoring facts/generator",
+  "method": "all four original PDFs rendered to PNG and visually read; pdftotext -layout and pdfinfo used as supplementary evidence; scans have no text layer",
+  "files": [
+    {
+      "filename": "copper-valve-native.pdf",
+      "sha256": "dc323890c0c20082c1f6bcfd402b0365009d4e0147b36299835129cf39c96791",
+      "bytes": 3442
+    },
+    {
+      "filename": "copper-valve-scan.pdf",
+      "sha256": "741c0bc7adfcb6fccffe404f8dc4096a31e55fbe8f76b18fef5f5807586495f6",
+      "bytes": 118476
+    },
+    {
+      "filename": "harbor-thread-native.pdf",
+      "sha256": "0d8993129e04f666f715018040106dc518c1a42f41f77587293180b4ed4df1c5",
+      "bytes": 2789
+    },
+    {
+      "filename": "harbor-thread-scan.pdf",
+      "sha256": "fa814b53d96635afc6c7fc08e02eec91df5a656c9024d72b2a5949b4248090a5",
+      "bytes": 107517
+    }
+  ],
+  "logicalInvoices": [
+    {
+      "supplier": "Copper Valve Maintenance Inc.",
+      "invoiceNumber": "CV-9017",
+      "invoiceDate": "2026-10-23",
+      "dueDate": "2026-11-06",
+      "terms": "Net 14",
+      "currency": "USD",
+      "billTo": "Project Test Hospitality LLC",
+      "poReference": "PO-CV-219",
+      "workReference": "CV-SVC-72",
+      "pageSizePoints": [
+        612,
+        792
+      ],
+      "lines": [
+        {
+          "sku": "LAB-PL",
+          "description": "Preventive plumbing inspection and adjustment",
+          "quantity": "2.75",
+          "unit": "hour",
+          "unitPriceCents": 6400,
+          "amountCents": 17600
+        },
+        {
+          "sku": "SEAL-K",
+          "description": "Food-grade pump seal replacement kit",
+          "quantity": "2",
+          "unit": "kit",
+          "unitPriceCents": 1875,
+          "amountCents": 3750
+        },
+        {
+          "sku": "FLT-04",
+          "description": "Inline water filter cartridge, four micron",
+          "quantity": "4",
+          "unit": "each",
+          "unitPriceCents": 1225,
+          "amountCents": 4900
+        }
+      ],
+      "subtotalCents": 26250,
+      "taxCents": 0,
+      "freightCents": 0,
+      "discountCents": 0,
+      "totalCents": 26250,
+      "files": [
+        "copper-valve-native.pdf",
+        "copper-valve-scan.pdf"
+      ]
+    },
+    {
+      "supplier": "Harbor Thread Textiles LLC",
+      "invoiceNumber": "HT-2408",
+      "invoiceDate": "2026-10-22",
+      "dueDate": "2026-11-21",
+      "terms": "Net 30",
+      "currency": "USD",
+      "billTo": "Project Test Hospitality LLC",
+      "poReference": "PO-HT-418",
+      "deliveryReference": "HT-D-711",
+      "pageSizePoints": [
+        792,
+        612
+      ],
+      "lines": [
+        {
+          "sku": "COT-ROLL",
+          "description": "Cotton table linen roll",
+          "quantity": "1.5",
+          "unit": "roll",
+          "unitPriceCents": 12840,
+          "amountCents": 19260
+        },
+        {
+          "sku": "NAP-12",
+          "description": "Linen napkins, pack of twelve",
+          "quantity": "3",
+          "unit": "pack",
+          "unitPriceCents": 2475,
+          "amountCents": 7425
+        }
+      ],
+      "subtotalCents": 26685,
+      "taxCents": 0,
+      "freightCents": 1250,
+      "discountCents": 535,
+      "totalCents": 27400,
+      "files": [
+        "harbor-thread-native.pdf",
+        "harbor-thread-scan.pdf"
+      ]
+    }
+  ],
+  "arithmetic": {
+    "distinctInvoiceCount": 2,
+    "documentCount": 4,
+    "distinctInvoiceTotalCents": 53650,
+    "sumOverFourEquivalentPresentationFilesCents": 107300,
+    "equivalentPresentationFilesDoNotCreateNewObligations": true
+  },
+  "geometry": {
+    "eachPdfPages": 1,
+    "eachPdfRotation": 0,
+    "nativeTextPresent": true,
+    "scanTextAbsent": true,
+    "scanNativeAndDerivedAreNotInterchangeable": true,
+    "exactBoxesNotInferredFromContentAlone": true,
+    "allowedWithoutPreciseProviderGeometry": "unresolved; exact verified OCR may be derived with proper source/frame/token provenance"
+  },
+  "evidenceSufficiency": {
+    "purpose": "project-authored synthetic parser controls, explicitly not payable",
+    "supportingDocuments": "PO/work/delivery references are printed but actual PO/receipt/service acceptance documents are absent",
+    "businessApprovalExpected": false,
+    "paymentAuthorityExpected": false,
+    "codingNotVisible": [
+      "supplier master ID",
+      "ledger account",
+      "store",
+      "department",
+      "project"
+    ],
+    "supplierTaxOrPaymentDetailsVisible": false
+  },
+  "provenanceLimits": [
+    "The same two economic invoices appear as native and scan presentations.",
+    "Project author saw the mapper; this is a held-out layout/supplier control, not blind evaluation or production supplier evidence.",
+    "Independent agent engineering review is not practitioner sign-off."
+  ]
+}

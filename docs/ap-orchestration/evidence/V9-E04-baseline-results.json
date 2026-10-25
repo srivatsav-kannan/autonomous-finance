@@ -1,0 +1,224 @@
+{
+  "review": "V9 E04 independent engineering baseline",
+  "runtime": "55f1efe815f68ec86719b21fdd3f7ef00370a93e",
+  "sourcePatch": "3242bf6d64d72c2be6ec21a4feefe755f21a265a",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "result": {
+    "total": 37,
+    "passed": 35,
+    "failed": 2,
+    "independent": 20,
+    "independentPassed": 18,
+    "owner": 17,
+    "ownerPassed": 17
+  },
+  "typechecks": {
+    "root": "passed",
+    "backend": "passed",
+    "tests": "passed"
+  },
+  "testSha256": {
+    "tests/ap-system/v9-physical-fixture.ts": "33d6b91aecb8a048eccd80b27f3a3fb15e135fbe7f7cb0e5df8c3752afbd024a",
+    "tests/ap-system/v9-physical.test.ts": "48216f5a08aab3a607801af4d2bb1c674dbc02a1b972c8bf8e560548348f1f6f",
+    "tests/ap-system/v9-accrual-close.test.ts": "4e66b947339a7cb6ca4faf3fc9f301885b51fc10194546606822eca67fad6fea",
+    "tests/ap-system/v9-credits-history.test.ts": "d38cb7d2603db19d4cdb1d96d8d4000fde227dc1b7d18e59b6628b4c20cbbb05"
+  },
+  "rawResult": {
+    "path": "/private/tmp/ap97-v9-e04-baseline.json",
+    "sha256": "ffa7ab9878e85af27f22dd55b5fd29485bb9102610592302a681c2e684649390"
+  },
+  "suites": [
+    {
+      "file": "tests/ap-system/physical-lines.test.ts",
+      "assertions": [
+        {
+          "name": "E04 reviewed physical receipt identities retains repeated-SKU holds until a positive independent mapping, then recognizes both physical lines",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities allows reviewed merged parser representation without creating capacity",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities allows reviewed reordered parser representation without creating capacity",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities rejects a renamed original trying to establish a second catalog",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities rejects overlapping or fabricated source locators even with different physical names",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities cannot increase aggregate capacity by splitting, merging or changing SKU/unit/price",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities does not infer distribution of a partial merged parser line",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities requires a current configured independent human and immutable exact decision",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities rechecks physical reviewer authority before payment without rewriting the recognition",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities keeps pre-mapping historical usage held instead of guessing new physical attribution",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities returns exact proposal replays and deduplicates the one original catalog under concurrent approvals",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities keeps period close blocked for unmatched physical lines and for unmapped duplicate SKU rows",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities serializes competing final approvals against one physical line",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities supports repeated reviewed service acceptance lines under the existing non-PO route",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities supports a reviewed split after the first parser merged both physical rows",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities uses the same physical capacity protection for explicit supplier return credits",
+          "status": "passed"
+        },
+        {
+          "name": "E04 reviewed physical receipt identities accrues one reviewed physical line and reverses it only against that line's later invoice",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v9-accrual-close.test.ts",
+      "assertions": [
+        {
+          "name": "keeps sibling accruals separate through an invoice reversal, manual partial reversal, reaccrual and final invoice",
+          "status": "passed"
+        },
+        {
+          "name": "closes a fully recognized repeated-SKU original with its actual reconciled unpaid liability",
+          "status": "passed"
+        },
+        {
+          "name": "does not close after a physical accrual reversal reopens unrecognized receipt capacity",
+          "status": "passed"
+        },
+        {
+          "name": "permits full October physical accrual coverage when the mapped invoice is dated in November",
+          "status": "failed",
+          "failure": "AssertionError: [{\"code\":\"received_source_conflict\",\"owner\":\"purchasing_owner\",\"reason\":\"Same original has conflicting received capacity\",\"reference\":\"receipt:[\\\"26270ea47c2eb0ab1031530de61c18c29356ec7da0237ce37d9d6314024384aa\\\",\\\"KALE-24\\\",\\\"case\\\"]\"},{\"code\":\"received_not_invoiced\",\"owner\":\"purchasing_owner\",\"reason\":\"Received units remain outside invoice/accrual recognition\",\"reference\":\"receipt:[\\\"26270ea47c2eb0ab1031530de61c18c29356ec7da0237ce37d9d6314024384aa\\\",\\\"KALE-24\\\",\\\"case\\\"]\"}]: expected [ { \u2026(4) }, { \u2026(4) } ] to deeply equal []"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v9-credits-history.test.ts",
+      "assertions": [
+        {
+          "name": "prevents one physical half-unit from being reused while aggregate receipt and agreement still have spare capacity",
+          "status": "passed"
+        },
+        {
+          "name": "uses distinct return physical pools across merged notes, prevents duplicate returns, and never replenishes receiving capacity",
+          "status": "passed"
+        },
+        {
+          "name": "cannot relabel an existing receiving original as return capacity by reusing its catalog",
+          "status": "passed"
+        },
+        {
+          "name": "holds untagged historical recognized usage rather than guessing its physical allocation",
+          "status": "passed"
+        },
+        {
+          "name": "holds untagged historical accrued usage rather than guessing its physical allocation",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v9-physical.test.ts",
+      "assertions": [
+        {
+          "name": "conserves original half-plus-one-and-half units across a merged parser representation while allowing both legitimate invoices",
+          "status": "passed"
+        },
+        {
+          "name": "conserves original half-plus-one-and-half units across a resplit parser representation while allowing both legitimate invoices",
+          "status": "passed"
+        },
+        {
+          "name": "conserves original half-plus-one-and-half units across a reordered parser representation while allowing both legitimate invoices",
+          "status": "passed"
+        },
+        {
+          "name": "permits a reviewed split of a previously merged row without inheriting its prior consumed physical sibling",
+          "status": "passed"
+        },
+        {
+          "name": "rejects a second catalog from renamed identical bytes and refuses reassigning a partial merged claim to an unrelated physical row",
+          "status": "passed"
+        },
+        {
+          "name": "rechecks a newly remapped reviewer seat at final business approval and a retired reviewer at payment request",
+          "status": "passed"
+        },
+        {
+          "name": "rejects an accrual posted for another supplier against the first supplier physical receipt",
+          "status": "failed",
+          "failure": "Error: promise resolved \"{ pr: { \u2026(4) }, result: { \u2026(4) } }\" instead of rejecting"
+        },
+        {
+          "name": "requires the current case snapshot and source binding even if a different case approved the same original catalog",
+          "status": "passed"
+        },
+        {
+          "name": "requires a fresh same-case mapping after a parser revision and then permits recognition from the conserved catalog",
+          "status": "passed"
+        },
+        {
+          "name": "requires fresh proposal approval after the identity-review policy changes",
+          "status": "passed"
+        },
+        {
+          "name": "serializes two competing final human approvals for the same physical half-unit",
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "V9-F1",
+      "priority": "P1",
+      "status": "open",
+      "summary": "Physical receipt can authorize accrual for another supplier"
+    },
+    {
+      "id": "V9-F2",
+      "priority": "P2",
+      "status": "open",
+      "summary": "Out-of-period mapped case loses physical identity during close receipt coverage"
+    }
+  ],
+  "limitations": [
+    "Synthetic retained text originals, not independent PDF/render evaluation",
+    "No live backend/provider/private credential",
+    "No E04 HTTP/UI acceptance",
+    "No practitioner sign-off",
+    "Historical untagged usage safely held, not positively migrated"
+  ]
+}
