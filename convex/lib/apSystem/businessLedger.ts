@@ -31,7 +31,7 @@ export async function assertConsumptions(
 ) {
   const grouped = new Map<string, Consumption[]>();
   for (const c of claims) {
-    const key = `${c.source.sourceId}:${c.lineId}`;
+    const key = `${c.source.sha256}:${c.lineId}`;
     grouped.set(key, [...(grouped.get(key) ?? []), c]);
   }
   for (const items of grouped.values()) {
@@ -50,15 +50,7 @@ export async function assertConsumptions(
         "consumption_source_conflict",
         "One original line cannot have inconsistent capacity or units",
       );
-    const prior = await ctx.db
-      .query("apReceiptConsumptions")
-      .withIndex("by_source_line", (q) =>
-        q
-          .eq("scope.runId", scope.runId)
-          .eq("sourceId", first.source.sourceId)
-          .eq("lineId", first.lineId),
-      )
-      .collect();
+    const prior = (await ctx.db.query("apReceiptConsumptions").withIndex("by_bill", (q) => q.eq("scope.runId", scope.runId)).collect()).filter((p) => p.lineId === first.lineId && (p.sourceId === first.source.sourceId || p.sourceHash === first.source.sha256));
     if (
       prior.some(
         (p) =>
@@ -118,7 +110,7 @@ export async function assertConsumptions(
     const oldInput = intakeSchema.parse(revision.intake);
     if (
       oldInput.purchasingEvidence.some((p) =>
-        p.lines.some((l) => grouped.has(`${p.source.sourceId}:${l.lineId}`)),
+        p.lines.some((l) => claims.some((c) => c.lineId === l.lineId && (c.source.sourceId === p.source.sourceId || c.source.sha256 === p.source.sha256))),
       )
     )
       deny(

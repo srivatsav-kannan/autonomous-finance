@@ -41,3 +41,5 @@ describe("B3 authoritative historical export",()=>{
   expect((await f.vote(prop,"second")).status).toBe("approved");
  });
 });
+
+it("does not regain received capacity by renaming the same original source bytes",async()=>{const f=await businessFixture();await f.recognize();const next=packet("GS-renamed");next.documents.splice(1,2,...structuredClone(f.input.documents.slice(1)));next.purchasingEvidence=structuredClone(f.input.purchasingEvidence);next.documents.slice(1).forEach((d,i)=>{d.sourceId+=`-alias`;d.deliveryId+="-alias";next.purchasingEvidence[i]!.source=binding(d);});next.candidate!.sources=next.documents.map(binding);const d=await f.reviewed(next);await expect(f.propose(d,acceptance(next,"1"))).rejects.toThrow(/already_used/);});
