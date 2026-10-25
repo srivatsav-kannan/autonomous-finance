@@ -206,6 +206,7 @@ for (const mode of modes) {
   const usage: Usage = llm.emptyUsage();
   const perTask: { externalId: string; type: string; ms: number; turns: number; toolCalls: number; inputTokens: number; outputTokens: number; costUsd: number; error?: string; final?: string }[] = [];
   const started = performance.now();
+  let scriptedCalls = 0; // bank-feed import by the harness is not counted
   for (const e of world.events) {
     await st.ingest(e);
     if (!HANDLED.has(e.type)) continue;
@@ -215,8 +216,10 @@ for (const mode of modes) {
       if (agent === "scripted") {
         // Model-free reference: books every reference operation, judges nothing, flags nothing.
         for (const op of (refOps.get(e.externalId) ?? []).filter((o) => o.kind !== "resolve_bill")) {
+          const before = st.mode === "kernel" ? st.k!.calls : st.t!.actions.length;
           if (st.mode === "kernel") await st.k!.apply(op);
           else await st.books!.apply(op);
+          scriptedCalls += (st.mode === "kernel" ? st.k!.calls : st.t!.actions.length) - before;
         }
       } else {
         final = await llm.runTools({ system: systemFor(mode), user: userFor(e), tools: st.tools, effort, maxTurns, usage });
@@ -236,7 +239,7 @@ for (const mode of modes) {
   const state = mode === "kernel" ? await kernelState(st.k!, st.flags) : sheetState(st.t!);
   const score: SliceScore = scoreSlice(world, state);
   // Scripted runs bypass the model-facing wrappers, so count the underlying calls instead.
-  const toolCalls = agent === "scripted" ? (mode === "spreadsheet" ? st.t!.actions.length : st.k!.calls) : st.trace.length;
+  const toolCalls = agent === "scripted" ? scriptedCalls : st.trace.length;
   results[mode] = {
     wallMs, toolCalls, refusedToolCalls: st.trace.filter((x) => !x.ok).length,
     turns: usage.turns, inputTokens: usage.inputTokens + usage.cacheReadTokens, outputTokens: usage.outputTokens, costUsd: usage.costMicros / 1e6,
