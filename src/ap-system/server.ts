@@ -44,6 +44,7 @@ export interface APWorkspaceService {
  close?:CloseOperations;
  closeAccounting?:QBOCloseBridge;
  corrections?:CorrectionOperations;
+ guidance?:{current(caseId:string):Promise<unknown>;evaluate(caseId:string,input:{expectedRevision:number;snapshotHash:string}):Promise<unknown>};
  operationalTimings?():Promise<OperationalTimings>;
  supplierContacts?:SupplierContactOperations;
  physicalLines?:PhysicalLineOperations;
@@ -127,6 +128,13 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
    if(req.method==="GET"&&url.pathname===PREFIX+"/metrics"){
     if(!service.operationalTimings)throw new APHttpError("capability_unavailable",503,"Operational event timings are unavailable on this service.");
     return send(res,await service.operationalTimings());
+   }
+   const guidance=/^\/api\/ap-system\/cases\/([^/]+)\/guidance$/.exec(url.pathname);
+   if(guidance){
+    if(!service.guidance)throw new APHttpError("capability_unavailable",503,"Case guidance is unavailable.");
+    const caseId=decodeURIComponent(guidance[1]!);
+    if(req.method==="GET")return send(res,{guidance:await service.guidance.current(caseId)});
+    if(req.method==="POST")return send(res,await service.guidance.evaluate(caseId,binding.strict().parse(await json(req))));
    }
    const physical=/^\/api\/ap-system\/physical-lines(?:\/(propose|decide))?$/.exec(url.pathname);
    if(physical){

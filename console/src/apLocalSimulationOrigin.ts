@@ -1,5 +1,6 @@
 // The other origins belong only to dev-only, isolated FakeBank rehearsals with one exact run and scope each.
 const DEV_REHEARSALS: Record<string, { runId: string; organizationId: string; accountId: string }> = {
+  "http://127.0.0.1:5198": { runId: "ap97-b3-guidance-20261025-v1", organizationId: "ap97-b3-synthetic-company", accountId: "ap97-b3-usd-operating" },
   "http://127.0.0.1:5195": { runId: "ap97-i3-20261025", organizationId: "ap97-i3-synthetic-company", accountId: "ap97-i3-usd-operating" },
   // Issue #107 APEX World 9 replay.
   "http://127.0.0.1:5197": { runId: "apex107-replay-20261025", organizationId: "apex107-synthetic-sterling-marsh", accountId: "apex107-usd-operating" },

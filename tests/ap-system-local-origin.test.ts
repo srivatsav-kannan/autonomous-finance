@@ -26,3 +26,11 @@ describe("isolated local rehearsal origin", () => {
     for (const [key, value] of Object.entries({ provider: "increase", environment: "sandbox", organizationId: "other", accountId: "other" })) expect(isLocalSimulationOrigin({ ...apex, scope: { ...apex.scope, [key]: value } }, "http://127.0.0.1:5197", true)).toBe(false);
   });
 });
+
+it("admits uploaded guidance only for its exact dev origin and isolated scope",()=>{
+ const guidance={identityMode:"simulated_human",runId:"ap97-b3-guidance-20261025-v1",scope:{runId:"ap97-b3-guidance-20261025-v1",provider:"fake",environment:"local",organizationId:"ap97-b3-synthetic-company",accountId:"ap97-b3-usd-operating"}};
+ expect(isLocalSimulationOrigin(guidance,"http://127.0.0.1:5198",true)).toBe(true);
+ expect(isLocalSimulationOrigin(guidance,"http://127.0.0.1:5198",false)).toBe(false);
+ expect(isLocalSimulationOrigin(runtime,"http://127.0.0.1:5198",true)).toBe(false);
+ expect(isLocalSimulationOrigin({...guidance,scope:{...guidance.scope,provider:"increase"}},"http://127.0.0.1:5198",true)).toBe(false);
+});

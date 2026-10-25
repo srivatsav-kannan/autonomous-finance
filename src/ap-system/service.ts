@@ -83,6 +83,7 @@ export function createAPWorkspaceService(options:{
  };
  return{
   paymentRuns,domain,close,corrections,supplierContacts,physicalLines,
+  guidance:{current:caseId=>human.query(makeFunctionReference<"query">("apCaseGuidance:current"),{scope,caseId}),evaluate:(caseId,input)=>agent.mutation(makeFunctionReference<"mutation">("apCaseGuidance:evaluate"),{scope,...options.apCredential,caseId,...input})},
   bankEvidence:{
    view:()=>human.query(makeFunctionReference<"query">("demoEvidence:bankReconciliation"),{scope}),
    classifyFunding:input=>human.mutation(makeFunctionReference<"mutation">("demoEvidence:approveSandboxFunding"),{scope,...sandboxFundingSchema.parse(input)}),

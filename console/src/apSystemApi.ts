@@ -86,6 +86,8 @@ export function accountingSelection(value?:APAccountingSelection|string):APAccou
  return input;
 }
 export const apSystemApi = {
+  guidance:(caseId:string,signal?:AbortSignal)=>request<{guidance:import("../../src/ap-system/case-guidance").CaseGuidance|null}>(`/cases/${encodeURIComponent(caseId)}/guidance`,undefined,signal).then(v=>v.guidance),
+  evaluateGuidance:(detail:APCaseDetail)=>request<import("../../src/ap-system/case-guidance").CaseGuidance>(`/cases/${encodeURIComponent(detail.caseId)}/guidance`,{expectedRevision:detail.revision,snapshotHash:detail.snapshotHash}),
   bankEvidence:(signal?:AbortSignal)=>request<BankReconciliationView>("/bank-evidence",undefined,signal),
   classifySandboxFunding:(input:SandboxFundingInput)=>request<{entryId:string;replayed:boolean}>("/bank-evidence/funding",sandboxFundingSchema.parse(input)),
   physicalLines:(caseId?:string,signal?:AbortSignal)=>request<PhysicalLineWorkspaceView>(`/physical-lines${caseId?`?caseId=${encodeURIComponent(caseId)}`:""}`,undefined,signal),

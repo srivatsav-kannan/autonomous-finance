@@ -1,3 +1,4 @@
+import { saveCaseGuidance } from "./apCaseGuidance";
 import { ensureAPCaseWork } from "./lib/apSystem/agentWork";
 import { activeBusinessPolicy, currentFieldReviewer } from "./lib/apSystem/businessAuthority";
 import { mutation, query } from "./_generated/server";
@@ -283,6 +284,7 @@ export const ingest = mutation({
       },
     );
     await ensureAPCaseWork(ctx, row);
+    await saveCaseGuidance(ctx, row, seat.seatId);
     const result = {
       caseId: row._id,
       revision: row.currentRevision,

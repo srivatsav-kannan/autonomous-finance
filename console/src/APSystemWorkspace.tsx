@@ -1,3 +1,4 @@
+import { APCaseGuidance } from "./APCaseGuidance";
 import { APAgentTimeline } from "./APAgentHistory";
 import { decisionAnchor } from "./apAgentHistoryView";
 import {APPaymentDimensions} from "./APDimensions";
@@ -92,6 +93,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange, section, onSe
           <APRelatedCases detail={detail} cases={cases??[]} onOpenCase={setSelectedId} busy={busy}/>
           <APCaseStatus detail={detail}/>
           <APAmounts detail={detail}/>
+          <APCaseGuidance key={`${detail.caseId}:${detail.revision}:${reload}`} detail={detail}/>
           {detail.links.duplicateOfCaseId && <p className="aps-notice">This delivery is linked to an existing obligation. <button className="aps-text-button" onClick={()=>setSelectedId(detail.links.duplicateOfCaseId!)} disabled={busy}>Open original case</button></p>}
           <div className="aps-tabs" role="group" aria-label="Case sections">{VIEWS.map(v=><button type="button" key={v} disabled={busy} onClick={()=>setView(v)} aria-pressed={view===v} className={view===v ? "is-selected" : ""}>{v === "evidence" ? "Source & fields" : apLabel(v)}</button>)}</div>
           {view === "evidence" && <><APSystemEvidence detail={detail}/><APOriginals detail={detail}/></>}
