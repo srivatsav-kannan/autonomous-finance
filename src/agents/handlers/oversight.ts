@@ -48,11 +48,13 @@ export const runClose: Handler = async (rt, task) => {
       { key: "close.snapshot", value: sources.snapshotHash, source: { kind: "ledger", ref: period } },
     ], rules: [],
   });
+  let alreadyClosed = false;
   if (checks.every((c) => c.ok)) {
     await rt.mem.tag(tag, `Close review candidate for ${period}`, rt.author);
     const signed = await rt.kernel.client.mutation(api.ledger.signClose, {
       ...rt.kernel.auth, period, memoryTag: tag, expectedSnapshotHash: sources.snapshotHash,
     });
+    alreadyClosed = signed.ok && signed.status === "closed";
     if (!signed.ok) {
       checks.push({ ok: false, text: `Kernel refused close signature: ${signed.error}` });
       d = await rt.decide({
@@ -68,7 +70,8 @@ export const runClose: Handler = async (rt, task) => {
   await rt.ask({
     to: "human_cfo", severity: "decision", title: ready ? `Co-sign the ${period} close` : `${period} isn't ready to close`,
     body: checks.map((c) => `${c.ok ? "OK" : "OPEN"}  ${c.text}`).join("\n"),
-    options: ready ? [{ id: "sign", label: "Co-sign close" }, { id: "hold", label: "Hold" }] : [{ id: "ack", label: "Acknowledge" }],
+    // A ready close carries a kernel-checked effect: the co-sign applies to this period, not the title's.
+    ...(ready && !alreadyClosed ? { effect: { kind: "close" as const, period } } : { options: [{ id: "ack", label: "Acknowledge" }] }),
     evidence: [{ label: "decision", ref: d.path }], taskId: task._id,
   });
   return { outcome: ready ? "signed" : "not_ready", summary: checks.filter((c) => !c.ok).map((c) => c.text).join("; ") || "clean" };

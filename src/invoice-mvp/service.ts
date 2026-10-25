@@ -13,7 +13,7 @@ import { parseSupportedSource } from "./parser";
 export const MAX_BATCH_BYTES = 9_500_000;
 export const MAX_SOURCE_BYTES = 6 * 1024 * 1024;
 export const MAX_TEXT_BYTES = 750_000;
-const sourceSchema = z.object({ externalId: z.string().min(1).max(500), name: z.string().min(1).max(500), mimeType: z.string().min(1).max(200), text: z.string().max(1_000_000), contentBase64: z.string().max(Math.ceil(MAX_SOURCE_BYTES / 3) * 4).optional(), replacesExternalId: z.string().min(1).max(500).optional() }).strict();
+const sourceSchema = z.object({ externalId: z.string().min(1).max(500), name: z.string().min(1).max(500), mimeType: z.string().min(1).max(200), text: z.string().max(1_000_000), contentBase64: z.string().max(Math.ceil(MAX_SOURCE_BYTES / 3) * 4).optional(), replacesExternalId: z.string().min(1).max(500).optional(), newVersion: z.boolean().optional() }).strict();
 const batchSchema = z.object({ label: z.string().min(1).max(300), documents: z.array(sourceSchema).min(1).max(100), idempotencyKey: z.string().min(1).max(500).optional() }).strict();
 const decisionSchema = z.object({ caseId: z.string().min(1), proposalId: z.string().min(1), evidenceVersion: z.number().int().positive(), idempotencyKey: z.string().min(1).max(500), action: z.enum(["accept", "exclude", "request_evidence"]), note: z.string().max(4000).optional() }).strict();
 export type ProcessResult = { mode: RuntimeMode; processed: InvestigationResult[]; errors: { caseId: string; code: string; message: string }[]; remaining: number };

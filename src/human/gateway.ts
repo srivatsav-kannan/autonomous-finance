@@ -29,17 +29,36 @@ async function body(req: http.IncomingMessage): Promise<Record<string, unknown>>
 
 /**
  * Answering an ask is a decision; some decisions are also actions taken as the human seat.
- * The kernel records the answer first (refusing a different one), then each effect runs, then
- * the ask is completed. A failed effect leaves the ask open with its answer recorded, and
- * resending the same answer resumes it: every effect is a no-op once it has happened.
+ * What an answer does comes only from the ask's kernel-stored `effect`, never from the option
+ * id, a label, the title or a legacy reference field. The kernel records the answer first
+ * (refusing a different one), then the effect runs, then the ask is completed. A failed effect
+ * leaves the ask open with its answer recorded, and resending the same answer resumes it: every
+ * effect is a no-op once it has happened.
  */
 export async function answer(h: SeatClient, runId: string, askId: string, optionId: string, note?: string, mem = () => new MemoryStore(memoryDir(runId))) {
   const ask = (await h.client.query(api.asks.list, { runId })).find((a) => a._id === askId);
   if (!ask) throw new Error("ask not found");
-  const period = optionId === "sign" ? /the (\d{4}-\d{2}) close/.exec(ask.title)?.[1] : undefined;
-  if (optionId === "sign" && !period) throw new Error("this ask names no close period to sign");
-  const proposalId = optionId === "merge" ? ask.proposalBranch?.replace("proposal/", "") : undefined;
-  if (optionId === "merge" && !proposalId) throw new Error("this ask has no proposal to merge");
+  const effect = ask.effect;
+  const pay = effect?.kind === "payment" && optionId === "approve" ? effect : undefined;
+  const reject = effect?.kind === "payment" && optionId === "reject" ? effect : undefined;
+  const sign = effect?.kind === "close" && optionId === "sign" ? effect : undefined;
+  const merge = effect?.kind === "merge" && optionId === "merge" ? effect : undefined;
+
+  // The human approved what the drawer showed; refuse if the target has since changed.
+  if (pay) {
+    const intent = await h.client.query(api.payments.intent, { runId, intentId: pay.paymentIntentId });
+    if (!intent) throw new Error("payment intent not found");
+    if (intent.payee !== pay.payee || intent.amountCents !== pay.amountCents || intent.remitTo.bank !== pay.remitTo.bank || intent.remitTo.accountLast4 !== pay.remitTo.accountLast4) {
+      throw new Error("payment changed since this ask was created; ask again");
+    }
+  }
+  const store = merge ? mem() : undefined;
+  const alreadyMerged = merge && store ? await store.git(["rev-parse", "--verify", `refs/merged/${merge.proposalId}`]).then(() => true, () => false) : false;
+  if (merge && store && !alreadyMerged) {
+    const now = await store.proposalPaths(merge.proposalId);
+    const samePaths = now.paths.length === merge.paths.length && now.paths.every((p) => merge.paths.includes(p));
+    if (now.head !== merge.headSha || !samePaths) throw new Error("proposal changed since this ask was created; ask again");
+  }
 
   const recorded = await h.client.mutation(api.asks.recordAnswer, { ...h.auth, askId: ask._id, optionId, note });
   if (!recorded.ok) throw new Error(recorded.error);
@@ -47,31 +66,29 @@ export async function answer(h: SeatClient, runId: string, askId: string, option
   const reason = recorded.answer.note;
 
   const effects: string[] = [];
-  if (ask.paymentIntentId && optionId === "approve") {
-    const intent = await h.client.query(api.payments.intent, { runId, intentId: ask.paymentIntentId });
+  if (pay) {
+    const intent = await h.client.query(api.payments.intent, { runId, intentId: pay.paymentIntentId });
     if (intent?.approvals.some((a) => a.seatId === h.seatId)) effects.push(`payment ${intent.status}`);
     else {
-      const r = await h.client.mutation(api.payments.approvePayment, { ...h.auth, intentId: ask.paymentIntentId });
+      const r = await h.client.mutation(api.payments.approvePayment, { ...h.auth, intentId: pay.paymentIntentId });
       if (!r.ok) throw new Error(`payment approval refused: ${r.error}`);
       effects.push(`payment ${r.status}`);
     }
   }
-  if (ask.paymentIntentId && optionId === "reject") {
-    const r = await h.client.mutation(api.payments.voidPayment, { ...h.auth, intentId: ask.paymentIntentId, reason: reason ?? "rejected by human CFO" });
+  if (reject) {
+    const r = await h.client.mutation(api.payments.voidPayment, { ...h.auth, intentId: reject.paymentIntentId, reason: reason ?? "rejected by human CFO" });
     if (!r.ok) throw new Error(`void refused: ${r.error}`);
     effects.push("payment voided");
   }
-  if (period) {
-    const r = await h.client.mutation(api.ledger.signClose, { ...h.auth, period });
+  if (sign) {
+    const r = await h.client.mutation(api.ledger.signClose, { ...h.auth, period: sign.period });
     if (!r.ok) throw new Error(`sign refused: ${r.error}`);
     effects.push(`close ${r.status}`);
   }
-  if (proposalId) {
-    const store = mem();
-    const merged = await store.git(["rev-parse", "--verify", `refs/merged/${proposalId}`]).then(() => true, () => false);
-    if (merged) effects.push("already merged");
+  if (merge && store) {
+    if (alreadyMerged) effects.push("already merged");
     else {
-      const m = await store.merge({ id: proposalId, approver: { seatId: h.seatId, name: "Human CFO" }, caps: ROLE_CAPABILITIES.human_cfo, note: reason ?? "approved by human CFO" });
+      const m = await store.merge({ id: merge.proposalId, approver: { seatId: h.seatId, name: "Human CFO" }, caps: ROLE_CAPABILITIES.human_cfo, note: reason ?? "approved by human CFO" });
       effects.push(`merged ${m.sha.slice(0, 8)}`);
     }
   }

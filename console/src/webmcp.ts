@@ -1,7 +1,10 @@
 import { gateway } from "./gateway";
 
-// Agent-native by default: the console exposes its actions as WebMCP tools, so a human's own
-// browser agent can operate it (list what needs a decision, answer it, ask why) without screen-scraping.
+// The console exposes read-only WebMCP tools, so a human's own browser agent can see what needs
+// a decision and ask why, without screen-scraping. It cannot answer: an answer acts as the human
+// CFO (payments, merges, close co-signs), and ask text is agent-written and partly derived from
+// vendor documents, so a model reading it must not be able to click for the human. Answers take a
+// real click in the review drawer.
 // Uses the W3C/Chrome document.modelContext API when present (Chrome 149+ origin trial or flag).
 
 interface ModelContext {
@@ -20,7 +23,7 @@ export function registerWebMcpTools(runId: string): () => void {
   const tools = [
     {
       name: "list_open_decisions",
-      description: "List decisions the finance agents are waiting on the human CFO for.",
+      description: "List decisions the finance agents are waiting on the human CFO for, with what each would do. Read-only: the human answers in the console.",
       inputSchema: { type: "object", properties: {}, additionalProperties: false },
       execute: async () => {
         const res = await fetch(`${import.meta.env.VITE_CONVEX_URL}/api/query`, {
@@ -29,14 +32,8 @@ export function registerWebMcpTools(runId: string): () => void {
           body: JSON.stringify({ path: "asks:list", args: { runId, status: "open", to: "human_cfo" }, format: "json" }),
         });
         const data = await res.json();
-        return (data.value ?? []).map((a: { _id: string; title: string; severity: string; options: { id: string; label: string }[] }) => ({ id: a._id, title: a.title, severity: a.severity, options: a.options }));
+        return (data.value ?? []).map((a: { _id: string; title: string; severity: string; options: { id: string; label: string }[]; effect?: unknown }) => ({ id: a._id, title: a.title, severity: a.severity, options: a.options, effect: a.effect ?? null }));
       },
-    },
-    {
-      name: "answer_decision",
-      description: "Answer one of the agents' open decisions as the human CFO. Payment approvals and period close co-signs take effect immediately.",
-      inputSchema: { type: "object", properties: { askId: { type: "string" }, optionId: { type: "string" }, note: { type: "string" } }, required: ["askId", "optionId"], additionalProperties: false },
-      execute: async (input: Record<string, unknown>) => gateway(runId, `asks/${input.askId}/answer`, { method: "POST", body: { optionId: input.optionId, note: input.note } }),
     },
     {
       name: "ask_why",

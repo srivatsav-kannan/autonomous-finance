@@ -191,7 +191,7 @@ They run against the live agent team (`npm run eval`):
   - eval scoreboard
   - chaos panel and sim clock
 
-  The console also registers WebMCP tools, so a human's own browser agent can work it.
+  The console also registers read-only WebMCP tools (list open decisions, ask why), so a human's own browser agent can read it. Answering a decision takes a real click in the review drawer, which shows the kernel-stored effect (payee, amount and remit-to; branch and paths; close period) next to the buttons.
 - **MCP server (agents):** the kernel's tools for external agents, such as an outside auditor running in Claude Code, scoped by seat token.
 - **No spreadsheets anywhere.** Humans get answers and decisions, not grids to fill.
 

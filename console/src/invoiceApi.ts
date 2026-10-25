@@ -41,11 +41,23 @@ function asSource(value: unknown, index: number): SourceInput {
   }
   if (source.contentBase64 !== undefined && typeof source.contentBase64 !== "string") throw new Error(`Document ${index + 1}: contentBase64 must be a string.`);
   if (source.replacesExternalId !== undefined && typeof source.replacesExternalId !== "string") throw new Error(`Document ${index + 1}: replacesExternalId must be a string.`);
+  if (source.newVersion !== undefined && typeof source.newVersion !== "boolean") throw new Error(`Document ${index + 1}: newVersion must be true or false.`);
   if (/pdf/i.test(source.mimeType) && (!source.contentBase64 || !source.text.trim())) throw new Error(`PDF “${source.name}” requires both original contentBase64 bytes and extracted text. PDF extraction is not available in this browser.`);
   if (source.contentBase64) {
     try { atob(source.contentBase64); } catch { throw new Error(`Document ${index + 1} has invalid base64 original bytes.`); }
   }
-  return { externalId: source.externalId, name: source.name, mimeType: source.mimeType, text: source.text, contentBase64: source.contentBase64, replacesExternalId: source.replacesExternalId };
+  return { externalId: source.externalId, name: source.name, mimeType: source.mimeType, text: source.text, contentBase64: source.contentBase64, replacesExternalId: source.replacesExternalId, ...(source.newVersion ? { newVersion: true } : {}) };
+}
+
+/**
+ * A plain file upload's import id: its content hash plus a fresh UUID. File names are not
+ * identities ("invoice.txt" is common), so a later file never versions an earlier one by name.
+ * Identical bytes are still caught server-side as duplicates by content hash.
+ */
+async function uploadId(bytes: Uint8Array<ArrayBuffer>) {
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+  const hash = Array.from(digest, (b) => b.toString(16).padStart(2, "0")).join("");
+  return `${hash.slice(0, 16)}-${crypto.randomUUID()}`;
 }
 
 export async function readSourceFiles(files: File[]): Promise<SourceInput[]> {
@@ -67,7 +79,7 @@ export async function readSourceFiles(files: File[]): Promise<SourceInput[]> {
     }
     let binary = "";
     for (const byte of bytes) binary += String.fromCharCode(byte);
-    documents.push({ externalId: file.name, name: file.name, mimeType: /\.json$/i.test(file.name) ? "application/json" : /\.csv$/i.test(file.name) ? "text/csv" : "text/plain", text, contentBase64: btoa(binary) });
+    documents.push({ externalId: await uploadId(bytes), name: file.name, mimeType: /\.json$/i.test(file.name) ? "application/json" : /\.csv$/i.test(file.name) ? "text/csv" : "text/plain", text, contentBase64: btoa(binary) });
   }
   if (!documents.length) throw new Error("Choose at least one document to import.");
   return documents;
