@@ -1,0 +1,50 @@
+{
+  "scope": "Synthetic desktop components only; no Auth0 subject, private provider data or real actions",
+  "images": [
+    {
+      "file": "e01-tax-blank-desktop-light.jpg",
+      "bytes": 73012,
+      "sha256": "2b13649733f139678162f8cd6c484f03ac906da5ac1c600f5aa8661b6a1144f7"
+    },
+    {
+      "file": "e01-tax-review-desktop-light.jpg",
+      "bytes": 92559,
+      "sha256": "f8c82de5286aae9f9b19e0ff8c877de9efa1a274f6a4609dc0491462aa9f16e8"
+    },
+    {
+      "file": "e01-tax-review-desktop-dark.jpg",
+      "bytes": 86216,
+      "sha256": "a79db8063d693bd88a6a28467bc782f237572eb05a8b0682140a492b4b3c6c36"
+    },
+    {
+      "file": "e01-tax-adjustment-desktop-light.jpg",
+      "bytes": 95865,
+      "sha256": "772626c08b3067486896784f13b6220c8b43911e36cc2287f401ad6b0ebe60b7"
+    },
+    {
+      "file": "e01-tax-adjustment-desktop-dark.jpg",
+      "bytes": 87497,
+      "sha256": "e07f59f2825ae571450eb50fbfbc1aeb0f1b3ba748d8ac46248ca9e46c420ca5"
+    },
+    {
+      "file": "e01-tax-historical-unknown-light.jpg",
+      "bytes": 117743,
+      "sha256": "9557dfcad66e2b9555ba777fd595aa57eb04cb18ca8a6be46efa980533e24a09"
+    },
+    {
+      "file": "e01-tax-historical-recovery-dark.jpg",
+      "bytes": 109441,
+      "sha256": "921ce919927dfa0026d65dc3592b1a383bd08fc393c6cbd89b4e5f60d9ea83b8"
+    },
+    {
+      "file": "e01-tax-historical-no-read-dark.jpg",
+      "bytes": 119654,
+      "sha256": "20157c1214b7017766a31c986478d85e860f364ec5172c7947ca08af32d6ade9"
+    },
+    {
+      "file": "e01-tax-prepared-dark-fixed.jpg",
+      "bytes": 119577,
+      "sha256": "69b92cc9a4f360a385b742feda380c19b990e1acd439d66943bd8eece457baaf"
+    }
+  ]
+}

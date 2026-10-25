@@ -23,13 +23,13 @@ export class IncreaseSandboxHarness {
   readonly #scope: BankScope;
   readonly #fetch: typeof fetch;
   constructor(options: { apiKey: string; scope: BankScope; fetch?: typeof fetch }) {
-    if (options.scope.provider !== "increase" || options.scope.environment !== "sandbox" || !options.scope.organizationId.trim() || !options.scope.runId.trim() || !/^account_[a-zA-Z0-9]+$/.test(options.scope.accountId) || !options.apiKey) throw new Error("Sandbox-only harness requires sandbox account binding");
+    if (options.scope.provider !== "increase" || options.scope.environment !== "sandbox" || !options.scope.organizationId.trim() || !options.scope.runId.trim() || !/^(?:sandbox_)?account_[a-zA-Z0-9]+$/.test(options.scope.accountId) || !options.apiKey) throw new Error("Sandbox-only harness requires sandbox account binding");
     this.#apiKey = options.apiKey;
     this.#scope = { ...options.scope };
     this.#fetch = options.fetch ?? fetch;
   }
   async #action(transferId: string, action: "submit" | "settle" | "return") {
-    if (!/^ach_transfer_[a-zA-Z0-9]+$/.test(transferId)) throw new Error("Invalid transfer identifier");
+    if (!/^(?:sandbox_)?ach_transfer_[a-zA-Z0-9]+$/.test(transferId)) throw new Error("Invalid transfer identifier");
     const headers = { Authorization: `Bearer ${this.#apiKey}`, "Content-Type": "application/json" };
     const verifiedTransfer = async () => {
       const current = await this.#fetch(`${INCREASE_SANDBOX_ORIGIN}/ach_transfers/${transferId}`, { headers, redirect: "error", signal: AbortSignal.timeout(15_000) });

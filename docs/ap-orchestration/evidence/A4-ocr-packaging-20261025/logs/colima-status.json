@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/colima",
+    "status"
+  ],
+  "startedUtc": "2026-10-25T10:44:15.683288+00:00",
+  "durationSeconds": 0.392,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "logs/colima-status.stdout",
+  "stderr": "logs/colima-status.stderr"
+}

@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "imageId": "sha256:09c398f49cc16a60d0e7888b3939505d60f5482264ea0e86bb4374034352d9c7",
+  "containerId": "3883b8a9c32810b38d6ead27c73a47a8f51b4082b47638c7c9a4b9c8113b0ffa",
+  "state": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-25T10:46:32.562490081Z",
+    "FinishedAt": "2026-10-25T10:46:33.695264092Z"
+  },
+  "result": {
+    "status": "packaging_smoke_pass",
+    "architecture": "aarch64",
+    "pythonVersion": "3.11.2",
+    "tesseract": "tesseract 5.5.2",
+    "traineddataSha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+    "results": [
+      {
+        "sourceId": "harbor-thread-scan",
+        "sourceSha256": "fa814b53d96635afc6c7fc08e02eec91df5a656c9024d72b2a5949b4248090a5",
+        "page": 1,
+        "rasterDimensions": [
+          1584,
+          1224
+        ],
+        "rasterSha256": "a4cd4ae8b9496db4029c76a74fd3e3829550c69a22c540602cde17944fb860e5",
+        "rawTsvSha256": "721a892111f2165253c19d81c7e76cbea2580b59435781ea7362b43a1282dcc8",
+        "wordCount": 123
+      },
+      {
+        "sourceId": "copper-valve-scan",
+        "sourceSha256": "741c0bc7adfcb6fccffe404f8dc4096a31e55fbe8f76b18fef5f5807586495f6",
+        "page": 1,
+        "rasterDimensions": [
+          1224,
+          1584
+        ],
+        "rasterSha256": "437663ed24d4fac0ab6a7748beb75bda7b632be9334ea3c09d7d4a9865db85bc",
+        "rawTsvSha256": "070cbf8969ba1c0fd889306965cb5407e6db8b628c99919e5cdf630879aa042c",
+        "wordCount": 135
+      }
+    ],
+    "accuracyEvaluated": false,
+    "providerCalls": 0
+  }
+}

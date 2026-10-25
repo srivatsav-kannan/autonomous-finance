@@ -131,10 +131,14 @@ export const ingestBatch = mutation({
       // An old import retry must never roll back the latest version. Match all history.
       const same = sources.find((s) => s.externalId === input.externalId && s.contentHash === hash && s.text === input.text && s.replacesExternalId === input.replacesExternalId);
       if (prior?.contentHash === hash && (prior.text !== input.text || prior.replacesExternalId !== input.replacesExternalId)) return fail("source_conflict", "The same original bytes cannot acquire different extracted text or replacement metadata");
+      // A reused ID is a new version only when the importer says so. File names are not identities.
+      if (prior && !same && !input.newVersion) return fail("external_id_conflict", `External ID ${input.externalId} already names a different source; give this document its own ID, or set newVersion to import it as a new version`);
+      if (input.newVersion && !prior) return fail("invalid_version", `newVersion needs an existing external ID; ${input.externalId} is new`);
+      if (input.newVersion && input.replacesExternalId) return fail("invalid_replacement", "A document is either a new version of its own ID or a replacement of another, not both");
       let replace: Source | undefined;
       if (input.replacesExternalId) {
         replace = sources.filter((s) => s.externalId === input.replacesExternalId).sort((a, b) => b.version - a.version)[0];
-        if (!replace || input.replacesExternalId === input.externalId) return fail("invalid_replacement", "Replacement must name an existing different external ID; same-ID edits are versioned automatically");
+        if (!replace || input.replacesExternalId === input.externalId) return fail("invalid_replacement", "Replacement must name an existing different external ID; for a new version of the same ID set newVersion");
         if (!same && byId.get(replace.caseId)?.status === "superseded") return fail("stale_replacement", "Replacement target is already superseded");
         if (!same && replace.contentHash === hash) return fail("invalid_replacement", "Identical bytes are a duplicate, not a replacement; omit replacesExternalId");
         if (args.documents.some((d) => d.externalId === input.replacesExternalId)) return fail("invalid_replacement", "Import replacement and target changes in separate batches");
@@ -147,12 +151,15 @@ export const ingestBatch = mutation({
     const newCaseIds = new Set<string>();
     for (const p of prepared) {
       if (p.same) { documentIds.push(p.same._id); caseIds.push(p.same.caseId); continue; }
+      let replacesDocumentId: string | undefined;
       for (const old of [p.prior, p.replace]) {
         const oldCase = old && await caseOf(ctx, args.runId, old.caseId);
-        if (oldCase && oldCase.status !== "superseded") {
-          await deactivate(ctx, args.runId, oldCase.documentId);
-          await transition(ctx, args, oldCase, "superseded", `Explicit importer version/replacement by ${p.input.externalId}`, { evidenceVersion: oldCase.evidenceVersion + 1, currentProposalId: undefined });
-        }
+        if (!oldCase || oldCase.status === "superseded") continue;
+        // A recorded case counts toward customer totals: only a human-accepted proposal on the new
+        // case may supersede it (see submitProposal). Pending work is superseded at once.
+        if (oldCase.status === "recorded") { replacesDocumentId = oldCase.documentId; continue; }
+        await deactivate(ctx, args.runId, oldCase.documentId);
+        await transition(ctx, args, oldCase, "superseded", `Explicit importer version/replacement by ${p.input.externalId}`, { evidenceVersion: oldCase.evidenceVersion + 1, currentProposalId: undefined });
       }
       const canonical = sources.find((s) => s.contentHash === p.hash);
       const version = (p.prior?.version ?? 0) + 1;
@@ -161,9 +168,10 @@ export const ingestBatch = mutation({
         runId: args.runId, batchId, documentId: "", externalId: p.input.externalId, name: p.input.name, version, contentHash: p.hash,
         status: canonical ? "duplicate" : "received", evidenceVersion: 1,
         ...(canonical ? { canonicalDocumentId: canonical.canonicalDocumentId ?? canonical._id, reason: "Identical source bytes already received" } : {}),
+        ...(replacesDocumentId ? { replacesDocumentId } : {}),
         contradictions: [], missingEvidence: [], createdAt: now, updatedAt: now,
       });
-      const { contentBase64: originalBytes, ...sourceInput } = p.input;
+      const { contentBase64: originalBytes, newVersion: _newVersion, ...sourceInput } = p.input;
       const documentId = await ctx.db.insert("invoiceSources", {
         runId: args.runId, ...sourceInput, caseId, batchId, version, contentHash: p.hash, createdAt: now,
         ...(canonical ? { canonicalDocumentId: canonical.canonicalDocumentId ?? canonical._id } : {}),
@@ -172,7 +180,7 @@ export const ingestBatch = mutation({
         for (let offset = 0; offset < originalBytes.length; offset += 128_000) await ctx.db.insert("invoiceSourceChunks", { runId: args.runId, documentId, index: offset / 128_000, content: originalBytes.slice(offset, offset + 128_000) });
       }
       await ctx.db.patch(caseId, { documentId });
-      await audit(ctx, args, caseId, "ingested", canonical ? `Duplicate of ${canonical.canonicalDocumentId ?? canonical._id}` : `Received immutable source version ${version}`, { evidenceVersion: 1 });
+      await audit(ctx, args, caseId, "ingested", canonical ? `Duplicate of ${canonical.canonicalDocumentId ?? canonical._id}` : `Received immutable source version ${version}${replacesDocumentId ? `; replaces recorded source ${replacesDocumentId} only if a human accepts` : ""}`, { evidenceVersion: 1 });
       sources.push((await ctx.db.get(documentId))!);
       documentIds.push(documentId); caseIds.push(caseId); newCaseIds.add(caseId);
     }
@@ -312,6 +320,25 @@ async function accept(ctx: MutationCtx, args: SeatAuth, c: Case, proposal: Doc<"
   return await transition(ctx, args, c, conclusion.treatment === "exclude" ? "excluded" : "recorded", conclusion.reason, { acceptedProposalId: proposal._id, reason: conclusion.reason, customerId: conclusion.customerId, question: undefined, missingEvidence: [] });
 }
 
+/**
+ * A case imported as a version or replacement of a recorded source carries `replacesDocumentId`.
+ * An inclusion proposal on it is bound to that replacement, which makes it non-routine: the
+ * recorded original is superseded only when a human accepts (see accept). Exclusion keeps it.
+ */
+async function withRecordedReplacement(ctx: QueryCtx, runId: string, c: Case, conclusion: Conclusion): Promise<Conclusion | Fail> {
+  if (!c.replacesDocumentId || !conclusion.treatment.startsWith("include_")) return conclusion;
+  const target = await sourceOf(ctx, runId, c.replacesDocumentId);
+  const targetCase = target && await caseOf(ctx, runId, target.caseId);
+  if (!target || targetCase?.status !== "recorded") return conclusion;
+  if (conclusion.supersedesDocumentId && conclusion.supersedesDocumentId !== target._id) return fail("invalid_replacement", `This import replaces recorded source ${target._id}; a proposal cannot name another replacement target`);
+  const cited = conclusion.evidence.some((ref) => ref.documentId === target._id);
+  return {
+    ...conclusion, supersedesDocumentId: target._id,
+    evidence: cited ? conclusion.evidence : [...conclusion.evidence, { documentId: target._id, version: target.version, contentHash: target.contentHash }],
+    question: conclusion.question ?? `This source replaces recorded “${target.name}” (${target.externalId} v${target.version}). Accept to replace its contribution, or exclude this source to keep the original.`,
+  };
+}
+
 export const submitProposal = mutation({
   args: { ...seatArgs, caseId: v.string(), evidenceVersion: v.number(), conclusion: conclusionValidator, mode: modeValidator, model: v.optional(v.string()), idempotencyKey: v.string() },
   handler: async (ctx, args): Promise<BackendResult<SubmitProposalResult>> => {
@@ -320,16 +347,17 @@ export const submitProposal = mutation({
     const c = await caseOf(ctx, args.runId, args.caseId); if (!c) return fail("not_found", "Case not found");
     if (c.evidenceVersion !== args.evidenceVersion) return fail("stale_proposal", "Case evidence changed; investigate the current source set");
     if (!["investigating", "needs_review"].includes(c.status)) return fail("invalid_transition", "Only an investigating or review case may receive a proposal");
-    const invalid = await validateConclusion(ctx, args.runId, c, args.conclusion); if (invalid) return invalid;
+    const conclusion = await withRecordedReplacement(ctx, args.runId, c, args.conclusion); if ("ok" in conclusion) return conclusion;
+    const invalid = await validateConclusion(ctx, args.runId, c, conclusion); if (invalid) return invalid;
     const source = (await sourceOf(ctx, args.runId, c.documentId))!;
-    const routine = args.mode === "deterministic" && !args.conclusion.contradictions.length && !args.conclusion.missingEvidence.length && !args.conclusion.supersedesDocumentId && (routineMatches(source, args.conclusion) || args.conclusion.treatment === "exclude" && (supportingOnly(source) || /^(?:customerId|customer_id),legal(?:Name|_name)(?:,|$)/i.test(source.text.trim().split(/\r?\n/)[0]!)));
-    const problem = routine ? await acceptanceProblem(ctx, args.runId, c, args.conclusion) : null;
-    const proposalId = await ctx.db.insert("invoiceProposals", { runId: args.runId, caseId: c._id, evidenceVersion: args.evidenceVersion, conclusion: args.conclusion, author: args.seatId, mode: args.mode, ...(args.model ? { model: args.model } : {}), createdAt: Date.now() });
-    await ctx.db.patch(c._id, { currentProposalId: proposalId, reason: args.conclusion.reason, customerId: args.conclusion.customerId, contradictions: [...args.conclusion.contradictions, ...(problem ? [problem.error] : [])], missingEvidence: args.conclusion.missingEvidence, question: args.conclusion.question, updatedAt: Date.now() });
-    await audit(ctx, args, c._id, "proposal", args.conclusion.reason, { proposalId, evidenceVersion: args.evidenceVersion });
+    const routine = args.mode === "deterministic" && !conclusion.contradictions.length && !conclusion.missingEvidence.length && !conclusion.supersedesDocumentId && (routineMatches(source, conclusion) || conclusion.treatment === "exclude" && (supportingOnly(source) || /^(?:customerId|customer_id),legal(?:Name|_name)(?:,|$)/i.test(source.text.trim().split(/\r?\n/)[0]!)));
+    const problem = routine ? await acceptanceProblem(ctx, args.runId, c, conclusion) : null;
+    const proposalId = await ctx.db.insert("invoiceProposals", { runId: args.runId, caseId: c._id, evidenceVersion: args.evidenceVersion, conclusion, author: args.seatId, mode: args.mode, ...(args.model ? { model: args.model } : {}), createdAt: Date.now() });
+    await ctx.db.patch(c._id, { currentProposalId: proposalId, reason: conclusion.reason, customerId: conclusion.customerId, contradictions: [...conclusion.contradictions, ...(problem ? [problem.error] : [])], missingEvidence: conclusion.missingEvidence, question: conclusion.question, updatedAt: Date.now() });
+    await audit(ctx, args, c._id, "proposal", conclusion.reason, { proposalId, evidenceVersion: args.evidenceVersion });
     let current = (await ctx.db.get(c._id))!;
     if (routine && !problem) current = await accept(ctx, args, current, (await ctx.db.get(proposalId))!);
-    else current = await transition(ctx, args, current, args.conclusion.treatment === "needs_evidence" || args.conclusion.missingEvidence.length ? "evidence_missing" : "needs_review", problem?.error ?? (args.conclusion.question || "Human review required before acceptance"));
+    else current = await transition(ctx, args, current, conclusion.treatment === "needs_evidence" || conclusion.missingEvidence.length ? "evidence_missing" : "needs_review", problem?.error ?? (conclusion.question || "Human review required before acceptance"));
     return await remember(ctx, args, "proposal", idem.hash!, { proposalId, case: summarize(current) });
   },
 });

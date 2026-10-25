@@ -1,0 +1,334 @@
+{
+  "review": "V11 independent repair replay: local cost_and_settlement lifecycle",
+  "classification": "independent agent engineering review",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "frozenBaseline": {
+    "runtime": "41a1116575f98460209e4164776363a0fa4e6e50",
+    "evidenceCommit": "8520406ea07a48927fd3e478375e6ff68be62370",
+    "independent": {
+      "passed": 11,
+      "failed": 1,
+      "total": 12
+    },
+    "ownerLifecycle": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8
+    },
+    "architecture": {
+      "passed": 2,
+      "failed": 1,
+      "total": 3
+    }
+  },
+  "creditRepair": {
+    "runtime": "a43852e502948db5ad4450f416a8c7103ef822dd",
+    "raw": {
+      "path": "/private/tmp/ap97-v11-credit-repair.json",
+      "sha256": "47734b6d4c4ba7e270c5d4794af2776bb612cd15ad5d5891624a33e34c949cc2"
+    },
+    "result": {
+      "passed": 22,
+      "failed": 1,
+      "total": 23
+    },
+    "suites": [
+      {
+        "file": "tests/ap-system/settlement-dimensions.test.ts",
+        "assertions": [
+          {
+            "name": "Explicit immutable settlement location recognition requires the operator's scope/rule pair and rejects mixed including null departments before recognition",
+            "status": "passed"
+          },
+          {
+            "name": "Explicit immutable settlement location recognition posts and exports exact original AP department on recognition and linked credit",
+            "status": "passed"
+          },
+          {
+            "name": "Explicit immutable settlement location recognition retains legacy cost-only AP dimensions and does not claim settlement authority",
+            "status": "passed"
+          },
+          {
+            "name": "Explicit immutable settlement location recognition retains explicit null settlement authority and rejects changed historical AP coordinates",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/settlement-payment-binding.test.ts",
+        "assertions": [
+          {
+            "name": "Frozen settlement accounting binding binds exact partial cash and credit approval, then posts and reverses the original department after policy retirement",
+            "status": "passed"
+          },
+          {
+            "name": "Frozen settlement accounting binding rejects a validly rehashed command with a foreign accounting binding before any attempt",
+            "status": "passed"
+          },
+          {
+            "name": "Frozen settlement accounting binding keeps possible-send reconciliation and exact command after current policy retirement",
+            "status": "passed"
+          },
+          {
+            "name": "Frozen settlement accounting binding preserves absence and existing canonical command hash for cost-only legacy scope",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/v11-settlement-binding.test.ts",
+        "assertions": [
+          {
+            "name": "freezes ops authority in exact snapshot/command hashes and preserves partial cash/credit arithmetic through real FakeBank settlement and return",
+            "status": "passed"
+          },
+          {
+            "name": "freezes null authority in exact snapshot/command hashes and preserves partial cash/credit arithmetic through real FakeBank settlement and return",
+            "status": "passed"
+          },
+          {
+            "name": "blocks a first send after current human retirement without changing the original binding or submitting to the bank",
+            "status": "passed"
+          },
+          {
+            "name": "blocks a first send after current policy retirement without changing the original binding or submitting to the bank",
+            "status": "passed"
+          },
+          {
+            "name": "rejects a rehashed forged department binding during human authorization",
+            "status": "passed"
+          },
+          {
+            "name": "rejects a rehashed forged credit amount binding during human authorization",
+            "status": "passed"
+          },
+          {
+            "name": "rejects a rehashed forged recognition journal binding during human authorization",
+            "status": "passed"
+          },
+          {
+            "name": "recovers an accepted lost response and settles the frozen department after both current policy and approving human retire",
+            "status": "passed"
+          },
+          {
+            "name": "rejects a changed command binding during possible-send recovery even with a valid new request hash",
+            "status": "passed"
+          },
+          {
+            "name": "requires the original settlement account and department before posting a verified bank return",
+            "status": "passed"
+          },
+          {
+            "name": "stores one exact zero-cash binding on every group member and rejects a partial changed member during grouped read",
+            "status": "passed"
+          },
+          {
+            "name": "applies one governed credit without cash, retains its binding and refuses a stripped binding on authoritative read",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/payments/architecture.test.ts",
+        "assertions": [
+          {
+            "name": "payment module dependency boundaries keeps domain/contracts/ports free of framework, runtime, provider SDK and IO dependencies",
+            "status": "failed"
+          },
+          {
+            "name": "payment module dependency boundaries makes application workflows depend on domain and ports rather than concrete adapters",
+            "status": "passed"
+          },
+          {
+            "name": "payment module dependency boundaries keeps transfer submission and service credentials out of ordinary agent entry points",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  "finalRepair": {
+    "runtime": "5c3459890499a16d3ed9a895dc9f29d925b2cf47",
+    "raw": {
+      "path": "/private/tmp/ap97-v11-final-repair.json",
+      "sha256": "114fd661d95a323f961aad68fcf7493b957a4137795b4020399e3a5ce1d44041"
+    },
+    "result": {
+      "passed": 23,
+      "failed": 0,
+      "total": 23
+    },
+    "suites": [
+      {
+        "file": "tests/payments/architecture.test.ts",
+        "assertions": [
+          {
+            "name": "payment module dependency boundaries keeps domain/contracts/ports free of framework, runtime, provider SDK and IO dependencies",
+            "status": "passed"
+          },
+          {
+            "name": "payment module dependency boundaries makes application workflows depend on domain and ports rather than concrete adapters",
+            "status": "passed"
+          },
+          {
+            "name": "payment module dependency boundaries keeps transfer submission and service credentials out of ordinary agent entry points",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/settlement-dimensions.test.ts",
+        "assertions": [
+          {
+            "name": "Explicit immutable settlement location recognition requires the operator's scope/rule pair and rejects mixed including null departments before recognition",
+            "status": "passed"
+          },
+          {
+            "name": "Explicit immutable settlement location recognition posts and exports exact original AP department on recognition and linked credit",
+            "status": "passed"
+          },
+          {
+            "name": "Explicit immutable settlement location recognition retains legacy cost-only AP dimensions and does not claim settlement authority",
+            "status": "passed"
+          },
+          {
+            "name": "Explicit immutable settlement location recognition retains explicit null settlement authority and rejects changed historical AP coordinates",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/settlement-payment-binding.test.ts",
+        "assertions": [
+          {
+            "name": "Frozen settlement accounting binding binds exact partial cash and credit approval, then posts and reverses the original department after policy retirement",
+            "status": "passed"
+          },
+          {
+            "name": "Frozen settlement accounting binding rejects a validly rehashed command with a foreign accounting binding before any attempt",
+            "status": "passed"
+          },
+          {
+            "name": "Frozen settlement accounting binding keeps possible-send reconciliation and exact command after current policy retirement",
+            "status": "passed"
+          },
+          {
+            "name": "Frozen settlement accounting binding preserves absence and existing canonical command hash for cost-only legacy scope",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/v11-settlement-binding.test.ts",
+        "assertions": [
+          {
+            "name": "freezes ops authority in exact snapshot/command hashes and preserves partial cash/credit arithmetic through real FakeBank settlement and return",
+            "status": "passed"
+          },
+          {
+            "name": "freezes null authority in exact snapshot/command hashes and preserves partial cash/credit arithmetic through real FakeBank settlement and return",
+            "status": "passed"
+          },
+          {
+            "name": "blocks a first send after current human retirement without changing the original binding or submitting to the bank",
+            "status": "passed"
+          },
+          {
+            "name": "blocks a first send after current policy retirement without changing the original binding or submitting to the bank",
+            "status": "passed"
+          },
+          {
+            "name": "rejects a rehashed forged department binding during human authorization",
+            "status": "passed"
+          },
+          {
+            "name": "rejects a rehashed forged credit amount binding during human authorization",
+            "status": "passed"
+          },
+          {
+            "name": "rejects a rehashed forged recognition journal binding during human authorization",
+            "status": "passed"
+          },
+          {
+            "name": "recovers an accepted lost response and settles the frozen department after both current policy and approving human retire",
+            "status": "passed"
+          },
+          {
+            "name": "rejects a changed command binding during possible-send recovery even with a valid new request hash",
+            "status": "passed"
+          },
+          {
+            "name": "requires the original settlement account and department before posting a verified bank return",
+            "status": "passed"
+          },
+          {
+            "name": "stores one exact zero-cash binding on every group member and rejects a partial changed member during grouped read",
+            "status": "passed"
+          },
+          {
+            "name": "applies one governed credit without cash, retains its binding and refuses a stripped binding on authoritative read",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  "repairs": [
+    {
+      "id": "V11-F1",
+      "status": "resolved by unchanged independent probe",
+      "upstreamCommit": "f760a90f05809c1fa650db53ceba9baa7a17fd13",
+      "integratedRuntime": "a43852e502948db5ad4450f416a8c7103ef822dd"
+    },
+    {
+      "id": "V11-K1",
+      "status": "resolved; original architecture assertions unchanged",
+      "upstreamCommit": "8be040b1b022764055016003256332de9be03656",
+      "isolatedCherryPick": "5c3459890499a16d3ed9a895dc9f29d925b2cf47"
+    }
+  ],
+  "testSha256": {
+    "tests/ap-system/v11-settlement-fixture.ts": "5a5fc29878a7302ef8c9cab974dcf3bfcf3872e946c6aaa39654ffc7096fd04b",
+    "tests/ap-system/v11-settlement-binding.test.ts": "be73def5ab5717116e3ec48b3ae053f9f603ba0050510311f4e8fee31e983691"
+  },
+  "architectureTestSha256": "1d24b295480d4beab860aebff0e2b99c1c61953c8c56678ff774a4fa4cdcd533",
+  "independentTestsUnchanged": true,
+  "architectureAssertionsUnchanged": true,
+  "finalCategories": {
+    "independent": {
+      "passed": 12,
+      "failed": 0,
+      "total": 12
+    },
+    "ownerLifecycle": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8
+    },
+    "architecture": {
+      "passed": 3,
+      "failed": 0,
+      "total": 3
+    }
+  },
+  "typechecks": {
+    "creditRepair": {
+      "root": "passed",
+      "convex": "passed",
+      "tests": "passed"
+    },
+    "finalRepair": {
+      "root": "passed",
+      "convex": "passed",
+      "tests": "passed"
+    }
+  },
+  "limits": [
+    "Only local cost_and_settlement dimension lifecycle is accepted by this engineering checkpoint.",
+    "No real provider requests, credentials, live backend, Auth0 or practitioner sign-off.",
+    "FakeBank is isolated in-memory SQLite, with synthetic humans and business evidence.",
+    "E01 changes present in integrated parent runtime were not accepted by this scope.",
+    "Future QBO settlement export and tax integration are excluded."
+  ]
+}

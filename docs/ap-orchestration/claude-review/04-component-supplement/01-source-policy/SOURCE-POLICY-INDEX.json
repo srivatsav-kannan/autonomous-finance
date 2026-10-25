@@ -1,0 +1,3928 @@
+[
+  {
+    "variantId": "C02-8f8d92c08513",
+    "database": 0,
+    "caseId": "C02",
+    "sources": [
+      {
+        "sourceId": "gs-invoice-quantity-discrepancy",
+        "revision": 1,
+        "originalSha256": "59b5344281b0a7202c924f4ace515667f34bcf45816826252cecc3b0c6df967a",
+        "originalBytes": 2873,
+        "file": "sources/59b5344281b0a7202c924f4ace515667f34bcf45816826252cecc3b0c6df967a.pdf",
+        "kind": "invoice",
+        "declaredName": "invoice-quantity-discrepancy.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "PDF",
+        "provenance": {
+          "description": "Real A1 synthetic PDF bytes; manually transcribed V1 facts for V2 state tests.",
+          "kind": "synthetic",
+          "license": "Synthetic repository fixture",
+          "originalFilename": "invoice-quantity-discrepancy.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "gs-purchase-order",
+        "revision": 1,
+        "originalSha256": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7",
+        "originalBytes": 3022,
+        "file": "sources/180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7.pdf",
+        "kind": "purchase_order",
+        "declaredName": "purchase-order.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "PDF",
+        "provenance": {
+          "description": "Real A1 synthetic PDF bytes; manually transcribed V1 facts for V2 state tests.",
+          "kind": "synthetic",
+          "license": "Synthetic repository fixture",
+          "originalFilename": "purchase-order.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "gs-receipt",
+        "revision": 1,
+        "originalSha256": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2",
+        "originalBytes": 2908,
+        "file": "sources/a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2.pdf",
+        "kind": "receipt",
+        "declaredName": "receipt.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "PDF",
+        "provenance": {
+          "description": "Real A1 synthetic PDF bytes; manually transcribed V1 facts for V2 state tests.",
+          "kind": "synthetic",
+          "license": "Synthetic repository fixture",
+          "originalFilename": "receipt.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "gs-contract",
+        "revision": 1,
+        "originalSha256": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883",
+        "originalBytes": 3022,
+        "file": "sources/63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883.pdf",
+        "kind": "contract",
+        "declaredName": "contract.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "PDF",
+        "provenance": {
+          "description": "Real A1 synthetic PDF bytes; manually transcribed V1 facts for V2 state tests.",
+          "kind": "synthetic",
+          "license": "Synthetic repository fixture",
+          "originalFilename": "contract.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C04-80c0b19744aa",
+    "database": 0,
+    "caseId": "C04",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "contract",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C04-fefd640cc285",
+    "database": 0,
+    "caseId": "C04",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C05-ab9a1df362b5",
+    "database": 0,
+    "caseId": "C05",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "5350d7e1631ce02de7086fce74cfde90855fa98a5cd62334d55e675f47eea723",
+        "originalBytes": 294,
+        "file": "sources/5350d7e1631ce02de7086fce74cfde90855fa98a5cd62334d55e675f47eea723.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-CN-1",
+        "revision": 1,
+        "originalSha256": "a721645c0cdb5e874a75253290f67f9f25fc1d4dfe381dca47c050a1a7c99a32",
+        "originalBytes": 291,
+        "file": "sources/a721645c0cdb5e874a75253290f67f9f25fc1d4dfe381dca47c050a1a7c99a32.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-CN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-CN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-CN-1",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-CN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-CN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-CN-1",
+        "revision": 1,
+        "originalSha256": "92da2138540cfd5b6b20f32d5c928a01ab77ba7e15fe6a453b9d7d05b59ff56b",
+        "originalBytes": 69,
+        "file": "sources/92da2138540cfd5b6b20f32d5c928a01ab77ba7e15fe6a453b9d7d05b59ff56b.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-CN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-CN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-CN-2",
+        "revision": 1,
+        "originalSha256": "8dbabcb3d45a67cb4f05cab31abd8883563b2893b10100ecdf1cb440ac2f8fad",
+        "originalBytes": 291,
+        "file": "sources/8dbabcb3d45a67cb4f05cab31abd8883563b2893b10100ecdf1cb440ac2f8fad.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-CN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-CN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-CN-2",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-CN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-CN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-CN-2",
+        "revision": 1,
+        "originalSha256": "39f5a3ec27add1b365aaec0f26cf1ff527c77d34a0bdd8ba3ab76c77eb75c687",
+        "originalBytes": 69,
+        "file": "sources/39f5a3ec27add1b365aaec0f26cf1ff527c77d34a0bdd8ba3ab76c77eb75c687.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-CN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-CN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-CN-3",
+        "revision": 1,
+        "originalSha256": "ab355ef180d5807daffdaae78e0a9c791c5c4c4d455ad1de8b5c422832a34709",
+        "originalBytes": 291,
+        "file": "sources/ab355ef180d5807daffdaae78e0a9c791c5c4c4d455ad1de8b5c422832a34709.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-CN-3.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-CN-3.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-CN-3",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-CN-3.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-CN-3.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-CN-3",
+        "revision": 1,
+        "originalSha256": "5a230d6d4809082e3ef0495a7f7c2f28dbb8ac46b9659847413686cafc3f6dc2",
+        "originalBytes": 69,
+        "file": "sources/5a230d6d4809082e3ef0495a7f7c2f28dbb8ac46b9659847413686cafc3f6dc2.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-CN-3.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-CN-3.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C05-b0257ede73e9",
+    "database": 0,
+    "caseId": "C05",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "5350d7e1631ce02de7086fce74cfde90855fa98a5cd62334d55e675f47eea723",
+        "originalBytes": 294,
+        "file": "sources/5350d7e1631ce02de7086fce74cfde90855fa98a5cd62334d55e675f47eea723.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-CN-1",
+        "revision": 1,
+        "originalSha256": "a721645c0cdb5e874a75253290f67f9f25fc1d4dfe381dca47c050a1a7c99a32",
+        "originalBytes": 291,
+        "file": "sources/a721645c0cdb5e874a75253290f67f9f25fc1d4dfe381dca47c050a1a7c99a32.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-CN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-CN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-CN-1",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-CN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-CN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-CN-1",
+        "revision": 1,
+        "originalSha256": "92da2138540cfd5b6b20f32d5c928a01ab77ba7e15fe6a453b9d7d05b59ff56b",
+        "originalBytes": 69,
+        "file": "sources/92da2138540cfd5b6b20f32d5c928a01ab77ba7e15fe6a453b9d7d05b59ff56b.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-CN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-CN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C06-41b1155841c8",
+    "database": 0,
+    "caseId": "C06",
+    "sources": [
+      {
+        "sourceId": "invoice-V3-1",
+        "revision": 1,
+        "originalSha256": "5546bfaffd300126a6db25bf985f0864373f8baeef614afacc1f86dd770b8169",
+        "originalBytes": 114,
+        "file": "sources/5546bfaffd300126a6db25bf985f0864373f8baeef614afacc1f86dd770b8169.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-V3-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-V3-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-V3-1",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-V3-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-V3-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-V3-1",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-V3-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-V3-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C07-5b9918b37b2b",
+    "database": 0,
+    "caseId": "C07",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-V5X-CREDIT-3",
+        "revision": 1,
+        "originalSha256": "a490e704a86658a9bd1d71c1b044f4c7086380db2b2d40575633960d4db1f7cc",
+        "originalBytes": 273,
+        "file": "sources/a490e704a86658a9bd1d71c1b044f4c7086380db2b2d40575633960d4db1f7cc.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-V5X-CREDIT-3.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-V5X-CREDIT-3.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-V5X-CREDIT-3",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-V5X-CREDIT-3.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-V5X-CREDIT-3.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-V5X-CREDIT-3",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-V5X-CREDIT-3.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-V5X-CREDIT-3.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-V5X-CREDIT-6",
+        "revision": 1,
+        "originalSha256": "7118141f7fd279511692e46e2594a08fd25c32b9d8468db92a89e9dd61075870",
+        "originalBytes": 273,
+        "file": "sources/7118141f7fd279511692e46e2594a08fd25c32b9d8468db92a89e9dd61075870.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-V5X-CREDIT-6.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-V5X-CREDIT-6.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-V5X-CREDIT-6",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-V5X-CREDIT-6.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-V5X-CREDIT-6.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-V5X-CREDIT-6",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-V5X-CREDIT-6.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-V5X-CREDIT-6.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C08-8508f59288bd",
+    "database": 0,
+    "caseId": "C08",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "210bb3d3df2364b4b8fe857d71bad4ff2bc96414960c620bb24ba857a11ac849",
+        "originalBytes": 268,
+        "file": "sources/210bb3d3df2364b4b8fe857d71bad4ff2bc96414960c620bb24ba857a11ac849.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-CORRECTED-CREDIT-2",
+        "revision": 1,
+        "originalSha256": "206347367217238da9d3365989ebc5fd7686b5c3ec7cdfa185235ae8924c5bdf",
+        "originalBytes": 279,
+        "file": "sources/206347367217238da9d3365989ebc5fd7686b5c3ec7cdfa185235ae8924c5bdf.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-CORRECTED-CREDIT-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-CORRECTED-CREDIT-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-CORRECTED-CREDIT-2",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-CORRECTED-CREDIT-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-CORRECTED-CREDIT-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-CORRECTED-CREDIT-2",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-CORRECTED-CREDIT-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-CORRECTED-CREDIT-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C09-a21e2c85f9a1",
+    "database": 0,
+    "caseId": "C09",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "close-source-1",
+        "revision": 1,
+        "originalSha256": "59805ebcbc1c873289e90fb8a70f7dc724265a9339066d8d87f492c0671e479b",
+        "originalBytes": 88,
+        "file": "sources/59805ebcbc1c873289e90fb8a70f7dc724265a9339066d8d87f492c0671e479b.txt",
+        "kind": "other",
+        "declaredName": "close-source-1.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C10-787b05c99c9d",
+    "database": 0,
+    "caseId": "C10",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C11-83a2b76734b4",
+    "database": 0,
+    "caseId": "C11",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "v5-close-1",
+        "revision": 1,
+        "originalSha256": "542f07b6667cbcb438f1dfc90eda2c6f3a2b53e14cf55b8d4af89c8136409e19",
+        "originalBytes": 88,
+        "file": "sources/542f07b6667cbcb438f1dfc90eda2c6f3a2b53e14cf55b8d4af89c8136409e19.txt",
+        "kind": "other",
+        "declaredName": "v5-1.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "v5-close-2",
+        "revision": 1,
+        "originalSha256": "5ae7871dadc8e7c18c409aa202d76ac583a973cf7de16434383fa2f15851b596",
+        "originalBytes": 125,
+        "file": "sources/5ae7871dadc8e7c18c409aa202d76ac583a973cf7de16434383fa2f15851b596.txt",
+        "kind": "receipt",
+        "declaredName": "v5-2.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "v5-close-5",
+        "revision": 1,
+        "originalSha256": "994b11353bc698cad1edc6ef3f294d44c1ee125498984a5e32ed90a2c54c63b5",
+        "originalBytes": 62,
+        "file": "sources/994b11353bc698cad1edc6ef3f294d44c1ee125498984a5e32ed90a2c54c63b5.txt",
+        "kind": "other",
+        "declaredName": "v5-5.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C11-a17255931727",
+    "database": 0,
+    "caseId": "C11",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "v5-close-1",
+        "revision": 1,
+        "originalSha256": "542f07b6667cbcb438f1dfc90eda2c6f3a2b53e14cf55b8d4af89c8136409e19",
+        "originalBytes": 88,
+        "file": "sources/542f07b6667cbcb438f1dfc90eda2c6f3a2b53e14cf55b8d4af89c8136409e19.txt",
+        "kind": "other",
+        "declaredName": "v5-1.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "v5-close-2",
+        "revision": 1,
+        "originalSha256": "5ae7871dadc8e7c18c409aa202d76ac583a973cf7de16434383fa2f15851b596",
+        "originalBytes": 125,
+        "file": "sources/5ae7871dadc8e7c18c409aa202d76ac583a973cf7de16434383fa2f15851b596.txt",
+        "kind": "receipt",
+        "declaredName": "v5-2.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "v5-close-4",
+        "revision": 1,
+        "originalSha256": "994b11353bc698cad1edc6ef3f294d44c1ee125498984a5e32ed90a2c54c63b5",
+        "originalBytes": 62,
+        "file": "sources/994b11353bc698cad1edc6ef3f294d44c1ee125498984a5e32ed90a2c54c63b5.txt",
+        "kind": "other",
+        "declaredName": "v5-4.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C12-5d712e64cce3",
+    "database": 0,
+    "caseId": "C12",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "close-source-1",
+        "revision": 1,
+        "originalSha256": "59805ebcbc1c873289e90fb8a70f7dc724265a9339066d8d87f492c0671e479b",
+        "originalBytes": 88,
+        "file": "sources/59805ebcbc1c873289e90fb8a70f7dc724265a9339066d8d87f492c0671e479b.txt",
+        "kind": "other",
+        "declaredName": "close-source-1.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "close-source-2",
+        "revision": 1,
+        "originalSha256": "7acd7c3cd2ef02ce9559350073d989e60aff750859352f987f05e83350c87389",
+        "originalBytes": 52,
+        "file": "sources/7acd7c3cd2ef02ce9559350073d989e60aff750859352f987f05e83350c87389.txt",
+        "kind": "other",
+        "declaredName": "close-source-2.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "close-source-6",
+        "revision": 1,
+        "originalSha256": "ec98aaaad136841ab287d796bd50386433beccb3576c272b8d8d486fc265c533",
+        "originalBytes": 52,
+        "file": "sources/ec98aaaad136841ab287d796bd50386433beccb3576c272b8d8d486fc265c533.txt",
+        "kind": "other",
+        "declaredName": "close-source-6.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C12-97ac240e8042",
+    "database": 0,
+    "caseId": "C12",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "close-source-1",
+        "revision": 1,
+        "originalSha256": "59805ebcbc1c873289e90fb8a70f7dc724265a9339066d8d87f492c0671e479b",
+        "originalBytes": 88,
+        "file": "sources/59805ebcbc1c873289e90fb8a70f7dc724265a9339066d8d87f492c0671e479b.txt",
+        "kind": "other",
+        "declaredName": "close-source-1.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "close-source-2",
+        "revision": 1,
+        "originalSha256": "494afaf501211b9b15d4ff8118bd5dfdf341fea98c68dd7cecba1580b5596561",
+        "originalBytes": 52,
+        "file": "sources/494afaf501211b9b15d4ff8118bd5dfdf341fea98c68dd7cecba1580b5596561.txt",
+        "kind": "other",
+        "declaredName": "close-source-2.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C12-d80917e22fef",
+    "database": 0,
+    "caseId": "C12",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "close-source-1",
+        "revision": 1,
+        "originalSha256": "59805ebcbc1c873289e90fb8a70f7dc724265a9339066d8d87f492c0671e479b",
+        "originalBytes": 88,
+        "file": "sources/59805ebcbc1c873289e90fb8a70f7dc724265a9339066d8d87f492c0671e479b.txt",
+        "kind": "other",
+        "declaredName": "close-source-1.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "close-source-2",
+        "revision": 1,
+        "originalSha256": "049036c51480e11cd102fa2c2a6c076689dfc4926c47470084d190b8dee36370",
+        "originalBytes": 49,
+        "file": "sources/049036c51480e11cd102fa2c2a6c076689dfc4926c47470084d190b8dee36370.txt",
+        "kind": "other",
+        "declaredName": "close-source-2.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C13-a193ac1b1596",
+    "database": 0,
+    "caseId": "C13",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C13-dc2449108aa2",
+    "database": 0,
+    "caseId": "C13",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "cdf3971ea6ad7a52202a98d49e49f8cf628fb38c3bc9bb848ea9a1b8f226c2fe",
+        "file": "policies/4e6a72668a8ca778f84f3db684ea1aa7c9eccf05de896dbadf420cb246e3c285.json",
+        "fileSha256": "4e6a72668a8ca778f84f3db684ea1aa7c9eccf05de896dbadf420cb246e3c285"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C14-1dee9ffe3f4b",
+    "database": 0,
+    "caseId": "C14",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "333d1f3ac6ecf315ee7900af6c6f4cf1979dce5be448ae24cb550bcd41a5164b",
+        "file": "policies/7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63.json",
+        "fileSha256": "7fff45b70f93290a28d874e7bd55c9e46c91363baeacf1d75233938aabef3c63"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C15-06257992acf8",
+    "database": 0,
+    "caseId": "C15",
+    "sources": [
+      {
+        "sourceId": "invoice-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1",
+        "originalBytes": 429,
+        "file": "sources/e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "synthetic-tax-eligibility",
+        "revision": 1,
+        "originalSha256": "a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59",
+        "originalBytes": 115,
+        "file": "sources/a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59.txt",
+        "kind": "other",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-PARTIAL-1",
+        "revision": 1,
+        "originalSha256": "636c9b503e9e1e2dab666007ea041a1e8451308124617c35d509a57439b46c5e",
+        "originalBytes": 296,
+        "file": "sources/636c9b503e9e1e2dab666007ea041a1e8451308124617c35d509a57439b46c5e.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-PARTIAL-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-PARTIAL-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-PARTIAL-1",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-PARTIAL-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-PARTIAL-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-PARTIAL-1",
+        "revision": 1,
+        "originalSha256": "08970fafd4e30f632b75fa53619c596e7b3c0b896133b7e5cf49165b19c188c4",
+        "originalBytes": 74,
+        "file": "sources/08970fafd4e30f632b75fa53619c596e7b3c0b896133b7e5cf49165b19c188c4.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-PARTIAL-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-PARTIAL-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-PARTIAL-2",
+        "revision": 1,
+        "originalSha256": "1208dc402aa10e6035c774f8fd1c0eafcdc9fce0c52cda6b6c67cc979f1157ef",
+        "originalBytes": 296,
+        "file": "sources/1208dc402aa10e6035c774f8fd1c0eafcdc9fce0c52cda6b6c67cc979f1157ef.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-PARTIAL-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-PARTIAL-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-PARTIAL-2",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-PARTIAL-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-PARTIAL-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-PARTIAL-2",
+        "revision": 1,
+        "originalSha256": "d8badf1eae944834f379b900aeaadcd524a54acad930c5e30eff891a645c045e",
+        "originalBytes": 74,
+        "file": "sources/d8badf1eae944834f379b900aeaadcd524a54acad930c5e30eff891a645c045e.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-PARTIAL-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-PARTIAL-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "synthetic-tax-policy-v1",
+        "retainedPolicyHash": "8c26e04b13e904d361f0bd971cdfb8a21c9e819596be8004f072696508fe6c1d",
+        "file": "policies/6a1aff8ab4fff617c400f94e8743b269217cc953ad7ddbbf889bb145ecd25d59.json",
+        "fileSha256": "6a1aff8ab4fff617c400f94e8743b269217cc953ad7ddbbf889bb145ecd25d59"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C15-6e876ea9c6de",
+    "database": 0,
+    "caseId": "C15",
+    "sources": [
+      {
+        "sourceId": "invoice-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1",
+        "originalBytes": 429,
+        "file": "sources/e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "synthetic-tax-eligibility",
+        "revision": 1,
+        "originalSha256": "a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59",
+        "originalBytes": 115,
+        "file": "sources/a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59.txt",
+        "kind": "other",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-TAX-ONLY",
+        "revision": 1,
+        "originalSha256": "7b7f4e21b98697b714addc703de4ec1c9a6f6189e08b19400e84357ca771423b",
+        "originalBytes": 288,
+        "file": "sources/7b7f4e21b98697b714addc703de4ec1c9a6f6189e08b19400e84357ca771423b.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-TAX-ONLY.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-TAX-ONLY.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-TAX-ONLY",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-TAX-ONLY.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-TAX-ONLY.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-TAX-ONLY",
+        "revision": 1,
+        "originalSha256": "a061bf04b78ebed943f69579ec1114841ab0ec033af93397c10f4b1271c289ab",
+        "originalBytes": 73,
+        "file": "sources/a061bf04b78ebed943f69579ec1114841ab0ec033af93397c10f4b1271c289ab.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-TAX-ONLY.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-TAX-ONLY.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-RETURN-1",
+        "revision": 1,
+        "originalSha256": "0b4bb94b92b9947faad1a47ae8d5de7d6038353eca348455a99c9ed2f4ad3590",
+        "originalBytes": 269,
+        "file": "sources/0b4bb94b92b9947faad1a47ae8d5de7d6038353eca348455a99c9ed2f4ad3590.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-RETURN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-RETURN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-RETURN-1",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-RETURN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-RETURN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-RETURN-1",
+        "revision": 1,
+        "originalSha256": "f44ed173948cd6f5ee6083875596181bb3181c242484380b30dd64fdd580b9c7",
+        "originalBytes": 73,
+        "file": "sources/f44ed173948cd6f5ee6083875596181bb3181c242484380b30dd64fdd580b9c7.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-RETURN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-RETURN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-RETURN-2",
+        "revision": 1,
+        "originalSha256": "fdeac313df92389cf918814315f7676152e1c11f63772c86b5b6e2bd1644a2f7",
+        "originalBytes": 269,
+        "file": "sources/fdeac313df92389cf918814315f7676152e1c11f63772c86b5b6e2bd1644a2f7.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-RETURN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-RETURN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-RETURN-2",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-RETURN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-RETURN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-RETURN-2",
+        "revision": 1,
+        "originalSha256": "cc73e8984d479955c34bcfab20fa6cb5d55d6571fbb890cdf9f2e31b30d2b591",
+        "originalBytes": 73,
+        "file": "sources/cc73e8984d479955c34bcfab20fa6cb5d55d6571fbb890cdf9f2e31b30d2b591.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-RETURN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-RETURN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-EXTRA-TAX",
+        "revision": 1,
+        "originalSha256": "95bbcb6f8cffae7c966f563a5bb97ab9a54034b3f100f3551aba9ea38febc7e6",
+        "originalBytes": 285,
+        "file": "sources/95bbcb6f8cffae7c966f563a5bb97ab9a54034b3f100f3551aba9ea38febc7e6.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-EXTRA-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-EXTRA-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-EXTRA-TAX",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-EXTRA-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-EXTRA-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-EXTRA-TAX",
+        "revision": 1,
+        "originalSha256": "687920f19d1e70a69ddc04e06d05a480534e7ac1f1840125984e78a50460cb99",
+        "originalBytes": 74,
+        "file": "sources/687920f19d1e70a69ddc04e06d05a480534e7ac1f1840125984e78a50460cb99.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-EXTRA-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-EXTRA-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "synthetic-tax-policy-v1",
+        "retainedPolicyHash": "1afe88b22b49bd268b70ae591bb77033549111d29c88e1462ae572d3c180ccf4",
+        "file": "policies/fe273b92d5caec6879b36694877be87fec5e6d1223f50d6388f88ad08ff0ef55.json",
+        "fileSha256": "fe273b92d5caec6879b36694877be87fec5e6d1223f50d6388f88ad08ff0ef55"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C16-44c250f8c196",
+    "database": 0,
+    "caseId": "C16",
+    "sources": [
+      {
+        "sourceId": "invoice-HEADER-TAX",
+        "revision": 1,
+        "originalSha256": "5c4004af36419b39faf3f24fc9e8ef522ed8af0b87a6a8b08ddb8c161dd24112",
+        "originalBytes": 436,
+        "file": "sources/5c4004af36419b39faf3f24fc9e8ef522ed8af0b87a6a8b08ddb8c161dd24112.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-HEADER-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-HEADER-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-HEADER-TAX",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-HEADER-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-HEADER-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-HEADER-TAX",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-HEADER-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-HEADER-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "synthetic-tax-eligibility",
+        "revision": 1,
+        "originalSha256": "a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59",
+        "originalBytes": 115,
+        "file": "sources/a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59.txt",
+        "kind": "other",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "b3e02d4637f172284daabfa1d3e4d807a653774adb712c47b84ffe6ef45e617f",
+        "file": "policies/05b5c74960a46d656bd46839d2c36ef5a668ff13e8753282328789983674ab31.json",
+        "fileSha256": "05b5c74960a46d656bd46839d2c36ef5a668ff13e8753282328789983674ab31"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C16-c2d4dcff05ad",
+    "database": 0,
+    "caseId": "C16",
+    "sources": [
+      {
+        "sourceId": "invoice-HEADER-TAX",
+        "revision": 1,
+        "originalSha256": "5c4004af36419b39faf3f24fc9e8ef522ed8af0b87a6a8b08ddb8c161dd24112",
+        "originalBytes": 436,
+        "file": "sources/5c4004af36419b39faf3f24fc9e8ef522ed8af0b87a6a8b08ddb8c161dd24112.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-HEADER-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-HEADER-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-HEADER-TAX",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-HEADER-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-HEADER-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-HEADER-TAX",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-HEADER-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-HEADER-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "synthetic-tax-eligibility",
+        "revision": 1,
+        "originalSha256": "a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59",
+        "originalBytes": 115,
+        "file": "sources/a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59.txt",
+        "kind": "other",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "b3e02d4637f172284daabfa1d3e4d807a653774adb712c47b84ffe6ef45e617f",
+        "file": "policies/05b5c74960a46d656bd46839d2c36ef5a668ff13e8753282328789983674ab31.json",
+        "fileSha256": "05b5c74960a46d656bd46839d2c36ef5a668ff13e8753282328789983674ab31"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C16-f4d324efe7b7",
+    "database": 0,
+    "caseId": "C16",
+    "sources": [
+      {
+        "sourceId": "invoice-HEADER-TAX",
+        "revision": 1,
+        "originalSha256": "5c4004af36419b39faf3f24fc9e8ef522ed8af0b87a6a8b08ddb8c161dd24112",
+        "originalBytes": 436,
+        "file": "sources/5c4004af36419b39faf3f24fc9e8ef522ed8af0b87a6a8b08ddb8c161dd24112.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-HEADER-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-HEADER-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-HEADER-TAX",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-HEADER-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-HEADER-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-HEADER-TAX",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-HEADER-TAX.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-HEADER-TAX.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "synthetic-tax-eligibility",
+        "revision": 1,
+        "originalSha256": "a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59",
+        "originalBytes": 115,
+        "file": "sources/a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59.txt",
+        "kind": "other",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-HEADER-RETURN-1",
+        "revision": 1,
+        "originalSha256": "bceb8d8c5832afff5a9f3faec34343275937e72f10d011e480dbac0b7e149e20",
+        "originalBytes": 302,
+        "file": "sources/bceb8d8c5832afff5a9f3faec34343275937e72f10d011e480dbac0b7e149e20.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-HEADER-RETURN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-HEADER-RETURN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-HEADER-RETURN-1",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-HEADER-RETURN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-HEADER-RETURN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-HEADER-RETURN-1",
+        "revision": 1,
+        "originalSha256": "40187a770a141f26f819bc7cc68b6a07e1aec8e62f71dc5ada4f665a6f8f84c8",
+        "originalBytes": 54,
+        "file": "sources/40187a770a141f26f819bc7cc68b6a07e1aec8e62f71dc5ada4f665a6f8f84c8.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-HEADER-RETURN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-HEADER-RETURN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-HEADER-RETURN-2",
+        "revision": 1,
+        "originalSha256": "4d6205b272ce3e445f364937f82230fcf9b8a46b5112eb0ebd270f0ca8e9e74d",
+        "originalBytes": 302,
+        "file": "sources/4d6205b272ce3e445f364937f82230fcf9b8a46b5112eb0ebd270f0ca8e9e74d.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-HEADER-RETURN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-HEADER-RETURN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-HEADER-RETURN-2",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-HEADER-RETURN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-HEADER-RETURN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-HEADER-RETURN-2",
+        "revision": 1,
+        "originalSha256": "f446a0603aa8a2ca1e37f6db159ea0e2d366b441c244a087bfd6bcd37ef98759",
+        "originalBytes": 54,
+        "file": "sources/f446a0603aa8a2ca1e37f6db159ea0e2d366b441c244a087bfd6bcd37ef98759.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-HEADER-RETURN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-HEADER-RETURN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "b3e02d4637f172284daabfa1d3e4d807a653774adb712c47b84ffe6ef45e617f",
+        "file": "policies/05b5c74960a46d656bd46839d2c36ef5a668ff13e8753282328789983674ab31.json",
+        "fileSha256": "05b5c74960a46d656bd46839d2c36ef5a668ff13e8753282328789983674ab31"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C17-ae38ad37173f",
+    "database": 0,
+    "caseId": "C17",
+    "sources": [
+      {
+        "sourceId": "invoice-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1",
+        "originalBytes": 429,
+        "file": "sources/e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "synthetic-tax-eligibility",
+        "revision": 1,
+        "originalSha256": "a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59",
+        "originalBytes": 115,
+        "file": "sources/a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59.txt",
+        "kind": "other",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-ADJUSTED-RETURN-1",
+        "revision": 1,
+        "originalSha256": "46714fd142d3a4a3ae72d53e08fc6526ccfdbec1f4134e5ddac34c3ce9838983",
+        "originalBytes": 304,
+        "file": "sources/46714fd142d3a4a3ae72d53e08fc6526ccfdbec1f4134e5ddac34c3ce9838983.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-ADJUSTED-RETURN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-ADJUSTED-RETURN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-ADJUSTED-RETURN-1",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-ADJUSTED-RETURN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-ADJUSTED-RETURN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-ADJUSTED-RETURN-1",
+        "revision": 1,
+        "originalSha256": "2fcf1eb60bd4cd6ca668e68c2011e5f82d0b92621adcd128250afd0a137e66ee",
+        "originalBytes": 82,
+        "file": "sources/2fcf1eb60bd4cd6ca668e68c2011e5f82d0b92621adcd128250afd0a137e66ee.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-ADJUSTED-RETURN-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-ADJUSTED-RETURN-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-ADJUSTED-RETURN-2",
+        "revision": 1,
+        "originalSha256": "9f09ea6b42d23ced0dddbd3f5c3f28ec420fd4b4c5375df1edb1736606009b05",
+        "originalBytes": 304,
+        "file": "sources/9f09ea6b42d23ced0dddbd3f5c3f28ec420fd4b4c5375df1edb1736606009b05.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-ADJUSTED-RETURN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-ADJUSTED-RETURN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-ADJUSTED-RETURN-2",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-ADJUSTED-RETURN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-ADJUSTED-RETURN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-ADJUSTED-RETURN-2",
+        "revision": 1,
+        "originalSha256": "a357bf58ff6c3a7438c56a7e21c8259898ad3af75e469c984ac6c0c359f4e055",
+        "originalBytes": 82,
+        "file": "sources/a357bf58ff6c3a7438c56a7e21c8259898ad3af75e469c984ac6c0c359f4e055.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-ADJUSTED-RETURN-2.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-ADJUSTED-RETURN-2.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "synthetic-tax-policy-v1",
+        "retainedPolicyHash": "1afe88b22b49bd268b70ae591bb77033549111d29c88e1462ae572d3c180ccf4",
+        "file": "policies/fe273b92d5caec6879b36694877be87fec5e6d1223f50d6388f88ad08ff0ef55.json",
+        "fileSha256": "fe273b92d5caec6879b36694877be87fec5e6d1223f50d6388f88ad08ff0ef55"
+      },
+      {
+        "version": "test-tax-recovery-5000",
+        "retainedPolicyHash": "f6216dfb8789d942c9717f489ebbca3c4c2e4802ae1acfa1b91ace408e53364b",
+        "file": "policies/207a0dbcb2220a7879fa2ddc9bcd4865642ca4cf447bdf674e578156e9c2c6cd.json",
+        "fileSha256": "207a0dbcb2220a7879fa2ddc9bcd4865642ca4cf447bdf674e578156e9c2c6cd"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C18-8c55d0ee1f5c",
+    "database": 0,
+    "caseId": "C18",
+    "sources": [
+      {
+        "sourceId": "invoice-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1",
+        "originalBytes": 429,
+        "file": "sources/e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "synthetic-tax-eligibility",
+        "revision": 1,
+        "originalSha256": "a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59",
+        "originalBytes": 115,
+        "file": "sources/a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59.txt",
+        "kind": "other",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-BEFORE-REVIEW",
+        "revision": 1,
+        "originalSha256": "1ac6dffc706d9d25ba9ea9e84375e2eb23b4fd36e283ab656621d660fa10e7f2",
+        "originalBytes": 300,
+        "file": "sources/1ac6dffc706d9d25ba9ea9e84375e2eb23b4fd36e283ab656621d660fa10e7f2.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-BEFORE-REVIEW.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-BEFORE-REVIEW.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-BEFORE-REVIEW",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-BEFORE-REVIEW.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-BEFORE-REVIEW.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-BEFORE-REVIEW",
+        "revision": 1,
+        "originalSha256": "1ba51c96c4fe9983cc01f1a809af90bfec932ba93eab3467db128ef9ef907594",
+        "originalBytes": 78,
+        "file": "sources/1ba51c96c4fe9983cc01f1a809af90bfec932ba93eab3467db128ef9ef907594.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-BEFORE-REVIEW.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-BEFORE-REVIEW.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "invoice-AFTER-REVIEW",
+        "revision": 1,
+        "originalSha256": "c588ec99642012dc6ad72766c0b39edecfb7a1ceee0ccb47812bda788c584953",
+        "originalBytes": 299,
+        "file": "sources/c588ec99642012dc6ad72766c0b39edecfb7a1ceee0ccb47812bda788c584953.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-AFTER-REVIEW.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-AFTER-REVIEW.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-AFTER-REVIEW",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-AFTER-REVIEW.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-AFTER-REVIEW.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-AFTER-REVIEW",
+        "revision": 1,
+        "originalSha256": "e4c32d09c09b37ccfc2795fb3f15549137b9068d49fb85a5bc2e188abb40309b",
+        "originalBytes": 77,
+        "file": "sources/e4c32d09c09b37ccfc2795fb3f15549137b9068d49fb85a5bc2e188abb40309b.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-AFTER-REVIEW.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-AFTER-REVIEW.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "synthetic-tax-policy-v1",
+        "retainedPolicyHash": "8c26e04b13e904d361f0bd971cdfb8a21c9e819596be8004f072696508fe6c1d",
+        "file": "policies/6a1aff8ab4fff617c400f94e8743b269217cc953ad7ddbbf889bb145ecd25d59.json",
+        "fileSha256": "6a1aff8ab4fff617c400f94e8743b269217cc953ad7ddbbf889bb145ecd25d59"
+      },
+      {
+        "version": "test-tax-recovery-10000",
+        "retainedPolicyHash": "a0219a1ce22b39df8dfaf6f66818bdb5942428a669aac7995a6a3e2e315ea2c4",
+        "file": "policies/e5bb6c997ffbe98087122a3d7ae43232d42d079f10745a77164ae453eca0de85.json",
+        "fileSha256": "e5bb6c997ffbe98087122a3d7ae43232d42d079f10745a77164ae453eca0de85"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C19-ea2f03243a92",
+    "database": 0,
+    "caseId": "C19",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "6fcc8f59967a807405a9c73bdf140729573da3b6b6c9626a6de9c31b17608df9",
+        "originalBytes": 268,
+        "file": "sources/6fcc8f59967a807405a9c73bdf140729573da3b6b6c9626a6de9c31b17608df9.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      },
+      {
+        "sourceId": "invoice-CREDIT-1",
+        "revision": 1,
+        "originalSha256": "ada3db48651b7bcba271854213cca691a1952a205c02ef50bf4ee149d2c78f11",
+        "originalBytes": 269,
+        "file": "sources/ada3db48651b7bcba271854213cca691a1952a205c02ef50bf4ee149d2c78f11.txt",
+        "kind": "credit_note",
+        "declaredName": "invoice-CREDIT-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-CREDIT-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      },
+      {
+        "sourceId": "po-CREDIT-1",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-CREDIT-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-CREDIT-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      },
+      {
+        "sourceId": "return-CREDIT-1",
+        "revision": 1,
+        "originalSha256": "601c4350b89d99c4eeaab5400980d49da1759fa466662b2685dd800ee6bba784",
+        "originalBytes": 89,
+        "file": "sources/601c4350b89d99c4eeaab5400980d49da1759fa466662b2685dd800ee6bba784.txt",
+        "kind": "receipt",
+        "declaredName": "return-CREDIT-1.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "return-CREDIT-1.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "8df735f8772b07dab3b97188c8699e3230f790125c6254cee30bf910f7eb39b0",
+        "file": "policies/6efe5f8db04d6c4cd5f812d0e122a8590b1e611483bc94d2f509b0fe54f00b98.json",
+        "fileSha256": "6efe5f8db04d6c4cd5f812d0e122a8590b1e611483bc94d2f509b0fe54f00b98"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C20-16c700fe2b38",
+    "database": 0,
+    "caseId": "C20",
+    "sources": [
+      {
+        "sourceId": "invoice-november-invoice",
+        "revision": 1,
+        "originalSha256": "3c0ec9009917a5ffb93582074a6257bdc5084aef8ec36daa6a856b9292dae573",
+        "originalBytes": 277,
+        "file": "sources/3c0ec9009917a5ffb93582074a6257bdc5084aef8ec36daa6a856b9292dae573.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-november-invoice.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-november-invoice.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-november-invoice",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-november-invoice.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-november-invoice.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-november-invoice",
+        "revision": 1,
+        "originalSha256": "26270ea47c2eb0ab1031530de61c18c29356ec7da0237ce37d9d6314024384aa",
+        "originalBytes": 83,
+        "file": "sources/26270ea47c2eb0ab1031530de61c18c29356ec7da0237ce37d9d6314024384aa.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-november-invoice.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-november-invoice.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "retained-7",
+        "revision": 1,
+        "originalSha256": "4bff11924ca81c8782b40c644ecc27d1c3b176c6412f20631663d342ffa14cce",
+        "originalBytes": 77,
+        "file": "sources/4bff11924ca81c8782b40c644ecc27d1c3b176c6412f20631663d342ffa14cce.txt",
+        "kind": "other",
+        "declaredName": "retained-7.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-november-invoice.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "0f33523a47a54efe233e5b89449d906752eb8ca3ee91be263560b62efe15191d",
+        "file": "policies/7528f375c316dfcabda64e4109da3a66dd80be971d97d6ad6ec3bc416a1fc2a1.json",
+        "fileSha256": "7528f375c316dfcabda64e4109da3a66dd80be971d97d6ad6ec3bc416a1fc2a1"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C21-45bd954739e6",
+    "database": 0,
+    "caseId": "C21",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "contact-directory",
+        "revision": 1,
+        "originalSha256": "ff9a654fd152d4f5396731916e4c58d28d45b3b40a22ffd697c2f65256af8415",
+        "originalBytes": 90,
+        "file": "sources/ff9a654fd152d4f5396731916e4c58d28d45b3b40a22ffd697c2f65256af8415.txt",
+        "kind": "contract",
+        "declaredName": "contact-directory.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "5705cbb9ed2baf1710743e0f820bad62e6b89284b0005f491bca4367d5c87e54",
+        "file": "policies/da844da19a46b62b1903a1562af8eeca2a86ea1de45d71f2b62012dceff1e5e9.json",
+        "fileSha256": "da844da19a46b62b1903a1562af8eeca2a86ea1de45d71f2b62012dceff1e5e9"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C21-890251a1f515",
+    "database": 0,
+    "caseId": "C21",
+    "sources": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "originalSha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "originalBytes": 117,
+        "file": "sources/c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      },
+      {
+        "sourceId": "contact-directory",
+        "revision": 1,
+        "originalSha256": "ff9a654fd152d4f5396731916e4c58d28d45b3b40a22ffd697c2f65256af8415",
+        "originalBytes": 90,
+        "file": "sources/ff9a654fd152d4f5396731916e4c58d28d45b3b40a22ffd697c2f65256af8415.txt",
+        "kind": "contract",
+        "declaredName": "contact-directory.txt",
+        "declaredMimeType": "text/plain",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": true,
+        "scopeCaveat": null
+      }
+    ],
+    "policies": [
+      {
+        "version": "business-test-v1",
+        "retainedPolicyHash": "5705cbb9ed2baf1710743e0f820bad62e6b89284b0005f491bca4367d5c87e54",
+        "file": "policies/da844da19a46b62b1903a1562af8eeca2a86ea1de45d71f2b62012dceff1e5e9.json",
+        "fileSha256": "da844da19a46b62b1903a1562af8eeca2a86ea1de45d71f2b62012dceff1e5e9"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C22-be31efde30e2",
+    "database": 0,
+    "caseId": "C22",
+    "sources": [
+      {
+        "sourceId": "invoice-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1",
+        "originalBytes": 429,
+        "file": "sources/e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      },
+      {
+        "sourceId": "po-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      },
+      {
+        "sourceId": "receipt-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      },
+      {
+        "sourceId": "synthetic-tax-eligibility",
+        "revision": 1,
+        "originalSha256": "a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59",
+        "originalBytes": 115,
+        "file": "sources/a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59.txt",
+        "kind": "other",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      }
+    ],
+    "policies": [
+      {
+        "version": "synthetic-tax-policy-v1",
+        "retainedPolicyHash": "3494058b51525ed7e67788a4de2ead0fece49867e9367dd2f6f17c42ddd63c9a",
+        "file": "policies/22a46b31274b5e41197ea02ffa8069faff1ee4a4a27da7ee90f8bd18fcc62967.json",
+        "fileSha256": "22a46b31274b5e41197ea02ffa8069faff1ee4a4a27da7ee90f8bd18fcc62967"
+      },
+      {
+        "version": "test-tax-50-percent",
+        "retainedPolicyHash": "9de8472c6ebd2f4db244f249cbe8aefbc1e07bf6e02318630673fdedd1ff717a",
+        "file": "policies/710191d0cd650e4b58019492d2800bfb8d94f46d4b6dd1ada40fa24784a040a3.json",
+        "fileSha256": "710191d0cd650e4b58019492d2800bfb8d94f46d4b6dd1ada40fa24784a040a3"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  },
+  {
+    "variantId": "C22-c0783eb2dfcc",
+    "database": 0,
+    "caseId": "C22",
+    "sources": [
+      {
+        "sourceId": "invoice-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1",
+        "originalBytes": 429,
+        "file": "sources/e3c7af66a258f8dca6a0ed3e874268f3fb19d09b9bbfcaba1e26634f5015ace1.txt",
+        "kind": "invoice",
+        "declaredName": "invoice-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      },
+      {
+        "sourceId": "po-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "originalBytes": 40,
+        "file": "sources/8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f.txt",
+        "kind": "purchase_order",
+        "declaredName": "po-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      },
+      {
+        "sourceId": "receipt-TAX-INVOICE",
+        "revision": 1,
+        "originalSha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "originalBytes": 57,
+        "file": "sources/1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931.txt",
+        "kind": "receipt",
+        "declaredName": "receipt-TAX-INVOICE.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-TAX-INVOICE.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      },
+      {
+        "sourceId": "synthetic-tax-eligibility",
+        "revision": 1,
+        "originalSha256": "a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59",
+        "originalBytes": 115,
+        "file": "sources/a7004fa87631347ec96697f01e2db9f582393872909c81b80f283ea3a9100b59.txt",
+        "kind": "other",
+        "declaredName": "invoice-GS-1042.pdf",
+        "declaredMimeType": "application/pdf",
+        "actualRepresentation": "synthetic UTF-8 text stand-in; declared PDF MIME/name does not make these PDF bytes",
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "chunkScopeMatchesSourceRow": false,
+        "scopeCaveat": "Protocol fixture promoted metadata scope but retained raw source chunks in another scope. Bytes match hash; this does not prove scoped source API retrieval."
+      }
+    ],
+    "policies": [
+      {
+        "version": "synthetic-tax-policy-v1",
+        "retainedPolicyHash": "3494058b51525ed7e67788a4de2ead0fece49867e9367dd2f6f17c42ddd63c9a",
+        "file": "policies/22a46b31274b5e41197ea02ffa8069faff1ee4a4a27da7ee90f8bd18fcc62967.json",
+        "fileSha256": "22a46b31274b5e41197ea02ffa8069faff1ee4a4a27da7ee90f8bd18fcc62967"
+      },
+      {
+        "version": "test-tax-50-percent",
+        "retainedPolicyHash": "9de8472c6ebd2f4db244f249cbe8aefbc1e07bf6e02318630673fdedd1ff717a",
+        "file": "policies/710191d0cd650e4b58019492d2800bfb8d94f46d4b6dd1ada40fa24784a040a3.json",
+        "fileSha256": "710191d0cd650e4b58019492d2800bfb8d94f46d4b6dd1ada40fa24784a040a3"
+      }
+    ],
+    "scope": "Synthetic scenario only; not a real entity policy or legal eligibility decision"
+  }
+]

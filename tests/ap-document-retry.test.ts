@@ -34,7 +34,7 @@ function fixture(mode: "approve" | "hold" | "reject") {
   const rt = new SeatRuntime("test", { seatId: "ap-1", role: "ap_clerk", name: "AP" }, "token", mem);
   const item = vendor.contractPrices[0]!;
   const invoice: ParsedInvoice = {
-    vendorName: vendor.legalName, invoiceNumber: "INV-42", invoiceDate: "2026-01-05", dueDate: "2026-02-05", storeId, deliveryId: null,
+    vendorName: vendor.legalName, invoiceNumber: "INV-42", invoiceDate: "2026-01-05", dueDate: "2026-02-05", storeId, deliveryId: "DEL-42",
     lines: [{ sku: item.sku, description: item.description, quantity: 1, unitCents: item.unitCents, amountCents: item.unitCents }],
     totalCents: item.unitCents, remitBank: vendor.remitTo.bank, remitLast4: vendor.remitTo.accountLast4, note: null,
   };
@@ -48,6 +48,7 @@ function fixture(mode: "approve" | "hold" | "reject") {
   const task = { _id: "document-task", payload: { eventId: "source-document", externalId: "external-invoice" } } as Task;
   vi.spyOn(rt, "event").mockResolvedValue({ _id: "source-document", externalId: "external-invoice", payload: { kind: "invoice", from: vendor.contacts[0]!.email, text: "fixture invoice" } } as Doc<"events">);
   vi.spyOn(rt, "simDate").mockResolvedValue("2026-01-05");
+  vi.spyOn(rt, "eventsOfType").mockResolvedValue([{ _id: "receiving-event", externalId: "receipt-42", payload: { deliveryId: "DEL-42", items: [{ sku: item.sku, qtyReceived: 1 }] } } as Doc<"events">]);
   vi.spyOn(rt, "parsersNow").mockResolvedValue([{ id: "fixture", origin: "builtin", detect: () => true, parse: () => invoice }]);
   vi.spyOn(rt.kernel.client, "query").mockImplementation(async (...call) => {
     const [ref] = call;
@@ -92,6 +93,75 @@ function fixture(mode: "approve" | "hold" | "reject") {
 }
 
 describe("AP document retry after kernel acceptance", () => {
+  const goodsCategories = ["produce", "protein", "dairy", "packaging", "beverage", "supplies"] as const;
+  const nonGoodsCategories = ["utilities", "tech", "landlord", "facilities", "marketing", "services"] as const;
+  const setVendorCategory = (category: Vendor["category"], contractPrices = vendor.contractPrices) =>
+    mem.bootstrap([{ path: `vendors/${vendor.id}.yaml`, data: { ...vendor, category, contractPrices } }], { seatId: "system", name: "System" }, "Seed approved vendor category and contracts");
+
+  it.each(nonGoodsCategories)("approves a %s invoice without a goods delivery reference or catalog SKU", async category => {
+    const f = fixture("approve");
+    f.invoice.deliveryId = null;
+    f.invoice.lines[0]!.sku = "SERVICE-FEE";
+    await setVendorCategory(category, []);
+
+    expect(await f.run()).toMatchObject({ outcome: "approved" });
+    expect(f.bills).toHaveLength(1);
+    expect(f.bills[0]).toMatchObject({ totalCents: f.invoice.totalCents, status: "approved", exceptions: [], entryId: "accrual" });
+    expect(f.handoffs.size).toBe(0);
+    expect(f.rt.eventsOfType).not.toHaveBeenCalled();
+    const decision = await mem.read<Decision>(f.bills[0]!.decisionPath!);
+    expect(decision!.summary).toContain("applicable non-goods policy checks passed");
+    expect(decision!.summary).not.toContain("receiving checks passed");
+    expect(decision!.facts.some(fact => fact.key === "receiving")).toBe(false);
+  });
+
+  it.each(goodsCategories)("holds a %s invoice with no delivery reference instead of calling it a clean match", async category => {
+    const f=fixture("approve");f.invoice.deliveryId=null;
+    await setVendorCategory(category);
+    const result=await f.run();expect(result.outcome).toBe("held");
+    expect(f.bills[0]!.exceptions).toEqual(expect.arrayContaining([expect.stringContaining("missing_delivery_reference")]));
+  });
+  it.each(goodsCategories)("holds an unknown %s SKU even when receiving records claim a matching quantity", async category => {
+    const f=fixture("approve");f.invoice.lines[0]!.sku="UNKNOWN";
+    await setVendorCategory(category);
+    vi.mocked(f.rt.eventsOfType).mockResolvedValue([{ _id: "receiving-event", externalId: "receipt-42", payload: { deliveryId: "DEL-42", items: [{ sku: "UNKNOWN", qtyReceived: 1 }] } } as Doc<"events">]);
+    const result=await f.run();expect(result.outcome).toBe("held");
+    expect(f.bills[0]!.exceptions).toEqual([expect.stringContaining("unknown_sku")]);
+  });
+
+  it("still checks a delivery reference explicitly stated by a non-goods invoice", async () => {
+    const f = fixture("approve");
+    await setVendorCategory("services", []);
+    vi.mocked(f.rt.eventsOfType).mockResolvedValue([]);
+    expect(await f.run()).toMatchObject({ outcome: "held" });
+    expect(f.bills[0]!.exceptions).toEqual([expect.stringContaining("no_receiving_record")]);
+  });
+
+  it("still holds a non-goods price variance against its applicable contract", async () => {
+    const f = fixture("hold");
+    f.invoice.deliveryId = null;
+    await setVendorCategory("tech");
+    expect(await f.run()).toMatchObject({ outcome: "held" });
+    expect(f.bills[0]!.exceptions).toEqual([expect.stringContaining("price_over_contract")]);
+    expect(f.bills[0]!.totalCents).toBe(f.invoice.totalCents);
+    expect(f.handoffs.size).toBe(1);
+  });
+
+  it("reuses a non-goods approval after a lost bill response despite later category changes", async () => {
+    const f = fixture("approve");
+    f.invoice.deliveryId = null;
+    f.invoice.lines[0]!.sku = "SERVICE-FEE";
+    await setVendorCategory("utilities", []);
+    f.loseBillResponse();
+    await expect(f.run()).rejects.toThrow("bill response lost");
+    const recorded = structuredClone(f.bills[0]);
+    await setVendorCategory("supplies", []);
+
+    expect(await f.run()).toMatchObject({ outcome: "approved" });
+    expect(f.bills).toEqual([recorded]);
+    expect(f.mutation.mock.calls.filter(([ref]) => getFunctionName(ref) === "ap:recordBill")).toHaveLength(1);
+    expect(f.handoffs.size).toBe(0);
+  });
   it.each([
     ["approve", "decision mirror"], ["hold", "decision mirror"], ["reject", "decision mirror"],
     ["approve", "bill request"], ["hold", "bill request"], ["reject", "bill request"],

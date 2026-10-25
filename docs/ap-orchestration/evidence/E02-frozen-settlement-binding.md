@@ -1,0 +1,15 @@
+# E02 frozen settlement binding checkpoint
+
+This implements the Root-approved local part of E02-settlement-dimension-proposal.md. The explicit business policy may select cost_and_settlement only with settlementDepartment=homogeneous_approved_department. No active policy, run configuration or service was changed. Existing cost_allocations records keep their old serialized shape and behavior.
+
+New recognition requires homogeneous department including null and carries it on the AP line. Linked credits preserve original payable scope/department, even after cost reclassification. Recertification cannot switch the original scope. Historical exports reconstruct the policy from the original approval hash, retain original journal/approval/policy hashes, and validate the posted dimension-bearing journal. Retiring current policy does not erase those historical facts.
+
+The backend derives PaymentSnapshot.accountingBinding from the exact immutable bill and credit recognition authority, amounts, supplier and department. Mixed scopes/departments, missing authority and incomplete ID/amount coverage reject. New BankCommand.accountingBindingHash is included in the existing canonical request hash. Increase request bytes still contain only the original banking fields. Old strict workers reject the added field; this checkpoint does not change any executor configuration or silently migrate workers.
+
+Approval and first dispatch recheck original binding and current authority. Possible-send recovery checks frozen snapshot/command integrity but does not reauthorize against current policy. Matched posted debits use the frozen department; returns reverse exact original account/department coordinates. The existing posted transaction and journal idempotency remains authoritative. Direct zero-cash credit application stores the same complete binding without inventing a bank journal.
+
+External QBO payment/return mapping still deliberately holds department-bearing settlement until the next export/adapter checkpoint. Project cash dimensions are not fabricated. Independent review and real authorized sandbox acceptance remain required; all checks here are local synthetic tests.
+
+New tests exercise actual request → human approval → claim → retained posted debit → return, partial cash plus credit, explicit null, historical policy retirement, forged command binding with a valid request rehash, original credit capacity retained after cash return, idempotent return, and legacy field/hash absence. Validation commands and final totals are reported with the checkpoint; no provider calls or private credential reads were made.
+
+Validation: the full AP run passed 584/585 tests and found one error-order compatibility difference in the independent multi-credit overdraw probe. The production preflight now preserves its original credit_unavailable response; that unchanged probe and all 10 tests in the three affected files pass. All three TypeScript configurations and diff whitespace checks pass. Broader final regression will run again after the external export checkpoint.

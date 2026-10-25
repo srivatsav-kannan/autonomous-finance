@@ -1,16 +1,17 @@
+import { isDeepStrictEqual } from "node:util";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { api } from "../../core/kernel-client";
 import { formatMoney } from "../../core/money";
 import { ROLE_CAPABILITIES, canApprovePayment } from "../../core/roles";
-import { compileParser, type ParserRecord } from "../../integrations/parsers";
+import { compileParser, parseWith, type ParserRecord } from "../../integrations/parsers";
 import type { Vendor } from "../../memory/schemas";
 import type { Handler, SeatRuntime } from "../runtime";
 import type { Exception } from "./ap";
 
 /**
- * Resolve a held bill. Duplicates are rejected; quantity and price problems are short-paid
- * to what was received at contract price; open credits are deducted and marked applied;
- * clean over-limit bills are approved. Every resolution leaves a decision record.
+ * Resolve a held bill. Price/quantity and missing-evidence exceptions require an explicit
+ * human decision; a computed recommendation never authorizes a reduction. Existing credits
+ * retain their separate claim controls. Every resolution leaves a decision record.
  */
 export const reviewHeld: Handler = async (rt, task) => {
   const billId = task.payload.billId as Id<"bills">;
@@ -21,15 +22,15 @@ export const reviewHeld: Handler = async (rt, task) => {
   const codes = new Set(ex.map((e) => e.code));
 
   let humanAnswer: Doc<"asks"> | undefined;
-  if (codes.has("no_receiving_record") || codes.has("unknown_store")) {
+  if (["no_receiving_record", "unknown_store", "missing_delivery_reference", "unknown_sku", "price_over_contract", "short_shipment"].some(code => codes.has(code as Exception["code"]))) {
     const asks = await rt.kernel.client.query(api.asks.forTask, { runId: rt.runId, taskId: task._id });
     humanAnswer = asks.find((a) => a.taskId === task._id && a.to === "human_cfo" && a.status === "answered" &&
       (a.answer?.optionId === "pay" || a.answer?.optionId === "reject") && a.options.some((o) => o.id === a.answer?.optionId));
     if (!humanAnswer) {
       await rt.ask({ to: "human_cfo", severity: "decision", title: `Can't verify ${bill.vendor} ${bill.invoiceNumber}`,
-        body: ex.map((e) => e.detail).join("\n"), options: [{ id: "pay", label: "Pay as billed" }, { id: "reject", label: "Reject" }], taskId: task._id,
+        body: `${ex.map((e) => e.detail).join("\n")}\nA calculated adjustment is a proposal only. Obtain a corrected invoice/credit or explicit authorized decision; no vendor communication has been sent.`, options: [{ id: "pay", label: "Pay as billed" }, { id: "reject", label: "Reject" }], taskId: task._id,
         evidence: [{ label: "decision", ref: String(task.payload.decisionPath) }] });
-      return { outcome: "asked", summary: "needs a human: no receiving record", waiting: true };
+      return { outcome: "asked", summary: "needs an authorized human resolution of the held evidence/variance", waiting: true };
     }
   }
 
@@ -90,7 +91,7 @@ export const reviewHeld: Handler = async (rt, task) => {
       const on = await rt.simDate();
       await rt.updateVendor(v.id, (current) => ({
         ...current,
-        notes: [...current.notes, ...disputes.map((e) => ({ on, by: rt.seat.seatId, text: `Short-paid ${bill.invoiceNumber}: ${e.detail}. Vendor notified.` }))],
+        notes: [...current.notes, ...disputes.map((e) => ({ on, by: rt.seat.seatId, text: `Dispute recorded for ${bill.invoiceNumber}: ${e.detail}. Communication state: not sent; retain actual delivery evidence if later sent.` }))],
       }), `Record disputes for ${bill.invoiceNumber}`, { "Decision-Id": d.path }, `vendor-update:${bill._id}`);
     }
   }
@@ -175,8 +176,7 @@ export const approvePayment: Handler = async (rt, task) => {
     body: `${intent.billIds.length} approved bill(s), remit to ${intent.remitTo.bank} ****${intent.remitTo.accountLast4} (verified ${vendorRec?.vendor.remitTo.verifiedOn}). ` +
       `Controller ${withinMine ? "approved" : "is over its limit"}${cfoAvailable ? "; the CFO agent is the other approver" : ""}. ` +
       (intent.requiresHuman ? "Policy requires a human at this amount." : "No second agent can approve this amount, so a human must."),
-    options: [{ id: "approve", label: "Approve payment" }, { id: "reject", label: "Reject" }],
-    paymentIntentId: intentId,
+    effect: { kind: "payment", paymentIntentId: intentId },
     taskId: task._id,
   });
   return { outcome: "asked", summary: "human approval required", waiting: true };
@@ -192,16 +192,22 @@ export const reviewProposal: Handler = async (rt, task) => {
       const proposed = await rt.mem.read<Vendor>(p, head);
       if (!proposed || proposed.remitTo.method !== "callback_known_number") problems.push(`${p}: remit-to not verified by callback to the number on file`);
     } else if (p.startsWith("integrations/parsers/")) {
-      const rec = await rt.mem.read<ParserRecord>(p, head);
+      const rec = await rt.mem.read<unknown>(p, head);
       if (!rec) {
         problems.push(`${p}: unreadable`);
         continue;
       }
+      // compileParser validates the spec (schema and regex safety) and refuses legacy code.
+      // Every stored test must then parse, pass the schema and arithmetic checks, and match.
       try {
         const parser = compileParser(rec);
-        for (const [i, t] of rec.tests.entries()) {
-          const got = parser.parse(t.input);
-          if (JSON.stringify(got) !== JSON.stringify(t.expected)) problems.push(`${p}: test ${i + 1} output differs from expected`);
+        const { id, tests } = rec as ParserRecord;
+        if (p !== `integrations/parsers/${id}.yaml`) problems.push(`${p}: record id ${id} does not match its path`);
+        if (!tests.length) problems.push(`${p}: no tests`);
+        for (const [i, t] of tests.entries()) {
+          const got = parseWith([parser], t.input);
+          if (!got.ok) problems.push(`${p}: test ${i + 1}: ${got.reason}`);
+          else if (!isDeepStrictEqual(got.invoice, t.expected)) problems.push(`${p}: test ${i + 1} output differs from expected`);
         }
       } catch (e) {
         problems.push(`${p}: ${e instanceof Error ? e.message.slice(0, 200) : e}`);

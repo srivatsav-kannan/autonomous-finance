@@ -1,0 +1,40 @@
+{
+  "phase": "02-comparison",
+  "files": [
+    {
+      "path": "EVIDENCE-MAP.md",
+      "bytes": 2863,
+      "sha256": "2e188c497cb93e45ecdb9c948a7dad2bd0cb6025ca07049ae7620fbb05697ea1"
+    },
+    {
+      "path": "PROMPT.txt",
+      "bytes": 2210,
+      "sha256": "5ef021fd2f13ba9eefe9e4c19c8e381403bcb1cabd5704a76d02784f3f5f5998"
+    },
+    {
+      "path": "TEAM-EXPECTED-ONLY.json",
+      "bytes": 46322,
+      "sha256": "cce1c3d615f7a4a351d64f193af9fdd69727e3896d39326b47feac97d88073b2"
+    },
+    {
+      "path": "observed/I1-retained-readback.json",
+      "bytes": 5217,
+      "sha256": "94dc221ae30a326bd72475ada087b7cdfdca1d8856c40437ebe36b542a0c592d"
+    },
+    {
+      "path": "observed/I2-close-retained-readback.json",
+      "bytes": 2880,
+      "sha256": "45f11a2068b8bc4aa8dff48bdee44e5c9be217f43af5222683105cdd8a0a2c79"
+    },
+    {
+      "path": "observed/I2-retained-readback.json",
+      "bytes": 5374,
+      "sha256": "7187bc2dc00fc4f58a67e157c96f19a46bd358e99b3071b3cb5dae14ba54bbeb"
+    },
+    {
+      "path": "observed/I3-retained-readback.json",
+      "bytes": 8458,
+      "sha256": "2edc82f39f0afecedc79d1a39ebe49e3dd468b23baf14ad5eaac082880d59603"
+    }
+  ]
+}

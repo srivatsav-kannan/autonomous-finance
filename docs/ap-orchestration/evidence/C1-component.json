@@ -1,0 +1,34 @@
+{
+  "task": "C1",
+  "status": "component_verified_pending_independent_review",
+  "source_base": "f4ff17a",
+  "working_changes": [
+    "convex/lib/payments/executionConfig.ts",
+    "tests/ap-case-payments.test.ts"
+  ],
+  "contract": "ap-evidence-v1",
+  "checks": [
+    {
+      "command": "npx vitest run tests/ap-case-payments.test.ts tests/payment-kernel.test.ts tests/ap-system-server.test.ts",
+      "result": "28 passed"
+    },
+    {
+      "command": "npm run typecheck && npm run typecheck:backend && npm run typecheck:tests",
+      "result": "all three passed"
+    }
+  ],
+  "coverage": [
+    "original scoped payment engine",
+    "separate human authorization",
+    "revision/snapshot/same-bill gates",
+    "direct legacy request bypass",
+    "first-dispatch case authority",
+    "request replay and existing reservation tests",
+    "source bytes/hash/session serving"
+  ],
+  "not_established": [
+    "same uploaded PDF integration",
+    "external Increase workflow",
+    "independent verifier acceptance"
+  ]
+}

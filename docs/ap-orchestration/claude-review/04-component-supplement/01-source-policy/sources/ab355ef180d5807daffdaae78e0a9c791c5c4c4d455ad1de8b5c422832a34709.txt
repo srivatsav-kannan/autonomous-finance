@@ -1,0 +1,10 @@
+extractedSupplierName Golden State Produce Co.
+invoiceNumber CN-3
+invoiceDate 2026-10-19
+totalCents 4235
+lines.line-1.sku KALE-24
+lines.line-1.description Organic Kale, 24ct case
+lines.line-1.quantity 1
+lines.line-1.unitPriceCents 3850
+lines.line-1.amountCents 3850
+lines.line-1.taxCents 385

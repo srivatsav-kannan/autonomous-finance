@@ -1,0 +1,18 @@
+extractedSupplierName Golden State Produce Co.
+invoiceNumber HEADER-TAX
+invoiceDate 2026-10-19
+totalCents 9350
+lines.line-1.sku KALE-24
+lines.line-1.description Organic Kale, 24ct case
+lines.line-1.quantity 2
+lines.line-1.unitPriceCents 3850
+lines.line-1.amountCents 7700
+lines.line-1.taxCents 850
+Net $77.00
+Freight $10.00
+Discount $2.00
+Tax $8.50
+Rate 10%
+Tax point 2026-10-19
+Pricing tax exclusive
+Jurisdiction SYNTHETIC-JURISDICTION

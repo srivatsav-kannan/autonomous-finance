@@ -11,15 +11,13 @@ import { AdminClient, SeatClient, api, convex } from "../core/kernel-client";
 import { ROLE_CAPABILITIES } from "../core/roles";
 import { MemoryStore } from "../memory/store";
 import { memoryDir, runDir } from "../world/scenario";
+import { readHumanToken } from "../world/seat-tokens";
 import { addDays } from "../world/rng";
-import { llmAvailable, runTools, type ToolDef } from "../agents/llm";
-import { z } from "zod";
 import { GATEWAY_TOKEN_HEADER, guardRequest, loadGatewayAuth, type GatewayAuth } from "./gateway-auth";
+import { why } from "./why";
 
-const human = (runId: string) => {
-  const tokens = JSON.parse(fs.readFileSync(path.join(runDir(runId), "seats.json"), "utf8")) as Record<string, string>;
-  return new SeatClient(runId, "human-cfo", tokens["human-cfo"]!);
-};
+/** The human CFO's seat, from the run's human token file (never the agents' seats.json). */
+export const humanClient = (runId: string) => new SeatClient(runId, "human-cfo", readHumanToken(runDir(runId)));
 
 async function body(req: http.IncomingMessage): Promise<Record<string, unknown>> {
   let data = "";
@@ -29,17 +27,36 @@ async function body(req: http.IncomingMessage): Promise<Record<string, unknown>>
 
 /**
  * Answering an ask is a decision; some decisions are also actions taken as the human seat.
- * The kernel records the answer first (refusing a different one), then each effect runs, then
- * the ask is completed. A failed effect leaves the ask open with its answer recorded, and
- * resending the same answer resumes it: every effect is a no-op once it has happened.
+ * What an answer does comes only from the ask's kernel-stored `effect`, never from the option
+ * id, a label, the title or a legacy reference field. The kernel records the answer first
+ * (refusing a different one), then the effect runs, then the ask is completed. A failed effect
+ * leaves the ask open with its answer recorded, and resending the same answer resumes it: every
+ * effect is a no-op once it has happened.
  */
 export async function answer(h: SeatClient, runId: string, askId: string, optionId: string, note?: string, mem = () => new MemoryStore(memoryDir(runId))) {
   const ask = (await h.client.query(api.asks.list, { runId })).find((a) => a._id === askId);
   if (!ask) throw new Error("ask not found");
-  const period = optionId === "sign" ? /the (\d{4}-\d{2}) close/.exec(ask.title)?.[1] : undefined;
-  if (optionId === "sign" && !period) throw new Error("this ask names no close period to sign");
-  const proposalId = optionId === "merge" ? ask.proposalBranch?.replace("proposal/", "") : undefined;
-  if (optionId === "merge" && !proposalId) throw new Error("this ask has no proposal to merge");
+  const effect = ask.effect;
+  const pay = effect?.kind === "payment" && optionId === "approve" ? effect : undefined;
+  const reject = effect?.kind === "payment" && optionId === "reject" ? effect : undefined;
+  const sign = effect?.kind === "close" && optionId === "sign" ? effect : undefined;
+  const merge = effect?.kind === "merge" && optionId === "merge" ? effect : undefined;
+
+  // The human approved what the drawer showed; refuse if the target has since changed.
+  if (pay) {
+    const intent = await h.client.query(api.payments.intent, { runId, intentId: pay.paymentIntentId });
+    if (!intent) throw new Error("payment intent not found");
+    if (intent.payee !== pay.payee || intent.amountCents !== pay.amountCents || intent.remitTo.bank !== pay.remitTo.bank || intent.remitTo.accountLast4 !== pay.remitTo.accountLast4) {
+      throw new Error("payment changed since this ask was created; ask again");
+    }
+  }
+  const store = merge ? mem() : undefined;
+  const alreadyMerged = merge && store ? await store.git(["rev-parse", "--verify", `refs/merged/${merge.proposalId}`]).then(() => true, () => false) : false;
+  if (merge && store && !alreadyMerged) {
+    const now = await store.proposalPaths(merge.proposalId);
+    const samePaths = now.paths.length === merge.paths.length && now.paths.every((p) => merge.paths.includes(p));
+    if (now.head !== merge.headSha || !samePaths) throw new Error("proposal changed since this ask was created; ask again");
+  }
 
   const recorded = await h.client.mutation(api.asks.recordAnswer, { ...h.auth, askId: ask._id, optionId, note });
   if (!recorded.ok) throw new Error(recorded.error);
@@ -47,31 +64,29 @@ export async function answer(h: SeatClient, runId: string, askId: string, option
   const reason = recorded.answer.note;
 
   const effects: string[] = [];
-  if (ask.paymentIntentId && optionId === "approve") {
-    const intent = await h.client.query(api.payments.intent, { runId, intentId: ask.paymentIntentId });
+  if (pay) {
+    const intent = await h.client.query(api.payments.intent, { runId, intentId: pay.paymentIntentId });
     if (intent?.approvals.some((a) => a.seatId === h.seatId)) effects.push(`payment ${intent.status}`);
     else {
-      const r = await h.client.mutation(api.payments.approvePayment, { ...h.auth, intentId: ask.paymentIntentId });
+      const r = await h.client.mutation(api.payments.approvePayment, { ...h.auth, intentId: pay.paymentIntentId });
       if (!r.ok) throw new Error(`payment approval refused: ${r.error}`);
       effects.push(`payment ${r.status}`);
     }
   }
-  if (ask.paymentIntentId && optionId === "reject") {
-    const r = await h.client.mutation(api.payments.voidPayment, { ...h.auth, intentId: ask.paymentIntentId, reason: reason ?? "rejected by human CFO" });
+  if (reject) {
+    const r = await h.client.mutation(api.payments.voidPayment, { ...h.auth, intentId: reject.paymentIntentId, reason: reason ?? "rejected by human CFO" });
     if (!r.ok) throw new Error(`void refused: ${r.error}`);
     effects.push("payment voided");
   }
-  if (period) {
-    const r = await h.client.mutation(api.ledger.signClose, { ...h.auth, period });
+  if (sign) {
+    const r = await h.client.mutation(api.ledger.signClose, { ...h.auth, period: sign.period });
     if (!r.ok) throw new Error(`sign refused: ${r.error}`);
     effects.push(`close ${r.status}`);
   }
-  if (proposalId) {
-    const store = mem();
-    const merged = await store.git(["rev-parse", "--verify", `refs/merged/${proposalId}`]).then(() => true, () => false);
-    if (merged) effects.push("already merged");
+  if (merge && store) {
+    if (alreadyMerged) effects.push("already merged");
     else {
-      const m = await store.merge({ id: proposalId, approver: { seatId: h.seatId, name: "Human CFO" }, caps: ROLE_CAPABILITIES.human_cfo, note: reason ?? "approved by human CFO" });
+      const m = await store.merge({ id: merge.proposalId, approver: { seatId: h.seatId, name: "Human CFO" }, caps: ROLE_CAPABILITIES.human_cfo, note: reason ?? "approved by human CFO" });
       effects.push(`merged ${m.sha.slice(0, 8)}`);
     }
   }
@@ -112,46 +127,6 @@ async function chaos(runId: string, kind: string) {
   }
 }
 
-/** "Why?" answered from the record: decisions in git memory and entries in the ledger, with citations. */
-async function why(runId: string, question: string) {
-  const mem = new MemoryStore(memoryDir(runId));
-  const log = await mem.log({ limit: 2000 });
-  if (!llmAvailable()) {
-    const words = question.toLowerCase().split(/\W+/).filter((w) => w.length > 3);
-    const hits = log.filter((c) => words.some((w) => c.subject.toLowerCase().includes(w))).slice(0, 6);
-    return { answer: hits.length ? hits.map((h) => `${h.author}: ${h.subject} (${h.sha.slice(0, 8)})`).join("\n") : "No matching decisions.", cited: hits.map((h) => h.sha) };
-  }
-  const tools: ToolDef[] = [
-    {
-      name: "search_decisions", description: "Search decision commits in company memory by keyword. Returns subject, author, sha.",
-      schema: z.object({ query: z.string() }),
-      inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"], additionalProperties: false },
-      run: async (input) => {
-        const q = (input as { query: string }).query.toLowerCase();
-        return log.filter((c) => c.subject.toLowerCase().includes(q)).slice(0, 15).map((c) => ({ sha: c.sha, author: c.author, subject: c.subject, trailers: c.trailers }));
-      },
-    },
-    {
-      name: "read_memory", description: "Read a YAML record from company memory, e.g. decisions/2026-01/<id>.yaml or vendors/<id>.yaml.",
-      schema: z.object({ path: z.string() }),
-      inputSchema: { type: "object", properties: { path: { type: "string" } }, required: ["path"], additionalProperties: false },
-      run: async (input) => (await mem.readText((input as { path: string }).path)) ?? "not found",
-    },
-    {
-      name: "recent_entries", description: "Most recent ledger entries with their decision paths.",
-      schema: z.object({ limit: z.number().int() }),
-      inputSchema: { type: "object", properties: { limit: { type: "integer" } }, required: ["limit"], additionalProperties: false },
-      run: async (input) => (await convex().query(api.ledger.entries, { runId, limit: Math.min(50, (input as { limit: number }).limit) }))
-        .map((e) => ({ seq: e.sequence, memo: e.memo, total: e.totalCents, by: e.postedBy, decision: e.decisionPath })),
-    },
-  ];
-  const text = await runTools({
-    system: "You answer a CFO's questions about what the company's finance agents did and why. Use only the tools; cite commit SHAs (first 8 chars) and decision paths. Be brief and specific. If the record doesn't say, say so.",
-    user: question, tools, effort: "medium", maxTurns: 8,
-  });
-  return { answer: text };
-}
-
 class NotFound extends Error {}
 
 export function createGatewayServer(auth: GatewayAuth) {
@@ -176,7 +151,7 @@ export function createGatewayServer(auth: GatewayAuth) {
       let out: unknown;
       if (req.method === "POST" && /^asks\/[^/]+\/answer$/.test(rest)) {
         const b = await body(req);
-        out = await answer(human(runId), runId, rest.split("/")[1]!, String(b.optionId), b.note as string | undefined);
+        out = await answer(humanClient(runId), runId, rest.split("/")[1]!, String(b.optionId), b.note as string | undefined);
       } else if (req.method === "POST" && rest === "chaos") {
         out = await chaos(runId, String((await body(req)).kind));
       } else if (req.method === "POST" && rest === "why") {

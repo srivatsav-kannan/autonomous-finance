@@ -1,0 +1,119 @@
+{
+  "accounts": [
+    {
+      "account": "5000",
+      "treatment": "expense"
+    },
+    {
+      "account": "1200",
+      "treatment": "inventory"
+    },
+    {
+      "account": "1300",
+      "treatment": "prepayment"
+    },
+    {
+      "account": "1500",
+      "treatment": "fixed_asset"
+    },
+    {
+      "account": "5100",
+      "treatment": "expense"
+    }
+  ],
+  "bands": [
+    {
+      "steps": [
+        {
+          "escalateAfterMs": 60000,
+          "escalationGroupId": "escalation",
+          "groupId": "owner",
+          "quorum": 1
+        }
+      ],
+      "upToCents": 5000
+    },
+    {
+      "steps": [
+        {
+          "escalateAfterMs": 60000,
+          "escalationGroupId": "escalation",
+          "groupId": "owner",
+          "quorum": 1
+        },
+        {
+          "escalateAfterMs": 60000,
+          "escalationGroupId": null,
+          "groupId": "finance",
+          "quorum": 1
+        }
+      ],
+      "upToCents": 9007199254740991
+    }
+  ],
+  "dimensions": {
+    "departments": [
+      "ops"
+    ],
+    "projects": [],
+    "scope": "cost_and_settlement",
+    "settlementDepartment": "homogeneous_approved_department",
+    "version": "ap-gl-dimensions-v1"
+  },
+  "groups": [
+    {
+      "groupId": "verify",
+      "members": [
+        "https://ap-demo.invalid|verifier"
+      ]
+    },
+    {
+      "groupId": "govern",
+      "members": [
+        "https://ap-demo.invalid|governor"
+      ]
+    },
+    {
+      "groupId": "owner",
+      "members": [
+        "https://ap-demo.invalid|owner",
+        "https://ap-demo.invalid|second"
+      ]
+    },
+    {
+      "groupId": "finance",
+      "members": [
+        "https://ap-demo.invalid|finance"
+      ]
+    },
+    {
+      "groupId": "escalation",
+      "members": [
+        "https://ap-demo.invalid|escalation"
+      ]
+    }
+  ],
+  "maxDelegationMs": 86400000,
+  "maxPriceVarianceBps": 0,
+  "stores": [
+    "sf-hayes-valley"
+  ],
+  "supplierApprovalGroup": "govern",
+  "supplierVerificationGroup": "verify",
+  "taxCodes": [
+    {
+      "code": "NONE",
+      "mode": "none"
+    },
+    {
+      "code": "COST",
+      "mode": "nonrecoverable"
+    },
+    {
+      "code": "VAT",
+      "mode": "recoverable"
+    }
+  ],
+  "varianceApprovalGroup": "finance",
+  "version": "business-test-v1"
+}

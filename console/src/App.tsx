@@ -6,6 +6,7 @@ import { registerWebMcpTools } from "./webmcp";
 import { gateway } from "./gateway";
 import { Icon } from "./Icon";
 import { ReviewDrawer } from "./ReviewDrawer";
+import { AskEffectSummary } from "./AskEffect";
 import { Ledger } from "./Ledger";
 import { Bank } from "./Bank";
 import { EvidenceRecord } from "./EvidenceRecord";
@@ -13,6 +14,8 @@ import { FinanceFlow } from "./FinanceFlow";
 import { useUrlState } from "./useUrlState";
 import { InvoiceWorkspace, type InvoiceContext } from "./InvoiceWorkspace";
 import { modeLabel } from "./invoiceFormat";
+import { APAuthGate } from "./APAuthGate";
+import { APSystemWorkspace, type APSystemContext } from "./APSystemWorkspace";
 
 const $ = (cents: number) => (cents < 0 ? "-" : "") + "$" + (Math.abs(cents) / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const ago = (t: number) => {
@@ -20,8 +23,9 @@ const ago = (t: number) => {
   return s < 60 ? `${s}s ago` : s < 3600 ? `${Math.round(s / 60)}m ago` : `${Math.round(s / 3600)}h ago`;
 };
 
-type Tab = "invoices" | "inbox" | "org" | "activity" | "ledger" | "memory" | "evals" | "control" | "bank" | "flow";
+type Tab = "ap-system" | "invoices" | "inbox" | "org" | "activity" | "ledger" | "memory" | "evals" | "control" | "bank" | "flow";
 const TABS: { id: Tab; label: string }[] = [
+  { id: "ap-system", label: "Accounts payable" },
   { id: "invoices", label: "Invoices" },
   { id: "inbox", label: "Inbox" },
   { id: "bank", label: "Bank & cash" },
@@ -40,7 +44,7 @@ function initialRun() {
 
 function initialTab(): Tab {
   const value = new URLSearchParams(location.search).get("view");
-  return TABS.find((t) => t.id === value)?.id ?? (location.pathname.startsWith("/legacy") ? "inbox" : "invoices");
+  return TABS.find((t) => t.id === value)?.id ?? (location.pathname.replace(/\/$/, "") === "/ap-system" ? "ap-system" : location.pathname.startsWith("/legacy") ? "inbox" : "invoices");
 }
 
 function Loading({ label }: { label: string }) {
@@ -62,21 +66,24 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
   const [tab, setTab] = useState<Tab>(initialTab);
   const [invoiceContext, setInvoiceContext] = useState<InvoiceContext>();
   const [invoiceBusy, setInvoiceBusy] = useState(false);
+  const [apContext, setAPContext] = useState<APSystemContext>();
+  const isAP = tab === "ap-system";
   const isInvoice = tab === "invoices";
-  const company = isInvoice ? invoiceContext?.company ?? "Invoice workspace" : "Sweetgreen, Inc.";
-  const companyCaption = isInvoice ? "Local simulated identity · USD" : "Simulated company";
+  const company = isAP ? "Accounts payable" : isInvoice ? invoiceContext?.company ?? "Invoice workspace" : "Sweetgreen, Inc.";
+  const companyCaption = isAP ? "Evidence and obligations" : isInvoice ? "Local simulated identity · USD" : "Simulated company";
   useEffect(() => {
-    if (!runId && runs?.length) {
+    if (!isAP && !runId && runs?.length) {
       const first = runs[0]!.runId;
       const url = new URL(location.href);
       url.hash = encodeURIComponent(first);
       history.replaceState(null, "", url);
       setRunId(first);
     }
-  }, [runs, runId]);
+  }, [runs, runId, isAP]);
   useEffect(() => {
     const url = new URL(location.href);
     url.searchParams.set("view", tab);
+    if (tab === "ap-system") url.hash = "";
     history.replaceState(null, "", url);
     document.title = `${TABS.find(t => t.id === tab)?.label} · Autonomous Finance`;
   }, [tab]);
@@ -90,13 +97,14 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
     };
   }, []);
   useEffect(() => {
-    if (simulationAvailable && runId && !isInvoice) return registerWebMcpTools(runId);
-  }, [runId, isInvoice, simulationAvailable]);
+    if (simulationAvailable && runId && !isInvoice && !isAP) return registerWebMcpTools(runId);
+  }, [runId, isInvoice, isAP, simulationAvailable]);
 
   const navigate = (next: Tab) => {
     if (invoiceBusy || next === tab) return;
     const url = new URL(location.href);
     url.searchParams.set("view", next);
+    url.pathname = next === "ap-system" ? "/ap-system" : "/";
     url.searchParams.delete("case");
     history.pushState(null, "", url);
     setTab(next);
@@ -122,8 +130,8 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
           <p className="nav-label">Workspace</p>
           {TABS.map((t) => (
             <button type="button" key={t.id} className={t.id === tab ? "on" : ""} aria-current={t.id === tab ? "page" : undefined} onClick={() => navigate(t.id)} disabled={invoiceBusy}>
-              <Icon name={t.id === "invoices" ? "file" : t.id} /><span>{t.label}</span>
-              {t.id === "inbox" && !isInvoice && simulationAvailable && runId && <InboxCount runId={runId} />}
+              <Icon name={t.id === "invoices" || t.id === "ap-system" ? "file" : t.id} /><span>{t.label}</span>
+              {t.id === "inbox" && !isInvoice && !isAP && simulationAvailable && runId && <InboxCount runId={runId} />}
             </button>
           ))}
         </nav>
@@ -132,10 +140,12 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
       <div className="workspace">
         <header className="workspace-top">
           <div className="breadcrumb"><span>Workspace</span><Icon name="chevron" /><span>{TABS.find((t) => t.id === tab)?.label}</span></div>
-          {isInvoice ? <div className="iv-workspace-context"><span>{invoiceContext ? modeLabel[invoiceContext.runtimeMode] : "Connecting to invoices…"}</span><small>{invoiceContext?.runId}</small></div> : <label className="scenario-picker"><span>Scenario</span>
+          {isAP ? <div className="iv-workspace-context"><span>{apContext?.provider ?? "AP workspace"}</span><small>{apContext?.runId ?? "Connect to the AP service"}</small></div> : isInvoice ? <div className="iv-workspace-context"><span>{invoiceContext ? modeLabel[invoiceContext.runtimeMode] : "Connecting to invoices…"}</span><small>{invoiceContext?.runId}</small></div> : <label className="scenario-picker"><span>Scenario</span>
             <select value={runId} onChange={(e) => selectRun(e.target.value)} aria-label="Scenario" disabled={!runs?.length}>
               {!runs?.length && <option value={runId}>{!simulationAvailable ? "Backend not configured" : runs ? "No scenarios" : "Loading scenarios…"}</option>}
               {(runs ?? []).map((r) => <option key={r.runId} value={r.runId}>{r.label} ({r.runId})</option>)}
+              {/* A run linked by URL (e.g. #scenario-1) stays selectable after newer runs push it out of the recent list. */}
+              {!!runs?.length && runId && !runs.some((r) => r.runId === runId) && <option value={runId}>{runId}</option>}
             </select>
           </label>}
         </header>
@@ -145,10 +155,10 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
               {TABS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
             </select>
           </label>
-          {!isInvoice && simulationAvailable && !connected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
-          {!isInvoice && simulationAvailable && runId && tab !== "bank" && tab !== "flow" && <Kpis runId={runId} />}
-          <main className="main" id="main" tabIndex={-1} key={isInvoice ? "invoices" : runId}>
-            {isInvoice ? <InvoiceWorkspace onContextChange={setInvoiceContext} onBusyChange={setInvoiceBusy} /> : !simulationAvailable ? <div className="empty"><h2>Connect the simulation backend</h2><p>Start the local backend and restart the console with <code>VITE_CONVEX_URL</code> configured. Invoices use their own gateway and remain available.</p><button onClick={() => navigate("invoices")}>Open invoices</button></div> : !runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div> : <>
+          {!isInvoice && !isAP && simulationAvailable && !connected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
+          {!isInvoice && !isAP && simulationAvailable && runId && tab !== "bank" && tab !== "flow" && <Kpis runId={runId} />}
+          <main className="main" id="main" tabIndex={-1} key={isAP ? "ap-system" : isInvoice ? "invoices" : runId}>
+            {isAP ? <APAuthGate busy={invoiceBusy}><APSystemWorkspace onContextChange={setAPContext} onBusyChange={setInvoiceBusy} /></APAuthGate> : isInvoice ? <InvoiceWorkspace onContextChange={setInvoiceContext} onBusyChange={setInvoiceBusy} /> : !simulationAvailable ? <div className="empty"><h2>Connect the simulation backend</h2><p>Start the local backend and restart the console with <code>VITE_CONVEX_URL</code> configured. Invoices use their own gateway and remain available.</p><button onClick={() => navigate("invoices")}>Open invoices</button></div> : !runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div> : <>
               {tab === "inbox" && <Inbox runId={runId} />}
               {tab === "bank" && <Bank runId={runId} onReview={(askId) => { navigate("inbox"); const url = new URL(location.href); url.searchParams.set("ask", askId); history.replaceState(null, "", url); }} />}
               {tab === "flow" && <FinanceFlow runId={runId} onNavigate={navigate} />}
@@ -297,7 +307,7 @@ function AskDetail({ runId, ask, onAnswered }: { runId: string; ask: Doc<"asks">
     </div>
     <footer className="drawer-footer">
       {result && <p className={`feedback ${failed ? "error" : ""}`} role={failed ? "alert" : "status"}>{result}</p>}
-      {!answered ? <><p className="action-hint">Your response will be sent to {seatName(ask.from)}.</p><div className="ask-actions" aria-busy={busy}>{ask.options.map((o, i) => <button type="button" key={o.id} disabled={busy} aria-busy={busy} className={i === 0 ? "primary" : ""} onClick={() => void choose(o.id)}>{o.label}</button>)}</div></> : <p className="response-confirmed" ref={confirmation} tabIndex={-1}><Icon name="check" />{ask.options.find((o) => o.id === (ask.answer?.optionId ?? submitted))?.label ?? "Response recorded"}</p>}
+      {!answered ? <><AskEffectSummary effect={ask.effect} /><p className="action-hint">Your response will be sent to {seatName(ask.from)}.</p><div className="ask-actions" aria-busy={busy}>{ask.options.map((o, i) => <button type="button" key={o.id} disabled={busy} aria-busy={busy} className={i === 0 ? "primary" : ""} onClick={() => void choose(o.id)}>{o.label}</button>)}</div></> : <p className="response-confirmed" ref={confirmation} tabIndex={-1}><Icon name="check" />{ask.options.find((o) => o.id === (ask.answer?.optionId ?? submitted))?.label ?? "Response recorded"}</p>}
     </footer>
   </article>;
 }
@@ -459,6 +469,14 @@ function Evals({ runId }: { runId: string }) {
   );
 }
 
+/** Renders the **bold** and `code` spans that "why" answers use; everything else stays plain text. */
+function inlineMarkdown(text: string) {
+  return text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, i) =>
+    part.startsWith("**") && part.endsWith("**") && part.length > 4 ? <strong key={i}>{part.slice(2, -2)}</strong>
+    : part.startsWith("`") && part.endsWith("`") && part.length > 2 ? <code key={i}>{part.slice(1, -1)}</code>
+    : part);
+}
+
 function Control({ runId }: { runId: string }) {
   const [log, setLog] = useState<string[]>([]);
   const [q, setQ] = useState("Why did we short-pay Golden State Produce?");
@@ -508,7 +526,7 @@ function Control({ runId }: { runId: string }) {
           <button type="submit" className="primary" disabled={asking || !q.trim()} aria-busy={asking}>{asking ? "Asking…" : "Ask"}</button>
         </div>
       </form>
-      <div className="feedback" aria-live="polite">{answer && <pre className="ask-body">{answer}</pre>}</div>
+      <div className="feedback" aria-live="polite">{answer && <pre className="ask-body">{inlineMarkdown(answer)}</pre>}</div>
     </section>
   );
 }

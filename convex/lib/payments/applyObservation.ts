@@ -1,3 +1,5 @@
+import { assertFrozenPaymentAccounting, assertPaymentAccountingBinding } from "../apSystem/paymentAccountingBinding";
+import { settlementPostingLines } from "../../../src/payments/domain/accounting-binding";
 import type { Doc } from "../../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../../_generated/server";
 import { accountingSeat, auditDemo, requireService } from "../demoAuth";
@@ -133,12 +135,23 @@ export async function postVerifiedTransaction(ctx: MutationCtx, args: { scope: B
     const returning = tx.purpose === "return";
     const original = returning && observation.originalTransactionId ? await transactionFor(ctx, args.scope, observation.originalTransactionId) : null;
     assertPostingEvidence(command.command, observation, tx, original?.entryId ? { transaction: original.transaction, entryId: original.entryId } : undefined);
+    const version = await ctx.db.get(command.versionId);
+    if (!version) throw Error("accounting_payment_version_missing");
+    await assertFrozenPaymentAccounting(ctx, args.scope, version, command);
+    if (version.snapshot.accountingBinding) await assertPaymentAccountingBinding(ctx, args.scope, version.snapshot);
     const amount = Math.abs(tx.amountCents);
+    if (returning) {
+      const originalJournal = original?.entryId ? await ctx.db.get(original.entryId) : null;
+      const financial = (lines: {account:string;debit:number;credit:number;dims?:unknown}[]) => lines.map(l=>({...l,dims:l.dims??{}})).map(({account,debit,credit,dims})=>({account,debit,credit,dims}));
+      if (!originalJournal || originalJournal.runId !== args.scope.runId || originalJournal.status !== "posted" ||
+        canonicalJson(financial(originalJournal.lines)) !== canonicalJson(financial(settlementPostingLines(amount,false,version.snapshot.accountingBinding))))
+        throw Error("return_original_accounting_mismatch");
+    }
     const key = `${args.scope.organizationId}:${args.scope.runId}:${args.scope.provider}:${args.scope.environment}:${args.scope.accountId}:${tx.id}:${tx.purpose}`;
     const result = await appendDemoEntry(ctx, {
       runId: args.scope.runId, seat: accountingSeat(args.scope.runId), date: tx.postedAt!.slice(0, 10),
       memo: `Verified ACH ${tx.purpose} ${tx.id}`, source: { kind: "payment_settlement", ref: key },
-      lines: returning ? [{ account: "1000", debit: amount, credit: 0 }, { account: "2000", debit: 0, credit: amount }] : [{ account: "2000", debit: amount, credit: 0 }, { account: "1000", debit: 0, credit: amount }], idempotencyKey: key,
+      lines: settlementPostingLines(amount, returning, version.snapshot.accountingBinding), idempotencyKey: key,
     });
     if (!result.ok) throw new Error(`Local posting blocked: ${result.code}: ${result.error}`);
     if (returning) await returnEffects(ctx, command.versionId);

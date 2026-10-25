@@ -19,6 +19,9 @@ import { CHART, account, isKnownAccount } from "../src/core/accounts";
 import { readCloseReadiness } from "./lib/closeReadiness";
 
 const RESERVED_SOURCES = new Set(["bill", "payment_settlement", "payroll_funding", "reversal"]);
+// Entries the kernel creates as part of a bill or payment flow. reverseEntry refuses them (and
+// reversals of them): a mirror entry would move AP or cash and leave the bill or intent stale.
+const KERNEL_SOURCES = new Set(["bill", "payment_settlement", "payroll_funding"]);
 
 const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 
@@ -101,6 +104,32 @@ export const reverseEntry = mutation({
     }
     if (original.status === "reversed") {
       return await recordViolation(ctx, args.runId, args.seatId, "ledger.reverseEntry", fail("already_reversed", `entry #${original.sequence} is already reversed`));
+    }
+    // Walk a reversal chain back to the entry that started it. Depth is odd when the entry
+    // being reversed is itself an undo, so reversing it books the root's effect again.
+    let root = original;
+    let depth = 0;
+    while (root.source.kind === "reversal" && root.reversalOf) {
+      const prior = await ctx.db.get(root.reversalOf);
+      if (!prior) break;
+      root = prior;
+      depth++;
+    }
+    // Kernel-created entries carry bill or payment state that a mirror entry would leave stale.
+    if (KERNEL_SOURCES.has(root.source.kind) || (root.source.kind === "reversal" && !root.reversalOf)) {
+      return await recordViolation(ctx, args.runId, args.seatId, "ledger.reverseEntry",
+        fail("kernel_entry", `entry #${original.sequence} comes from a kernel "${root.source.kind}" entry; correct it through its own flow, not a reversal`));
+    }
+    // Cash is corrected only by undoing a bank match, which releases or rebooks its bank transaction.
+    if (original.lines.some((l) => isKnownAccount(l.account) && account(l.account).cash)) {
+      if (root.source.kind !== "bank_match") {
+        return await recordViolation(ctx, args.runId, args.seatId, "ledger.reverseEntry",
+          fail("no_bank_evidence", `entry #${original.sequence} moves cash and is not a bank match; only bank matches can be reversed`));
+      }
+      if (depth % 2 === 1) {
+        const ev = await bankEvidence(ctx, args.runId, root.source.ref, root.lines);
+        if (!ev.ok) return await recordViolation(ctx, args.runId, args.seatId, "ledger.reverseEntry", ev);
+      }
     }
     const res = await appendEntry(ctx, {
       runId: args.runId,

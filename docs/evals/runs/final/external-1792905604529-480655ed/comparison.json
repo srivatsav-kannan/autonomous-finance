@@ -1,0 +1,44 @@
+{
+  "progress": {
+    "completedRuns": 2,
+    "expectedRuns": 2,
+    "complete": true
+  },
+  "groups": [
+    {
+      "mode": "full-team",
+      "benchmark": "dabstep",
+      "runs": 1,
+      "answered": 1,
+      "abstained": 0,
+      "errors": 0,
+      "graded": 1,
+      "meanScore": 1,
+      "fullyPassed": 1,
+      "agentTurns": 14,
+      "inputTokens": 77567,
+      "outputTokens": 1996,
+      "estimatedAgentCostUsd": 0.175094,
+      "estimatedJudgeCostUsd": 0,
+      "wallSeconds": 37.823
+    },
+    {
+      "mode": "full-team",
+      "benchmark": "apex",
+      "runs": 1,
+      "answered": 1,
+      "abstained": 0,
+      "errors": 0,
+      "graded": 1,
+      "meanScore": 1,
+      "fullyPassed": 1,
+      "agentTurns": 17,
+      "inputTokens": 398760,
+      "outputTokens": 8628,
+      "estimatedAgentCostUsd": 0.8838,
+      "estimatedJudgeCostUsd": 0.04595,
+      "wallSeconds": 113.599
+    }
+  ],
+  "paired": []
+}

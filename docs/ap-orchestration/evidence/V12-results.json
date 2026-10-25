@@ -1,0 +1,260 @@
+{
+  "review": "V12 independent external settlement-dimension verification",
+  "classification": "independent agent engineering review",
+  "runtime": "ea499a9f96e95030ff1e86a41bdbd94fd1cbd544",
+  "featureCommit": "1e2234353abaaa64ef1906015159d047b70d3e8d",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "independent": {
+    "raw": {
+      "path": "/private/tmp/ap97-v12-independent-baseline.json",
+      "sha256": "6b0f2570cc69d05aabdac5a7a31f8d637ff3188354ef4dcc2ed8d5c9e007d82a"
+    },
+    "result": {
+      "passed": 20,
+      "failed": 0,
+      "total": 20
+    },
+    "suites": [
+      {
+        "file": "tests/ap-system/v12-external-settlement.test.ts",
+        "assertions": [
+          {
+            "name": "conserves 2750 returned cash across 850 zero-cash restored credit and 1900 replacement with exact external linked records",
+            "status": "passed"
+          },
+          {
+            "name": "preserves exact accounting-only payload bytes for null department without inferring header or line dimensions",
+            "status": "passed"
+          },
+          {
+            "name": "preserves exact accounting-only payload bytes for legacy department without inferring header or line dimensions",
+            "status": "passed"
+          },
+          {
+            "name": "retains the first authorizer, request bytes and identity while an accepted response is lost and subsequent searches are empty",
+            "status": "passed"
+          },
+          {
+            "name": "refuses missing header on ambiguous external settlement without retry or authorizer replacement",
+            "status": "passed"
+          },
+          {
+            "name": "refuses wrong header on ambiguous external settlement without retry or authorizer replacement",
+            "status": "passed"
+          },
+          {
+            "name": "refuses extra line department on ambiguous external settlement without retry or authorizer replacement",
+            "status": "passed"
+          },
+          {
+            "name": "refuses extra class on ambiguous external settlement without retry or authorizer replacement",
+            "status": "passed"
+          },
+          {
+            "name": "refuses wrong linked bill on ambiguous external settlement without retry or authorizer replacement",
+            "status": "passed"
+          },
+          {
+            "name": "refuses merchant processing on ambiguous external settlement without retry or authorizer replacement",
+            "status": "passed"
+          },
+          {
+            "name": "rechecks the exact externally stored original bill department before submitting linked settlement",
+            "status": "passed"
+          },
+          {
+            "name": "refuses authoritative settlement export after changed journal hash",
+            "status": "passed"
+          },
+          {
+            "name": "refuses authoritative settlement export after changed command binding",
+            "status": "passed"
+          },
+          {
+            "name": "refuses authoritative settlement export after changed journal extra dimension",
+            "status": "passed"
+          },
+          {
+            "name": "rejects changed recognition approval when mapping an authenticated export",
+            "status": "passed"
+          },
+          {
+            "name": "rejects changed recognition authority when mapping an authenticated export",
+            "status": "passed"
+          },
+          {
+            "name": "rejects changed credit coverage when mapping an authenticated export",
+            "status": "passed"
+          },
+          {
+            "name": "rejects changed credit supplier when mapping an authenticated export",
+            "status": "passed"
+          },
+          {
+            "name": "does not release a returned-payment hold for changed return-journal dimensions or newly requested payment processing",
+            "status": "passed"
+          },
+          {
+            "name": "keeps generated dimension-bearing payment requests accounting-only in preparation and saved readback",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  "ownerRegression": {
+    "raw": {
+      "path": "/private/tmp/ap97-v12-owner-baseline.json",
+      "sha256": "e9fafef95d24d4fd51ea0d1ae0c4df0d372a7feab4301cec90479a3b511ef0ad"
+    },
+    "result": {
+      "passed": 21,
+      "failed": 0,
+      "total": 21
+    },
+    "suites": [
+      {
+        "file": "tests/ap-system/quickbooks-accounting-only.test.ts",
+        "assertions": [
+          {
+            "name": "QBO accounting-only merchant-processing boundary rejects true and malformed processing flags before token lookup or HTTP",
+            "status": "passed"
+          },
+          {
+            "name": "QBO accounting-only merchant-processing boundary preserves legacy payload bytes and accepts explicitly disabled processing",
+            "status": "passed"
+          },
+          {
+            "name": "QBO accounting-only merchant-processing boundary rejects merchant processing during read verification, recovery and initial response",
+            "status": "passed"
+          },
+          {
+            "name": "QBO accounting-only merchant-processing boundary does not certify a processing request even if provider echoes it, while metadata remains additive",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/quickbooks-business-protocol.test.ts",
+        "assertions": [
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) applies zero cash to exact restored and original principal and resolves only read-verified application holds",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) keeps lost zero-cash restored-credit responses unknown with the original identity and unresolved hold",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) preserves cash+credit economics across original Bill and restored JournalEntry",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) replicates approved return, resolves held evidence only after readback, and pays exact restored allocation",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) never resolves ambiguous journal creation or retries with a new request ID",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) blocks externally consumed restored principal before a replacement POST",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) preserves original signed discount GL on Bill and linked VendorCredit through readback",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) posts exact Bill, VendorCredit and credit-only application; retry preserves original approval author",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) posts cash+credit with actual cash total and blocks missing or insufficient external credit",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) keeps an ambiguous zero-net response unknown with its fixed identity and original approval",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) persists a returned-evidence hold even for bill-only submit without altering successful history",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) refuses changed requester identity before first external POST and requires journal authorization",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/quickbooks-settlement-dimensions.test.ts",
+        "assertions": [
+          {
+            "name": "QBO frozen settlement locations replicates exact partial cash/credit location and holds missing or altered authority",
+            "status": "passed"
+          },
+          {
+            "name": "QBO frozen settlement locations retains department through approved return JE and zero-cash credit application to restored payable",
+            "status": "passed"
+          },
+          {
+            "name": "QBO frozen settlement locations rejects a dimension changed in posted local settlement before exporting",
+            "status": "passed"
+          },
+          {
+            "name": "QBO frozen settlement locations pays a restored journal through a second independently approved cash command with the same department",
+            "status": "passed"
+          },
+          {
+            "name": "QBO frozen settlement locations recovers an ambiguous department-bearing payment with one request ID and preserves the original approval",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  "testSha256": {
+    "tests/ap-system/v12-external-settlement.test.ts": "90df8195196ced1c3e202d8d6d9d670615cd78e9edb3c8c60834ffc64de410c5",
+    "tests/ap-system/v12-settlement-fixture.ts": "51168d92bc9e0b557f7a0e79b8e59b478bc55e4c776919051a4f7b5c9f2ef231"
+  },
+  "typechecks": {
+    "root": "passed",
+    "convex": "passed",
+    "tests": "passed"
+  },
+  "findings": [],
+  "independentArithmetic": {
+    "recognizedCents": 7700,
+    "linkedCreditRecognizedCents": 3850,
+    "firstGrossApplicationCents": 4100,
+    "firstCreditApplicationCents": 1350,
+    "firstCashSettlementCents": 2750,
+    "cashReturnCents": 2750,
+    "restoredZeroCashCreditApplicationCents": 850,
+    "restoredReplacementCashCents": 1900,
+    "finalLocalBillPaidCents": 4100,
+    "finalLocalCreditConsumedCents": 2200,
+    "restoredPrincipalConsumedCents": 2750,
+    "externalCreates": {
+      "Bill": 1,
+      "VendorCredit": 1,
+      "BillPayment": 3,
+      "JournalEntry": 1
+    },
+    "localBankCommands": 2
+  },
+  "harnessCorrections": [
+    "The first test-only lease token did not satisfy the existing minimum length; lengthened it before business checks.",
+    "Added an explicit assertion and read-verification action for the existing return-journal gate before a restored allocation preview.",
+    "Bills track reservation by reservedVersionId, not reservedCents; asserted absence of reservedVersionId. No amount or dimensional expectation changed."
+  ],
+  "limits": [
+    "No real QBO/Increase calls, private configuration, live backend, browser session or practitioner sign-off.",
+    "Uses actual public AP request/approval/correction/read paths and production posting code with explicitly synthetic bank evidence in convex-test.",
+    "QBO HTTP transport, identities, reference catalogs and ledger are synthetic; acceptance describes local protocol behavior, not external provider semantics.",
+    "Single recognized bill and linked credit, one supplier, homogeneous ops or explicit null/legacy department; no new multi-department or project settlement support claimed.",
+    "E01 tax behavior, runtime UI changes and live provider completion excluded."
+  ]
+}

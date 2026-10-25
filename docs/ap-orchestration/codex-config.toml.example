@@ -1,0 +1,7 @@
+# Optional project configuration template, not installed.
+# Merge only after inspecting the active project's existing configuration.
+# Current platform/session limits still take precedence.
+# Models and reasoning inherit from the user's session.
+
+[agents]
+max_concurrent_threads_per_session = 3

@@ -1,0 +1,26 @@
+{
+  "baseline": "852d835bba09180e2cd71dabefd14d807b3f9da8",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "reviewKind": "independent agent engineering review; no practitioner or live-provider sign-off",
+  "derivedBeforeExecution": true,
+  "costArithmetic": {
+    "originalExpenseDebitCents": 7700,
+    "originalDiscountCreditCents": 100,
+    "reclassificationExpenseToInventoryCents": 4000,
+    "remainingExpenseDebitCents": 3600,
+    "remainingInventoryDebitCents": 4000,
+    "halfCredit": {"grossCreditCents":3850,"discountDebitCents":50,"apDebitCents":3800},
+    "validExpenseCredit":3650,
+    "validExpenseDiscountDebit":50,
+    "validInventoryCredit":200,
+    "invalidOneCentExpenseOverdraw": {"expenseCredit":3651,"expenseDebit":50,"inventoryCredit":199}
+  },
+  "expectations": [
+    "UI ready plan checks signed aggregated account/store capacity as well as original-share capacity.",
+    "Actual backend independently rejects forged excess atomically; valid signed netting succeeds.",
+    "Read-only bridge uses current human and exact server scope; no ledger/payment mutation; retired/unconfigured/missing human fails.",
+    "Late cost responses and original/date/quantity/source-policy context changes cannot retain a prior ready review.",
+    "General accounting amount parsing permits explicit safe cents, while payments continue to enforce current positive outstanding balance."
+  ]
+}

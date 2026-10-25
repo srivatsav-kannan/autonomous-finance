@@ -81,7 +81,7 @@ export function verifyIncreaseWebhook(options: {
   const headers = Object.fromEntries(Object.entries(options.headers).map(([k, v]) => [k.toLowerCase(), v]));
   const webhookId = headers["webhook-id"] ?? "";
   const timestamp = headers["webhook-timestamp"] ?? "";
-  if (!/^event_[a-zA-Z0-9]+$/.test(webhookId) || !/^\d+$/.test(timestamp) ||
+  if (!/^(?:sandbox_)?event_[a-zA-Z0-9]+$/.test(webhookId) || !/^\d+$/.test(timestamp) ||
       Math.abs((options.now ?? Date.now()) / 1000 - Number(timestamp)) > 300 || rawBody.length > 256_000) {
     throw new BankProviderError("authentication", "Invalid or expired Increase webhook");
   }
@@ -138,7 +138,7 @@ export class IncreaseSandboxBank implements BankingProvider, BankingEvents, Paym
   readonly #now: () => number;
   constructor(options: IncreaseOptions) {
     if (options.scope.provider !== "increase" || options.scope.environment !== "sandbox" ||
-        !options.scope.organizationId || !options.scope.runId || !/^account_[a-zA-Z0-9]+$/.test(options.scope.accountId) || !options.apiKey) {
+        !options.scope.organizationId || !options.scope.runId || !/^(?:sandbox_)?account_[a-zA-Z0-9]+$/.test(options.scope.accountId) || !options.apiKey) {
       throw new BankProviderError("configuration", "One explicit Increase sandbox account and credential are required");
     }
     this.#scope = Object.freeze({ ...options.scope });
@@ -154,7 +154,7 @@ export class IncreaseSandboxBank implements BankingProvider, BankingEvents, Paym
   async #assertCommand(command: BankCommand) {
     this.#assertScope(command.scope);
     if (!Number.isSafeInteger(command.amountCents) || command.amountCents <= 0 || command.amountCents > 9_999_999_999 ||
-        command.currency !== "USD" || !/^external_account_[a-zA-Z0-9]+$/.test(command.destination.externalAccountId) ||
+        command.currency !== "USD" || !/^(?:sandbox_)?external_account_[a-zA-Z0-9]+$/.test(command.destination.externalAccountId) ||
         !/^[ -~]{1,200}$/.test(command.commandId) || !/^[\x21-\x7e]{1,200}$/.test(command.idempotencyKey) ||
         !command.destination.version || !command.approvalVersion || command.requestHash !== await commandRequestHash(command)) {
       throw new BankProviderError("validation", "Invalid immutable Increase ACH command");
@@ -188,7 +188,7 @@ export class IncreaseSandboxBank implements BankingProvider, BankingEvents, Paym
   }
   #resourcePath(kind: "ach_transfers" | "transactions", resourceId: string): string {
     const prefix = kind === "ach_transfers" ? "ach_transfer" : "transaction";
-    if (!new RegExp(`^${prefix}_[a-zA-Z0-9]+$`).test(resourceId)) throw new BankProviderError("validation", "Invalid Increase resource identifier");
+    if (!new RegExp(`^(?:sandbox_)?${prefix}_[a-zA-Z0-9]+$`).test(resourceId)) throw new BankProviderError("validation", "Invalid Increase resource identifier");
     return `/${kind}/${resourceId}`;
   }
   async #rawTransfer(transferId: string): Promise<Transfer> {

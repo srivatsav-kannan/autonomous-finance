@@ -4,6 +4,7 @@ import * as api from "../convex/invoiceCases";
 import { sha256Hex } from "../convex/lib/kernel";
 import { kernelHarness, mutationHandler } from "./helpers/kernelHarness";
 import type { BackendResult, CaseDetail, Conclusion, EvidenceRef, SourceInput } from "../src/invoice-mvp/contracts";
+import { readSourceFiles } from "../console/src/invoiceApi";
 
 const query = <A extends Record<string, unknown>, R>(q: RegisteredQuery<"public", A, R>) => (q as unknown as { _handler: (ctx: unknown, args: A) => R })._handler;
 const unwrap = <T>(r: BackendResult<T>): T => { if (!r.ok) throw new Error(`${r.code}: ${r.error}`); return r.value; };
@@ -61,15 +62,26 @@ describe("durable invoice case boundary", () => {
     expect(exact).toMatchObject({ ok: true, replayed: true, value: batch });
   });
 
-  it("same external ID revision removes previous effect atomically and keeps immutable versions", async () => {
+  it("explicit same external ID version replaces the recorded effect atomically on human acceptance and keeps immutable versions", async () => {
     const f = await setup(); const { caseId, d } = await f.start(); unwrap(await f.propose(caseId));
-    const revision = await f.ingest([document("INV-1", "120.00")]);
-    expect((await f.workspace()).customerTotals[0]!.netCents).toBe(0);
+    const revision = await f.ingest([{ ...document("INV-1", "120.00"), newVersion: true }]);
+    expect((await f.workspace()).customerTotals[0]!.netCents).toBe(10_000);
+    expect((await f.detail(caseId)).case.status).toBe("recorded");
+    const next = revision.caseIds[0]!; await f.begin(next);
+    expect(unwrap(await f.propose(next, { amountCents: 12_000 })).case.status).toBe("needs_review");
+    unwrap(await f.decide(next, "accept-version"));
     expect((await f.detail(caseId)).case.status).toBe("superseded");
-    const next = revision.caseIds[0]!; await f.begin(next); unwrap(await f.propose(next, { amountCents: 12_000 }));
     const detail = await f.detail(next); expect(detail.source.version).toBe(2); expect(detail.sourceVersions[0]).toEqual(d.source);
     expect((await f.workspace()).customerTotals[0]!.netCents).toBe(12_000);
     expect(f.h.all("invoiceContributions")).toHaveLength(2); expect(f.h.all("invoiceContributions").filter((c) => c.active)).toHaveLength(1);
+  });
+
+  it("an explicit version of pending work supersedes it at once", async () => {
+    const f = await setup(); const { caseId } = await f.start();
+    const next = (await f.ingest([{ ...document("INV-1", "120.00"), newVersion: true }])).caseIds[0]!;
+    expect((await f.detail(caseId)).case.status).toBe("superseded");
+    await f.begin(next); expect(unwrap(await f.propose(next, { amountCents: 12_000 })).case.status).toBe("recorded");
+    expect((await f.workspace()).customerTotals[0]!.netCents).toBe(12_000);
   });
 
   it("explicit importer replacement supersedes another identity; textual revision claims require human acceptance", async () => {
@@ -80,9 +92,13 @@ describe("durable invoice case boundary", () => {
     expect(proposal.case.status).toBe("needs_review"); expect((await f.workspace()).customerTotals[0]!.netCents).toBe(10_000);
     unwrap(await f.decide(revision, "accept-revision")); expect((await f.workspace()).customerTotals[0]!.netCents).toBe(12_000);
     expect((await f.detail(caseId)).case.status).toBe("superseded");
+    // An explicit replacement of a recorded invoice still needs a human before it removes that effect.
     const imported = (await f.ingest([{ ...document("INV-3", "150.00"), replacesExternalId: "INV-2" }])).caseIds[0]!;
-    expect((await f.detail(revision)).case.status).toBe("superseded"); expect((await f.workspace()).customerTotals[0]!.netCents).toBe(0);
-    await f.begin(imported); unwrap(await f.propose(imported, { amountCents: 15_000 }));
+    expect((await f.detail(revision)).case.status).toBe("recorded"); expect((await f.workspace()).customerTotals[0]!.netCents).toBe(12_000);
+    await f.begin(imported); expect(unwrap(await f.propose(imported, { amountCents: 15_000 })).case.status).toBe("needs_review");
+    expect((await f.workspace()).customerTotals[0]!.netCents).toBe(12_000);
+    unwrap(await f.decide(imported, "accept-replacement"));
+    expect((await f.detail(revision)).case.status).toBe("superseded");
     expect((await f.workspace()).customerTotals[0]!.netCents).toBe(15_000);
   });
 
@@ -194,7 +210,8 @@ describe("durable invoice case boundary", () => {
 describe("invoice invariants and persistent budgets", () => {
   it("old version ingestion replay cannot remove the newer accepted revision", async () => {
     const f = await setup(); const { caseId } = await f.start(); unwrap(await f.propose(caseId));
-    const next = (await f.ingest([document("INV-1", "120.00")])).caseIds[0]!; await f.begin(next); unwrap(await f.propose(next, { amountCents: 12_000 }));
+    const next = (await f.ingest([{ ...document("INV-1", "120.00"), newVersion: true }])).caseIds[0]!; await f.begin(next); unwrap(await f.propose(next, { amountCents: 12_000 }));
+    unwrap(await f.decide(next, "accept-version"));
     const replay = await f.ingest([document()]); expect(replay.caseIds).toEqual([caseId]);
     expect((await f.detail(next)).case.status).toBe("recorded"); expect((await f.workspace()).customerTotals[0]!.netCents).toBe(12_000);
     expect(f.h.all("invoiceSources")).toHaveLength(2);
@@ -317,5 +334,64 @@ describe("invoice replacement and currency validation", () => {
     const currencyMissing = (await f.ingest([{ ...document("INV-3"), text: document("INV-3").text.replace("Total: USD 100.00", "Amount Cents: 10000") }])).caseIds[0]!;
     await f.begin(currencyMissing);
     expect(await f.propose(currencyMissing)).toMatchObject({ ok: false, code: "unsupported_conclusion" });
+  });
+});
+
+describe("import identity and supersession (P1-4)", () => {
+  const file = (text: string, name = "invoice.txt") => new File([text], name, { type: "text/plain" });
+  it("a second invoice.txt for a different customer does not drop the first customer's net", async () => {
+    const f = await setup();
+    const [a] = await readSourceFiles([file("INVOICE\nCustomer ID: C001\nCustomer: Acme\nInvoice Number: A-1\nTotal: USD 1000.00")]);
+    const caseA = (await f.ingest([a!])).caseIds[0]!; await f.register(await f.detail(caseA)); await f.begin(caseA);
+    expect(unwrap(await f.propose(caseA, { documentNumber: "A-1", amountCents: 100_000 })).case.status).toBe("recorded");
+    const [b] = await readSourceFiles([file("INVOICE\nCustomer ID: C002\nCustomer: Birch\nInvoice Number: B-1\nTotal: USD 400.00")]);
+    expect(b!.name).toBe(a!.name);
+    expect(b!.externalId).not.toBe(a!.externalId);
+    const caseB = (await f.ingest([b!])).caseIds[0]!; await f.register(await f.detail(caseB), "C002", "Birch"); await f.begin(caseB);
+    expect(unwrap(await f.propose(caseB, { customerId: "C002", documentNumber: "B-1", amountCents: 40_000 })).case.status).toBe("recorded");
+    expect((await f.detail(caseA)).case.status).toBe("recorded");
+    expect((await f.workspace()).customerTotals.map((c) => [c.customerId, c.netCents])).toEqual([["C001", 100_000], ["C002", 40_000]]);
+  });
+
+  it("derives a browser import id from the content hash plus a fresh UUID", async () => {
+    const text = "INVOICE\nCustomer ID: C001";
+    const hash = await sha256Hex(text);
+    const [first] = await readSourceFiles([file(text)]);
+    const [second] = await readSourceFiles([file(text)]);
+    expect(first!.externalId.startsWith(`${hash.slice(0, 16)}-`)).toBe(true);
+    expect(second!.externalId).not.toBe(first!.externalId);
+  });
+
+  it("refuses an existing external ID with different bytes unless the importer explicitly versions it", async () => {
+    const f = await setup(); const { caseId } = await f.start(); unwrap(await f.propose(caseId));
+    expect(await mutationHandler(api.ingestBatch)(f.h.ctx, { ...human, label: "Batch", documents: [document("INV-1", "120.00")], idempotencyKey: "implicit-version" })).toMatchObject({ ok: false, code: "external_id_conflict" });
+    expect((await f.detail(caseId)).case.status).toBe("recorded");
+    expect((await f.workspace()).customerTotals[0]!.netCents).toBe(10_000);
+    expect(f.h.all("invoiceSources")).toHaveLength(1);
+  });
+
+  it("an explicit new version of a recorded invoice waits for human review before replacing it", async () => {
+    const f = await setup(); const { caseId, d } = await f.start(); unwrap(await f.propose(caseId));
+    const next = (await f.ingest([{ ...document("INV-1", "120.00"), newVersion: true }])).caseIds[0]!;
+    expect((await f.detail(caseId)).case.status).toBe("recorded");
+    expect((await f.workspace()).customerTotals[0]!.netCents).toBe(10_000);
+    await f.begin(next);
+    const proposal = unwrap(await f.propose(next, { amountCents: 12_000 }));
+    expect(proposal.case.status).toBe("needs_review");
+    expect((await f.detail(next)).currentProposal?.conclusion.supersedesDocumentId).toBe(d.source.documentId);
+    expect((await f.workspace()).customerTotals[0]!.netCents).toBe(10_000);
+    unwrap(await f.decide(next, "accept-version"));
+    expect((await f.detail(caseId)).case.status).toBe("superseded");
+    expect((await f.workspace()).customerTotals[0]!.netCents).toBe(12_000);
+    expect((await f.detail(next)).source.version).toBe(2);
+  });
+
+  it("a human can keep the recorded original by excluding the new version", async () => {
+    const f = await setup(); const { caseId } = await f.start(); unwrap(await f.propose(caseId));
+    const next = (await f.ingest([{ ...document("INV-1", "120.00"), newVersion: true }])).caseIds[0]!; await f.begin(next);
+    unwrap(await f.propose(next, { amountCents: 12_000 }));
+    unwrap(await f.decide(next, "keep-original", "exclude"));
+    expect((await f.detail(caseId)).case.status).toBe("recorded");
+    expect((await f.workspace()).customerTotals[0]!.netCents).toBe(10_000);
   });
 });

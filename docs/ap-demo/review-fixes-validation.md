@@ -54,7 +54,7 @@ unresolved failures that must continue blocking, unselected funding and atomic
 rollback on failed journal posting. Funding notifications are verified and imported
 without requiring a fictitious ACH command.
 
-Reproduce the local and browser flows with the [demo guide](../ap-demo.md).
+Reproduce the local and browser flows with the [demo guide](README.md).
 The full reports remain in the ignored `var/ap-demo/` directories named in the
 JSON record. Fresh runs generate new IDs. Existing pre-fix demo runs should be
 reviewed and retired without replaying any historical payments.

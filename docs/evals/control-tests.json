@@ -1,8 +1,8 @@
 {
-  "runId": "controls-mvnc9ak5",
-  "at": "2026-10-25T04:39:34.681Z",
-  "held": 20,
-  "total": 20,
+  "runId": "controls-mvngh786",
+  "at": "2026-10-25T06:37:42.118Z",
+  "held": 22,
+  "total": 22,
   "results": [
     {
       "id": "bill-without-document",
@@ -39,7 +39,7 @@
       "id": "bill-paid-twice",
       "control": "a bill can be in only one live payment",
       "held": true,
-      "detail": "bill CTL1 is already in payment mx7esj4ckkpxqj2tqvg607d9sn8gzb0m (pending_approval)"
+      "detail": "bill CTL1 is already in payment mx7814gpamk8zhz27tkwj32yy98gyegp (pending_approval)"
     },
     {
       "id": "human-threshold",
@@ -63,7 +63,7 @@
       "id": "ledger-chain",
       "control": "ledger hash chain verifies",
       "held": true,
-      "detail": "{\"entries\":2,\"head\":\"0824361727266873d82388d6e97d5133bf19609699697555979e393ca925e221\",\"ok\":true}"
+      "detail": "{\"entries\":2,\"head\":\"e51a5909ffb172f7d6c7098d710f30c5fe8532bec6a78d91c8f91ea1dd192618\",\"ok\":true}"
     },
     {
       "id": "memory-direct-bank-change",
@@ -119,6 +119,18 @@
       "control": "kernel-only entry labels can't be posted directly",
       "held": true,
       "detail": "\"payment_settlement\" entries are created by the kernel, not posted directly"
+    },
+    {
+      "id": "bill-accrual-reversal",
+      "control": "a bill accrual can't be reversed outside the bill flow",
+      "held": true,
+      "detail": "entry #8 comes from a kernel \"bill\" entry; correct it through its own flow, not a reversal"
+    },
+    {
+      "id": "settlement-reversal",
+      "control": "a payment settlement can't be reversed without bank evidence",
+      "held": true,
+      "detail": "entry #9 comes from a kernel \"payment_settlement\" entry; correct it through its own flow, not a reversal"
     },
     {
       "id": "answer-own-ask",

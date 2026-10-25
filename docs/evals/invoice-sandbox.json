@@ -4,8 +4,8 @@
     "repository": "https://github.com/ciru-ai/invoice-sandbox-benchmark",
     "commit": "b8cb58ff9747486e86c623e867b76fad5d8d075f",
     "bench_dirs": [
-      "/Users/srivatsavkannan/Documents/calhacks/benchdata/invoice-sandbox",
-      "/Users/srivatsavkannan/Documents/calhacks/benchdata/invoice-sandbox-seed20261024"
+      "../benchdata/invoice-sandbox",
+      "../benchdata/invoice-sandbox-seed20261024"
     ]
   },
   "coverage": {
@@ -107,7 +107,7 @@
       "a-f1": 1.4662,
       "b-f1": 1.5481
     },
-    "ledger": "/Users/srivatsavkannan/Documents/calhacks/benchdata/invoice-sandbox/ledger.jsonl",
+    "ledger": "../benchdata/invoice-sandbox/ledger.jsonl",
     "api_calls": 668,
     "fallback_calls": 0
   },

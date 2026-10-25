@@ -1,0 +1,415 @@
+Browser tab: 9, Title: "Accounts payable · Autonomous Finance", URL: "http://127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system&apView=matching".
+1 AXWebArea Accounts payable · Autonomous Finance, URL: 127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system&apView=matching
+	2 container root
+		3 link Description: Skip to content, Value: 127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system&apView=matching#main
+		4 container
+			5 heading Autonomous Finance, Value: 1
+				6 text Autonomous
+				7 text Finance
+			8 text Accounts payable Evidence and obligations
+			9 container Console views
+				10 text Workspace
+				11 button Accounts payable
+				12 button Invoices
+				13 button Inbox
+				14 button Bank & cash
+				15 button Finance flow
+				16 button Team
+				17 button Live activity
+				18 button Ledger
+				19 button Memory
+				20 button Evals
+				21 button Control room
+			22 text Human finance lead You oversee. Agents operate.
+		23 container
+			24 text Workspace Accounts payable Local FakeBank ap97-i3-20261025
+		25 container main
+			26 container Local multi-human simulation
+				27 text Local multi-human simulation / FakeBank
+				28 text These are distinct simulated human seats on an isolated local backend. This is not an Auth0 login, a real person’s approval or an external bank authorization.
+				29 container
+					30 text Simulated human
+					31 pop up button (collapsed, settable) Simulated human, Value: I3 simulated operator, Secondary Actions: Expand
+						32 menu
+							33 Choose a simulated actor
+							34 (selected) I3 simulated operator
+				35 container
+					36 text Acting as  I3 simulated operator . Group membership, distinct-person quorum and stale-evidence checks still apply.
+			37 container Accounts payable workspace
+				38 heading Accounts payable, Value: 2
+					39 text Accounts payable
+				40 text Inspect the obligation, its approvals and the outcome.
+				41 button Refresh
+				42 button (collapsed) Upload documents, Secondary Actions: Expand
+				43 container Workspace sections
+					44 checkbox Cases, Value: 1
+					45 checkbox Payment runs, Value: 0
+					46 checkbox Policy & suppliers, Value: 0
+					47 checkbox Period close, Value: 0
+				48 container Workspace operational metrics
+					49 definition list
+						50 container Cases needing attention
+							51 text Cases needing attention
+						52 container
+							53 text 1 of  1  cases in this run
+						54 container Approved outstanding
+							55 text Approved outstanding
+						56 container
+							57 text $0.00 Across 0 unique invoices
+						58 container Execution needs review
+							59 text Execution needs review
+						60 container
+							61 text 0 Inspect bank evidence before retrying
+					62 text Recognizing a bill records the obligation. Applied supplier credits reduce what is owed; a verified cash settlement records money leaving the bank. QuickBooks synchronization is a separate, receipt-backed operation.
+					63 button (collapsed) Extraction, source coverage and recorded trace counts, Secondary Actions: Expand
+						64 text Extraction, source coverage and recorded trace counts
+					65 button (collapsed) Operational durations and waiting ages, Secondary Actions: Expand
+						66 text Operational durations and waiting ages
+				67 container AP cases
+					68 search text field (settable) Search AP cases
+					69 container
+						70 text Show
+						71 pop up button (collapsed, settable) Description: Filter AP cases, Value: All, Secondary Actions: Expand
+							72 menu
+								73 (selected) All
+								74 Needs attention
+								75 Approved
+								76 Settled
+					77 content list
+						78 checkbox Golden State Produce Co. INV-1001 $678.60 Held Needs attention, Value: 1
+							79 text Golden State Produce Co.
+							80 text INV-1001
+							81 text $678.60
+							82 text Held
+							83 text Needs attention
+					84 container
+						85 text 1  of  1  cases shown
+				86 container
+					87 heading INV-1001, Value: 3
+						88 text INV-1001
+					89 text Golden State Produce Co. Local FakeBank Simulated human identity
+				90 container
+					91 text Case  kd74wbhvrp0y8tr74pt603pj6x8gzv2y  / Revision  1  /  Document provenance varies; inspect originals
+				92 definition list
+					93 container Document review
+						94 text Document review
+					95 text Reviewed
+					96 container Bill decision
+						97 text Bill decision
+					98 text Held
+					99 container Accounting
+						100 text Accounting
+					101 text Unposted
+					102 container Payment authorization
+						103 text Payment authorization
+					104 text Not requested
+					105 container Bank execution
+						106 text Bank execution
+					107 text Not started
+					108 container Reconciliation
+						109 text Reconciliation
+					110 text Unmatched
+				111 definition list
+					112 container Invoiced
+						113 text Invoiced
+					114 text $678.60
+					115 container Accepted
+						116 text Accepted
+					117 text Not established
+					118 container Outstanding
+						119 text Outstanding
+					120 text Not established
+				121 button (collapsed) Disputed, credited and payment amounts, Secondary Actions: Expand
+					122 text Disputed, credited and payment amounts
+				123 container Case sections
+					124 checkbox Source & fields, Value: 0
+					125 checkbox Matching, Value: 1
+					126 checkbox Accounting, Value: 0
+					127 checkbox History, Value: 0
+				359 heading Matching and holds, Value: 3
+					360 text Matching and holds
+				361 content list
+					362 container
+						363 heading Missing receipt, Value: 4
+							364 text Missing receipt
+						365 text Blocking hold Accepted receipt lines are missing or ambiguous for line-1.
+						366 definition list
+							367 container Owner
+								368 text Owner
+							369 text Receiving owner
+							370 container Permitted actions
+								371 text Permitted actions
+							372 text Submit supporting evidence revision, Request authorized correction
+							373 container Required evidence
+								374 text Required evidence
+							375 text Accepted receiving evidence
+					376 container
+						377 heading Missing receipt, Value: 4
+							378 text Missing receipt
+						379 text Blocking hold Accepted receipt lines are missing or ambiguous for line-2.
+						380 definition list
+							381 container Owner
+								382 text Owner
+							383 text Receiving owner
+							384 container Permitted actions
+								385 text Permitted actions
+							386 text Submit supporting evidence revision, Request authorized correction
+							387 container Required evidence
+								388 text Required evidence
+							389 text Accepted receiving evidence
+					390 container
+						391 heading Missing receipt, Value: 4
+							392 text Missing receipt
+						393 text Blocking hold Accepted receipt lines are missing or ambiguous for line-3.
+						394 definition list
+							395 container Owner
+								396 text Owner
+							397 text Receiving owner
+							398 container Permitted actions
+								399 text Permitted actions
+							400 text Submit supporting evidence revision, Request authorized correction
+							401 container Required evidence
+								402 text Required evidence
+							403 text Accepted receiving evidence
+					404 container
+						405 heading Missing receipt, Value: 4
+							406 text Missing receipt
+						407 text Blocking hold Accepted receipt lines are missing or ambiguous for line-4.
+						408 definition list
+							409 container Owner
+								410 text Owner
+							411 text Receiving owner
+							412 container Permitted actions
+								413 text Permitted actions
+							414 text Submit supporting evidence revision, Request authorized correction
+							415 container Required evidence
+								416 text Required evidence
+							417 text Accepted receiving evidence
+				418 heading Supporting evidence, Value: 4
+					419 text Supporting evidence
+				420 table
+					421 row
+						422 cell
+							423 text Evidence
+						424 cell
+							425 text Reference
+						426 cell
+							427 text Line
+						428 cell
+							429 text Quantity
+						430 cell
+							431 text Unit price
+					432 row
+						433 cell
+							434 text Purchase order
+						435 cell
+							436 text PO-GS-20261019-001
+						437 cell
+							438 text KALE-24
+							439 text line-1
+						440 cell
+							441 text 5 case
+						442 cell
+							443 text $38.50
+					444 row
+						445 cell
+							446 text Purchase order
+						447 cell
+							448 text PO-GS-20261019-001
+						449 cell
+							450 text ROM-CS
+							451 text line-2
+						452 cell
+							453 text 4 case
+						454 cell
+							455 text $42.75
+					456 row
+						457 cell
+							458 text Purchase order
+						459 cell
+							460 text PO-GS-20261019-001
+						461 cell
+							462 text AVO-48
+							463 text line-3
+						464 cell
+							465 text 3 case
+						466 cell
+							467 text $68.90
+					468 row
+						469 cell
+							470 text Purchase order
+						471 cell
+							472 text PO-GS-20261019-001
+						473 cell
+							474 text TOM-25
+							475 text line-4
+						476 cell
+							477 text 2 case
+						478 cell
+							479 text $54.20
+					480 row
+						481 cell
+							482 text Contract
+						483 cell
+							484 text CONTRACT-GS-2026
+						485 cell
+							486 text KALE-24
+							487 text line-1
+						488 cell
+							489 text 5 case
+						490 cell
+							491 text $38.50
+					492 row
+						493 cell
+							494 text Contract
+						495 cell
+							496 text CONTRACT-GS-2026
+						497 cell
+							498 text ROM-CS
+							499 text line-2
+						500 cell
+							501 text 4 case
+						502 cell
+							503 text $42.75
+					504 row
+						505 cell
+							506 text Contract
+						507 cell
+							508 text CONTRACT-GS-2026
+						509 cell
+							510 text AVO-48
+							511 text line-3
+						512 cell
+							513 text 3 case
+						514 cell
+							515 text $68.90
+					516 row
+						517 cell
+							518 text Contract
+						519 cell
+							520 text CONTRACT-GS-2026
+						521 cell
+							522 text TOM-25
+							523 text line-4
+						524 cell
+							525 text 2 case
+						526 cell
+							527 text $54.20
+				528 heading Invoice lines and coding, Value: 4
+					529 text Invoice lines and coding
+				530 table
+					531 row
+						532 cell
+							533 text Line
+						534 cell
+							535 text Quantity
+						536 cell
+							537 text Unit price
+						538 cell
+							539 text Amount
+						540 cell
+							541 text Allocation
+					542 row
+						543 cell
+							544 text Organic Kale, 24ct case
+							545 text KALE-24
+						546 cell
+							547 text 5 case
+						548 cell
+							549 text $38.50
+						550 cell
+							551 text $192.50
+							552 container
+								553 text Tax  $0.00
+						554 cell
+							555 text GL  5000 :  $192.50
+							556 container
+								557 text Expense  /  2026-10  / sf-hayes-valley
+					558 row
+						559 cell
+							560 text Romaine Hearts, case
+							561 text ROM-CS
+						562 cell
+							563 text 4 case
+						564 cell
+							565 text $42.75
+						566 cell
+							567 text $171.00
+							568 container
+								569 text Tax  $0.00
+						570 cell
+							571 text GL  5000 :  $171.00
+							572 container
+								573 text Expense  /  2026-10  / sf-hayes-valley
+					574 row
+						575 cell
+							576 text Hass Avocados, 48ct
+							577 text AVO-48
+						578 cell
+							579 text 3 case
+						580 cell
+							581 text $68.90
+						582 cell
+							583 text $206.70
+							584 container
+								585 text Tax  $0.00
+						586 cell
+							587 text GL  5000 :  $206.70
+							588 container
+								589 text Expense  /  2026-10  / sf-hayes-valley
+					590 row
+						591 cell
+							592 text Heirloom Tomatoes, 25lb
+							593 text TOM-25
+						594 cell
+							595 text 2 case
+						596 cell
+							597 text $54.20
+						598 cell
+							599 text $108.40
+							600 container
+								601 text Tax  $0.00
+						602 cell
+							603 text GL  5000 :  $108.40
+							604 container
+								605 text Expense  /  2026-10  / sf-hayes-valley
+				606 container
+					607 text Policy  golden-state-ap-v1 . New supporting evidence creates a revision that requires fresh review.
+				608 container Physical source line identity
+					609 heading Physical source line identity, Value: 3
+						610 text Physical source line identity
+					611 text Parser rows can be renamed, split or merged. An independently reviewed map keeps them tied to the same original physical capacity, separately from field review, business approval and payment authorization.
+					612 button (collapsed) Propose the exact original-to-parser line mapping, Secondary Actions: Expand
+						613 text Propose the exact original-to-parser line mapping
+					614 heading Frozen originals and current capacity, Value: 4
+						615 text Frozen originals and current capacity
+					616 text No frozen physical catalog is recorded for these originals. Existing source-capacity protections still apply.
+					617 heading Immutable mapping decisions, Value: 4
+						618 text Immutable mapping decisions
+					619 text No physical mapping has been proposed for this case.
+				620 container
+					621 heading Business approval policy, Value: 3
+						622 text Business approval policy
+					623 text No governed business policy is active for this case. Inspect Policy & suppliers to configure the approval route.
+				339 container Case review actions
+					340 heading Review this revision, Value: 3
+						341 text Review this revision
+					342 text Your decision binds the current sources and amounts. Backend authority and stale-revision checks apply.
+					343 container
+						344 text Decision reason
+						345 text entry area (settable) Decision reason, ID: ap-review-reason
+					346 checkbox (settable, integer) Description: I inspected the correct original source revision and supporting evidence., Value: 0
+					347 container
+						348 text Field review outcome
+						349 pop up button (collapsed, settable) Field review outcome, Value: Approve extracted fields, Secondary Actions: Expand
+							350 menu
+								351 (selected) Approve extracted fields
+								352 Request evidence
+								353 Reject extracted fields
+					354 button (disabled) Record field review
+					355 button (disabled) Approve bill $678.60
+						356 text Approve bill  $678.60
+					357 text Resolve the owned holds with supporting evidence before bill approval.
+					358 text Payment release requires the exact amount, verified beneficiary, funding account and independent authorization. Review the proposal under Accounting.
+
+The focused UI element is 125 checkbox Matching, Value: 1

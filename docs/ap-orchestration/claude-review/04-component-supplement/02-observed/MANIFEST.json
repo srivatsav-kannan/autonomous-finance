@@ -1,0 +1,24 @@
+{
+  "files": [
+    {
+      "path": "ACTUAL-JOURNALS-AND-BUSINESS-RESULTS.json",
+      "bytes": 289370,
+      "sha256": "4b0f5e6f3ec5a67634949a1459d2de4656ab8906a84e771b929d989aa126dcbe"
+    },
+    {
+      "path": "DB-AND-EXECUTED-TESTS.zip",
+      "bytes": 631228,
+      "sha256": "a6bb4b42d44e20de631df666888f328b9a09e5809e86751356ff0e5360277251"
+    },
+    {
+      "path": "INDEX.json",
+      "bytes": 11834,
+      "sha256": "7132af796efd2fad2ca3e91906cda49bc2b7b177b92ea3cb7f260ac92a2d57db"
+    },
+    {
+      "path": "READ-AFTER-DERIVATION.md",
+      "bytes": 2347,
+      "sha256": "0530980b2b90f2dd7dc94014f007716fcb2090fdb485eca944a75b02f10f4259"
+    }
+  ]
+}

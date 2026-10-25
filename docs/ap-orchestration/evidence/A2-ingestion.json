@@ -1,0 +1,607 @@
+{
+  "task": "A2",
+  "owner": "/root/p0_inventory",
+  "parent": "/root",
+  "runId": "ap97-20261025-01a1722e-a",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "sourceBaseline": "ac6285412a3db2948590ca22248737e20f387fcf",
+  "contractVersion": "ap-evidence-v1",
+  "newProviderJobs": 4,
+  "parse": {
+    "extraction": "complete",
+    "reasons": [],
+    "totalCents": 67860,
+    "lineCount": 4,
+    "grounding": {
+      "none": 2,
+      "native": 33
+    },
+    "sources": [
+      {
+        "sourceId": "gs-invoice",
+        "sha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83",
+        "pageStatus": [
+          {
+            "page": 1,
+            "status": "complete",
+            "reason": null
+          }
+        ],
+        "jobId": "pjb-9vuui4sefrqzcaqbxnbhdobp93pt",
+        "requestedVersion": "2026-09-28",
+        "resolvedVersion": null
+      },
+      {
+        "sourceId": "gs-purchase-order",
+        "sha256": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7",
+        "pageStatus": [
+          {
+            "page": 1,
+            "status": "complete",
+            "reason": null
+          }
+        ],
+        "jobId": "pjb-isalmjsom7w2o1v1g9svihe32x3o",
+        "requestedVersion": "2026-09-28",
+        "resolvedVersion": null
+      },
+      {
+        "sourceId": "gs-receipt",
+        "sha256": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2",
+        "pageStatus": [
+          {
+            "page": 1,
+            "status": "complete",
+            "reason": null
+          }
+        ],
+        "jobId": "pjb-aszl3isyql6pu9p6bfnwvjo2pp3b",
+        "requestedVersion": "2026-09-28",
+        "resolvedVersion": null
+      },
+      {
+        "sourceId": "gs-contract",
+        "sha256": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883",
+        "pageStatus": [
+          {
+            "page": 1,
+            "status": "complete",
+            "reason": null
+          }
+        ],
+        "jobId": "pjb-cl4jgp2pqw1shv8uy2v7zvabjwej",
+        "requestedVersion": "2026-09-28",
+        "resolvedVersion": null
+      }
+    ],
+    "purchasingEvidence": [
+      {
+        "kind": "purchase_order",
+        "reference": "PO-GS-20261019-001",
+        "lineCount": 4
+      },
+      {
+        "kind": "receipt",
+        "reference": "DLV-sf-hayes-valley-20261019-GOL",
+        "lineCount": 4
+      },
+      {
+        "kind": "contract",
+        "reference": "CONTRACT-GS-2026",
+        "lineCount": 4
+      }
+    ],
+    "evidence": [
+      {
+        "fieldPath": "extractedSupplierName",
+        "rawValue": "Golden State Produce Co.",
+        "status": "unresolved",
+        "method": "none",
+        "reason": "local_ocr_ambiguous"
+      },
+      {
+        "fieldPath": "invoiceNumber",
+        "rawValue": "INV-1001",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "invoiceDate",
+        "rawValue": "2026-10-19",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "dueDate",
+        "rawValue": "2026-11-02",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "currency",
+        "rawValue": "USD",
+        "status": "unresolved",
+        "method": "none",
+        "reason": "local_ocr_ambiguous"
+      },
+      {
+        "fieldPath": "terms",
+        "rawValue": "Net 14",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "subtotalCents",
+        "rawValue": "USD 678.60",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "taxCents",
+        "rawValue": "USD 0.00",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "freightCents",
+        "rawValue": "USD 0.00",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "discountCents",
+        "rawValue": "USD 0.00",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "totalCents",
+        "rawValue": "USD 678.60",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-1.sku",
+        "rawValue": "KALE-24",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-1.description",
+        "rawValue": "Organic Kale, 24ct case",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-1.quantity",
+        "rawValue": "5",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-1.unit",
+        "rawValue": "case",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-1.unitPriceCents",
+        "rawValue": "38.50",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-1.amountCents",
+        "rawValue": "192.50",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-2.sku",
+        "rawValue": "ROM-CS",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-2.description",
+        "rawValue": "Romaine Hearts, case",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-2.quantity",
+        "rawValue": "4",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-2.unit",
+        "rawValue": "case",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-2.unitPriceCents",
+        "rawValue": "42.75",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-2.amountCents",
+        "rawValue": "171.00",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-3.sku",
+        "rawValue": "AVO-48",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-3.description",
+        "rawValue": "Hass Avocados, 48ct",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-3.quantity",
+        "rawValue": "3",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-3.unit",
+        "rawValue": "case",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-3.unitPriceCents",
+        "rawValue": "68.90",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-3.amountCents",
+        "rawValue": "206.70",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-4.sku",
+        "rawValue": "TOM-25",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-4.description",
+        "rawValue": "Heirloom Tomatoes, 25lb",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-4.quantity",
+        "rawValue": "2",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-4.unit",
+        "rawValue": "case",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-4.unitPriceCents",
+        "rawValue": "54.20",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      },
+      {
+        "fieldPath": "lines.line-4.amountCents",
+        "rawValue": "108.40",
+        "status": "native",
+        "method": "native",
+        "reason": null
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "sourceSha256": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7",
+      "jobId": "pjb-isalmjsom7w2o1v1g9svihe32x3o",
+      "status": "complete",
+      "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+      "resultArtifact": {
+        "ref": "artifacts/23f89637f5b2c908569d9d17c59d94003c5f094146d46d7cf368081595efe3f1.json",
+        "sha256": "23f89637f5b2c908569d9d17c59d94003c5f094146d46d7cf368081595efe3f1"
+      },
+      "groundedArtifact": {
+        "ref": "artifacts/531c5717a4acdb85274db980b985790a4d1268887ee9df609824eaf61fa43beb.jsonl",
+        "sha256": "531c5717a4acdb85274db980b985790a4d1268887ee9df609824eaf61fa43beb"
+      },
+      "wordsArtifact": {
+        "ref": "artifacts/975a799a9c3f1dadcf8be36937c3668d45f5ee0f20ea315cb61f5fcb0e3ae1b5.jsonl",
+        "sha256": "975a799a9c3f1dadcf8be36937c3668d45f5ee0f20ea315cb61f5fcb0e3ae1b5"
+      }
+    },
+    {
+      "sourceSha256": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883",
+      "jobId": "pjb-cl4jgp2pqw1shv8uy2v7zvabjwej",
+      "status": "complete",
+      "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+      "resultArtifact": {
+        "ref": "artifacts/92c53f9924f723098852b7b626280ededec01cb23878e0253d8f1a31d97aecb8.json",
+        "sha256": "92c53f9924f723098852b7b626280ededec01cb23878e0253d8f1a31d97aecb8"
+      },
+      "groundedArtifact": {
+        "ref": "artifacts/b7ca2c32daa9c80c88a1775368f6f48b2f87c34b7de25c396030738913f63007.jsonl",
+        "sha256": "b7ca2c32daa9c80c88a1775368f6f48b2f87c34b7de25c396030738913f63007"
+      },
+      "wordsArtifact": {
+        "ref": "artifacts/9ff90b4abcf2b3af6ef690ede105ec8e309f1a9fc2a69ec3a5cec504e6a99f50.jsonl",
+        "sha256": "9ff90b4abcf2b3af6ef690ede105ec8e309f1a9fc2a69ec3a5cec504e6a99f50"
+      }
+    },
+    {
+      "sourceSha256": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2",
+      "jobId": "pjb-aszl3isyql6pu9p6bfnwvjo2pp3b",
+      "status": "complete",
+      "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+      "resultArtifact": {
+        "ref": "artifacts/bdd277ff2cdec39c598dd67b9ac48549da4bdbea0b6e04bb38b0c05e0a7d4449.json",
+        "sha256": "bdd277ff2cdec39c598dd67b9ac48549da4bdbea0b6e04bb38b0c05e0a7d4449"
+      },
+      "groundedArtifact": {
+        "ref": "artifacts/4661c6b3e7c662a55853affcc4b84d238810887332f438ad9c1a11facb8ee197.jsonl",
+        "sha256": "4661c6b3e7c662a55853affcc4b84d238810887332f438ad9c1a11facb8ee197"
+      },
+      "wordsArtifact": {
+        "ref": "artifacts/37354abbb41977220e7d1dff89a87ec777f66fa1b9e3d16d275ca3a4cc283267.jsonl",
+        "sha256": "37354abbb41977220e7d1dff89a87ec777f66fa1b9e3d16d275ca3a4cc283267"
+      }
+    },
+    {
+      "sourceSha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83",
+      "jobId": "pjb-9vuui4sefrqzcaqbxnbhdobp93pt",
+      "status": "complete",
+      "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+      "resultArtifact": {
+        "ref": "artifacts/eff9d76da338749f20ab4f928b02e2e831fa8db18b1a9ae8cc25718dff246ea9.json",
+        "sha256": "eff9d76da338749f20ab4f928b02e2e831fa8db18b1a9ae8cc25718dff246ea9"
+      },
+      "groundedArtifact": {
+        "ref": "artifacts/c48cd9a3cbce35e63f9a61f1bc88ffa2e00ca55db5ddf516696ea1c4637e4bb3.jsonl",
+        "sha256": "c48cd9a3cbce35e63f9a61f1bc88ffa2e00ca55db5ddf516696ea1c4637e4bb3"
+      },
+      "wordsArtifact": {
+        "ref": "artifacts/4b8f906fb7cf8552caaf0be32ba746169b49fd76f3b3728a1b88a76972e58930.jsonl",
+        "sha256": "4b8f906fb7cf8552caaf0be32ba746169b49fd76f3b3728a1b88a76972e58930"
+      }
+    }
+  ],
+  "render": {
+    "providerCalls": 0,
+    "outputs": [
+      {
+        "sourceId": "gs-invoice",
+        "sourceSha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83",
+        "rasterSha256": "5efefdf64d2d34c416f4114638e46977d05d73d15dde661ac1618176fcaba0ae",
+        "frame": {
+          "width": 612,
+          "height": 792,
+          "units": "point",
+          "origin": "top_left",
+          "rotation": 0,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        },
+        "originalRehydratedFromBase64": true
+      },
+      {
+        "sourceId": "gs-purchase-order",
+        "sourceSha256": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7",
+        "rasterSha256": "f3255b698544ba2bdfd5d38439f6f81d9b9105e9b029d88790a2bc8f86ce5144",
+        "frame": {
+          "width": 612,
+          "height": 792,
+          "units": "point",
+          "origin": "top_left",
+          "rotation": 0,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        },
+        "originalRehydratedFromBase64": true
+      },
+      {
+        "sourceId": "gs-receipt",
+        "sourceSha256": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2",
+        "rasterSha256": "86966c23adec383bbfb15025c1458fce576444d7f075eff5ba76fa2a8704af30",
+        "frame": {
+          "width": 612,
+          "height": 792,
+          "units": "point",
+          "origin": "top_left",
+          "rotation": 0,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        },
+        "originalRehydratedFromBase64": true
+      },
+      {
+        "sourceId": "gs-contract",
+        "sourceSha256": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883",
+        "rasterSha256": "4753644ad213c2f0db788136513114786b53a35e3ab1be0903a74e10a73798ed",
+        "frame": {
+          "width": 612,
+          "height": 792,
+          "units": "point",
+          "origin": "top_left",
+          "rotation": 0,
+          "transform": [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        },
+        "originalRehydratedFromBase64": true
+      }
+    ],
+    "rotation": "explicitly_rejected"
+  },
+  "offlineReplay": "Byte-identical APIntake; network-disabled fetcher; no key required",
+  "privateScan": {
+    "sourceSha256": "0536b1ee4ca22cf618e608b4aa0c8078c2f9f8ecd8eecc1716e13bee92710760",
+    "priorJobId": "pjb-lfpn3gr0obrww7nvdat73o0z2z9h",
+    "newProviderJobs": 0,
+    "nativeDescriptionPresent": false,
+    "withoutFallback": {
+      "status": "unresolved",
+      "reason": "missing_exact_text"
+    },
+    "withFallback": {
+      "status": "derived",
+      "method": "local_ocr_exact",
+      "frame": {
+        "width": 754,
+        "height": 1000,
+        "units": "pixel",
+        "origin": "top_left",
+        "rotation": 0,
+        "transform": [
+          1,
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      },
+      "regions": [
+        {
+          "x": 106,
+          "y": 529,
+          "width": 286,
+          "height": 13,
+          "granularity": "line",
+          "tokenRefs": [
+            "ocr:1:67",
+            "ocr:1:68",
+            "ocr:1:69",
+            "ocr:1:70",
+            "ocr:1:71",
+            "ocr:1:72",
+            "ocr:1:73",
+            "ocr:1:74"
+          ]
+        },
+        {
+          "x": 107,
+          "y": 556,
+          "width": 198,
+          "height": 13,
+          "granularity": "line",
+          "tokenRefs": [
+            "ocr:1:78",
+            "ocr:1:79",
+            "ocr:1:80",
+            "ocr:1:81",
+            "ocr:1:82"
+          ]
+        }
+      ],
+      "processor": {
+        "provider": "tesseract",
+        "model": "eng",
+        "version": "5.5.2",
+        "configHash": "2e55b3b8f34b064ad5f162144ae7cfc947176c453419e34463323507fd39ab27",
+        "jobId": null,
+        "resolvedVersion": "5.5.2",
+        "implementationVersion": "ap-local-ocr-v1",
+        "configArtifact": {
+          "ref": "artifacts/2e55b3b8f34b064ad5f162144ae7cfc947176c453419e34463323507fd39ab27.json",
+          "sha256": "2e55b3b8f34b064ad5f162144ae7cfc947176c453419e34463323507fd39ab27"
+        },
+        "rawArtifact": {
+          "ref": "artifacts/5ed5e24f88c9366d4005a7a23d320dca4dd0aedc12158fc5ce3940a6dfed62d4.json",
+          "sha256": "5ed5e24f88c9366d4005a7a23d320dca4dd0aedc12158fc5ce3940a6dfed62d4"
+        },
+        "tokenArtifact": {
+          "ref": "artifacts/e1baf4cd90ed068e2b348e3677bab410cf61eaab808a4ef85a25448f3ea78acb.json",
+          "sha256": "e1baf4cd90ed068e2b348e3677bab410cf61eaab808a4ef85a25448f3ea78acb"
+        },
+        "rasterArtifact": {
+          "ref": "artifacts/4e1030f6e29114b33b911603dcbaf99b5b7ac86f808ec55b449fb287b96b3c55.json",
+          "sha256": "4e1030f6e29114b33b911603dcbaf99b5b7ac86f808ec55b449fb287b96b3c55"
+        },
+        "traineddata": {
+          "language": "eng",
+          "version": "tessdata-fast-87416418657359cb625c412a48b6e1d6d41c29bd",
+          "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+        }
+      }
+    },
+    "scope": "One genuine private archival scan; engine integration regression, not representative production reliability or AP candidate acceptance"
+  },
+  "checks": {
+    "vitest": "29 passed (4 files)",
+    "typescript": "passed",
+    "containerBuild": "NOT_RUN: Docker daemon unavailable",
+    "backendOrServiceStarted": false
+  },
+  "acceptance": "Implementation evidence only; independent acceptance belongs to Master"
+}

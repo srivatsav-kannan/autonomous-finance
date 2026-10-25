@@ -9,7 +9,7 @@ export interface LineInput {
   debit: number;
   credit: number;
   memo?: string;
-  dims?: { store?: string; vendor?: string; channel?: string; employee?: string };
+  dims?: { store?: string; department?: string; project?: string; vendor?: string; channel?: string; employee?: string };
 }
 
 export interface PostInput {
@@ -27,7 +27,8 @@ export interface PostInput {
 }
 
 // Cash moves only when real money moved: a settled payment or a bank match.
-// "reversal" is only produced by ledger.reverseEntry (postEntry refuses it), so corrections to cash work.
+// "reversal" is only produced by ledger.reverseEntry (postEntry refuses it), which allows cash
+// lines only when undoing a bank match chain; kernel-created entries cannot be reversed at all.
 const CASH_SOURCES = new Set(["payment_settlement", "bank_match", "payroll_funding", "reversal"]);
 
 export function validateLines(seat: Seat, source: { kind: string }, lines: LineInput[]): string | null {

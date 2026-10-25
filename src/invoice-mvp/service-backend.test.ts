@@ -77,6 +77,11 @@ describe("actual service and backend handlers on public synthetic data", () => {
     await service.ingestBatch(demoBatch("late"));
     const resumed = await new InvoiceService(backend).processPending();
     expect(resumed.errors).toEqual([]);
+    // The late version replaces a recorded invoice, so it waits for the human before changing totals.
+    const waiting = await service.workspace();
+    expect(waiting.customerTotals.map((c) => c.netCents)).toEqual([107500, 40000]);
+    const revision = waiting.cases.find((c) => c.externalId === "demo-revision" && c.status === "needs_review")!;
+    await service.decide({ caseId: revision.caseId, proposalId: revision.currentProposalId!, evidenceVersion: revision.evidenceVersion, idempotencyKey: "human-accept-revision", action: "accept" });
     const final = await service.workspace();
     expect(final.customerTotals.map((c) => c.netCents)).toEqual([107500, 45000]);
     expect(final.progress.superseded).toBe(1);

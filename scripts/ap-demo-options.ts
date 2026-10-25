@@ -1,4 +1,6 @@
-/** Command-line options for scripts/ap-demo.ts. Pure, so the parsing rules are unit tested. */
+/** Command-line options and secret handling for scripts/ap-demo.ts, unit tested in tests/ap-demo-options.test.ts. */
+import fs from "node:fs";
+import { ENV_FILE, isPlaceholderSecret, newSecret, readEnvFile, upsertEnv, writeEnvFile } from "./lib/env-file";
 
 /** Must equal LEASE_MS in convex/lib/payments/applyEffect.ts (asserted by tests/ap-demo-options.test.ts). */
 export const DISPATCH_LEASE_MS = 30_000;
@@ -36,4 +38,22 @@ export function parseDemoArgs(args: readonly string[]): DemoOptions {
     throw new Error("--browser-approval and --lease-wait-seconds apply to the local crash-recovery demo only");
   }
   return { profile, browserApproval, leaseWaitMs };
+}
+
+/**
+ * The kernel admin secret the local demo writes to the deployment. World, eval, agents and
+ * control tests all read KERNEL_ADMIN_SECRET from .env.local, so the demo must reuse that value:
+ * replacing the deployment's secret with a random one breaks every other runner with
+ * bad_admin_secret. A secret is generated only when none is set (missing, empty or the
+ * `change-me` placeholder), and it is saved to .env.local, when that file exists, so the
+ * deployment and the other runners keep agreeing.
+ */
+export function resolveAdminSecret(env: Record<string, string | undefined>, envFile = ENV_FILE): { secret: string; source: "env" | "generated_saved" | "generated_unsaved" } {
+  const current = env.KERNEL_ADMIN_SECRET;
+  if (!isPlaceholderSecret(current)) return { secret: current!.trim(), source: "env" };
+  const secret = newSecret();
+  env.KERNEL_ADMIN_SECRET = secret;
+  if (!fs.existsSync(envFile)) return { secret, source: "generated_unsaved" };
+  writeEnvFile(upsertEnv(readEnvFile(envFile), { KERNEL_ADMIN_SECRET: secret }, ["KERNEL_ADMIN_SECRET"]).text, envFile);
+  return { secret, source: "generated_saved" };
 }

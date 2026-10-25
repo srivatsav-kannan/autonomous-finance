@@ -1,5 +1,8 @@
+import { apAccountingTables } from "./apAccountingSchema";
+import { apPaymentRunTables } from "./apPaymentRunSchema";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { apSystemTables } from "./apSystemSchema";
 import { demoTables } from "./demoSchema";
 import { demoEvidenceTables } from "./demoEvidenceSchema";
 
@@ -18,6 +21,8 @@ export const lineValidator = v.object({
   dims: v.optional(
     v.object({
       store: v.optional(v.string()),
+      department: v.optional(v.string()),
+      project: v.optional(v.string()),
       vendor: v.optional(v.string()),
       channel: v.optional(v.string()),
       employee: v.optional(v.string()),
@@ -27,7 +32,23 @@ export const lineValidator = v.object({
 
 export const evidenceValidator = v.object({ documentId: v.string(), version: v.number(), contentHash: v.string(), quote: v.optional(v.string()) });
 export const modeValidator = v.union(v.literal("deterministic"), v.literal("mock_model"), v.literal("live_model"));
-export const invoiceSourceValidator = v.object({ externalId: v.string(), name: v.string(), mimeType: v.string(), text: v.string(), contentBase64: v.optional(v.string()), replacesExternalId: v.optional(v.string()) });
+// `newVersion` is explicit importer metadata: only with it does a reused externalId become a new version.
+export const invoiceSourceValidator = v.object({ externalId: v.string(), name: v.string(), mimeType: v.string(), text: v.string(), contentBase64: v.optional(v.string()), replacesExternalId: v.optional(v.string()), newVersion: v.optional(v.boolean()) });
+
+/**
+ * What answering an ask does as the human, fixed by the kernel when the ask is created. The gateway
+ * runs only this; option ids, labels and titles are never read for it. The display fields are the
+ * kernel's snapshot of the target, so the console shows exactly what a click will do.
+ */
+export const askEffectValidator = v.union(
+  v.object({
+    kind: v.literal("payment"), paymentIntentId: v.id("paymentIntents"),
+    payee: v.string(), amountCents: v.number(), method: v.string(), dueDate: v.string(),
+    remitTo: v.object({ bank: v.string(), accountLast4: v.string() }),
+  }),
+  v.object({ kind: v.literal("merge"), proposalBranch: v.string(), proposalId: v.string(), headSha: v.string(), paths: v.array(v.string()) }),
+  v.object({ kind: v.literal("close"), period: v.string() }),
+);
 export const conclusionValidator = v.object({
   treatment: v.union(v.literal("include_invoice"), v.literal("include_credit"), v.literal("exclude"), v.literal("needs_evidence")),
   customerId: v.optional(v.string()), customerName: v.optional(v.string()), documentNumber: v.optional(v.string()), amountCents: v.optional(v.number()),
@@ -40,6 +61,9 @@ export const toolCallValidator = v.object({ tool: v.string(), summary: v.string(
 export const invoiceCaseStatusValidator = v.union(v.literal("received"), v.literal("investigating"), v.literal("needs_review"), v.literal("evidence_missing"), v.literal("recorded"), v.literal("excluded"), v.literal("superseded"), v.literal("duplicate"));
 
 export default defineSchema({
+  ...apAccountingTables,
+  ...apSystemTables,
+  ...apPaymentRunTables,
   ...demoTables,
   ...demoEvidenceTables,
 
@@ -70,6 +94,8 @@ export default defineSchema({
     runId: v.string(), batchId: v.string(), documentId: v.string(), externalId: v.string(), name: v.string(), version: v.number(), contentHash: v.string(),
     status: invoiceCaseStatusValidator, evidenceVersion: v.number(), currentProposalId: v.optional(v.string()), acceptedProposalId: v.optional(v.string()),
     canonicalDocumentId: v.optional(v.string()), reason: v.optional(v.string()), customerId: v.optional(v.string()), question: v.optional(v.string()),
+    // A recorded source this import would replace. Only a human-accepted proposal may supersede it.
+    replacesDocumentId: v.optional(v.string()),
     contradictions: v.array(v.string()), missingEvidence: v.array(v.string()), createdAt: v.number(), updatedAt: v.number(),
   }).index("by_run", ["runId"]).index("by_run_document", ["runId", "documentId"]),
   invoiceProposals: defineTable({ runId: v.string(), caseId: v.string(), evidenceVersion: v.number(), conclusion: conclusionValidator, author: v.string(), mode: modeValidator, model: v.optional(v.string()), createdAt: v.number() }).index("by_run_case", ["runId", "caseId"]),
@@ -285,6 +311,8 @@ export default defineSchema({
     status: v.union(v.literal("open"), v.literal("answered"), v.literal("withdrawn")),
     answer: v.optional(v.object({ optionId: v.string(), note: v.optional(v.string()), by: v.string(), at: v.number() })),
     taskId: v.optional(v.id("tasks")),
+    effect: v.optional(askEffectValidator),
+    // Legacy: agent-written before effects existed. Never read to decide what an answer does.
     proposalBranch: v.optional(v.string()),
     paymentIntentId: v.optional(v.id("paymentIntents")),
     createdAt: v.number(),

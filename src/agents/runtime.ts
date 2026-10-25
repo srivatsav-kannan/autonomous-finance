@@ -7,6 +7,12 @@ import type { Decision, Vendor, Store } from "../memory/schemas";
 import { BUILTIN_PARSERS, loadMemoryParsers, type Parser } from "../integrations/parsers";
 import { emptyUsage, type Usage } from "./llm";
 
+/** The target of an ask that acts as the human; see convex/asks.ts createAsk. */
+export type AskEffectRequest =
+  | { kind: "payment"; paymentIntentId: Id<"paymentIntents"> }
+  | { kind: "merge"; proposalBranch: string }
+  | { kind: "close"; period: string };
+
 export type Task = Doc<"tasks">;
 
 export interface HandlerResult {
@@ -163,23 +169,25 @@ export class SeatRuntime {
     title: string;
     body: string;
     evidence?: { label: string; ref: string }[];
-    options?: { id: string; label: string }[];
     taskId?: Id<"tasks">;
-    paymentIntentId?: Id<"paymentIntents">;
-    proposalBranch?: string;
-  }) {
-    return await this.kernel.client.mutation(api.asks.createAsk, {
+  } & (
+    // An ask that acts as the human names its target; the kernel then sets the options.
+    | { effect: AskEffectRequest; options?: never }
+    | { effect?: never; options?: { id: string; label: string }[] }
+  )) {
+    const r = await this.kernel.client.mutation(api.asks.createAsk, {
       ...this.kernel.auth,
       to: a.to,
       severity: a.severity,
       title: a.title,
       body: a.body,
       evidence: a.evidence ?? [],
-      options: a.options ?? [{ id: "ack", label: "Acknowledge" }],
+      ...(a.effect ? { effect: a.effect } : { options: a.options ?? [{ id: "ack", label: "Acknowledge" }] }),
       taskId: a.taskId,
-      paymentIntentId: a.paymentIntentId,
-      proposalBranch: a.proposalBranch,
     });
+    // A task that parks on an ask the kernel refused would wait forever.
+    if (!r.ok) throw new Error(`createAsk refused: ${r.code} ${r.error}`);
+    return r;
   }
 
   async handoff(type: string, role: Role, payload: unknown, key: string, parentTaskId?: Id<"tasks">, priority?: number) {

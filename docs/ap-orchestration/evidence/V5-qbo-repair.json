@@ -1,0 +1,257 @@
+{
+  "reviewer": "/root/verifier",
+  "kind": "independent agent engineering review",
+  "failingBaseline": "3c834ae2b1ce17906eb3b03df2a5e59f697a8508",
+  "failingEvidenceCommit": "c3a42e4ab94eff8c8ec1a62b604f21ed061a9956",
+  "ownerFix": "d37071fbb1321ed7132729638c64e663d37678a9",
+  "replayCommit": "59abb13eae708119284ad751456876820e775d4b",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "allIndependentSourcesUnchanged": true,
+  "testSourceSha256": {
+    "tests/ap-system/v5-qbo-dimensions.test.ts": "bab7796f8a644d240f2b25e52b9be2140b44742c877ccc133cb63f42567a2445",
+    "tests/ap-system/v5-qbo-fixture.ts": "3842575ff682513ac0c174c5858d13aa5206695c11b846b305cce9dcfff2fd87",
+    "tests/ap-system/v3-quickbooks.test.ts": "16d3520a6bc06700c24d048309c2839dc710744082307e4bca3db901ff91c21c",
+    "tests/ap-system/v5-quickbooks.test.ts": "8c2b3d343b56915eb0418a94689f7ff278d7d6123d0682110b7568fb317f8244",
+    "docs/ap-orchestration/evidence/V5-qbo-extension-expectations.json": "a86ee682b93428e2ee598167162067ddc5d5ae7609a5ef7b72253e0933f926d5"
+  },
+  "finding": {
+    "id": "V5-QBO-F3",
+    "status": "closed for reproduced and inspected scope",
+    "baseline": "unexpected external JournalEntry Class produced no hold",
+    "repaired": "unchanged independent test now requires return_correction_sync_required and passes"
+  },
+  "typechecks": {
+    "root": 0,
+    "tests": 0,
+    "backend": 0
+  },
+  "run": {
+    "rawPath": "/private/tmp/ap97-v5-qbo-repair-results.json",
+    "rawSha256": "7a4b5e4969feae79e4957088e736a2b01bd761919665b48ad3551001b50b365d",
+    "total": 47,
+    "passed": 47,
+    "failed": 0,
+    "skipped": 0,
+    "files": [
+      {
+        "path": "tests/ap-system/quickbooks-business-protocol.test.ts",
+        "tests": [
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) applies zero cash to exact restored and original principal and resolves only read-verified application holds",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) keeps lost zero-cash restored-credit responses unknown with the original identity and unresolved hold",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) preserves cash+credit economics across original Bill and restored JournalEntry",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) replicates approved return, resolves held evidence only after readback, and pays exact restored allocation",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) never resolves ambiguous journal creation or retries with a new request ID",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) blocks externally consumed restored principal before a replacement POST",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) preserves original signed discount GL on Bill and linked VendorCredit through readback",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) posts exact Bill, VendorCredit and credit-only application; retry preserves original approval author",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) posts cash+credit with actual cash total and blocks missing or insufficient external credit",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) keeps an ambiguous zero-net response unknown with its fixed identity and original approval",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) persists a returned-evidence hold even for bill-only submit without altering successful history",
+            "status": "passed"
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) refuses changed requester identity before first external POST and requires journal authorization",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/quickbooks-close.test.ts",
+        "tests": [
+          {
+            "name": "approved B4 journals to QBO mock protocol exports case-less accrual then exact partial reversal by either selector with stable identity",
+            "status": "passed"
+          },
+          {
+            "name": "approved B4 journals to QBO mock protocol holds missing class or original external history and rejects stale current authority",
+            "status": "passed"
+          },
+          {
+            "name": "approved B4 journals to QBO mock protocol recovers a lost create response under the same identity without a second post",
+            "status": "passed"
+          },
+          {
+            "name": "approved B4 journals to QBO mock protocol preserves exact approved cost reclassification dimensions and forbids cash/AP substitution",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/quickbooks-runtime.test.ts",
+        "tests": [
+          {
+            "name": "shows honest missing configuration using the current verified case client and no provider request",
+            "status": "passed"
+          },
+          {
+            "name": "builds a backend-derived dry run without JWT input, binds the preview hash and never submits local evidence",
+            "status": "passed"
+          },
+          {
+            "name": "exposes current backend holds before credentials and keeps historical receipts separate",
+            "status": "passed"
+          },
+          {
+            "name": "retains receipt history but marks failed current accounting authority incomplete",
+            "status": "passed"
+          },
+          {
+            "name": "returns owned holds for preview submit and verification without provider reads or writes",
+            "status": "passed"
+          },
+          {
+            "name": "treats corrected Class mappings as current authority while retaining immutable receipt and held history without provider reads",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/v3-quickbooks.test.ts",
+        "tests": [
+          {
+            "name": "V3 independent credential-free QBO boundaries exports authoritative recognition, rejects wrong account, anonymous access and stale approval, and redacts originals",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries exports only exact partial cash and gross discharge with original linked credit, credit applied=false",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries exports only exact partial cash and gross discharge with original linked credit, credit applied=true",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries blocks a BillPayment when its linked external Bill changed before first write",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries serializes two separate journal instances and preserves one provider identity",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries recovers a lost create response after journal reopen with no new POST, preserving exact request",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries unknown with no match never reposts, and duplicate marker matches require review",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries rejects a changed external SyncToken and immutable mapping change without rewriting the receipt",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries does not accept a mismatched create response or later changed economic payload",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries rechecks approval after mapping waits and does not write after authority was withdrawn",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries binds concurrent callbacks to one use and rejects cross-session state without spending it",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries never reuses a refresh token after an ambiguous rotation, including a fresh OAuth instance",
+            "status": "passed"
+          },
+          {
+            "name": "V3 independent credential-free QBO boundaries rejects symlinked or broadly readable private files and immutable operation corruption",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/v5-qbo-dimensions.test.ts",
+        "tests": [
+          {
+            "name": "V5 independent store dimensions and restored-credit evidence preserves Class on both signed Bill and VendorCredit lines and detects changed or removed Classes",
+            "status": "passed"
+          },
+          {
+            "name": "V5 independent store dimensions and restored-credit evidence repairs current Class readiness without erasing held history and refuses changed mapping over an immutable successful receipt",
+            "status": "passed"
+          },
+          {
+            "name": "V5 independent store dimensions and restored-credit evidence releases only the exact restored-credit application hold after readback, with zero new local bank effects",
+            "status": "passed"
+          },
+          {
+            "name": "V5 independent store dimensions and restored-credit evidence does not certify a returned liability whose classless external journal gained an unauthorized Class",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/v5-quickbooks.test.ts",
+        "tests": [
+          {
+            "name": "V5 independent external accounting safeguards preserves signed discount costs and a partial cash/credit application exactly without changing original Bill",
+            "status": "passed"
+          },
+          {
+            "name": "V5 independent external accounting safeguards rejects missing, wrong-plan, stale and future first-write authorizations while preserving zero attempts",
+            "status": "passed"
+          },
+          {
+            "name": "V5 independent external accounting safeguards rejects a preview hash that does not match the authenticated plan before any provider call",
+            "status": "passed"
+          },
+          {
+            "name": "V5 independent external accounting safeguards recovers an accepted return journal after reopen without a new POST and resolves only covered historical holds",
+            "status": "passed"
+          },
+          {
+            "name": "V5 independent external accounting safeguards does not treat a malformed successful vendor-query envelope as proof that restored principal is unused",
+            "status": "passed"
+          },
+          {
+            "name": "V5 independent external accounting safeguards refuses duplicate external application evidence before a replacement POST",
+            "status": "passed"
+          },
+          {
+            "name": "V5 independent external accounting safeguards refuses mixed_links external application evidence before a replacement POST",
+            "status": "passed"
+          },
+          {
+            "name": "V5 independent external accounting safeguards refuses fractional_cent external application evidence before a replacement POST",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  }
+}

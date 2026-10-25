@@ -1,0 +1,281 @@
+[
+  {
+    "variantId": "C02-8f8d92c08513",
+    "caseId": "C02",
+    "testFile": "tests/ap-system/v2-independent.test.ts",
+    "testName": "holds quantity_conflict without creating an obligation or bank operation",
+    "rawFile": "C02-8f8d92c08513.json",
+    "rawSha256": "1e1e0d52c55e6d6cb06cd232a24dd39c7e577cf9781fd318c4a2ddab7d0fa126",
+    "journalCount": 0
+  },
+  {
+    "variantId": "C04-80c0b19744aa",
+    "caseId": "C04",
+    "testFile": "tests/ap-system/business.test.ts",
+    "testName": "accepts non-PO contract with documented service acceptance and explicit units",
+    "rawFile": "C04-80c0b19744aa.json",
+    "rawSha256": "d5eec41b5534378b7aa941ffa10f3e9d49a59566965a5311938df3db8c38f500",
+    "journalCount": 1
+  },
+  {
+    "variantId": "C04-fefd640cc285",
+    "caseId": "C04",
+    "testFile": "tests/ap-system/business.test.ts",
+    "testName": "recognizes explicit partial quantity at original value without automatic shortpay, with replay and safe projection",
+    "rawFile": "C04-fefd640cc285.json",
+    "rawSha256": "d547d4c2ecc6e13a04414bcd1d0fd1db1ec7c97f36d23ca31f9dc4a75cdf24eb",
+    "journalCount": 1
+  },
+  {
+    "variantId": "C05-ab9a1df362b5",
+    "caseId": "C05",
+    "testFile": "tests/ap-system/business-credits.test.ts",
+    "testName": "cumulative reversals consume remaining exact allocation cents and cannot exceed original units/net/tax",
+    "rawFile": "C05-ab9a1df362b5.json",
+    "rawSha256": "ad71599dbd4875a1e93e27f5cf6b25565a3b9a633c8d9150174d81e9a1e15083",
+    "journalCount": 3
+  },
+  {
+    "variantId": "C05-b0257ede73e9",
+    "caseId": "C05",
+    "testFile": "tests/ap-system/business-credits.test.ts",
+    "testName": "reverses original cost/tax allocations, replays once and applies with zero bank effect",
+    "rawFile": "C05-b0257ede73e9.json",
+    "rawSha256": "baa65462e18e14ec4077b095456f94dcad6fcbf6e9a706bb551d12da2393b3d3",
+    "journalCount": 2
+  },
+  {
+    "variantId": "C06-41b1155841c8",
+    "caseId": "C06",
+    "testFile": "tests/ap-system/v3-payments.test.ts",
+    "testName": "retains the applied credit when first partial cash is returned after a second settlement",
+    "rawFile": "C06-41b1155841c8.json",
+    "rawSha256": "7bc02ac59cf196f75f9d0462f6695c92d7b84ff41aa49da89c41d13568c187c7",
+    "journalCount": 6
+  },
+  {
+    "variantId": "C07-5b9918b37b2b",
+    "caseId": "C07",
+    "testFile": "tests/ap-system/v5-corrected-cost.test.ts",
+    "testName": "consumes two exact corrected credits through a multi-step cost chain without minting bill or cash effects",
+    "rawFile": "C07-5b9918b37b2b.json",
+    "rawSha256": "1b2a4722f24ea0186faca4cd82b602a23adca5f78ab2d4fb89062111886b3a3c",
+    "journalCount": 5
+  },
+  {
+    "variantId": "C08-8508f59288bd",
+    "caseId": "C08",
+    "testFile": "tests/ap-system/cost-corrections.test.ts",
+    "testName": "retains signed discount reversals without creating another AP obligation or cash journal",
+    "rawFile": "C08-8508f59288bd.json",
+    "rawSha256": "7e2252376c4146d22fe9824bd0ce6a8a9b6971eed4bcdbd771272e187922f5e6",
+    "journalCount": 3
+  },
+  {
+    "variantId": "C09-a21e2c85f9a1",
+    "caseId": "C09",
+    "testFile": "tests/ap-system/close.test.ts",
+    "testName": "recognizes accrued cost before invoice, carries it through close, and reverses exactly once atomically with later invoice",
+    "rawFile": "C09-a21e2c85f9a1.json",
+    "rawSha256": "b0d2767b60316ec49fa1df83063f6e26e40cc2202528cba4bf7f4b28c8453288",
+    "journalCount": 3
+  },
+  {
+    "variantId": "C10-787b05c99c9d",
+    "caseId": "C10",
+    "testFile": "tests/ap-system/v5-corrected-cost.test.ts",
+    "testName": "recognizes the invoice after a split partial corrected accrual reversal without reusing original share capacity",
+    "rawFile": "C10-787b05c99c9d.json",
+    "rawSha256": "426db5ac49725ab6a96919a4cb485ee7de4946721330463fe66784ad3c444778",
+    "journalCount": 6
+  },
+  {
+    "variantId": "C11-83a2b76734b4",
+    "caseId": "C11",
+    "testFile": "tests/ap-system/close-capacity.test.ts",
+    "testName": "does not close a standalone two-unit receipt after fully_reversed accrual without accounting for remaining units",
+    "rawFile": "C11-83a2b76734b4.json",
+    "rawSha256": "768a3d256b7cd004642d6ca3d0c071600c70402589cb7d15dccfb8554c3313da",
+    "journalCount": 3
+  },
+  {
+    "variantId": "C11-a17255931727",
+    "caseId": "C11",
+    "testFile": "tests/ap-system/close-capacity.test.ts",
+    "testName": "does not close a standalone two-unit receipt after partial accrual without accounting for remaining units",
+    "rawFile": "C11-a17255931727.json",
+    "rawSha256": "53909d5b2bd1448f7e377debb33c3421772748e5e8b075bd92c4df2f00ed410a",
+    "journalCount": 2
+  },
+  {
+    "variantId": "C12-5d712e64cce3",
+    "caseId": "C12",
+    "testFile": "tests/ap-system/close.test.ts",
+    "testName": "rejects unmatched statement differences until evidence-backed human resolutions, and malformed arithmetic is never waived",
+    "rawFile": "C12-5d712e64cce3.json",
+    "rawSha256": "9415c2fed6d3e7f2cf658017b0d696d5d94116cc09280c96ad1041b888be334a",
+    "journalCount": 1
+  },
+  {
+    "variantId": "C12-97ac240e8042",
+    "caseId": "C12",
+    "testFile": "tests/ap-system/close.test.ts",
+    "testName": "requires the actual nonzero opening cash balance from all prior periods",
+    "rawFile": "C12-97ac240e8042.json",
+    "rawSha256": "ded48e6e545639c6fa7ee4b418762a7ef459ba99ecec659665c80059dbdcb4df",
+    "journalCount": 2
+  },
+  {
+    "variantId": "C12-d80917e22fef",
+    "caseId": "C12",
+    "testFile": "tests/ap-system/close.test.ts",
+    "testName": "requires complete statement movements even when omitted bill and credit offset to zero",
+    "rawFile": "C12-d80917e22fef.json",
+    "rawSha256": "50c05d12f2ed1361590b3e5f2aa030f7bc749ab91776c762e2265e81609f93fc",
+    "journalCount": 2
+  },
+  {
+    "variantId": "C13-a193ac1b1596",
+    "caseId": "C13",
+    "testFile": "tests/ap-system/v4-business.test.ts",
+    "testName": "does not approve a bank change after its verification human was retired",
+    "rawFile": "C13-a193ac1b1596.json",
+    "rawSha256": "2274efaf33b8ec35a673f6edcfa693ab96a1c4bf776a05c5463bb6b40c0bb413",
+    "journalCount": 0
+  },
+  {
+    "variantId": "C13-dc2449108aa2",
+    "caseId": "C13",
+    "testFile": "tests/ap-system/v4-business.test.ts",
+    "testName": "cannot count two configured subject aliases for the same human seat as two quorum votes",
+    "rawFile": "C13-dc2449108aa2.json",
+    "rawSha256": "81eca90e091e9ce12afd102edf621fe5d187abd5794c010b90ba16e1380ee9bb",
+    "journalCount": 0
+  },
+  {
+    "variantId": "C14-1dee9ffe3f4b",
+    "caseId": "C14",
+    "testFile": "tests/ap-system/quickbooks-business.test.ts",
+    "testName": "exports 3850 approved cents without rewriting the 7700-cent original candidate",
+    "rawFile": "C14-1dee9ffe3f4b.json",
+    "rawSha256": "db49eb1883c12231000b59a2ae87a34952cf8f4cea1e13e4db43d46c1e8fa420",
+    "journalCount": 1
+  },
+  {
+    "variantId": "C15-06257992acf8",
+    "caseId": "C15",
+    "testFile": "tests/ap-system/tax-business.test.ts",
+    "testName": "conserves partial-recovery rounding across two returns",
+    "rawFile": "C15-06257992acf8.json",
+    "rawSha256": "2defc16b75c5faadfa0247f045caeeb569939e5ed476538eea7aeb39c1295ba2",
+    "journalCount": 3
+  },
+  {
+    "variantId": "C15-6e876ea9c6de",
+    "caseId": "C15",
+    "testFile": "tests/ap-system/tax-business.test.ts",
+    "testName": "reverses tax-only and then net return amounts from their separate original pools",
+    "rawFile": "C15-6e876ea9c6de.json",
+    "rawSha256": "bc9588fa76fd868ffe73c8da42fc5e386ac050d0eb848ac29e8f174b4b8886ed",
+    "journalCount": 4
+  },
+  {
+    "variantId": "C16-44c250f8c196",
+    "caseId": "C16",
+    "testFile": "tests/ap-system/tax-header.test.ts",
+    "testName": "posts supported tax and header amounts (partial=false)",
+    "rawFile": "C16-44c250f8c196.json",
+    "rawSha256": "908b320b783940ffd87645850ca8204a43607c3d88c7d72abf53c305ff39541f",
+    "journalCount": 1
+  },
+  {
+    "variantId": "C16-c2d4dcff05ad",
+    "caseId": "C16",
+    "testFile": "tests/ap-system/tax-header.test.ts",
+    "testName": "posts supported tax and header amounts (partial=true)",
+    "rawFile": "C16-c2d4dcff05ad.json",
+    "rawSha256": "e699da77c8aad42f075ea363ca5baa888b75d907d04b76f5a8c45f57769e740c",
+    "journalCount": 1
+  },
+  {
+    "variantId": "C16-f4d324efe7b7",
+    "caseId": "C16",
+    "testFile": "tests/ap-system/tax-header.test.ts",
+    "testName": "reverses distinct header shares cumulatively instead of quantity-only tax",
+    "rawFile": "C16-f4d324efe7b7.json",
+    "rawSha256": "7bf77c85f3a01cec4cabb6a95eed2333201d62bb89cd28116ebe2b645e658910",
+    "journalCount": 3
+  },
+  {
+    "variantId": "C17-ae38ad37173f",
+    "caseId": "C17",
+    "testFile": "tests/ap-system/tax-adjustments.test.ts",
+    "testName": "posts a separate correction and couples later credits to current remaining tax buckets",
+    "rawFile": "C17-ae38ad37173f.json",
+    "rawSha256": "b900bd0ddb029ab2dbba4b8fc1d09ccb1ae407c7f13ff0dcbbafe3a19bb9e967",
+    "journalCount": 4
+  },
+  {
+    "variantId": "C18-8c55d0ee1f5c",
+    "caseId": "C18",
+    "testFile": "tests/ap-system/tax-adjustments.test.ts",
+    "testName": "reviews embedded remaining tax after prior credits and a cost reclassification without rewriting either",
+    "rawFile": "C18-8c55d0ee1f5c.json",
+    "rawSha256": "27364ef05c12fbfbc219e884d8ed38b973c2e9bd6164fc79ef71aaff4d1d1284",
+    "journalCount": 5
+  },
+  {
+    "variantId": "C19-ea2f03243a92",
+    "caseId": "C19",
+    "testFile": "tests/ap-system/v12-external-settlement.test.ts",
+    "testName": "conserves 2750 returned cash across 850 zero-cash restored credit and 1900 replacement with exact external linked records",
+    "rawFile": "C19-ea2f03243a92.json",
+    "rawSha256": "37612c7e134dcb902dce27d74098cb4be36a9257d470349d396def153462d29d",
+    "journalCount": 5
+  },
+  {
+    "variantId": "C20-16c700fe2b38",
+    "caseId": "C20",
+    "testFile": "tests/ap-system/physical-accrual-regressions.test.ts",
+    "testName": "closes October with both physical lines accrued and keeps exact cents",
+    "rawFile": "C20-16c700fe2b38.json",
+    "rawSha256": "ab5aa3f00f12d83e2fb00dacca62d085f51553805acce4d6d97bee4c06d351b9",
+    "journalCount": 2
+  },
+  {
+    "variantId": "C21-45bd954739e6",
+    "caseId": "C21",
+    "testFile": "tests/ap-system/supplier-contact-changes.test.ts",
+    "testName": "preserves possibly sent command, destination, key and reservations across human replacement",
+    "rawFile": "C21-45bd954739e6.json",
+    "rawSha256": "df5acfacfc7d098a945c543c56b26031812b1c2a99af9252d7e7d429e1d2bdc7",
+    "journalCount": 1
+  },
+  {
+    "variantId": "C21-890251a1f515",
+    "caseId": "C21",
+    "testFile": "tests/ap-system/supplier-contact-changes.test.ts",
+    "testName": "requires independent reestablishment when replacement declares the old channel unavailable",
+    "rawFile": "C21-890251a1f515.json",
+    "rawSha256": "fce0163be793d38880d78cec613a5e96cbe99043fa6397d2f9e80097051c6cc8",
+    "journalCount": 0
+  },
+  {
+    "variantId": "C22-be31efde30e2",
+    "caseId": "C22",
+    "testFile": "tests/ap-system/quickbooks-tax.test.ts",
+    "testName": "replicates only exact noncash tax journal lines, preserving original Bill, dimensions and immutable authority",
+    "rawFile": "C22-be31efde30e2.json",
+    "rawSha256": "1f19ac38dcfa72124b9e23b43ef1bacb652334f9824bd0de4ecb1bc6ce7acaae",
+    "journalCount": 2
+  },
+  {
+    "variantId": "C22-c0783eb2dfcc",
+    "caseId": "C22",
+    "testFile": "tests/ap-system/quickbooks-tax.test.ts",
+    "testName": "recovers a sent unknown request after policy retirement with no new POST, mapping read or replacement authorizer",
+    "rawFile": "C22-c0783eb2dfcc.json",
+    "rawSha256": "657b9f993b223527b80eb5c95b214327cca7deefce422f4f872660acaccc2f3e",
+    "journalCount": 2
+  }
+]

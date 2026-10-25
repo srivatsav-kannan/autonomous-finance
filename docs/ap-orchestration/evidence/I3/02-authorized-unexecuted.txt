@@ -1,0 +1,247 @@
+Browser tab: 9, Title: "Accounts payable · Autonomous Finance", URL: "http://127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system&apView=accounting".
+1 AXWebArea Accounts payable · Autonomous Finance, URL: 127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system&apView=accounting
+	2 container root
+		3 link Description: Skip to content, Value: 127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system&apView=accounting#main
+		4 container
+			5 heading Autonomous Finance, Value: 1
+				6 text Autonomous
+				7 text Finance
+			8 text Accounts payable Evidence and obligations
+			9 container Console views
+				10 text Workspace
+				11 button Accounts payable
+				12 button Invoices
+				13 button Inbox
+				14 button Bank & cash
+				15 button Finance flow
+				16 button Team
+				17 button Live activity
+				18 button Ledger
+				19 button Memory
+				20 button Evals
+				21 button Control room
+			22 text Human finance lead You oversee. Agents operate.
+		23 container
+			24 text Workspace Accounts payable Local FakeBank ap97-i3-20261025
+		25 container main
+			26 container Local multi-human simulation
+				27 text Local multi-human simulation / FakeBank
+				28 text These are distinct simulated human seats on an isolated local backend. This is not an Auth0 login, a real person’s approval or an external bank authorization.
+				29 container
+					30 text Simulated human
+					31 pop up button (collapsed, settable) Simulated human, Value: I3 simulated operator, Secondary Actions: Expand
+						32 menu
+							33 Choose a simulated actor
+							34 (selected) I3 simulated operator
+				35 container
+					36 text Acting as  I3 simulated operator . Group membership, distinct-person quorum and stale-evidence checks still apply.
+			37 container Accounts payable workspace
+				38 heading Accounts payable, Value: 2
+					39 text Accounts payable
+				40 text Inspect the obligation, its approvals and the outcome.
+				41 button Refresh
+				42 button (collapsed) Upload documents, Secondary Actions: Expand
+				43 container Workspace sections
+					44 checkbox Cases, Value: 1
+					45 checkbox Payment runs, Value: 0
+					46 checkbox Policy & suppliers, Value: 0
+					47 checkbox Period close, Value: 0
+				77 container Workspace operational metrics
+					78 definition list
+						79 container Cases needing attention
+							80 text Cases needing attention
+						81 container
+							82 text 0 of  1  cases in this run
+						83 container Approved outstanding
+							84 text Approved outstanding
+						85 container
+							86 text $678.60 Across 1 unique invoices
+						87 container Execution needs review
+							88 text Execution needs review
+						89 container
+							90 text 0 Inspect bank evidence before retrying
+					91 text Recognizing a bill records the obligation. Applied supplier credits reduce what is owed; a verified cash settlement records money leaving the bank. QuickBooks synchronization is a separate, receipt-backed operation.
+					92 button (collapsed) Extraction, source coverage and recorded trace counts, Secondary Actions: Expand
+						93 text Extraction, source coverage and recorded trace counts
+					94 button (collapsed) Operational durations and waiting ages, Secondary Actions: Expand
+						95 text Operational durations and waiting ages
+				67 container AP cases
+					68 search text field (settable) Search AP cases
+					69 container
+						70 text Show
+						71 pop up button (collapsed, settable) Description: Filter AP cases, Value: All, Secondary Actions: Expand
+							72 menu
+								73 (selected) All
+								74 Needs attention
+								75 Approved
+								76 Settled
+					96 content list
+						97 checkbox Golden State Produce Co. INV-1001 $678.60 Approved Queued, Value: 1
+							98 text Golden State Produce Co.
+							99 text INV-1001
+							100 text $678.60
+							101 text Approved
+							102 text Queued
+					103 container
+						104 text 1  of  1  cases shown
+				105 container
+					106 heading INV-1001, Value: 3
+						107 text INV-1001
+					108 text Golden State Produce Co. Local FakeBank Simulated human identity
+				109 container
+					110 text Case  kd74wbhvrp0y8tr74pt603pj6x8gzv2y  / Revision  2  /  Document provenance varies; inspect originals
+				111 definition list
+					112 container Document review
+						113 text Document review
+					114 text Reviewed
+					115 container Bill decision
+						116 text Bill decision
+					117 text Approved
+					118 container Accounting
+						119 text Accounting
+					120 text Recognized
+					121 container Payment authorization
+						122 text Payment authorization
+					123 text Authorized
+					124 container Bank execution
+						125 text Bank execution
+					126 text Queued
+					127 container Reconciliation
+						128 text Reconciliation
+					129 text Unmatched
+				130 definition list
+					131 container Invoiced
+						132 text Invoiced
+					133 text $678.60
+					134 container Accepted
+						135 text Accepted
+					136 text $678.60
+					137 container Outstanding
+						138 text Outstanding
+					139 text $678.60
+				140 button (collapsed) Disputed, credited and payment amounts, Secondary Actions: Expand
+					141 text Disputed, credited and payment amounts
+				142 container Case sections
+					143 checkbox Source & fields, Value: 0
+					144 checkbox Matching, Value: 0
+					145 checkbox Accounting, Value: 1
+					146 checkbox History, Value: 0
+				411 container
+					412 heading Bill, payment and books, Value: 3
+						413 text Bill, payment and books
+					414 definition list
+						415 container Bill
+							416 text Bill
+						417 text p578we5h2hax0zsfhp5xf08es18gy0r8
+						418 container External accounting
+							419 text External accounting
+						420 text Inspect the QuickBooks connection and operation receipts below
+					421 heading Payment proposals, Value: 4
+						422 text Payment proposals
+					423 content list
+						424 container
+							425 text $678.60 Queued Beneficiary version  i3-synthetic-v1 Authorized by https://ap-demo.invalid|ap97-i3-operator
+							426 button (collapsed) Inspect payment, Secondary Actions: Expand
+					427 container Accounting correction authority
+						428 heading Accounting correction authority, Value: 3
+							429 text Accounting correction authority
+						430 text A returned payment, later repayment and existing supplier credit application need distinct accounting authority. Review the current evidence, approve the exact remedy, then separately review its external accounting plan. Historical receipts do not resolve a current hold.
+						431 text No accounting correction has been proposed for this case.
+						432 button (collapsed) Propose a return correction, payment or credit allocation, Secondary Actions: Expand
+							433 text Propose a return correction, payment or credit allocation
+					434 container QuickBooks accounting sync
+						435 heading QuickBooks accounting sync, Value: 3
+							436 text QuickBooks accounting sync
+						437 button Refresh sync status
+						438 text Bank execution and accounting sync have separate outcomes. A successful payment does not mean the external books have been updated.
+						439 definition list
+							440 container Server configuration
+								441 text Server configuration
+							442 text Not configured
+							443 container Saved company authorization
+								444 text Saved company authorization
+							445 text Authorization required
+							446 container Account and vendor mappings
+								447 text Account and vendor mappings
+							448 text Missing
+							449 container Current accounting authority
+								450 text Current accounting authority
+							451 text Verified
+							452 container External writes
+								453 text External writes
+							454 text Disabled in Local FakeBank
+						455 text The owner must configure the US sandbox company and explicitly review its vendor and GL account mappings before previewing a plan.
+						456 container
+							457 text Company consent uses the separate 
+							458 link Description: QuickBooks sandbox connection page, Value: localhost:8824/
+							459 text . Select Connect sandbox, then Continue to Intuit authorization, and sign in normally.
+						460 container
+							461 text Accounting record
+							462 pop up button (collapsed, settable) Accounting record, Value: Approved bill recognition, Secondary Actions: Expand
+								463 menu
+									464 (selected) Approved bill recognition
+						465 button (disabled) Preview accounting plan
+						466 heading External operation receipts, Value: 4
+							467 text External operation receipts
+						468 text No QuickBooks operation is linked to this case. No external record ID has been inferred.
+					469 heading Journal entries, Value: 4
+						470 text Journal entries
+					471 text Recognition records the payable. Settlement reduces AP and cash; it does not recognize the purchase again.
+					472 button (expanded) Recognition / 2026-10-19, Secondary Actions: Collapse
+						473 text Recognition
+						474 text  / 
+						475 text 2026-10-19
+					476 container
+						477 text Journal  s97cbt48b9hcrn7ra4xtg9056n8gy4yn
+					478 table
+						479 row
+							480 cell
+								481 text GL account
+							482 cell
+								483 text Debit
+							484 cell
+								485 text Credit
+						486 row
+							487 cell
+								488 text 5000
+							489 cell
+								490 text $192.50
+							491 cell
+								492 text $0.00
+						493 row
+							494 cell
+								495 text 5000
+							496 cell
+								497 text $171.00
+							498 cell
+								499 text $0.00
+						500 row
+							501 cell
+								502 text 5000
+							503 cell
+								504 text $206.70
+							505 cell
+								506 text $0.00
+						507 row
+							508 cell
+								509 text 5000
+							510 cell
+								511 text $108.40
+							512 cell
+								513 text $0.00
+						514 row
+							515 cell
+								516 text 2000
+							517 cell
+								518 text $0.00
+							519 cell
+								520 text $678.60
+				404 container Case review actions
+					405 heading Review this revision, Value: 3
+						406 text Review this revision
+					407 text Your decision binds the current sources and amounts. Backend authority and stale-revision checks apply.
+					408 container
+						409 text Bill approved.  Payment authorization: Authorized.
+					410 text Payment release requires the exact amount, verified beneficiary, funding account and independent authorization. Review the proposal under Accounting.
+
+The focused UI element is 145 checkbox Accounting, Value: 1

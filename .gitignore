@@ -10,3 +10,6 @@ var/
 *.log
 .DS_Store
 var-backend.log
+# local agent worktrees and per-user Claude Code settings
+.claude/worktrees/
+.claude/settings.local.json

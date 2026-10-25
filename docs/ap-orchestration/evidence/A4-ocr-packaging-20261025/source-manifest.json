@@ -1,0 +1,82 @@
+{
+  "sourceRepository": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
+  "sourceCommit": "ed372a40570d714b5b893c6e4e86e25f2427bc80",
+  "sourceTimestampUtc": "2026-10-25T10:43:39.110868+00:00",
+  "method": "git show of immutable commit; allowlisted files only",
+  "files": [
+    {
+      "path": "src/ap-system/ingestion/runtime/Dockerfile",
+      "sha256": "6d03b4b362bb7a1551f12423c7be920553c48e37863f4b2869954d91045bcffd",
+      "bytes": 1737,
+      "matchesWorkingTreeAtSnapshot": true
+    },
+    {
+      "path": "src/ap-system/ingestion/runtime/image-pages.py",
+      "sha256": "1bd81934b146f8c40ade91ad3557a3ad510be8d038bb4ef48a07efa62856482a",
+      "bytes": 872,
+      "matchesWorkingTreeAtSnapshot": true
+    },
+    {
+      "path": "src/ap-system/ingestion/runtime/lock.json",
+      "sha256": "9fa18905b28d2b006128ab861c76e42e285523a1745b9cae63f5eb4e148e72c2",
+      "bytes": 768,
+      "matchesWorkingTreeAtSnapshot": true
+    },
+    {
+      "path": "src/ap-system/ingestion/runtime/parse-xml.py",
+      "sha256": "1a3a4470662b3764cf001df9d4e570343c7d6e8ac39c18604adbeab1d70e27c1",
+      "bytes": 2639,
+      "matchesWorkingTreeAtSnapshot": true
+    },
+    {
+      "path": "docs/ap-orchestration/evidence/A3-F-heldout-suppliers.md",
+      "sha256": "d67f76e0ce1140c8a891e93d4b80020dbe4c1b30a7d2f22a58cb09aac064ce26",
+      "bytes": 6109,
+      "matchesWorkingTreeAtSnapshot": true
+    },
+    {
+      "path": "scripts/ap-system/ocr-packaging-smoke.py",
+      "sha256": "fbcbf670a2d5d1c33b189eb744f91cd145a2c01ed0711f5d6eb00fc6fdcdd103",
+      "bytes": 5418,
+      "matchesWorkingTreeAtSnapshot": true
+    },
+    {
+      "path": "fixtures/ap-system/heldout-suppliers-v1/manifest.json",
+      "sha256": "1ddd6649ebfe444f7dda837d221afd5679f5b318015323655fce690a8b61091d",
+      "bytes": 3720,
+      "matchesWorkingTreeAtSnapshot": true
+    },
+    {
+      "path": "fixtures/ap-system/heldout-suppliers-v1/README.md",
+      "sha256": "d2e0ab86ac3f3383106a7629dbf606cbefd8cf152e3abfb5530a12cbb7515df4",
+      "bytes": 4680,
+      "matchesWorkingTreeAtSnapshot": true
+    },
+    {
+      "path": "fixtures/ap-system/heldout-suppliers-v1/input/copper-valve-native.pdf",
+      "sha256": "dc323890c0c20082c1f6bcfd402b0365009d4e0147b36299835129cf39c96791",
+      "bytes": 3442,
+      "matchesWorkingTreeAtSnapshot": true
+    },
+    {
+      "path": "fixtures/ap-system/heldout-suppliers-v1/input/copper-valve-scan.pdf",
+      "sha256": "741c0bc7adfcb6fccffe404f8dc4096a31e55fbe8f76b18fef5f5807586495f6",
+      "bytes": 118476,
+      "matchesWorkingTreeAtSnapshot": true
+    },
+    {
+      "path": "fixtures/ap-system/heldout-suppliers-v1/input/harbor-thread-native.pdf",
+      "sha256": "0d8993129e04f666f715018040106dc518c1a42f41f77587293180b4ed4df1c5",
+      "bytes": 2789,
+      "matchesWorkingTreeAtSnapshot": true
+    },
+    {
+      "path": "fixtures/ap-system/heldout-suppliers-v1/input/harbor-thread-scan.pdf",
+      "sha256": "fa814b53d96635afc6c7fc08e02eec91df5a656c9024d72b2a5949b4248090a5",
+      "bytes": 107517,
+      "matchesWorkingTreeAtSnapshot": true
+    }
+  ],
+  "privateConfigurationCopied": false,
+  "evaluationOrAuthoringFilesCopied": false
+}

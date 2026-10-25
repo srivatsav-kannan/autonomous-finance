@@ -1,6 +1,7 @@
 /** Shared wire contract. Amounts are integer USD cents, never cash balances. */
 export type RuntimeMode = "deterministic" | "mock_model" | "live_model";
-export type SourceInput = { externalId: string; name: string; mimeType: string; text: string; contentBase64?: string; replacesExternalId?: string };
+/** `newVersion`: the importer explicitly versions an existing externalId. Without it, a reused ID is refused. */
+export type SourceInput = { externalId: string; name: string; mimeType: string; text: string; contentBase64?: string; replacesExternalId?: string; newVersion?: boolean };
 export type EvidenceRef = { documentId: string; version: number; contentHash: string; quote?: string };
 export type Treatment = "include_invoice" | "include_credit" | "exclude" | "needs_evidence";
 export type Conclusion = {
@@ -24,7 +25,7 @@ export type CaseSummary = {
   caseId: string; batchId: string; documentId: string; externalId: string; name: string;
   version: number; contentHash: string; status: CaseStatus; evidenceVersion: number;
   currentProposalId?: string; acceptedProposalId?: string; canonicalDocumentId?: string;
-  reason?: string; customerId?: string; question?: string; contradictions: string[];
+  reason?: string; customerId?: string; question?: string; replacesDocumentId?: string; contradictions: string[];
   missingEvidence: string[]; createdAt: number; updatedAt: number;
 };
 export type AuditEntry = {

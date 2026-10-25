@@ -1,0 +1,104 @@
+Issue #97 — Docker 环境与 OCR 打包运行验收
+
+结论：PASS（范围仅为现有 OCR 依赖镜像在两份受控扫描样本上的打包运行能力）。
+执行日期：2026-10-25，America/Los_Angeles；日志时间同时保留 UTC。
+验收证据目录：/private/tmp/ap97-ocr-20261025-6tn3tag_
+供容器只读挂载的独立临时副本：/Users/junjiexiong/.ap97-ocr-smoke-6tn3tag/source
+
+1. 源码和边界
+固定提交：ed372a40570d714b5b893c6e4e86e25f2427bc80
+源目录：/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks
+使用 git show <固定提交>:<白名单路径> 导出 12 个文件；导出时均与工作目录一致。源码快照与实际挂载副本在运行后全部 SHA256 校验一致。
+Dockerfile、lock.json、ocr-packaging-smoke.py 均未修改；完整哈希见 source-manifest.json、SOURCE-SHA256SUMS、source-verification-after-run.json。
+Dockerfile SHA256: 6d03b4b362bb7a1551f12423c7be920553c48e37863f4b2869954d91045bcffd
+lock.json SHA256: 9fa18905b28d2b006128ab861c76e42e285523a1745b9cae63f5eb4e148e72c2
+smoke 脚本 SHA256: fbcbf670a2d5d1c33b189eb744f91cd145a2c01ed0711f5d6eb00fc6fdcdd103
+未复制 authoring/、evaluation/、运行时业务上下文、项目私有配置或凭据；未调用 provider。未编辑共享源码、contracts、plan.json、CAPABILITIES.md 或 Git 状态；无提交、推送、合并、issue 评论或跨会话消息。
+已检查当前和源目录祖先、目标文件与 fixture 祖先；未发现适用 AGENTS.md。console/AGENTS.md 不适用于本次路径。
+
+2. 现有 Docker 环境
+已安装 Docker CLI /opt/homebrew/bin/docker，Colima /opt/homebrew/bin/colima 0.10.3；现有 default VM（4 CPU、6 GiB、60 GiB、aarch64、vz）被复用，未安装第二套环境。
+初始 default 指向不存在的 /var/run/docker.sock，docker version 退出 1；初始 Colima status 报未运行。sandbox 下 list 的 Broken 状态不足以证明安装损坏，正常启动成功。
+启动命令：colima start default --activate=false --save-config=false --ssh-config=false
+启动退出码 0，耗时 22.698 秒。Colima 自动注册 colima context，但全局 current 始终为 default；没有 context use 操作。
+所有成功的 Docker 命令均显式传入 --host unix:///Users/junjiexiong/.colima/default/docker.sock。
+Client: 29.9.2，darwin/arm64；默认 API 1.56，协商 API 1.54。
+Server: 29.5.2，linux/arm64，API 1.54；Ubuntu 24.04.4 LTS VM，kernel 6.8.0-117-generic。
+主机：macOS/Darwin arm64；镜像：linux/arm64；容器 Python platform.machine(): aarch64。
+环境已保留运行；若直接使用不带 --host 的 docker 命令，仍会选择原有 default endpoint。
+
+3. 镜像构建：已执行通过
+使用项目原始 Dockerfile 与仅含 runtime 文件的独立构建上下文。
+镜像 tag: ap97-ocr-smoke-6tn3tag:ed372a4
+镜像 ID / OCI index digest（docker image inspect 的 Id，实际运行时指定此值）:
+  sha256:09c398f49cc16a60d0e7888b3939505d60f5482264ea0e86bb4374034352d9c7
+ARM64 platform manifest digest:
+  sha256:0e2c231231700f461f611eb0ea36e0bb68e2e513f3fd82308fe4124a722763d6
+镜像 config digest:
+  sha256:0c6eaabbae0d9e819bce73fa30ae5072fa9c2568c3ff7c3a820c602889f69102
+本次解析的 debian:bookworm-slim base digest:
+  sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8
+镜像 inspect Size: 93834958 bytes。
+构建退出码 0，耗时 102.012 秒；未超时。
+源码 tarball SHA256 校验通过：6235ea0dae45ea137f59c09320406f5888383741924d98855bd2ce0d16b54f21。
+traineddata SHA256 在构建和 smoke 中均通过：7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2。
+Tesseract 5.5.2；构建日志含上游 C++ -Wstringop-overflow 警告，但编译、链接、镜像导出均完成。
+Debian tag 和 apt 包由原始 Dockerfile 在构建时解析；本报告记录本次确切产物，并不声称未来重新构建会得到同一镜像 digest。
+主要已安装包版本：
+  liblept5:arm64: 1.82.0-3+b3 (arm64)
+  libgomp1:arm64: 12.2.0-14+deb12u1 (arm64)
+  libarchive13:arm64: 3.6.2-1+deb12u5 (arm64)
+  libcurl4:arm64: 7.88.1-10+deb12u15 (arm64)
+  poppler-utils: 22.12.0-2+deb12u3 (arm64)
+  python3: 3.11.2-1+b1 (arm64)
+  python3.11: 3.11.2-6+deb12u9 (arm64)
+  python3-pil:arm64: 9.4.0-1.1+deb12u1 (arm64)
+全部 172 个包见 logs/image-packages.stdout；查询容器退出 0 并自动删除。
+
+4. 执行失败历史与修正
+第一次 smoke-create 退出 1：Colima VM 不共享 /private/tmp，故 bind source path does not exist。此时容器未创建，OCR NOT_RUN，不能记为 smoke 通过。
+只读 findmnt 证实现有 VM 仅共享 /Users/junjiexiong。随后把固定快照复制到 /Users/junjiexiong/.ap97-ocr-smoke-6tn3tag/source，逐文件 SHA256 一致；未新增挂载或修改 VM 配置。
+第二次创建和 smoke 成功。首次错误原样保存在 logs/smoke-create.stderr 和 .json。
+
+5. 受限 smoke：已执行通过
+实际执行原有脚本，未加入或替换断言。为保存配置和退出状态证据，将文档的 docker run --rm 等价拆分为 create、inspect、start --attach、inspect、rm；最终无任务容器残留。
+容器 ID: 3883b8a9c32810b38d6ead27c73a47a8f51b4082b47638c7c9a4b9c8113b0ffa
+容器名称: ap97-ocr-smoke-6tn3tag-2
+实际配置已通过 docker inspect 核对：network none；readonly rootfs；三个 bind mounts 均 readonly；cap-drop ALL；no-new-privileges；PidsLimit 64；Memory 536870912 bytes；NanoCpus 1000000000；/tmp tmpfs rw,noexec,nosuid,size=128m。
+MemorySwap 按 Docker 默认记录为 1073741824 bytes（文档命令未显式设置 --memory-swap）。
+脚本每个子进程最多 20 秒，外层 smoke 等待上限 240 秒；PSM 6、DPI 144、eng。
+脚本校验四个原始 PDF 的大小和哈希，再对两份 scan 校验单页、零旋转、页面尺寸、无原生文字层、栅格尺寸、非空 TSV 词和全部词框在页面内。
+start --attach 退出码 0，主机测量耗时 1.204 秒；容器 State.ExitCode=0，OOMKilled=False，Running=False，外层未超时。
+容器 StartedAt: 2026-10-25T10:46:32.562490081Z
+容器 FinishedAt: 2026-10-25T10:46:33.695264092Z
+Python: 3.11.2；Tesseract: tesseract 5.5.2。
+
+harbor-thread-scan: PASS；页 1；栅格 1584 × 1224；非空词 123
+  原始 PDF SHA256: fa814b53d96635afc6c7fc08e02eec91df5a656c9024d72b2a5949b4248090a5
+  栅格 PNG SHA256: a4cd4ae8b9496db4029c76a74fd3e3829550c69a22c540602cde17944fb860e5
+  原始 TSV SHA256: 721a892111f2165253c19d81c7e76cbea2580b59435781ea7362b43a1282dcc8
+
+copper-valve-scan: PASS；页 1；栅格 1224 × 1584；非空词 135
+  原始 PDF SHA256: 741c0bc7adfcb6fccffe404f8dc4096a31e55fbe8f76b18fef5f5807586495f6
+  栅格 PNG SHA256: 437663ed24d4fac0ab6a7748beb75bda7b632be9334ea3c09d7d4a9865db85bc
+  原始 TSV SHA256: 070cbf8969ba1c0fd889306965cb5407e6db8b628c99919e5cdf630879aa042c
+
+两份样本共用一次 smoke 进程，整体和容器退出码均为 0。原脚本的 check=True 表明各内部子进程正常返回；原脚本不单独输出各子进程退出码或耗时，本报告未编造单样本性能数据。
+输出 accuracyEvaluated=false、providerCalls=0。日志只含测量结果及哈希，不保留 OCR 原文；脚本按原行为清理临时栅格和 TSV，哈希来自本次实际生成的字节。
+
+6. 未运行与结论限度
+以下为 NOT_RUN / UNMEASURED：完整 AP 应用或 parseUpload 集成、抽取字段准确率、exact-word grounding 正确性、多页/旋转覆盖、生产就绪验收。
+本次没有观察到需要修改项目源码才能通过的打包问题；不能据此排除上述范围内的问题。
+启动后基线容器数为 0，最终容器数为 0。仅移除本任务的已退出 smoke 容器；无全局 prune、重置或停止其他服务。
+
+7. 证据入口与复现
+acceptance.json：机器可读验收摘要。
+gate-result.json / logs/smoke-run-2.stdout：实际两份样本测量输出。
+logs/image-build.stderr：完整构建输出；logs/image-build.json：确切 argv、退出码和耗时。
+logs/docker-version.stdout：实际 Client/Server 版本。
+logs/smoke-configuration-2.stdout、logs/smoke-state-2.stdout：实际限制和退出状态。
+每个 logs/*.json 均记录命令 argv、UTC 开始时间、主机耗时、退出码、超时状态及对应 stdout/stderr。
+reproduce.py：在当前现有 Colima 环境下按已记录镜像 ID 重放同一受限 smoke，使用新的随机独立容器名，240 秒总超时，不覆盖本次证据；可选 build 子命令从固定源码重建到新 tag。复现辅助脚本的执行状态为 NOT_RUN（本次已执行的是 run-smoke-2.py）。
+
+供 Master 采用的验收摘要：
+在固定提交 ed372a40570d714b5b893c6e4e86e25f2427bc80 上，复用已安装的 Colima 0.10.3，Docker Client 29.9.2 成功连接 Server 29.5.2；原始 OCR Dockerfile 构建成功，image ID sha256:09c398f49cc16a60d0e7888b3939505d60f5482264ea0e86bb4374034352d9c7，linux/arm64。现有受限 smoke 实际运行两份 controlled scans 并退出 0：Harbor 123 词、1584×1224；Copper 135 词、1224×1584；框均在页内、OOM=false、providerCalls=0。只可将 A3/F 的 OCR packaging runtime gate 标记为 PASS；抽取准确率和完整集成验收仍保留独立状态。首次未共享路径导致的创建失败已留证，并通过字节一致的独立共享副本修正，未修改项目源文件。

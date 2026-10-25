@@ -1,0 +1,85 @@
+--- frozen snapshot
+
++++ live issue 97
+
+@@ -193,7 +193,7 @@
+
+ 
+ Publish the packet in the agreed repository fixture location so teammates do not depend on an unshared local `var/` directory. Include source files, frozen business context and a manifest recording generator revision/seed/configuration, case/document IDs, source hashes/versions, document dates and arrival order, and supplier/invoice/PO-line/delivery/credit relationships. Distinguish exported records from newly authored synthetic documents.
+ 
+-Keep **expected results** separate from **actual execution results**. Policies and supporting documents are agent inputs; answer keys and evaluator privileges are not.
++Keep three separate artifacts: **agent inputs** (source files, frozen context and policy), **reviewed expected outcomes** (evaluator-only answer key), and **actual execution evidence** (decisions, IDs, bank observations and journals). Agents must not access answer keys or evaluator privileges.
+ 
+ A reviewer independent of the agent's answer should confirm:
+ 
+@@ -203,6 +203,9 @@
+
+ - **Payment and retry effects:** whether preparation/authorization is allowed, approved amount and trusted destination source, and expected effects under reimport, retry and recovery. A correct hold is a valid expected result.
+ 
+ Record reviewer identity/qualification, review date, policy/label version, rationale and unresolved questions. Distinguish an internal consistency review from an AP practitioner's business review. Labels remain **draft / policy-derived** until the relevant review is completed; reviewing a test answer does not authorize a runtime payment. Known fixtures establish integration/regression behavior, not unseen extraction accuracy.
++
++
++First, freeze three related variants: **clean baseline**, **missing receipt then later resolution**, and **duplicate/resend or explicit correction**. Replay evidence by arrival time: Monday's invoice must remain held when its receipt arrives Tuesday; only the later arrival permits revalidation of the same case. Do not leak future documents, erase the earlier hold, or create a replacement bill merely to resume. Use this hold-to-resolution transition in the demo.
+ 
+ ### Connect to the existing workflow
+ 
+@@ -230,7 +233,7 @@
+
+ 
+ ## 6. Build sequence and completion gates
+ 
+-These are implementation phases, not a forced three-person split or a promise to finish the full system in an hour. Reuse the current foundations. Each phase should leave usable, testable behavior.
++Phases **A–F are delivery gates, not workstream owners A–D**. Master freezes contracts/dependencies and owns integrated acceptance; A owns evidence/data, B AP/accounting, C payments/integrations, and D experience plus independent verification. Reuse current foundations; each gate requires observable behavior.
+ 
+ | Phase | Build / extend | Gate before calling it complete |
+ | --- | --- | --- |
+@@ -241,7 +244,7 @@
+
+ | **E. Complete the operating experience** | Case workspace, evidence highlights, exception/approval queues, audit timeline and cross-stage operator diagnostics. Extend crash/retry verification across connected steps. | A user can explain every amount, decision, blocker and next action. Recovery preserves original operations and creates no duplicate bill/payment/journal effects in the specified tests. |
+ | **F. Broaden coverage and integrations** | More real-world documents, business policies, accounting treatments, payment operations, one selected ERP connector and held-out evaluations. | Each new capability has explicit supported scope, fixtures and failure tests; ERP mappings, sync conflicts and source-of-truth boundaries are verified. |
+ 
+-The UX should be designed alongside these phases, rather than deferred until everything else is built. Wider event simulation and large scenario generation come after the initial case contract and connected path.
++After the shared contract is agreed, workstreams A–D can build in parallel, with UI and verification starting immediately. Deliver in this order: **source-to-bill chain → owned exception and resume → authorized payment, crash recovery and reconciliation**. Complete one connected path before broadening coverage. Provider credentials/account readiness are separate from a passed workflow test. ERP selection/access gates the ERP connector; it must not block internal-ledger verification or payment scheduling.
+ 
+ **Domain extensions within the full roadmap:** partial receipts/invoices/payments; credit application and returns; configurable approval thresholds, groups, delegation and escalation; supplier onboarding and verified bank-detail changes; payment runs/scheduling; supplier-statement and AP-to-GL reconciliation; period-end accruals and controlled reopening/adjustments; then broader tax, currency and account support. Select policy and acceptance tests before enabling each one. Received-but-not-invoiced goods or disputed amounts must not disappear just because they are outside an “approved invoices” queue.
+ 
+@@ -331,6 +334,38 @@
+
+ 
+ Extend existing controls and recovery tests. Use a frozen case set with expected outcomes and record code, data, parser/model, policy and provider versions. Unsupported or unresolved cases stay in the denominator.
+ 
++### Visual — crash after the bank accepts payment
++
++Restored from the October 24, 2026, 23:56 PDT issue revision ("Visual 3"). This is the required successful recovery scenario, not a new verification result.
++
++```mermaid
++sequenceDiagram
++    actor P as Authorized payer
++    participant S as Durable AP state
++    participant W1 as Worker 1
++    participant B as Bank sandbox
++    participant W2 as Recovery worker
++    participant E as Evidence and posting worker
++    P->>S: Authorize the exact saved payment proposal
++    S->>S: Verify prerequisites and persist authorized command
++    W1->>S: Claim fenced attempt and read saved request/key
++    W1->>B: Submit saved request using original key
++    B->>B: Accept transfer
++    Note over W1,B: Response is lost and worker crashes
++    Note over S: Bank outcome unresolved - retain obligation reservation
++    W2->>S: Reclaim after lease expiry
++    W2->>B: Resolve original operation identity
++    B-->>W2: Return original transfer
++    W2->>S: Persist recovered identity and observed state
++    Note over B,E: Settlement notification may also be missing
++    E->>B: Poll and verify posted transaction
++    B-->>E: Bank evidence for the original transfer
++    E->>S: Post and link settlement effect idempotently
++    S-->>P: Show settlement, journal, reconciliation and recovery trace
++```
++
++A failed lookup or timeout leaves the outcome **unknown**. Follow the adapter's supported lookup/retry protocol using the original immutable request/key; never generate a new payment identity to escape uncertainty. If settlement is verified but posting fails, repair posting without another payment. Show actual IDs/counts and measured recovery time for the tested run; the initial bill-recognition journal is separate.
++
+ | Test family | Required observable result |
+ | --- | --- |
+ | File identity and revision | Same-named different files remain distinct; repeated delivery does not create a duplicate payable; explicit revisions preserve previous evidence and decisions. |

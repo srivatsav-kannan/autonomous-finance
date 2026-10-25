@@ -1,0 +1,89 @@
+{
+  "checkedAt": "2026-10-25T10:20:59.061Z",
+  "code": "3278dfb (backend/current local UI); older gateway process29492",
+  "runId": "ap97-b3-live-20261025",
+  "mode": "local FakeBank; five explicit simulated humans",
+  "caseId": "k175gds0dypbgeknejs2henw5h8gysw8",
+  "period": "2026-10",
+  "status": "open",
+  "ready": false,
+  "reconciliation": {
+    "accruedGLCents": 0,
+    "accruedSubledgerCents": 0,
+    "apGLCents": 18560,
+    "apSubledgerCents": 18560,
+    "differenceCents": 0
+  },
+  "opening": {
+    "accruedCents": 0,
+    "apCents": 0,
+    "cashBalances": [
+      {
+        "account": "1000",
+        "balanceCents": 0
+      },
+      {
+        "account": "1010",
+        "balanceCents": 0
+      },
+      {
+        "account": "1020",
+        "balanceCents": 0
+      }
+    ]
+  },
+  "blockers": [
+    {
+      "code": "disputed_portion",
+      "owner": "purchasing_owner",
+      "reason": "Unaccepted invoice portion requires explicit period-end accrual or supported non-obligation/timing disposition",
+      "reference": "case:k175gds0dypbgeknejs2henw5h8gysw8:disputed"
+    },
+    {
+      "code": "received_not_invoiced",
+      "owner": "purchasing_owner",
+      "reason": "Received units remain outside invoice/accrual recognition",
+      "reference": "receipt:[\"a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2\",\"KALE-24\",\"case\"]"
+    },
+    {
+      "code": "received_not_invoiced",
+      "owner": "purchasing_owner",
+      "reason": "Received units remain outside invoice/accrual recognition",
+      "reference": "receipt:[\"a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2\",\"ROM-CS\",\"case\"]"
+    },
+    {
+      "code": "received_not_invoiced",
+      "owner": "purchasing_owner",
+      "reason": "Received units remain outside invoice/accrual recognition",
+      "reference": "receipt:[\"a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2\",\"AVO-48\",\"case\"]"
+    },
+    {
+      "code": "received_not_invoiced",
+      "owner": "purchasing_owner",
+      "reason": "Received units remain outside invoice/accrual recognition",
+      "reference": "receipt:[\"a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2\",\"TOM-25\",\"case\"]"
+    },
+    {
+      "code": "supplier_statement_review",
+      "owner": "controller",
+      "reason": "Period supplier statement and any differences need current human review",
+      "reference": "golden-state-produce"
+    }
+  ],
+  "unpaidBills": [
+    {
+      "appliedCreditCents": 0,
+      "billId": "n577wxmcdgn3t9ygpa1yd4jgc18gzzpz",
+      "caseId": "k175gds0dypbgeknejs2henw5h8gysw8",
+      "cashCents": 10000,
+      "outstandingCents": 18560,
+      "recognizedCents": 28560,
+      "reference": "1001",
+      "supplierId": "golden-state-produce"
+    }
+  ],
+  "actionCount": 0,
+  "accrualCount": 0,
+  "newWrites": 0,
+  "externalOrPractitionerAcceptance": false
+}

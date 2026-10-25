@@ -26,6 +26,7 @@ export function assertSnapshotCurrent(config: PaymentExecutionConfig, snapshot: 
 export function assertCommandMatchesSnapshot(command: BankCommand, snapshot: PaymentSnapshot, versionId: string): void {
   parseBankCommand(command);
   parsePaymentSnapshot(snapshot);
+  if ((command.accountingBindingHash !== undefined) !== (snapshot.accountingBinding !== undefined)) throw new Error("Command accounting binding presence differs from snapshot");
   if (!sameBankScope(command.scope, snapshot.scope) || command.commandId !== versionId || command.approvalVersion !== versionId ||
       command.amountCents !== snapshot.amountCents || command.currency !== snapshot.currency ||
       canonicalJson(command.destination) !== canonicalJson(snapshot.destination)) throw new Error("Command differs from approved snapshot");

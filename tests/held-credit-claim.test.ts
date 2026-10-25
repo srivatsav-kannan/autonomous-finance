@@ -55,6 +55,13 @@ afterEach(() => {
 });
 
 describe("held bill credit deductions", () => {
+  it.each(["price_over_contract", "short_shipment", "missing_delivery_reference", "unknown_sku"])("keeps %s held instead of applying an automatic recommendation", async code => {
+    const rt=runtime();const ask=vi.spyOn(rt,"ask").mockResolvedValue({ok:true} as never);
+    const held=task("bill-a");held.payload.exceptions=[{code,detail:"unresolved business evidence",deltaCents:-1000}];
+    const result=await reviewHeld(rt,held);
+    expect(result).toMatchObject({outcome:"asked",waiting:true});expect(approved).toHaveLength(0);
+    expect(ask).toHaveBeenCalledWith(expect.objectContaining({to:"human_cfo",body:expect.stringContaining("no vendor communication has been sent")}));
+  });
   it("deducts one open credit once across sequential reviews", async () => {
     const rt = runtime();
     await reviewHeld(rt, task("bill-a"));

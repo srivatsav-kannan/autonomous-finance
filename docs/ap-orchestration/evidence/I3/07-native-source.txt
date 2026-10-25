@@ -1,0 +1,352 @@
+Browser tab: 9, Title: "Accounts payable · Autonomous Finance", URL: "http://127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system".
+1 AXWebArea Accounts payable · Autonomous Finance, URL: 127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system
+	2 container root
+		3 link Description: Skip to content, Value: 127.0.0.1:5195/ap-system?case=kd74wbhvrp0y8tr74pt603pj6x8gzv2y&view=ap-system#main
+		4 container
+			5 heading Autonomous Finance, Value: 1
+				6 text Autonomous
+				7 text Finance
+			8 text Accounts payable Evidence and obligations
+			9 container Console views
+				10 text Workspace
+				11 button Accounts payable
+				12 button Invoices
+				13 button Inbox
+				14 button Bank & cash
+				15 button Finance flow
+				16 button Team
+				17 button Live activity
+				18 button Ledger
+				19 button Memory
+				20 button Evals
+				21 button Control room
+			22 text Human finance lead You oversee. Agents operate.
+		23 container
+			24 text Workspace Accounts payable Local FakeBank ap97-i3-20261025
+		25 container main
+			26 container Local multi-human simulation
+				27 text Local multi-human simulation / FakeBank
+				28 text These are distinct simulated human seats on an isolated local backend. This is not an Auth0 login, a real person’s approval or an external bank authorization.
+				29 container
+					30 text Simulated human
+					31 pop up button (collapsed, settable) Simulated human, Value: I3 simulated operator, Secondary Actions: Expand
+						32 menu
+							33 Choose a simulated actor
+							34 (selected) I3 simulated operator
+				35 container
+					36 text Acting as  I3 simulated operator . Group membership, distinct-person quorum and stale-evidence checks still apply.
+			37 container Accounts payable workspace
+				38 heading Accounts payable, Value: 2
+					39 text Accounts payable
+				40 text Inspect the obligation, its approvals and the outcome.
+				41 button Refresh
+				42 button (collapsed) Upload documents, Secondary Actions: Expand
+				43 container Workspace sections
+					44 checkbox Cases, Value: 1
+					45 checkbox Payment runs, Value: 0
+					46 checkbox Policy & suppliers, Value: 0
+					47 checkbox Period close, Value: 0
+				77 container Workspace operational metrics
+					78 definition list
+						79 container Cases needing attention
+							80 text Cases needing attention
+						81 container
+							82 text 0 of  1  cases in this run
+						83 container Approved outstanding
+							84 text Approved outstanding
+						85 container
+							86 text $0.00 Across 1 unique invoices
+						87 container Execution needs review
+							88 text Execution needs review
+						89 container
+							90 text 0 Inspect bank evidence before retrying
+					91 text Recognizing a bill records the obligation. Applied supplier credits reduce what is owed; a verified cash settlement records money leaving the bank. QuickBooks synchronization is a separate, receipt-backed operation.
+					92 button (collapsed) Extraction, source coverage and recorded trace counts, Secondary Actions: Expand
+						93 text Extraction, source coverage and recorded trace counts
+					94 button (collapsed) Operational durations and waiting ages, Secondary Actions: Expand
+						95 text Operational durations and waiting ages
+				67 container AP cases
+					68 search text field (settable) Search AP cases
+					69 container
+						70 text Show
+						71 pop up button (collapsed, settable) Description: Filter AP cases, Value: All, Secondary Actions: Expand
+							72 menu
+								73 (selected) All
+								74 Needs attention
+								75 Approved
+								76 Settled
+					96 content list
+						97 checkbox Golden State Produce Co. INV-1001 $678.60 Approved Settled, Value: 1
+							98 text Golden State Produce Co.
+							99 text INV-1001
+							100 text $678.60
+							101 text Approved
+							102 text Settled
+					103 container
+						104 text 1  of  1  cases shown
+				105 container
+					106 heading INV-1001, Value: 3
+						107 text INV-1001
+					108 text Golden State Produce Co. Local FakeBank Simulated human identity
+				109 container
+					110 text Case  kd74wbhvrp0y8tr74pt603pj6x8gzv2y  / Revision  2  /  Document provenance varies; inspect originals
+				111 definition list
+					112 container Document review
+						113 text Document review
+					114 text Reviewed
+					115 container Bill decision
+						116 text Bill decision
+					117 text Approved
+					118 container Accounting
+						119 text Accounting
+					120 text Recognized
+					121 container Payment authorization
+						122 text Payment authorization
+					123 text Authorized
+					124 container Bank execution
+						125 text Bank execution
+					126 text Settled
+					127 container Reconciliation
+						128 text Reconciliation
+					129 text Matched
+				130 definition list
+					131 container Invoiced
+						132 text Invoiced
+					133 text $678.60
+					134 container Accepted
+						135 text Accepted
+					136 text $678.60
+					137 container Outstanding
+						138 text Outstanding
+					139 text $0.00
+				140 button (collapsed) Disputed, credited and payment amounts, Secondary Actions: Expand
+					141 text Disputed, credited and payment amounts
+				142 container Case sections
+					143 checkbox Source & fields, Value: 1
+					144 checkbox Matching, Value: 0
+					145 checkbox Accounting, Value: 0
+					146 checkbox History, Value: 0
+				293 container Extracted fields
+					294 heading Source fields, Value: 3
+						295 text Source fields
+					296 container
+						297 text 35  fields. Select one to inspect its original evidence.
+					298 container
+						299 text Find a field
+						300 search text field (settable) Find a field
+					301 container Field search results
+						302 checkbox Supplier name Golden State Produce Co. Supported content / Location unresolved, Value: 0
+							303 text Supplier name
+							304 text Golden State Produce Co.
+							305 container
+								306 text Supported  content  / Location unresolved
+						307 checkbox Invoice number INV-1001 Supported content / Native location, Value: 0
+							308 text Invoice number
+							309 text INV-1001
+							310 container
+								311 text Supported  content  / Native location
+						312 checkbox Invoice date 2026-10-19 Supported content / Native location, Value: 0
+							313 text Invoice date
+							314 text 2026-10-19
+							315 container
+								316 text Supported  content  / Native location
+						317 checkbox Due date 2026-11-02 Supported content / Native location, Value: 0
+							318 text Due date
+							319 text 2026-11-02
+							320 container
+								321 text Supported  content  / Native location
+						322 checkbox Currency USD Supported content / Location unresolved, Value: 0
+							323 text Currency
+							324 text USD
+							325 container
+								326 text Supported  content  / Location unresolved
+						327 checkbox Terms Net 14 Supported content / Native location, Value: 0
+							328 text Terms
+							329 text Net 14
+							330 container
+								331 text Supported  content  / Native location
+						332 checkbox Subtotal $678.60 Supported content / Native location, Value: 0
+							333 text Subtotal
+							334 text $678.60
+							335 container
+								336 text Supported  content  / Native location
+						337 checkbox Tax $0.00 Supported content / Native location, Value: 0
+							338 text Tax
+							339 text $0.00
+							340 container
+								341 text Supported  content  / Native location
+						342 checkbox Freight $0.00 Supported content / Native location, Value: 0
+							343 text Freight
+							344 text $0.00
+							345 container
+								346 text Supported  content  / Native location
+						347 checkbox Discount $0.00 Supported content / Native location, Value: 0
+							348 text Discount
+							349 text $0.00
+							350 container
+								351 text Supported  content  / Native location
+						352 checkbox Total amount $678.60 Supported content / Native location, Value: 1
+							353 text Total amount
+							354 text $678.60
+							355 container
+								356 text Supported  content  / Native location
+						357 checkbox Line 1 / SKU KALE-24 Supported content / Native location, Value: 0
+							358 text Line 1 / SKU
+							359 text KALE-24
+							360 container
+								361 text Supported  content  / Native location
+						362 checkbox Line 1 / Description Organic Kale, 24ct case Supported content / Native location, Value: 0
+							363 text Line 1 / Description
+							364 text Organic Kale, 24ct case
+							365 container
+								366 text Supported  content  / Native location
+						367 checkbox Line 1 / Quantity 5 Supported content / Native location, Value: 0
+							368 text Line 1 / Quantity
+							369 text 5
+							370 container
+								371 text Supported  content  / Native location
+						372 checkbox Line 1 / Unit case Supported content / Native location, Value: 0
+							373 text Line 1 / Unit
+							374 text case
+							375 container
+								376 text Supported  content  / Native location
+						377 checkbox Line 1 / Unit price $38.50 Supported content / Native location, Value: 0
+							378 text Line 1 / Unit price
+							379 text $38.50
+							380 container
+								381 text Supported  content  / Native location
+						382 checkbox Line 1 / Amount $192.50 Supported content / Native location, Value: 0
+							383 text Line 1 / Amount
+							384 text $192.50
+							385 container
+								386 text Supported  content  / Native location
+						387 checkbox Line 2 / SKU ROM-CS Supported content / Native location, Value: 0
+							388 text Line 2 / SKU
+							389 text ROM-CS
+							390 container
+								391 text Supported  content  / Native location
+						392 checkbox Line 2 / Description Romaine Hearts, case Supported content / Native location, Value: 0
+							393 text Line 2 / Description
+							394 text Romaine Hearts, case
+							395 container
+								396 text Supported  content  / Native location
+						397 checkbox Line 2 / Quantity 4 Supported content / Native location, Value: 0
+							398 text Line 2 / Quantity
+							399 text 4
+							400 container
+								401 text Supported  content  / Native location
+						402 checkbox Line 2 / Unit case Supported content / Native location, Value: 0
+							403 text Line 2 / Unit
+							404 text case
+							405 container
+								406 text Supported  content  / Native location
+						407 checkbox Line 2 / Unit price $42.75 Supported content / Native location, Value: 0
+							408 text Line 2 / Unit price
+							409 text $42.75
+							410 container
+								411 text Supported  content  / Native location
+						412 checkbox Line 2 / Amount $171.00 Supported content / Native location, Value: 0
+							413 text Line 2 / Amount
+							414 text $171.00
+							415 container
+								416 text Supported  content  / Native location
+						417 checkbox Line 3 / SKU AVO-48 Supported content / Native location, Value: 0
+							418 text Line 3 / SKU
+							419 text AVO-48
+							420 container
+								421 text Supported  content  / Native location
+						422 checkbox Line 3 / Description Hass Avocados, 48ct Supported content / Native location, Value: 0
+							423 text Line 3 / Description
+							424 text Hass Avocados, 48ct
+							425 container
+								426 text Supported  content  / Native location
+						427 checkbox Line 3 / Quantity 3 Supported content / Native location, Value: 0
+							428 text Line 3 / Quantity
+							429 text 3
+							430 container
+								431 text Supported  content  / Native location
+						432 checkbox Line 3 / Unit case Supported content / Native location, Value: 0
+							433 text Line 3 / Unit
+							434 text case
+							435 container
+								436 text Supported  content  / Native location
+						437 checkbox Line 3 / Unit price $68.90 Supported content / Native location, Value: 0
+							438 text Line 3 / Unit price
+							439 text $68.90
+							440 container
+								441 text Supported  content  / Native location
+						442 checkbox Line 3 / Amount $206.70 Supported content / Native location, Value: 0
+							443 text Line 3 / Amount
+							444 text $206.70
+							445 container
+								446 text Supported  content  / Native location
+						447 checkbox Line 4 / SKU TOM-25 Supported content / Native location, Value: 0
+							448 text Line 4 / SKU
+							449 text TOM-25
+							450 container
+								451 text Supported  content  / Native location
+						452 checkbox Line 4 / Description Heirloom Tomatoes, 25lb Supported content / Native location, Value: 0
+							453 text Line 4 / Description
+							454 text Heirloom Tomatoes, 25lb
+							455 container
+								456 text Supported  content  / Native location
+						457 checkbox Line 4 / Quantity 2 Supported content / Native location, Value: 0
+							458 text Line 4 / Quantity
+							459 text 2
+							460 container
+								461 text Supported  content  / Native location
+						462 checkbox Line 4 / Unit case Supported content / Native location, Value: 0
+							463 text Line 4 / Unit
+							464 text case
+							465 container
+								466 text Supported  content  / Native location
+						467 checkbox Line 4 / Unit price $54.20 Supported content / Native location, Value: 0
+							468 text Line 4 / Unit price
+							469 text $54.20
+							470 container
+								471 text Supported  content  / Native location
+						472 checkbox Line 4 / Amount $108.40 Supported content / Native location, Value: 0
+							473 text Line 4 / Amount
+							474 text $108.40
+							475 container
+								476 text Supported  content  / Native location
+				477 container Selected source evidence
+					478 heading invoice.pdf, Value: 3
+						479 text invoice.pdf
+					480 container
+						481 text Revision 2  / Page 1
+					482 button Download original
+					483 text Total amount
+					484 text $678.60 Native location Supported  content
+					510 container invoice.pdf, page 1, native evidence regions
+					488 text USD 678.60
+					489 button (collapsed) Evidence provenance, Secondary Actions: Expand
+						490 text Evidence provenance
+				491 container
+					492 heading Original documents, Value: 3
+						493 text Original documents
+					494 content list
+						495 container
+							496 text invoice.pdf Invoice  / Revision  1  /  1 page User uploaded original; this does not authenticate the supplier.
+							497 button Download original
+						498 container
+							499 text purchase-order.pdf Purchase order  / Revision  1  /  1 page User uploaded original; this does not authenticate the supplier.
+							500 button Download original
+						501 container
+							502 text contract.pdf Contract  / Revision  1  /  1 page User uploaded original; this does not authenticate the supplier.
+							503 button Download original
+						504 container
+							505 text invoice.pdf Invoice  / Revision  2  /  1 page User uploaded original; this does not authenticate the supplier.
+							506 button Download original
+						507 container
+							508 text receipt.pdf Receipt  / Revision  1  /  1 page User uploaded original; this does not authenticate the supplier.
+							509 button Download original
+				286 container Case review actions
+					287 heading Review this revision, Value: 3
+						288 text Review this revision
+					289 text Your decision binds the current sources and amounts. Backend authority and stale-revision checks apply.
+					290 container
+						291 text Bill approved.  Payment authorization: Authorized.
+					292 text Payment release requires the exact amount, verified beneficiary, funding account and independent authorization. Review the proposal under Accounting.
+
+The focused UI element is 352 checkbox Total amount $678.60 Supported content / Native location, Value: 1

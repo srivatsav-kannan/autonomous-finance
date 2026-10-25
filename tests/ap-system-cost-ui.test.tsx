@@ -1,0 +1,44 @@
+import {afterEach,describe,it,expect,vi} from "vitest";
+import {renderToStaticMarkup} from "react-dom/server";
+import type {BusinessPolicy} from "../src/ap-system/domain-contracts";
+import {APCostCorrection,APCostCorrectionEditor,buildCostCorrection,reachableCostAccounts} from "../console/src/APCostCorrection";
+import {accountingAmountInput,paymentAmountInput} from "../console/src/apSystemView";
+import {APSystemBusiness} from "../console/src/APSystemBusiness";
+import {apUIFixture} from "./ap-system-ui.fixture";
+import {apSystemApi} from "../console/src/apSystemApi";
+import {configureAPSession} from "../console/src/apAuthSession";
+import {costUIFixture,signedCostUIFixture} from "./ap-system-cost-ui.fixture";
+const policy={accounts:[{account:"6000",treatment:"expense"},{account:"1200",treatment:"inventory"},{account:"1300",treatment:"prepayment"}]} as BusinessPolicy;
+const source={sourceId:"retained-original",revision:2,sha256:"e".repeat(64)};
+afterEach(()=>{configureAPSession(null);vi.unstubAllGlobals();});
+describe("explicit corrected original-share review",()=>{
+ it("preserves exact signed share identities and stores while allowing deliberate reachable splits",()=>{const state=signedCostUIFixture(),result=buildCostCorrection(state,[{share:0,account:"6000",amount:"4.99"},{share:0,account:"1200",amount:"5.01"},{share:1,account:"6000",amount:"0.50"}],policy,[source],"Exact partial reversal");expect(result.snapshotHash).toBe(state.snapshotHash);expect(result.allocations).toEqual([{originalLineId:"accrual",allocationIndex:0,account:"6000",store:"synthetic-store",treatment:"expense",side:"credit",amountCents:499},{originalLineId:"accrual",allocationIndex:0,account:"1200",store:"synthetic-store",treatment:"inventory",side:"credit",amountCents:501},{originalLineId:"discount",allocationIndex:0,account:"6000",store:"synthetic-store",treatment:"expense",side:"debit",amountCents:50}]);expect(result.evidence).toEqual([source]);});
+ it("rejects invented routes, duplicate share/accounts, aggregate excess capacity and rounded amounts",()=>{const state=costUIFixture();const build=(rows:Parameters<typeof buildCostCorrection>[1])=>buildCostCorrection(state,rows,policy,[source],"Reviewed");for(const amount of ["","0","-1","1.001","1e2"])expect(()=>build([{share:0,account:"6000",amount}])).toThrow();expect(()=>build([{share:0,account:"1300",amount:"1"}])).toThrow(/reachable/);expect(()=>build([{share:0,account:"6000",amount:"1"},{share:0,account:"6000",amount:"1"}])).toThrow(/Combine/);expect(()=>build([{share:0,account:"6000",amount:"15"},{share:0,account:"1200",amount:"6"}])).toThrow(/capacity/);state.corrections[0]!.store="other-store";expect(reachableCostAccounts(state,state.originalShares[0]!)).not.toContain("1200");});
+ it("requires explicit review, never fills partial amounts with capacity, and distinguishes evidence loading",()=>{const props={context:"original-context",policy,sources:[{...source,name:"Retained correction evidence"}],busy:false,onChange:()=>{}};const html=renderToStaticMarkup(<APCostCorrectionEditor {...props} state={signedCostUIFixture()}/>);for(const text of ["explicit current cost plan is required","Remaining capacity below is not a proposed reversal amount","Credit","Debit","$20.00","synthetic-cost-action","No approval is created here"])expect(html).toContain(text);expect(html).toContain('<button disabled="">Use reviewed cost allocation plan');expect(html).not.toContain('value="20.00"');const pending=renderToStaticMarkup(<APCostCorrection {...props} originalEntryId="journal"/>);expect(pending).toContain("Loading exact original shares");expect(pending).not.toContain("Use reviewed cost allocation plan");});
+ it("loads exact original cost state using protected transport and encoded ID",async()=>{configureAPSession({mode:"local"});const fetcher=vi.fn(async(_url:string)=>new Response(JSON.stringify(costUIFixture()),{status:200}));vi.stubGlobal("fetch",fetcher);await apSystemApi.costState("journal/with:delimiter");expect(fetcher.mock.calls[0]![0]).toBe("/api/ap-system/close/cost-state/journal%2Fwith%3Adelimiter");});
+});
+
+it("accepts explicit accounting amounts without treating blank as a balance or changing payment limits",()=>{expect(accountingAmountInput("10.25",true)).toBe(1025);expect(accountingAmountInput("0.00",true)).toBe(0);for(const value of ["","0","1.001","-1","1e3","90071992547409.92"])expect(()=>accountingAmountInput(value)).toThrow();expect(()=>paymentAmountInput("10.25",1000)).toThrow();expect(paymentAmountInput("",1000)).toBe(1000);});
+
+it("keeps the period accrual fixture free of the separate signed bill discount",()=>{const state=costUIFixture();expect(state.originalShares).toHaveLength(1);expect(state.originalShares[0]).toMatchObject({originalLineId:"accrual",amountCents:2000,side:"credit",store:null});expect(state.positions.reduce((sum,p)=>sum+p.balanceCents,0)).toBe(2000);});
+
+it("checks signed corrected account capacity including offsetting discount debits at the exact cent boundary",()=>{
+ const state=signedCostUIFixture();state.originalShares[0]!.amountCents=7700;state.originalShares[0]!.remainingCents=7700;state.positions[0]!.balanceCents=3600;state.positions[1]!.balanceCents=4000;
+ const build=(expense:string,inventory:string)=>buildCostCorrection(state,[{share:0,account:"6000",amount:expense},{share:0,account:"1200",amount:inventory},{share:1,account:"6000",amount:"0.50"}],policy,[source],"Half-credit exact signed shares");
+ expect(()=>build("36.51","1.99")).toThrow(/current corrected cost balance/);
+ expect(build("36.50","2.00").allocations.map(a=>a.amountCents)).toEqual([3650,200,50]);
+ state.positions[0]!.store="different-store";expect(()=>build("36.50","2.00")).toThrow(/current corrected cost balance/);
+});
+it("checks negative discount capacity without treating a positive balance as available debit capacity",()=>{
+ const state=signedCostUIFixture();state.positions[0]!.balanceCents=-50;
+ const build=(amount:string)=>buildCostCorrection(state,[{share:1,account:"6000",amount}],policy,[source],"Discount only");
+ expect(build("0.50").allocations[0]!.side).toBe("debit");expect(()=>build("0.51")).toThrow(/current corrected cost balance/);
+ state.positions[0]!.balanceCents=1;expect(()=>build("0.01")).toThrow(/current corrected cost balance/);
+});
+
+it("offers an explicit posting date for a governed credit without replacing its original date",()=>{
+ const detail=apUIFixture();detail.candidate!.kind="credit_note";detail.candidate!.invoiceDate="2026-10-19";
+ detail.domain={policyVersion:"policy",supplierId:detail.candidate!.supplierId,supplierRevision:1,approvalId:null,approvalHash:null,approvalStatus:"not_proposed",route:[],stage:0,stageStartedAt:null,votes:[],acceptance:null,credit:null,creditLinks:[],recognizedCents:0,appliedCreditCents:0,availableSupplierCreditCents:0,cashSettledCents:0};
+ const html=renderToStaticMarkup(<APSystemBusiness detail={detail} cases={[detail]} busy={false} onBusy={()=>{}} onChanged={()=>{}} onOpenCase={()=>{}}/>);
+ expect(html).toContain("Credit posting date");expect(html).toContain('type="date" value=""');expect(html).toContain("Original credit document date 2026-10-19");expect(html).toContain("Changing this date invalidates the reviewed cost allocation plan");expect(detail.candidate!.invoiceDate).toBe("2026-10-19");
+});

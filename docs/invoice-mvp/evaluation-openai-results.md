@@ -42,10 +42,29 @@ Root separately verified a deterministic browser workflow at the same app source
 
 Both model roles used `gpt-6.1-sol` with high effort. Tool access, whole-workspace versus per-case orchestration, output limits, parallel-tool behavior, human acceptance and reservation reconciliation differed. The original fixture was previously seen; the held-out live cohort is post-fix after earlier deterministic exposure. No reviewer is implemented and no reviewer gain or controlled agent-count benefit is demonstrated.
 
-The [earlier deterministic report](evaluation-results.md) remains separate: original 0/18, held-out 4/9, exact source retention and restart checks passed at app `926e4e8` with zero model calls. Historical 18/18 experiments are not new MVP results. [Configuration documentation](evaluation-openai.md) records the approved limits and future-only guard correction.
+The [earlier deterministic report](evaluation-results.md) remains separate: original 0/18, held-out 4/9, exact source retention and restart checks passed at app `926e4e8` with zero model calls. Historical 18/18 experiments are not new MVP results. [Configuration](#configuration) below records the approved limits and the future-only guard correction.
 
 A local limitation remains: simultaneous gateways on the same browser hostname overwrite the shared session cookie. Root isolated the demonstration with `localhost`; evaluation clients used separate cookie jars. No product code was tuned after these measured runs. Production SSO is not implemented; the demonstration uses simulated local identity.
 
 D's checks pass: 30 Python tests, 14 no-network Node tests and evaluation TypeScript. Root independently reports 331 tests in 26 files, all application/Convex/evaluation typechecks and the Vite build passing on the measured app code. These checks support the implementation but do not replace measured accuracy or broaden coverage.
 
 Private sealed artifacts are under `live/openai-20261024/{baseline-original,app-original,app-heldout}`, `live-scores/openai-20261024/{app-original-independent,app-heldout-independent}`, and `live-restart/openai-20261024/`. Sanitized diagnostics are in `diagnostics/openai-20261024-*`. The companion JSON records exact run, score, diagnostic, restart and retention/usage hashes. Source documents, grading keys and opaque provider reasoning remain outside public reports. D made no provider calls during scoring or diagnosis.
+
+## Configuration
+
+This section was `evaluation-openai.md`. The user approved one OpenAI batch on 2026-10-24, capped at $7.50 in total. It replaced the earlier Claude plan; it was not extra spending. Follow-up: [issue #66](https://github.com/srivatsav-kannan/autonomous-finance/issues/66).
+
+| Run | Maximum spend | Maximum requests | Input bound per request | Output bound per request | Run deadline |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Baseline, original fixture | $3.00 | 40 | 250,000 | 64,000 | 20 minutes |
+| Actual app, original fixture | $3.00 | 160 | 100,000 | 4,096 | 30 minutes |
+| Actual app, held-out suite | $1.50 | 64 | 100,000 | 4,096 | 20 minutes |
+
+- **Model.** Both roles use `gpt-6.1-sol` at high reasoning effort through the Responses API: default service tier, no caching, no retries, no fallback. Pricing ($2 / $10 per million input / output tokens, short context) was checked against the [model page](https://developers.openai.com/api/docs/models/gpt-6.1-sol) and [pricing page](https://developers.openai.com/api/docs/pricing) on 2026-10-24. Prompts above 272K input tokens cost more, so any input bound above 250,000 is rejected.
+- **Approval.** The committed [authorization example](../../evals/invoice-mvp/authorization.openai.example.json) stays disabled and carries [pricing provenance](../../evals/invoice-mvp/pricing-provenance.openai.json). A real approval needs a recorded reference, a future expiry and one absolute private ledger path. A key alone is not approval. Do not rerun the batch, reset its ledger or reuse its run IDs.
+- **Transport.** `baseline-agent.ts` is byte-identical to historical A except import paths; only its transport is replaced. Requests use `store: false`, replay every native output item (including encrypted reasoning) as opaque data, set `prompt_cache_options: {"mode":"explicit"}` with no breakpoints, pin `https://api.openai.com/v1/responses`, refuse redirects and bound each request to 60 seconds. Served model, service tier, token counts and zero cache usage are validated; missing usage keeps the full reservation.
+- **Input guard.** The completed baseline bounded input as request UTF-8 bytes plus 4,096. For future requests only, the bound also adds every prior response's output-token count, because encrypted reasoning size is not a proven token bound. No paid run has used the new guard.
+- **Product settings.** `INVOICE_MVP_PROVIDER=openai`, `INVOICE_MVP_MODE=live_model`, `INVOICE_MVP_LIVE_OPT_IN=1`, `INVOICE_MVP_OUTPUT_TOKENS_PER_CALL=4096`, plus explicit price and budget variables. The model is fixed and independent of `AGENT_MODEL`. The app sets `parallel_tool_calls: false`; the baseline allows parallel calls, as historical A did.
+- **Differences that remain.** Tool access, per-case versus whole-workspace execution, output limits, human acceptance and reservation accounting differ between baseline and app. This is not a controlled agent-count comparison.
+
+No-network checks (30 Python tests, 14 Node tests and the evaluation TypeScript check) are listed in the [harness README](../../evals/invoice-mvp/README.md#no-network-tests).

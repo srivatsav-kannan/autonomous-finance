@@ -1,0 +1,160 @@
+{
+  "baseline": "7b0f6444bf79ec914c0c7d0a4af1444af092c49c",
+  "originalDerivationCommit": "769df9f",
+  "originalKeyVisibleFactAgreement": "104/104",
+  "originalCount": 4,
+  "logicalInvoiceCount": 2,
+  "independentVisualPages": 4,
+  "actualParserInvoked": false,
+  "tests": {
+    "passed": 23,
+    "failed": 1,
+    "independent": 7,
+    "owner": 17
+  },
+  "typechecks": {
+    "root": "pass",
+    "backend": "pass",
+    "tests": "pass"
+  },
+  "openFindings": {
+    "V7-T1": {
+      "severity": "P2",
+      "status": "confirmed by Master; awaiting repair",
+      "impact": "pending invalid retained voter remains pending/ongoing in projection; next approval safely rejected"
+    }
+  },
+  "hashes": {
+    "tests/ap-system/v7-original-key.test.ts": "d35165cd70b6a22b00190bc83e16f3b65123c09dcdff44ba80acf87915606fde",
+    "tests/ap-system/v7-timing.test.ts": "2cc61f9c5382097ba9cf14e2eee7bf14d41e070c4bfaf20c48f8c2959566d0a5",
+    "docs/ap-orchestration/evidence/V7-original-derived.json": "5ebaeb9b6d64e272ba7284b80cb64c0c8adc6839f73617b700a41942e9632f12"
+  },
+  "testFiles": [
+    {
+      "file": "tests/ap-system-operational-timing.test.ts",
+      "assertions": [
+        {
+          "name": "distinguishes completed duration, ongoing age, not-started clock and unavailable evidence",
+          "status": "passed"
+        },
+        {
+          "name": "does not reuse prior-revision reviews or recognition, or generic updatedAt for hold onset",
+          "status": "passed"
+        },
+        {
+          "name": "does not count scheduled unsent time as unresolved outcome age",
+          "status": "passed"
+        },
+        {
+          "name": "counts recovery through durable posting, not provider acceptance or worker liveness",
+          "status": "passed"
+        },
+        {
+          "name": "measures explicit evidence-request episodes without overlapping repeated requests",
+          "status": "passed"
+        },
+        {
+          "name": "does not invent recovery time for an abandoned lease or a rejected outcome lacking completion",
+          "status": "passed"
+        },
+        {
+          "name": "times a proven pre-dispatch block separately from an unstarted payment outcome",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system-timing-transport.test.ts",
+      "assertions": [
+        {
+          "name": "uses only the request-owned human and configured scope for operational reads",
+          "status": "passed"
+        },
+        {
+          "name": "requires current authentication plus matching session and keeps metrics read-only",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system-timing-ui.test.tsx",
+      "assertions": [
+        {
+          "name": "keeps completed median, ongoing oldest and missing coverage separate",
+          "status": "passed"
+        },
+        {
+          "name": "exposes exact event, source and payment-run evidence without relabeling unknown history as current",
+          "status": "passed"
+        },
+        {
+          "name": "rejects timing snapshots for another scope, revision, hash or case set",
+          "status": "passed"
+        },
+        {
+          "name": "states fixed snapshot and overlapping intervals without invented latency or worker progress",
+          "status": "passed"
+        },
+        {
+          "name": "fetches only the authenticated read endpoint and forwards cancellation",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/operational-timing.test.ts",
+      "assertions": [
+        {
+          "name": "reads actual retained review/post/authorization/recovery events and changes no economic state",
+          "status": "passed"
+        },
+        {
+          "name": "measures a sequential business route until its final independent vote",
+          "status": "passed"
+        },
+        {
+          "name": "binds grouped proposal timing to its frozen source revision and stops an unsent queue at cancellation",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v7-original-key.test.ts",
+      "assertions": [
+        {
+          "name": "matches the held-out key to independently transcribed originals frozen before key access, preserving all104 facts",
+          "status": "passed"
+        },
+        {
+          "name": "matches all four immutable PDF bytes to independent hashes and manifest, not filename equivalence",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v7-timing.test.ts",
+      "assertions": [
+        {
+          "name": "marks superseded and subsequently invalidated human routes unavailable rather than ongoing or fabricated completion",
+          "status": "failed"
+        },
+        {
+          "name": "marks a pending proposal unavailable when a new approved policy invalidates its frozen authority",
+          "status": "passed"
+        },
+        {
+          "name": "excludes same-run foreign-scope proposal/version rows and rejects retired read identity without economic writes",
+          "status": "passed"
+        },
+        {
+          "name": "keeps accepted-but-unposted recovery ongoing, freezes matched completion, and requires distinct return evidence for returned outcome",
+          "status": "passed"
+        },
+        {
+          "name": "keeps missing, future and reversed event clocks out of completed/ongoing aggregation while admitting a real zero duration",
+          "status": "passed"
+        }
+      ]
+    }
+  ]
+}

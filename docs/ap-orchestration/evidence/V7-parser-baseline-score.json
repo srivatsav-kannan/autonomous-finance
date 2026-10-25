@@ -1,0 +1,2368 @@
+{
+  "reviewKind": "independent agent engineering review; no practitioner sign-off",
+  "originalDerivationSha256": "5ebaeb9b6d64e272ba7284b80cb64c0c8adc6839f73617b700a41942e9632f12",
+  "scorerSha256": "e84c4a17ad8def051cc2c4e40e8073c263d7e33fdc782f2d7831a811bc83cbac",
+  "runtimeBaseline": "6a0294197208fc891e715ea556d1a9b5e9f40aab",
+  "intakeFilename": "initial.intake.private.json",
+  "method": "Frozen original-derived fields; independently read provider labeled text and HTML tables, adapter normalized evidence, source/frame/hashed raw native regions and derived token rectangles. Provider correctness is semantic content presence, not candidate or end-to-end success. Candidate:null is a complete-document failure.",
+  "summary": {
+    "denominator": 104,
+    "providerCorrect": 104,
+    "candidateCorrect": 0,
+    "completeCandidates": 0,
+    "adapterContent": {
+      "correct": 75,
+      "wrong": 2,
+      "missing": 27
+    },
+    "adapterGeometryVerified": 72
+  },
+  "documents": [
+    {
+      "document": "copper-valve-native",
+      "originalSha256": "dc323890c0c20082c1f6bcfd402b0365009d4e0147b36299835129cf39c96791",
+      "intakeSha256": "f87331b163f290f33c7db0f15ad4db56db4ec977884dc06c28d241b46b5312e6",
+      "providerResultSha256": "da8e7daf1cce3012dfb6d7ff1576b8dc19a87befcb9604711ba78ae58c2899f1",
+      "providerJob": "pjb-tt0fw9l5c54lcb0uxsqxvm1g4du7",
+      "candidatePresent": false,
+      "extractionStatus": "incomplete",
+      "reasons": [
+        "missing_invoiceDate"
+      ],
+      "denominator": 29,
+      "candidateCorrect": 0,
+      "providerCorrect": 29,
+      "adapterContent": {
+        "correct": 26,
+        "wrong": 1,
+        "missing": 2
+      },
+      "adapterGeometryVerified": 24,
+      "fields": [
+        {
+          "field": "extractedSupplierName",
+          "expected": "Copper Valve Maintenance Inc.",
+          "provider": {
+            "value": "Copper Valve Maintenance Inc.",
+            "correct": true,
+            "quote": "Supplier: Copper Valve Maintenance Inc."
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Copper Valve Maintenance Inc.",
+            "content": "correct",
+            "evidenceId": "e-7c30fe2cbd8f706f2d040263",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "invoiceNumber",
+          "expected": "CV-9017",
+          "provider": {
+            "value": "CV-9017",
+            "correct": true,
+            "quote": "Invoice Number: CV-9017"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "CV-9017  Due Date: 2026-11-06",
+            "content": "wrong",
+            "evidenceId": "e-1612e113bf0dcd65b1b3107b",
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "wrong_field_content"
+            ],
+            "method": "local_ocr_exact"
+          }
+        },
+        {
+          "field": "invoiceDate",
+          "expected": "2026-10-23",
+          "provider": {
+            "value": "2026-10-23",
+            "correct": true,
+            "quote": "Invoice Date: 2026-10-23"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "dueDate",
+          "expected": "2026-11-06",
+          "provider": {
+            "value": "2026-11-06",
+            "correct": true,
+            "quote": "Due Date: 2026-11-06"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "terms",
+          "expected": "Net 14",
+          "provider": {
+            "value": "Net 14</td>",
+            "correct": true,
+            "quote": "Terms: Net 14</td>"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Net 14",
+            "content": "correct",
+            "evidenceId": "e-2c45b208ed87a5f4e0545054",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "raw_word_exact"
+          }
+        },
+        {
+          "field": "currency",
+          "expected": "USD",
+          "provider": {
+            "value": "USD</td>",
+            "correct": true,
+            "quote": "Currency: USD</td>"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "USD",
+            "content": "correct",
+            "evidenceId": "e-5f456bc27cf154b4743476ea",
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "unresolved:local_ocr_ambiguous"
+            ],
+            "method": "none"
+          }
+        },
+        {
+          "field": "subtotalCents",
+          "expected": 26250,
+          "provider": {
+            "value": 26250,
+            "correct": true,
+            "quote": "Subtotal | USD 262.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 26250,
+            "content": "correct",
+            "evidenceId": "e-2b296d0de1ecf204ddc647b0",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "taxCents",
+          "expected": 0,
+          "provider": {
+            "value": 0,
+            "correct": true,
+            "quote": "Tax | USD 0.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 0,
+            "content": "correct",
+            "evidenceId": "e-99f6e12b5fedaca992b06545",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "freightCents",
+          "expected": 0,
+          "provider": {
+            "value": 0,
+            "correct": true,
+            "quote": "Freight | USD 0.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 0,
+            "content": "correct",
+            "evidenceId": "e-e721ae07d8e7ddd362bf9efa",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "discountCents",
+          "expected": 0,
+          "provider": {
+            "value": 0,
+            "correct": true,
+            "quote": "Discount | USD 0.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 0,
+            "content": "correct",
+            "evidenceId": "e-687c58964e66af3a9ba231a2",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "totalCents",
+          "expected": 26250,
+          "provider": {
+            "value": 26250,
+            "correct": true,
+            "quote": "Total | USD 262.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 26250,
+            "content": "correct",
+            "evidenceId": "e-5fe5e9c634fcb24c252e37f9",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.LAB-PL.sku",
+          "expected": "LAB-PL",
+          "provider": {
+            "value": "LAB-PL",
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "LAB-PL",
+            "content": "correct",
+            "evidenceId": "e-f4f0dfbf0589e40f5af19d38",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.LAB-PL.description",
+          "expected": "Preventive plumbing inspection and adjustment",
+          "provider": {
+            "value": "Preventive plumbing inspection and adjustment",
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Preventive plumbing inspection and\nadjustment",
+            "content": "correct",
+            "evidenceId": "e-4954485e09f9e60bf1fe7e32",
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "multiline_collapsed"
+            ],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.LAB-PL.quantity",
+          "expected": "2.75",
+          "provider": {
+            "value": "2.75",
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "2.75",
+            "content": "correct",
+            "evidenceId": "e-8b1e47ba617fc1bb69c1112a",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.LAB-PL.unit",
+          "expected": "hour",
+          "provider": {
+            "value": "hour",
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "hour",
+            "content": "correct",
+            "evidenceId": "e-6a5eeb5992494a1ac1566ab7",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.LAB-PL.unitPriceCents",
+          "expected": 6400,
+          "provider": {
+            "value": 6400,
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 6400,
+            "content": "correct",
+            "evidenceId": "e-b6205a5e3adc249c5ed5bf80",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.LAB-PL.amountCents",
+          "expected": 17600,
+          "provider": {
+            "value": 17600,
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 17600,
+            "content": "correct",
+            "evidenceId": "e-79c717bf537a04c3fd041e80",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.SEAL-K.sku",
+          "expected": "SEAL-K",
+          "provider": {
+            "value": "SEAL-K",
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "SEAL-K",
+            "content": "correct",
+            "evidenceId": "e-8e494a42ddfb3963b6c1cadf",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.SEAL-K.description",
+          "expected": "Food-grade pump seal replacement kit",
+          "provider": {
+            "value": "Food-grade pump seal replacement kit",
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Food-grade pump seal replacement kit",
+            "content": "correct",
+            "evidenceId": "e-6c767f81ff37863d3682c6b3",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.SEAL-K.quantity",
+          "expected": "2",
+          "provider": {
+            "value": "2",
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "2",
+            "content": "correct",
+            "evidenceId": "e-f1e487907baff80f5f17c559",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.SEAL-K.unit",
+          "expected": "kit",
+          "provider": {
+            "value": "kit",
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "kit",
+            "content": "correct",
+            "evidenceId": "e-f612396df3715c284f89d57c",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.SEAL-K.unitPriceCents",
+          "expected": 1875,
+          "provider": {
+            "value": 1875,
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 1875,
+            "content": "correct",
+            "evidenceId": "e-b185e413f74a98690c9c7426",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.SEAL-K.amountCents",
+          "expected": 3750,
+          "provider": {
+            "value": 3750,
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 3750,
+            "content": "correct",
+            "evidenceId": "e-1a1e20259ff47d242dd87f73",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.FLT-04.sku",
+          "expected": "FLT-04",
+          "provider": {
+            "value": "FLT-04",
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "FLT-04",
+            "content": "correct",
+            "evidenceId": "e-0904fc5cb7012e39273e439a",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.FLT-04.description",
+          "expected": "Inline water filter cartridge, four micron",
+          "provider": {
+            "value": "Inline water filter cartridge, four micron",
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Inline water filter cartridge, four micron",
+            "content": "correct",
+            "evidenceId": "e-9c2cf38b0d200819c3ab5033",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.FLT-04.quantity",
+          "expected": "4",
+          "provider": {
+            "value": "4",
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "4",
+            "content": "correct",
+            "evidenceId": "e-744f03c48fcd0207c09683ec",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.FLT-04.unit",
+          "expected": "each",
+          "provider": {
+            "value": "each",
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "each",
+            "content": "correct",
+            "evidenceId": "e-30b3614ca37339f80c40a7f4",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.FLT-04.unitPriceCents",
+          "expected": 1225,
+          "provider": {
+            "value": 1225,
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 1225,
+            "content": "correct",
+            "evidenceId": "e-d4a48944fffecf4933531993",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.FLT-04.amountCents",
+          "expected": 4900,
+          "provider": {
+            "value": 4900,
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 4900,
+            "content": "correct",
+            "evidenceId": "e-e5072174ead0388be2a31d0f",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        }
+      ]
+    },
+    {
+      "document": "copper-valve-scan",
+      "originalSha256": "741c0bc7adfcb6fccffe404f8dc4096a31e55fbe8f76b18fef5f5807586495f6",
+      "intakeSha256": "4d0a76c5d05300a277593da25c8da89da1ff9979eac1b64e478592d3892e06e4",
+      "providerResultSha256": "ab917a788d796b4b01b05013de1828cea5688d008fdd2630dcd82613bec26206",
+      "providerJob": "pjb-wcbhik64edfeucm5fm32x3ab7sz5",
+      "candidatePresent": false,
+      "extractionStatus": "incomplete",
+      "reasons": [
+        "missing_supported_line_table"
+      ],
+      "denominator": 29,
+      "candidateCorrect": 0,
+      "providerCorrect": 29,
+      "adapterContent": {
+        "correct": 11,
+        "missing": 18
+      },
+      "adapterGeometryVerified": 10,
+      "fields": [
+        {
+          "field": "extractedSupplierName",
+          "expected": "Copper Valve Maintenance Inc.",
+          "provider": {
+            "value": "Copper Valve Maintenance Inc.",
+            "correct": true,
+            "quote": "Supplier: Copper Valve Maintenance Inc."
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Copper Valve Maintenance Inc.",
+            "content": "correct",
+            "evidenceId": "e-f80d48fabdd9253d1f9a701a",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "invoiceNumber",
+          "expected": "CV-9017",
+          "provider": {
+            "value": "CV-9017",
+            "correct": true,
+            "quote": "Invoice Number: CV-9017"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "CV-9017",
+            "content": "correct",
+            "evidenceId": "e-1156d30eede2ba6010df1037",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "local_ocr_exact"
+          }
+        },
+        {
+          "field": "invoiceDate",
+          "expected": "2026-10-23",
+          "provider": {
+            "value": "2026-10-23",
+            "correct": true,
+            "quote": "Invoice Date: 2026-10-23"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "2026-10-23",
+            "content": "correct",
+            "evidenceId": "e-492a21cefd4289264d025ae1",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "dueDate",
+          "expected": "2026-11-06",
+          "provider": {
+            "value": "2026-11-06",
+            "correct": true,
+            "quote": "Due Date: 2026-11-06"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "2026-11-06",
+            "content": "correct",
+            "evidenceId": "e-eba77c990429bb3d0611d141",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "terms",
+          "expected": "Net 14",
+          "provider": {
+            "value": "Net 14</td>",
+            "correct": true,
+            "quote": "Terms: Net 14</td>"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Net 14",
+            "content": "correct",
+            "evidenceId": "e-77622c1e761a4a90353277aa",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "raw_word_exact"
+          }
+        },
+        {
+          "field": "currency",
+          "expected": "USD",
+          "provider": {
+            "value": "USD</td>",
+            "correct": true,
+            "quote": "Currency: USD</td>"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "USD",
+            "content": "correct",
+            "evidenceId": "e-9784d89ecabe310895a16ef4",
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "unresolved:local_ocr_ambiguous"
+            ],
+            "method": "none"
+          }
+        },
+        {
+          "field": "subtotalCents",
+          "expected": 26250,
+          "provider": {
+            "value": 26250,
+            "correct": true,
+            "quote": "Subtotal | USD 262.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 26250,
+            "content": "correct",
+            "evidenceId": "e-768989f10d184d60e0f9cab5",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "taxCents",
+          "expected": 0,
+          "provider": {
+            "value": 0,
+            "correct": true,
+            "quote": "Tax | USD 0.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 0,
+            "content": "correct",
+            "evidenceId": "e-63f78c683cbf51970e11f562",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "freightCents",
+          "expected": 0,
+          "provider": {
+            "value": 0,
+            "correct": true,
+            "quote": "Freight | USD 0.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 0,
+            "content": "correct",
+            "evidenceId": "e-7d9baa51f9ff72c9e8c2b354",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "discountCents",
+          "expected": 0,
+          "provider": {
+            "value": 0,
+            "correct": true,
+            "quote": "Discount | USD 0.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 0,
+            "content": "correct",
+            "evidenceId": "e-3bc8bea491807c558e2a63b9",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "totalCents",
+          "expected": 26250,
+          "provider": {
+            "value": 26250,
+            "correct": true,
+            "quote": "Total | USD 262.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 26250,
+            "content": "correct",
+            "evidenceId": "e-375d0adf2344d91826782b70",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.LAB-PL.sku",
+          "expected": "LAB-PL",
+          "provider": {
+            "value": "LAB-PL",
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.LAB-PL.description",
+          "expected": "Preventive plumbing inspection and adjustment",
+          "provider": {
+            "value": "Preventive plumbing inspection and adjustment",
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.LAB-PL.quantity",
+          "expected": "2.75",
+          "provider": {
+            "value": "2.75",
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.LAB-PL.unit",
+          "expected": "hour",
+          "provider": {
+            "value": "hour",
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.LAB-PL.unitPriceCents",
+          "expected": 6400,
+          "provider": {
+            "value": 6400,
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.LAB-PL.amountCents",
+          "expected": 17600,
+          "provider": {
+            "value": 17600,
+            "correct": true,
+            "quote": "LAB-PL | Preventive plumbing inspection and adjustment | 2.75 | hour | 64.00 | 176.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.SEAL-K.sku",
+          "expected": "SEAL-K",
+          "provider": {
+            "value": "SEAL-K",
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.SEAL-K.description",
+          "expected": "Food-grade pump seal replacement kit",
+          "provider": {
+            "value": "Food-grade pump seal replacement kit",
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.SEAL-K.quantity",
+          "expected": "2",
+          "provider": {
+            "value": "2",
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.SEAL-K.unit",
+          "expected": "kit",
+          "provider": {
+            "value": "kit",
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.SEAL-K.unitPriceCents",
+          "expected": 1875,
+          "provider": {
+            "value": 1875,
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.SEAL-K.amountCents",
+          "expected": 3750,
+          "provider": {
+            "value": 3750,
+            "correct": true,
+            "quote": "SEAL-K | Food-grade pump seal replacement kit | 2 | kit | 18.75 | 37.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.FLT-04.sku",
+          "expected": "FLT-04",
+          "provider": {
+            "value": "FLT-04",
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.FLT-04.description",
+          "expected": "Inline water filter cartridge, four micron",
+          "provider": {
+            "value": "Inline water filter cartridge, four micron",
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.FLT-04.quantity",
+          "expected": "4",
+          "provider": {
+            "value": "4",
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.FLT-04.unit",
+          "expected": "each",
+          "provider": {
+            "value": "each",
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.FLT-04.unitPriceCents",
+          "expected": 1225,
+          "provider": {
+            "value": 1225,
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "lines.FLT-04.amountCents",
+          "expected": 4900,
+          "provider": {
+            "value": 4900,
+            "correct": true,
+            "quote": "FLT-04 | Inline water filter cartridge, four micron | 4 | each | 12.25 | 49.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        }
+      ]
+    },
+    {
+      "document": "harbor-thread-native",
+      "originalSha256": "0d8993129e04f666f715018040106dc518c1a42f41f77587293180b4ed4df1c5",
+      "intakeSha256": "c8985d21ad37436c190e480f658abaea8c6d6fa888edc879e6433a67d07ee63c",
+      "providerResultSha256": "0dff5f1b91bb32e92854fc96a68ce6df1d0776053be20f048b42aed436f276ac",
+      "providerJob": "pjb-1nlym1ei1hzbz3rp3fbn32orxsgn",
+      "candidatePresent": false,
+      "extractionStatus": "incomplete",
+      "reasons": [
+        "unparsed_line_row_page_1_row_3",
+        "unparsed_line_row_page_1_row_7",
+        "missing_invoiceNumber",
+        "missing_invoiceDate",
+        "missing_currency",
+        "missing_or_ambiguous_freightCents",
+        "unsupported_or_missing_currency"
+      ],
+      "denominator": 23,
+      "candidateCorrect": 0,
+      "providerCorrect": 23,
+      "adapterContent": {
+        "wrong": 1,
+        "missing": 6,
+        "correct": 16
+      },
+      "adapterGeometryVerified": 16,
+      "fields": [
+        {
+          "field": "extractedSupplierName",
+          "expected": "Harbor Thread Textiles LLC",
+          "provider": {
+            "value": "Harbor Thread Textiles LLC",
+            "correct": true,
+            "quote": "Supplier: Harbor Thread Textiles LLC"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Harbor Thread Textiles LLC                                                                     Invoice Number: HT-2408",
+            "content": "wrong",
+            "evidenceId": "e-c5265b7f49a4ce6f1e0751c4",
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "wrong_field_content"
+            ],
+            "method": "local_ocr_exact"
+          }
+        },
+        {
+          "field": "invoiceNumber",
+          "expected": "HT-2408",
+          "provider": {
+            "value": "HT-2408",
+            "correct": true,
+            "quote": "Invoice Number: HT-2408"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "invoiceDate",
+          "expected": "2026-10-22",
+          "provider": {
+            "value": "2026-10-22",
+            "correct": true,
+            "quote": "Invoice Date: 2026-10-22"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "dueDate",
+          "expected": "2026-11-21",
+          "provider": {
+            "value": "2026-11-21",
+            "correct": true,
+            "quote": "Due Date: 2026-11-21"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "terms",
+          "expected": "Net 30",
+          "provider": {
+            "value": "Net 30",
+            "correct": true,
+            "quote": "Terms: Net 30"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "currency",
+          "expected": "USD",
+          "provider": {
+            "value": "USD",
+            "correct": true,
+            "quote": "Currency: USD"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "subtotalCents",
+          "expected": 26685,
+          "provider": {
+            "value": 26685,
+            "correct": true,
+            "quote": "Subtotal | USD 266.85"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 26685,
+            "content": "correct",
+            "evidenceId": "e-a0405fa65df4e56c25fc81ea",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "taxCents",
+          "expected": 0,
+          "provider": {
+            "value": 0,
+            "correct": true,
+            "quote": "Tax | USD 0.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 0,
+            "content": "correct",
+            "evidenceId": "e-c6629bb24a84d3c50f16bc4d",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "freightCents",
+          "expected": 1250,
+          "provider": {
+            "value": 1250,
+            "correct": true,
+            "quote": "Freight | USD 12.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "discountCents",
+          "expected": 535,
+          "provider": {
+            "value": 535,
+            "correct": true,
+            "quote": "Discount | USD 5.35"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 535,
+            "content": "correct",
+            "evidenceId": "e-2e69f622b98e0277bf742f6e",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "totalCents",
+          "expected": 27400,
+          "provider": {
+            "value": 27400,
+            "correct": true,
+            "quote": "Grand Total | USD 274.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 27400,
+            "content": "correct",
+            "evidenceId": "e-47346cbb6e540458faceea23",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.sku",
+          "expected": "COT-ROLL",
+          "provider": {
+            "value": "COT-ROLL",
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "COT-ROLL",
+            "content": "correct",
+            "evidenceId": "e-3e445aadd5709479b2da2afa",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.description",
+          "expected": "Cotton table linen roll",
+          "provider": {
+            "value": "Cotton table linen roll",
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Cotton table linen roll",
+            "content": "correct",
+            "evidenceId": "e-d078bf5f3b1857da185dcae5",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.quantity",
+          "expected": "1.5",
+          "provider": {
+            "value": "1.5",
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "1.5",
+            "content": "correct",
+            "evidenceId": "e-fe988f9b9508cdaa2279b9aa",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.unit",
+          "expected": "roll",
+          "provider": {
+            "value": "roll",
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "roll",
+            "content": "correct",
+            "evidenceId": "e-41de1c30b599e7b91f71b246",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.unitPriceCents",
+          "expected": 12840,
+          "provider": {
+            "value": 12840,
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 12840,
+            "content": "correct",
+            "evidenceId": "e-59f451125db1dc39fb4f64b6",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.amountCents",
+          "expected": 19260,
+          "provider": {
+            "value": 19260,
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 19260,
+            "content": "correct",
+            "evidenceId": "e-aaebb75802a8e4abf5336d12",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.sku",
+          "expected": "NAP-12",
+          "provider": {
+            "value": "NAP-12",
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "NAP-12",
+            "content": "correct",
+            "evidenceId": "e-b0e694fb49f58ad7d1e7740c",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.description",
+          "expected": "Linen napkins, pack of twelve",
+          "provider": {
+            "value": "Linen napkins, pack of twelve",
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Linen napkins, pack of twelve",
+            "content": "correct",
+            "evidenceId": "e-f7e19af629fe4d2e4f03a17a",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.quantity",
+          "expected": "3",
+          "provider": {
+            "value": "3",
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "3",
+            "content": "correct",
+            "evidenceId": "e-56c5e861961781f145a739d9",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.unit",
+          "expected": "pack",
+          "provider": {
+            "value": "pack",
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "pack",
+            "content": "correct",
+            "evidenceId": "e-5e22876552114fea57e14573",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.unitPriceCents",
+          "expected": 2475,
+          "provider": {
+            "value": 2475,
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 2475,
+            "content": "correct",
+            "evidenceId": "e-979324fc67e7dd5b38ee9f98",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.amountCents",
+          "expected": 7425,
+          "provider": {
+            "value": 7425,
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 7425,
+            "content": "correct",
+            "evidenceId": "e-285f8665172fdeeab846b2e9",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        }
+      ]
+    },
+    {
+      "document": "harbor-thread-scan",
+      "originalSha256": "fa814b53d96635afc6c7fc08e02eec91df5a656c9024d72b2a5949b4248090a5",
+      "intakeSha256": "fbd09dfaa6579ac008705ef3fbc1cb16a268b5d2333b943283b4970f7fd5e96b",
+      "providerResultSha256": "16f63476e74297a83de3fe44fdf77b3106adeaefb1304aa90968757470273ad5",
+      "providerJob": "pjb-zq7o00kwnudqtebmhu7cvime3kwr",
+      "candidatePresent": false,
+      "extractionStatus": "incomplete",
+      "reasons": [
+        "unparsed_line_row_page_1_row_3",
+        "unparsed_line_row_page_1_row_7",
+        "missing_or_ambiguous_freightCents"
+      ],
+      "denominator": 23,
+      "candidateCorrect": 0,
+      "providerCorrect": 23,
+      "adapterContent": {
+        "correct": 22,
+        "missing": 1
+      },
+      "adapterGeometryVerified": 22,
+      "fields": [
+        {
+          "field": "extractedSupplierName",
+          "expected": "Harbor Thread Textiles LLC",
+          "provider": {
+            "value": "Harbor Thread Textiles LLC",
+            "correct": true,
+            "quote": "Supplier: Harbor Thread Textiles LLC"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Harbor Thread Textiles LLC",
+            "content": "correct",
+            "evidenceId": "e-bed8a302d56096499b5ca376",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "local_ocr_exact"
+          }
+        },
+        {
+          "field": "invoiceNumber",
+          "expected": "HT-2408",
+          "provider": {
+            "value": "HT-2408",
+            "correct": true,
+            "quote": "Invoice Number: HT-2408"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "HT-2408",
+            "content": "correct",
+            "evidenceId": "e-c2a84efad0092ec3c19ccf4d",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "invoiceDate",
+          "expected": "2026-10-22",
+          "provider": {
+            "value": "2026-10-22",
+            "correct": true,
+            "quote": "Invoice Date: 2026-10-22"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "2026-10-22",
+            "content": "correct",
+            "evidenceId": "e-4a463f71310426aeecd23d75",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "dueDate",
+          "expected": "2026-11-21",
+          "provider": {
+            "value": "2026-11-21",
+            "correct": true,
+            "quote": "Due Date: 2026-11-21"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "2026-11-21",
+            "content": "correct",
+            "evidenceId": "e-3eba2cf9bd418bbf31bb8b20",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "terms",
+          "expected": "Net 30",
+          "provider": {
+            "value": "Net 30",
+            "correct": true,
+            "quote": "Terms: Net 30"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Net 30",
+            "content": "correct",
+            "evidenceId": "e-5bfa74091ad86bd7d72895eb",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "currency",
+          "expected": "USD",
+          "provider": {
+            "value": "USD",
+            "correct": true,
+            "quote": "Currency: USD"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "USD",
+            "content": "correct",
+            "evidenceId": "e-c9769a293c7e383041fcc8a3",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "subtotalCents",
+          "expected": 26685,
+          "provider": {
+            "value": 26685,
+            "correct": true,
+            "quote": "Subtotal | USD 266.85"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 26685,
+            "content": "correct",
+            "evidenceId": "e-e91fced9023465baa7d70c5e",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "local_ocr_exact"
+          }
+        },
+        {
+          "field": "taxCents",
+          "expected": 0,
+          "provider": {
+            "value": 0,
+            "correct": true,
+            "quote": "Tax | USD 0.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 0,
+            "content": "correct",
+            "evidenceId": "e-7de2b5708626a32130f00731",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "freightCents",
+          "expected": 1250,
+          "provider": {
+            "value": 1250,
+            "correct": true,
+            "quote": "Freight | USD 12.50"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": null,
+            "content": "missing",
+            "evidenceId": null,
+            "geometry": "not_accepted",
+            "geometryReasons": [
+              "missing_evidence"
+            ],
+            "method": null
+          }
+        },
+        {
+          "field": "discountCents",
+          "expected": 535,
+          "provider": {
+            "value": 535,
+            "correct": true,
+            "quote": "Discount | USD 5.35"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 535,
+            "content": "correct",
+            "evidenceId": "e-7ac643f9f607d2648ad26005",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "totalCents",
+          "expected": 27400,
+          "provider": {
+            "value": 27400,
+            "correct": true,
+            "quote": "Grand Total | USD 274.00"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 27400,
+            "content": "correct",
+            "evidenceId": "e-4188d7691bccf5ffd03b8df5",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.sku",
+          "expected": "COT-ROLL",
+          "provider": {
+            "value": "COT-ROLL",
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "COT-ROLL",
+            "content": "correct",
+            "evidenceId": "e-68bd642e1c312d2b166bdfe5",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.description",
+          "expected": "Cotton table linen roll",
+          "provider": {
+            "value": "Cotton table linen roll",
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Cotton table linen roll",
+            "content": "correct",
+            "evidenceId": "e-ec19b57f3825d976f9e19533",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.quantity",
+          "expected": "1.5",
+          "provider": {
+            "value": "1.5",
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "1.5",
+            "content": "correct",
+            "evidenceId": "e-e868570e632296d0cc5ee6c9",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.unit",
+          "expected": "roll",
+          "provider": {
+            "value": "roll",
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "roll",
+            "content": "correct",
+            "evidenceId": "e-b0e1580e319708952f6058d3",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.unitPriceCents",
+          "expected": 12840,
+          "provider": {
+            "value": 12840,
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 12840,
+            "content": "correct",
+            "evidenceId": "e-95fcbdf2e56c86a4443d20d7",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.COT-ROLL.amountCents",
+          "expected": 19260,
+          "provider": {
+            "value": 19260,
+            "correct": true,
+            "quote": "1.5 | roll | Cotton table linen roll | COT-ROLL | 128.40 | 192.60"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 19260,
+            "content": "correct",
+            "evidenceId": "e-098a515544c9e4bacbea31a0",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.sku",
+          "expected": "NAP-12",
+          "provider": {
+            "value": "NAP-12",
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "NAP-12",
+            "content": "correct",
+            "evidenceId": "e-2561004895956fae1f661ce2",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.description",
+          "expected": "Linen napkins, pack of twelve",
+          "provider": {
+            "value": "Linen napkins, pack of twelve",
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "Linen napkins, pack of twelve",
+            "content": "correct",
+            "evidenceId": "e-badfea26b5240c666c498584",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.quantity",
+          "expected": "3",
+          "provider": {
+            "value": "3",
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "3",
+            "content": "correct",
+            "evidenceId": "e-42bf7b30bf8eceba700be57d",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.unit",
+          "expected": "pack",
+          "provider": {
+            "value": "pack",
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": "pack",
+            "content": "correct",
+            "evidenceId": "e-7f5abe44c852cfa5cc143b54",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.unitPriceCents",
+          "expected": 2475,
+          "provider": {
+            "value": 2475,
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 2475,
+            "content": "correct",
+            "evidenceId": "e-a874b833e6ad2d86536662e8",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        },
+        {
+          "field": "lines.NAP-12.amountCents",
+          "expected": 7425,
+          "provider": {
+            "value": 7425,
+            "correct": true,
+            "quote": "3 | pack | Linen napkins, pack of twelve | NAP-12 | 24.75 | 74.25"
+          },
+          "candidate": {
+            "value": null,
+            "correct": false
+          },
+          "adapter": {
+            "value": 7425,
+            "content": "correct",
+            "evidenceId": "e-6501ad920c7bf95a900afbb7",
+            "geometry": "verified",
+            "geometryReasons": [],
+            "method": "native"
+          }
+        }
+      ]
+    }
+  ]
+}
