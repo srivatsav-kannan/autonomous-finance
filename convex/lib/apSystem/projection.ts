@@ -5,6 +5,7 @@ import {
   AP_CONTRACT_VERSION,
   AP_POLICY_VERSION,
   intakeSchema,
+  historicalPaymentHoldSchema,
   decisionSchema,
   type APCaseDetail,
   type SourceDocument,
@@ -131,6 +132,12 @@ export async function projectCase(
     config.beneficiary.vendor,
     row.documentStatus === "reviewed",
   );
+  const historicalPaymentHold = row.historicalPaymentHold ? historicalPaymentHoldSchema.parse(row.historicalPaymentHold) : undefined;
+  if (historicalPaymentHold) exceptions.push({
+    exceptionId: "historical_payment_hold", code: "historical_payment_hold",
+    reason: `Historical source ${historicalPaymentHold.sourceRecordId} reports this invoice paid on ${historicalPaymentHold.paidDate} (${historicalPaymentHold.reference}). New approval and payment are blocked. No new bank settlement or journal is inferred.`,
+    ownerRole: "controller", permittedActions: ["inspect_historical_payment_evidence"], requiredEvidence: [], blocking: true, status: "open", resolution: null,
+  });
   if (!business && bill?.entryId && row.businessStatus !== "approved")
     exceptions.push({
       exceptionId: "posted_correction_required",
@@ -147,6 +154,7 @@ export async function projectCase(
   const approved = bill?.approvedCents ?? business?.credit?.amountCents ?? null;
   return {
     ...(business ? { domain: business.domain } : {}),
+    ...(historicalPaymentHold ? { historicalPaymentHold } : {}),
     contractVersion: AP_CONTRACT_VERSION,
     caseId: row._id,
     runId: row.scope.runId,
@@ -199,7 +207,7 @@ export async function projectCase(
     },
     states: {
       document: row.documentStatus,
-      business: row.businessStatus,
+      business: historicalPaymentHold ? "held" : row.businessStatus,
       accounting: bill?.entryId || business?.credit?.entryId ? "recognized" : "unposted",
       authorization: !payment
         ? "not_requested"

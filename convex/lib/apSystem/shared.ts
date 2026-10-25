@@ -16,9 +16,23 @@ import {
   type SourceDocument,
 } from "../../../src/ap-system/contracts";
 import { sourceKey } from "../../../src/ap-system/policy";
+import { normalizeInvoiceNumber } from "../invoiceIdentity";
 
 export function deny(code: string, reason: string): never {
   throw new ConvexError({ code, reason });
+}
+export function assertNoHistoricalPayment(row: Pick<Doc<"apCaseRecords">, "historicalPaymentHold">) {
+  if (row.historicalPaymentHold) deny("historical_payment_hold", "Historical source records report this invoice as already paid. New business approval, credit application and payment are blocked; re-importing or revising the invoice cannot clear this restriction.");
+}
+/** Legacy bills may predate case ingestion and have no by_bill link. */
+export async function assertNoHistoricalPaymentForInvoice(ctx: QueryCtx, scope: BankScope, supplierId: string, invoiceNumber: string) {
+  const key = `${supplierId}:USD:invoice:${normalizeInvoiceNumber(invoiceNumber)}`;
+  const row = await ctx.db.query("apCaseRecords")
+    .withIndex("by_obligation", q => q.eq("scope.runId", scope.runId).eq("obligationKey", key)).unique();
+  if (row) {
+    assertRowScope(row, scope);
+    assertNoHistoricalPayment(row);
+  }
 }
 export type ReadAuth = { scope: BankScope; seatId?: string; token?: string };
 export async function readAuth(ctx: QueryCtx, args: ReadAuth) {

@@ -45,6 +45,7 @@ import {
   replay,
   receipt,
   readAuth,
+  assertNoHistoricalPayment,
 } from "./lib/apSystem/shared";
 import {
   requireBusinessPolicy,
@@ -66,6 +67,7 @@ type Ctx = Parameters<typeof requireBusinessPolicy>[0];
 type Scope = Parameters<typeof requireBusinessPolicy>[1];
 async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
   const row = await caseRow(ctx, scope, request.caseId);
+  assertNoHistoricalPayment(row);
   if (
     row.currentRevision !== request.expectedRevision ||
     row.snapshotHash !== request.snapshotHash ||

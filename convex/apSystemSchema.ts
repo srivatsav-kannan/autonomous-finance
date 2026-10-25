@@ -230,6 +230,9 @@ export const apSystemTables = {
     .index("by_credit", ["scope.runId", "creditId"]),
   apCaseRecords: defineTable({
     scope: scopeValidator,
+    // Sticky restriction, validated by historicalPaymentHoldSchema at intake; revisions cannot remove it.
+    historicalPaymentHold: v.optional(v.any()),
+    historicalPrimaryHash: v.optional(v.string()),
     obligationKey: v.optional(v.string()),
     primaryHash: v.string(),
     currentRevision: v.number(),
@@ -262,6 +265,7 @@ export const apSystemTables = {
     .index("by_run", ["scope.runId"])
     .index("by_obligation", ["scope.runId", "obligationKey"])
     .index("by_hash", ["scope.runId", "primaryHash"])
+    .index("by_historical_hash", ["scope.runId", "historicalPrimaryHash"])
     .index("by_bill", ["scope.runId", "billId"]),
   apCaseRevisions: defineTable({
     scope: scopeValidator,

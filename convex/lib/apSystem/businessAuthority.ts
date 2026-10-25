@@ -10,7 +10,7 @@ import {
   type ApprovalStep,
 } from "../../../src/ap-system/domain-contracts";
 import { assertRowScope, getPaymentConfig } from "../demoAuth";
-import { deny } from "./shared";
+import { deny, assertNoHistoricalPayment, assertNoHistoricalPaymentForInvoice } from "./shared";
 import { approvedPhysicalReview } from "./physicalLines";
 import { contactChangeProposalSchema, contactOriginSchema, type ContactChangeReview } from "../../../src/ap-system/supplier-contact-contracts";
 import { independentContactEvidence } from "./supplierContactEvidence";
@@ -206,6 +206,7 @@ export async function assertApprovalCurrent(
   row: Doc<"apCaseRecords">,
   approval: Doc<"apApprovalProposals">,
 ) {
+  assertNoHistoricalPayment(row);
   if (
     approval.status !== "approved" ||
     row.domainApprovalId !== approval._id ||
@@ -355,12 +356,17 @@ export async function resolveAPBusinessPaymentAuthority(
   for (const billId of billIds) {
     const bill = await ctx.db.get(billId);
     assertRowScope(bill, scope);
+    await assertNoHistoricalPaymentForInvoice(ctx, scope, bill!.vendor, bill!.invoiceNumber);
     const row = await ctx.db
       .query("apCaseRecords")
       .withIndex("by_bill", (q) =>
         q.eq("scope.runId", scope.runId).eq("billId", billId),
       )
       .unique();
+    if (row) {
+      assertRowScope(row, scope);
+      assertNoHistoricalPayment(row);
+    }
     if (!row?.domainApprovalId) {
       legacy = true;
       continue;

@@ -1,5 +1,6 @@
 import { activeBusinessPolicy } from "./lib/apSystem/businessAuthority";
 import { requireNonAPCaseBill } from "./lib/apSystem/legacyGate";
+import { assertNoHistoricalPaymentForInvoice } from "./lib/apSystem/shared";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
@@ -68,6 +69,7 @@ export const recordBill = mutation({
     if (!["5000", "5200", "5300", "6000", "6100", "6200"].includes(args.expenseAccount)) throw new Error("AP expense account required");
     const invoiceNumber = normalizeInvoiceNumber(args.invoiceNumber);
     if (!invoiceNumber) throw new Error("Invoice identity required");
+    await assertNoHistoricalPaymentForInvoice(ctx, args.scope, args.vendor, invoiceNumber);
     const recordHash = await sha256Hex(canonical({ vendor: args.vendor, invoiceNumber, invoiceDate: args.invoiceDate, originalCents: args.originalCents, expenseAccount: args.expenseAccount, evidence: args.evidence }));
     const prior = await ctx.db.query("demoBills").withIndex("by_invoice", q => q.eq("scope.runId", args.scope.runId).eq("vendor", args.vendor).eq("invoiceNumber", invoiceNumber)).unique();
     if (prior) {

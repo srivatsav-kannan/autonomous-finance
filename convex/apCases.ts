@@ -41,6 +41,7 @@ import {
   verifyOriginal,
   storedIntake,
   sourceBytes,
+  assertNoHistoricalPayment,
 } from "./lib/apSystem/shared";
 import { projectCase } from "./lib/apSystem/projection";
 import { normalizeInvoiceNumber } from "./lib/invoiceIdentity";
@@ -213,10 +214,12 @@ export const ingest = mutation({
             )
             .unique()
         : null;
-      row = byHash ?? byKey;
+      const byHistoricalHash = await ctx.db.query("apCaseRecords")
+        .withIndex("by_historical_hash", q => q.eq("scope.runId", args.scope.runId).eq("historicalPrimaryHash", primaryHash)).unique();
+      row = byHash ?? byHistoricalHash ?? byKey;
       if (row) {
         assertRowScope(row, args.scope);
-        if (byHash && byKey && byHash._id !== byKey._id)
+        if (new Set([byHash, byHistoricalHash, byKey].filter(r => r !== null).map(r => r._id)).size > 1)
           deny(
             "obligation_conflict",
             "Source and invoice identity point to different existing cases",
@@ -256,6 +259,15 @@ export const ingest = mutation({
           updatedAt: now,
         });
         row = (await ctx.db.get(id))!;
+      }
+    }
+    if (input.historicalPaymentHold) {
+      if (row.historicalPaymentHold && canonical(row.historicalPaymentHold) !== canonical(input.historicalPaymentHold))
+        deny("historical_payment_conflict", "The retained historical payment restriction cannot be replaced by another import");
+      if (!row.historicalPaymentHold) {
+        await ctx.db.patch(row._id, { historicalPaymentHold: input.historicalPaymentHold, historicalPrimaryHash: input.historicalPaymentHold.invoiceSourceSha256, businessStatus: "held", updatedAt: now });
+        await auditDemo(ctx, args.scope, seat.seatId, "ap_historical_payment_hold", { caseId: row._id, ...input.historicalPaymentHold });
+        row = (await ctx.db.get(row._id))!;
       }
     }
     await saveSources(ctx, args.scope, row._id, input);
@@ -461,6 +473,7 @@ export const approveBill = mutation({
         decisionId: string;
       };
     const row = await caseRow(ctx, args.scope, request.caseId);
+    assertNoHistoricalPayment(row);
     if (row.domainApprovalId || await activeBusinessPolicy(ctx, args.scope))
       deny("business_route_required", "Configured business governance requires the explicit amount/allocation and sequential group approval route");
     const input = currentReview(row, request);

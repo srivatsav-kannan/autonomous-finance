@@ -4,6 +4,7 @@ import { v } from "convex/values";
 import { scopeValidator } from "./demoSchema";
 import { assertRowScope, auditDemo, requirePaymentHuman, requirePaymentSeat } from "./lib/demoAuth";
 import { requestPaymentCommand, approveAndQueueCommand, cancelUnsent } from "./lib/payments/applyCommand";
+import { assertNoHistoricalPayment } from "./lib/apSystem/shared";
 
 const binding = {scope:scopeValidator, caseId:v.id("apCaseRecords"), expectedRevision:v.number(), snapshotHash:v.string()};
 /** Resolve a reviewed case to an existing bill inside the same serializable mutation. */
@@ -13,6 +14,7 @@ export const request = mutation({
     await requirePaymentSeat(ctx,args,["payments"]);
     const row=await ctx.db.get(args.caseId);assertRowScope(row,args.scope);
     const ap=row as Doc<"apCaseRecords">;
+    assertNoHistoricalPayment(ap);
     if(ap.currentRevision!==args.expectedRevision||ap.snapshotHash!==args.snapshotHash)throw Error("Stale AP case payment request");
     if(ap.businessStatus!=="approved"||ap.documentStatus!=="reviewed"||!ap.fieldReviewId||!ap.billId)throw Error("Reviewed and approved AP case required before payment preparation");
     const bill=await ctx.db.get(ap.billId);assertRowScope(bill,args.scope);
@@ -30,6 +32,7 @@ export const authorize = mutation({
   handler:async(ctx,args)=>{
     const {seat}=await requirePaymentHuman(ctx,args.scope);
     const row=await ctx.db.get(args.caseId);assertRowScope(row,args.scope);const ap=row as Doc<"apCaseRecords">;
+    assertNoHistoricalPayment(ap);
     if(ap.currentRevision!==args.expectedRevision||ap.snapshotHash!==args.snapshotHash||ap.businessStatus!=="approved"||ap.documentStatus!=="reviewed"||!ap.billId)throw Error("Stale or unapproved AP case payment authorization");
     const version=await ctx.db.get(args.versionId);assertRowScope(version,args.scope);
     const payment=version as Doc<"demoVersions">;

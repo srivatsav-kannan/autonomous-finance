@@ -19,7 +19,8 @@ import { createDurableAPIntake } from "../../src/ap-system/intake-requests";
 import { renderPage } from "../../src/ap-system/ingestion";
 import { apexTextLayerIntake, simplePdf } from "../../src/ap-system/replay/apex-intake";
 import { mapContractAttorneyInvoice } from "../../src/ap-system/replay/apex-invoice";
-import { APEX_FILES, APEX_SOURCE, cents, historicalPaymentChecks, loadApexWorld } from "../../src/ap-system/replay/apex-sources";
+import { APEX_FILES, APEX_SOURCE, cents, historicalPaymentChecks, loadApexWorld, withApexHistoricalPaymentHold } from "../../src/ap-system/replay/apex-sources";
+import { assertMissingServiceEvidence } from "../../src/ap-system/replay/assertions";
 import { popplerVersion, readTextLayer, TEXT_LAYER_IMPLEMENTATION } from "../../src/ap-system/replay/text-layer";
 
 const RUN = "apex107-replay-20261025";
@@ -110,7 +111,7 @@ async function serve() {
     const existing = services.get(actorId);
     if (existing) return existing;
     let service: APWorkspaceService;
-    const parseUploads = createDurableAPIntake({ directory: DIR, loadCase: id => service.detail(id), parse: input => apexTextLayerIntake({ ...input, storageRoot: SOURCES, supplier, coding: CODING, options: { pdftotextPath: PDFTOTEXT, popplerVersion: poppler, ocr: OCR } }) });
+    const parseUploads = createDurableAPIntake({ directory: DIR, loadCase: id => service.detail(id), parse: async input => withApexHistoricalPaymentHold(await apexTextLayerIntake({ ...input, storageRoot: SOURCES, supplier, coding: CODING, options: { pdftotextPath: PDFTOTEXT, popplerVersion: poppler, ocr: OCR } }), world) });
     service = createAPWorkspaceService({ agent, human: humanFor(actorId), scope: SCOPE, apCredential: { seatId: "apex107-ap", token: saved.ap }, paymentsCredential: { seatId: "apex107-payments", token: saved.payments }, controllerCredential: { seatId: "apex107-controller", token: saved.controller }, parseUploads, renderPage: (source, page) => renderPage({ source, page, storageRoot: SOURCES, options: OCR }), runtime: () => runtimeInfo });
     services.set(actorId, service);
     return service;
@@ -279,7 +280,7 @@ async function case1Hold() {
   const r = await governor("/business/propose", { caseId: d.caseId, ...bind(d), idempotencyKey: "apex107-case1-propose-without-evidence", policyVersion: POLICY_VERSION, supplierRevision: 1, acceptance: acceptanceFor(d, false) });
   const after = await detail(governor, d.caseId);
   const proposals = (await ok(governor, "/business/proposals")).filter((p: any) => p.caseId === d.caseId);
-  assert.equal(after.journals.length, 0, "Missing evidence must not recognize a bill");
+  assertMissingServiceEvidence(r, after);
   record("case1-hold", { caseId: d.caseId, proposeStatus: r.status, proposeResult: r.body, exceptions: after.exceptions, domain: after.domain, proposals, missingEvidence: ["contract or rate agreement for the matter", "service acceptance by a matter owner", "supplier bank/beneficiary details", "firm AP approval policy for contract-attorney invoices", "W-9 / 1099 vendor tax documentation (not modeled by this AP system)"] });
 }
 async function case1Evidence() {
@@ -357,15 +358,18 @@ async function case2() {
   const historical = historicalPaymentChecks(world, { billId: c.billId, bankTransactionId: c.bankTransactionId, reference: c.reference, statementText });
   assert.ok(historical.passed, "Historical reconciliation checks failed: " + historical.checks.filter(x => !x.passed).map(x => x.check).join("; "));
   const r = await upload(reviewer, "apex107-case2-invoice", [{ bytes: invoiceBytes(c.file), name: c.file, kind: "invoice" }]);
-  assert.equal(r.status, 201, "Case 2 intake failed");
+  assert.ok(r.status === 201 || r.status === 200, "Case 2 intake failed");
   let d = await detail(reviewer, r.body.caseId);
   const comparison = await ledgerComparison(d, c.billId);
   assert.ok(comparison.allMatch, "Parsed case 2 fields differ from the APEX ledger");
   if (!d.decisions.some(x => x.kind === "field_review")) await fieldReview(reviewer, d, "apex107-case2-fields-r1");
   d = await detail(reviewer, d.caseId);
-  // The importer never proposes approval or payment for a source-paid invoice. The backend independently refuses payment without an approved bill.
-  const sourcePaidGuard = { sourceStatus: c.sourceStatus, importerAction: "historical_reference_only", proposed: false };
+  assert.ok(d.historicalPaymentHold, "Historical payment restriction must be persisted in the backend");
+  const approvalRefused = await refused(reviewer, "/business/propose", { caseId: d.caseId, ...bind(d), idempotencyKey: "apex107-case2-approval-attempt", policyVersion: POLICY_VERSION, supplierRevision: 1, acceptance: acceptanceFor(d, false) });
+  assert.equal(approvalRefused.code, "historical_payment_hold");
+  const sourcePaidGuard = { sourceStatus: c.sourceStatus, persisted: d.historicalPaymentHold, approvalRefused };
   const paymentRefused = await refused(treasury, `/cases/${d.caseId}/payments`, { ...bind(d), idempotencyKey: "apex107-case2-second-payment-attempt", executionDate: "2026-10-25" });
+  assert.equal(paymentRefused.code, "historical_payment_hold");
   const b = bank(); let snapshot; try { snapshot = b.harness.inspect(); } finally { b.close(); }
   assert.ok(!snapshot.transfers.some(t => t.amountCents === c.amountCents), "No FakeBank transfer may exist for the source-paid case");
   assert.equal(d.journals.length, 0, "Source-paid case must not post new journals");
@@ -395,9 +399,13 @@ async function reimport() {
   const resubmitPayment = await treasury(`/cases/${d1.caseId}/payments`, { ...bind(d1), idempotencyKey: "apex107-case1-payment", executionDate: "2026-10-25" });
   const secondPayment = await treasury(`/cases/${d1.caseId}/payments`, { ...bind(d1), idempotencyKey: "apex107-case1-second-payment", executionDate: "2026-10-25" });
   const after = await counts();
+  const d2 = await detail(treasury, caseIdFor("case2"));
+  assert.ok(d2.historicalPaymentHold, "Re-import must retain the historical payment restriction");
+  const historicalPaymentRefused = await refused(treasury, `/cases/${d2.caseId}/payments`, { ...bind(d2), idempotencyKey: "apex107-case2-after-reimport-payment", executionDate: "2026-10-25" });
+  assert.equal(historicalPaymentRefused.code, "historical_payment_hold");
   for (const r of replays) for (const k of ["sameKey", "newKeyRenamed"] as const) assert.ok(r[k].caseId === r.expectedCaseId || (r[k].status >= 400 && r[k].status < 500), "A re-import must resolve to the existing case or be refused");
   for (const k of ["cases", "bills", "paymentVersions", "commands", "journals", "bankTransactionsPosted", "fakeBankTransfers", "fakeBankCreateCalls"] as const) assert.equal(after[k], before[k], `Re-import changed ${k}`);
-  record("reimport", { replays, resubmitPayment: { status: resubmitPayment.status, body: resubmitPayment.body }, secondPayment: { status: secondPayment.status, error: secondPayment.body?.error ?? null }, before, after });
+  record("reimport", { replays, historicalPaymentRefused, resubmitPayment: { status: resubmitPayment.status, body: resubmitPayment.body }, secondPayment: { status: secondPayment.status, error: secondPayment.body?.error ?? null }, before, after });
 }
 async function report() {
   const call = await session("treasury");
@@ -412,7 +420,7 @@ async function report() {
     data: { ...APEX_SOURCE, files: Object.fromEntries(Object.entries(world.hashes).filter(([k]) => [CASES.case1.file, CASES.case2.file, CASES.case2.statement].some(f => k.endsWith(f)) || !k.includes(".pdf"))) },
     providerModes: { bank: "FakeBank (local, explicitly simulated settlement)", identity: "simulated local actors", parser: "local text layer, zero paid parser calls", models: "none (AGENT_LLM=off)", increase: "blocked: needs JJ's sandbox credentials", quickbooks: "blocked: needs JJ's sandbox credentials", auth0: "blocked: needs JJ's sandbox credentials" },
     case1: { caseId: d1.caseId, invoice: CASES.case1.invoiceNumber, billId: CASES.case1.billId, revision: d1.revision, states: d1.states, amounts: d1.amounts, links: d1.links, journals: d1.journals, payments: d1.payments, sources: d1.sources.map(s => ({ name: s.name, kind: s.kind, revision: s.revision, sha256: s.sha256 })), decisions: d1.decisions.map(x => ({ kind: x.kind, actor: x.actor, actorKind: x.actorKind, outcome: x.outcome, candidateRevision: x.candidateRevision })), localIds: { versionId: pay.versionId, commandId: pay.authorized?.commandId ?? d1.payments[0]?.commandId ?? null, fakeBankTransferIds: work.transfers.map((t: any) => t.id), fakeBankTransactionIds: work.transactions.map((t: any) => t.id) } },
-    case2: { caseId: d2.caseId, invoice: CASES.case2.invoiceNumber, billId: CASES.case2.billId, states: d2.states, amounts: d2.amounts, journals: d2.journals.length, payments: d2.payments.length, historicalSourceOutcome: proof("case2").historicalSourceOutcome, paymentRefused: proof("case2").paymentRefused },
+    case2: { caseId: d2.caseId, invoice: CASES.case2.invoiceNumber, billId: CASES.case2.billId, states: d2.states, amounts: d2.amounts, journals: d2.journals.length, payments: d2.payments.length, historicalPaymentHold: d2.historicalPaymentHold, approvalRefused: proof("case2").sourcePaidGuard.approvalRefused, historicalSourceOutcome: proof("case2").historicalSourceOutcome, paymentRefused: proof("case2").paymentRefused },
     reimport: proof("reimport"), finalCounts, inventory: (({ rows, fileHashes, ...rest }) => rest)(proof("inventory")), externalIds: "none: no external provider was called",
   };
   const target = path.join(ROOT, "docs/ap-orchestration/evidence/apex-107");

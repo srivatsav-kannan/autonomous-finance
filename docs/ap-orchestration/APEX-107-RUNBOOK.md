@@ -53,12 +53,12 @@ Every command uses a clean environment so no provider key from your shell can le
    | `case1-intake` | Uploads `Avila_AVILA-202412-A6.pdf` through `/api/ap-system/intake`, checks the parsed fields against the ledger, records the field review and shows a payment request is refused before any bill exists. |
    | `case1-evidence` | Uploads a revision with two generated PDFs labeled SIMULATED: a rate agreement and a service acceptance. APEX has neither. |
    | `governance` | Activates the SIMULATED services policy and supplier master (trusted contact, callback and beneficiary are all simulated). The backend refuses an invoice as trusted-contact evidence, so this runs after the simulated agreement exists. |
-   | `case1-hold` | Proposes acceptance citing only the invoice. The backend holds it on `missing_contract` and `missing_receipt`. |
+   | `case1-hold` | Proposes acceptance citing only the invoice. Requires HTTP 409 / `business_policy_hold`, both `missing_contract` and `missing_receipt`, no bill and no journal. Unrelated failures cannot pass. |
    | `case1-approve` | Proposes acceptance citing the simulated agreement and acceptance. The simulated matter owner and finance approver vote. The bill is recognized. |
    | `case1-pay` | Requests the $3,000 payment as the payments agent, shows a stale snapshot is refused, then authorizes as the simulated payment authorizer. No bank contact yet. |
    | `worker` | Runs the payment dispatcher against FakeBank, explicitly simulates settlement, runs the evidence worker, then repeats both to show nothing is reposted. |
-   | `case2` | Verifies the historical $3,500 payment against the ledger, bank export, GL, AP aging and April statement. Uploads the invoice and shows a payment request is refused. The importer never proposes approval or payment for a source-paid invoice. |
-   | `reimport` | Re-uploads both invoices (same key, then new key and new filename) and resubmits payment requests. Counts of cases, bills, versions, commands, journals, bank rows and FakeBank transfers must not change. |
+   | `case2` | Verifies the historical $3,500 payment against the ledger, bank export, GL, AP aging and April statement. The statement must contain exactly one matching row for reference, date, payee and debit. Uploads the invoice with a bound historical-payment hold, then attempts business approval and payment; both must return `historical_payment_hold`. |
+   | `reimport` | Re-uploads both invoices (same key, then new key and new filename) and resubmits payment requests. Verifies the historical hold survives and still rejects payment. Counts of cases, bills, versions, commands, journals, bank rows and FakeBank transfers must not change. |
    | `report` | Writes `docs/ap-orchestration/evidence/apex-107/run.json` and `inventory.json`. |
 
    ```bash
@@ -76,7 +76,8 @@ Every command uses a clean environment so no provider key from your shell can le
 ## Rules the harness keeps
 
 - Historical APEX outcomes (ledger status, bank row `OBT-000200`, GL entries) are read from the source files and recorded as historical. They are never loaded into FakeBank or the ledger. The FakeBank transfer and debit are new local observations.
-- The parser never reads the ledger. The ledger comparison runs after parsing, as a check.
+- The parser never reads the ledger. After parsing, the replay adapter binds any unambiguous Paid ledger row to the parsed supplier, invoice, amount and original bytes. The backend persists this restrictive hold with the source revision and ledger hash. It does not infer a new bank settlement or journal.
+- The historical hold survives field review, re-import and source revisions. Business approval, legacy bill APIs, payment requests, authorization and first dispatch enforce it. Existing attempted bank operations retain their recovery path; a newly found hold cannot erase an uncertain bank outcome. No hold-release workflow is included.
 - Every added policy, approval, contact, beneficiary, agreement and acceptance is labeled SIMULATED in its name, reason or document text.
 - Phases are safe to rerun. They reuse idempotency keys and skip finished steps. To start over, stop the backend and use a fresh checkout or delete `.convex/local` and `var/apex107-replay-20261025` in this worktree only.
 
