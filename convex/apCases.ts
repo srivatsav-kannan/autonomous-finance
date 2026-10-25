@@ -79,19 +79,6 @@ export const ingest = mutation({
         parsed.error.issues.map((i) => i.message).join("; "),
       );
     const input = parsed.data;
-    const operation = await replay(
-      ctx,
-      args.scope,
-      `ingest:${input.idempotencyKey}`,
-      { input, actor: seat.seatId },
-    );
-    if (operation.prior)
-      return operation.prior.result as {
-        caseId: string;
-        revision: number;
-        replayed: boolean;
-        duplicate: boolean;
-      };
     if (
       input.documents.reduce((sum, d) => sum + d.byteLength, 0) >
       8 * 1024 * 1024
@@ -114,6 +101,19 @@ export const ingest = mutation({
         "Parsed metadata exceeds the bounded case-row size; retain upload error for explicit review",
       );
     for (const document of input.documents) await verifyOriginal(document);
+    const operation = await replay(
+      ctx,
+      args.scope,
+      `ingest:${input.idempotencyKey}`,
+      { input: storedIntake(input), actor: seat.seatId },
+    );
+    if (operation.prior)
+      return operation.prior.result as {
+        caseId: string;
+        revision: number;
+        replayed: boolean;
+        duplicate: boolean;
+      };
     const invoices = input.documents.filter(
       (d) => d.kind === "invoice" || d.kind === "credit_note",
     );

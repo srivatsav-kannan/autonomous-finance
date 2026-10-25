@@ -139,9 +139,11 @@ export async function verifyOriginal(source: SourceDocument) {
     );
   let bytes: Uint8Array<ArrayBuffer>;
   try {
-    bytes = Uint8Array.from(atob(source.originalBase64), (c) =>
-      c.charCodeAt(0),
-    );
+    // Avoid Uint8Array.from(string), which materializes a large intermediate
+    // iterable and exceeds the Convex isolate heap for supported originals.
+    const decoded = atob(source.originalBase64);
+    bytes = new Uint8Array(decoded.length);
+    for (let i = 0; i < decoded.length; i++) bytes[i] = decoded.charCodeAt(i);
   } catch {
     deny("invalid_original", "Invalid original base64");
   }

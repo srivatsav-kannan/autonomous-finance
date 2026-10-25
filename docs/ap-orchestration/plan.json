@@ -106,14 +106,18 @@
       ],
       "external_gate": "llamaparse",
       "acceptance": "Actual PDF yields supported candidate fields and source grounding; reimport/version tests pass. Native -> exact unique raw-word -> bounded local OCR -> unresolved fallback preserves provenance and separate line regions. Pin/package OCR binary/traineddata; verify positive, mismatched/ambiguous/missing text, unavailable/timeout fallback, supported rotation/page frames and stale revisions; no forced character repair or value substitution.",
-      "status": "in_progress",
+      "status": "accepted",
       "session_id": "/root/p0_inventory",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-evidence/calhacks",
       "branch": "codex/ap-system-evidence",
-      "commit": null,
-      "evidence": [],
+      "commit": "ec65ae4",
+      "evidence": [
+        "docs/ap-orchestration/evidence/A2-ingestion.md",
+        "docs/ap-orchestration/evidence/A2-ingestion.json",
+        "src/ap-system/ingestion/README.md"
+      ],
       "blocker": null,
-      "next_action": "Implement scoped deliverable against frozen ap-evidence-v1; report exact checks and evidence",
+      "next_action": "I1 same-case integration; A3 closes remaining promised XML/image/TIFF format coverage; Docker image deployment remains unverified",
       "source_sha": "ac62854"
     },
     {
@@ -377,7 +381,8 @@
         "C3",
         "C4",
         "B4",
-        "D2"
+        "D2",
+        "A3"
       ],
       "external_gate": "domain_review",
       "acceptance": "Full issue97 scope accounted for with evidence; missing credentials or domain review remain explicit blockers, not silent scope cuts.",
@@ -389,6 +394,23 @@
       "evidence": [],
       "blocker": null,
       "next_action": null
+    },
+    {
+      "id": "A3",
+      "owner": "A",
+      "title": "Complete XML profile and image/TIFF input-format verification",
+      "depends_on": [
+        "A2"
+      ],
+      "acceptance": "Declared XML profile maps exact values with structural paths; PDF/JPEG/PNG/TIFF representative originals and multipage completeness are measured; unsupported profiles, rotations and failed pages are explicit. Runtime never reads expected key.",
+      "status": "in_progress",
+      "session_id": "/root/p0_inventory",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-evidence/calhacks",
+      "branch": "codex/ap-system-formats",
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": "Implement remaining issue97 section4 formats independently of first-case integration"
     }
   ],
   "registry": {
@@ -468,5 +490,5 @@
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true
   },
-  "last_updated_at": "2026-10-25T08:47:43.148554+00:00"
+  "last_updated_at": "2026-10-25T08:51:21.685090+00:00"
 }
