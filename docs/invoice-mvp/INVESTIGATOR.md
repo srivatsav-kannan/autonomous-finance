@@ -4,7 +4,7 @@ The invoice MVP uses one bounded Investigator. The default is **deterministic su
 
 ## Startup
 
-The root integration worker owns provisioning the existing local Convex backend and `scripts/invoice-workspace-init.ts`. Do not deploy a worker checkout's signature-only backend. Initialize a run with one simulated human CFO and one `ar_clerk` investigator. Save the resulting token mapping to a mode-0600 file outside source control.
+The root integration worker owns provisioning the existing local Convex backend and `scripts/invoice-workspace-init.ts`. Do not deploy a worker checkout's signature-only backend. Initialize a run with one simulated human CFO and one `invoice_investigator` investigator. Save the resulting token mapping to a mode-0600 file outside source control.
 
 ```sh
 CONVEX_URL=http://127.0.0.1:3230 \

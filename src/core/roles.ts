@@ -14,6 +14,7 @@ export type Role =
   | "fpa"
   | "integrations_engineer"
   | "auditor"
+  | "invoice_investigator"
   | "world";
 
 export interface Capabilities {
@@ -121,6 +122,9 @@ export const ROLE_CAPABILITIES: Record<Role, Capabilities> = {
   integrations_engineer: { ...NONE, taskRoles: ["controller"], asks: true },
   // Independent: reads everything, posts nothing, approves nothing.
   auditor: { ...NONE, taskRoles: [], asks: true },
+  // Invoice evidence workspace: proposes case conclusions through convex/invoiceCases.ts only.
+  // Posts nothing, records no bills or payments, and creates no tasks.
+  invoice_investigator: NONE,
   world: NONE,
 };
 

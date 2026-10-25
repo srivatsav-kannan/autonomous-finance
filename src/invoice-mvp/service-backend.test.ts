@@ -13,7 +13,7 @@ import { ZERO_USAGE, type InvestigatorModel } from "./model";
 async function setup() {
   const h = kernelHarness(), runId = "public-service-integration", token = "synthetic-only";
   await h.seed("runs", { runId, label: "Public synthetic service test", company: "Demo", simDate: "2026-10-24", status: "active", createdAt: 1 });
-  for (const [seatId, role, kind] of [["human", "human_cfo", "human"], ["investigator", "ar_clerk", "agent"]] as const) await h.seed("seats", { runId, seatId, role, kind, name: seatId, capabilities: {}, status: "active", tokenHash: await sha256Hex(token), createdAt: 1 });
+  for (const [seatId, role, kind] of [["human", "human_cfo", "human"], ["investigator", "invoice_investigator", "agent"]] as const) await h.seed("seats", { runId, seatId, role, kind, name: seatId, capabilities: {}, status: "active", tokenHash: await sha256Hex(token), createdAt: 1 });
   const invoke = (ref: FunctionReference<"query" | "mutation">, args: Record<string, unknown>) => {
     const name = getFunctionName(ref).split(":")[1]!;
     const handler = (handlers as unknown as Record<string, { _handler: (ctx: unknown, input: unknown) => unknown }>)[name];

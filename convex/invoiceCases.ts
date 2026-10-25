@@ -2,9 +2,13 @@ import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/s
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { authSeat, checkIdempotency, fail, getRun, storeIdempotency, type Fail } from "./lib/kernel";
-import { normalizeDocumentNumber } from "./receivables";
 import { evidenceValidator, modeValidator, invoiceSourceValidator as sourceValidator, conclusionValidator, toolCallValidator } from "./schema";
 import type { BackendResult, CaseDetail, CaseStatus, CaseSummary, Conclusion, Contribution, DecisionResult, EvidenceRef, IngestBatchResult, ModelBudget, ModelReservationResult, Proposal, SeatAuth, SourceInput, SourceVersion, SubmitProposalResult, WorkspaceSnapshot } from "../src/invoice-mvp/contracts";
+
+/** "INV-2025-1013", "inv 2025 1013" and "INV20251013" are the same document number. */
+export function normalizeDocumentNumber(n: string): string {
+  return n.toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
 
 export const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 const ok = <T>(value: T): BackendResult<T> => ({ ok: true, value });
@@ -17,7 +21,7 @@ async function authorize(ctx: QueryCtx, args: SeatAuth, operation: "read" | "hum
   const a = await authSeat(ctx, args.runId, args.seatId, args.token);
   if (!a.ok) return a;
   const human = a.seat.role === "human_cfo" && a.seat.kind === "human";
-  const investigator = ["ar_clerk", "controller"].includes(a.seat.role) && a.seat.kind === "agent";
+  const investigator = ["invoice_investigator", "controller"].includes(a.seat.role) && a.seat.kind === "agent";
   const reader = human || investigator || a.seat.role === "auditor";
   if (!(operation === "read" ? reader : operation === "human" ? human : operation === "investigate" ? investigator : human || investigator)) return fail("forbidden", `Seat may not perform invoice ${operation} operations`);
   const run = await getRun(ctx, args.runId);

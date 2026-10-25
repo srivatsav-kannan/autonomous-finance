@@ -15,7 +15,7 @@ Owned changes: `convex/invoiceCases.ts`, additive `convex/schema.ts` definitions
 
 ## Contract and backend
 
-All new functions authenticate `runId`, `seatId`, `token` server-side using existing seat authentication and run membership. Human authority requires both role `human_cfo` and kind `human`; investigator authority requires agent-kind `ar_clerk` or `controller`. `auditor` can read. Human identity is explicitly simulated in the workspace snapshot. Existing run bootstrap is `admin.createRun`, with SHA-256 seat token hashes.
+All new functions authenticate `runId`, `seatId`, `token` server-side using existing seat authentication and run membership. Human authority requires both role `human_cfo` and kind `human`; investigator authority requires agent-kind `invoice_investigator` or `controller`. `auditor` can read. Human identity is explicitly simulated in the workspace snapshot. Existing run bootstrap is `admin.createRun`, with SHA-256 seat token hashes.
 
 Backend responses uniformly use `BackendResult<T> = {ok:true,value:T,replayed?:boolean} | {ok:false,code,error}`. B unwraps the value for HTTP. Exact types are in the shared contracts file, with validators in schema and endpoint arguments in `invoiceCases.ts`.
 

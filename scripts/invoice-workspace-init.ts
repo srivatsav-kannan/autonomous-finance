@@ -33,7 +33,7 @@ const created = await admin.client.mutation(api.admin.createRun, {
   simDate: "2026-10-24", periods: [],
   seats: [
     { seatId: "human-cfo", role: "human_cfo", name: "Local operator (simulated identity)", kind: "human", tokenHash: hashToken(tokens["human-cfo"]!) },
-    { seatId: "invoice-investigator", role: "ar_clerk", name: "Invoice investigator", kind: "agent", tokenHash: hashToken(tokens["invoice-investigator"]!) },
+    { seatId: "invoice-investigator", role: "invoice_investigator", name: "Invoice investigator", kind: "agent", tokenHash: hashToken(tokens["invoice-investigator"]!) },
   ],
 });
 if (!created.ok && created.code !== "exists") throw new Error(`Workspace initialization failed: ${created.code}`);

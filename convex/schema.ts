@@ -44,6 +44,19 @@ export default defineSchema({
   ...demoEvidenceTables,
 
   // Invoice evidence MVP: accepted net-invoiced contributions, NOT cash or GL postings.
+  // Customer master for invoice cases. Same shape the invoice gateway already persists; the
+  // receivables kernel (customer documents, dispositions, AR clerk) is intentionally not part of main.
+  customers: defineTable({
+    runId: v.string(),
+    customerId: v.string(),
+    legalName: v.string(),
+    aliases: v.array(v.string()),
+    emailDomain: v.optional(v.string()),
+    status: v.union(v.literal("active"), v.literal("blocked")),
+    registeredBy: v.string(),
+    sourceDocumentId: v.string(),
+    at: v.number(),
+  }).index("by_run_customer", ["runId", "customerId"]),
   invoiceBatches: defineTable({ runId: v.string(), label: v.string(), documentIds: v.array(v.string()), createdAt: v.number() }).index("by_run", ["runId"]),
   invoiceModelBudgets: defineTable({ runId: v.string(), maxRequests: v.number(), maxCostMicros: v.number(), requestsReserved: v.number(), costReservedMicros: v.number(), createdAt: v.number() }).index("by_run", ["runId"]),
   invoiceModelReservations: defineTable({ runId: v.string(), caseId: v.string(), evidenceVersion: v.number(), idempotencyKey: v.string(), model: v.string(), maxCostMicros: v.number(), actor: v.string(), createdAt: v.number() }).index("by_run", ["runId"]),

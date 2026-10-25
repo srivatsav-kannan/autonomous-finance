@@ -15,7 +15,7 @@ const evidence = (d: CaseDetail): EvidenceRef => ({ documentId: d.source.documen
 async function setup() {
   const h = kernelHarness();
   await h.seed("runs", { runId, label: "MVP", company: "Demo", simDate: "2026-10-24", status: "active", createdAt: 1 });
-  for (const [seatId, role, kind] of [["human", "human_cfo", "human"], ["investigator", "ar_clerk", "agent"], ["wrong", "ap_clerk", "agent"], ["fake-human", "human_cfo", "agent"], ["auditor", "auditor", "agent"]] as const) await h.seed("seats", { runId, seatId, role, kind, name: seatId, capabilities: {}, status: "active", tokenHash: await sha256Hex(token), createdAt: 1 });
+  for (const [seatId, role, kind] of [["human", "human_cfo", "human"], ["investigator", "invoice_investigator", "agent"], ["wrong", "ap_clerk", "agent"], ["fake-human", "human_cfo", "agent"], ["auditor", "auditor", "agent"]] as const) await h.seed("seats", { runId, seatId, role, kind, name: seatId, capabilities: {}, status: "active", tokenHash: await sha256Hex(token), createdAt: 1 });
   let n = 0;
   const ingest = async (documents: SourceInput[], key = `ingest-${++n}`) => unwrap(await mutationHandler(api.ingestBatch)(h.ctx, { ...human, label: "Batch", documents, idempotencyKey: key }));
   const detail = async (caseId: string) => unwrap(await query(api.caseDetail)(h.ctx, { ...human, caseId }));
