@@ -1,151 +1,183 @@
 # Results
 
-Every number here was measured on Oct 24, 2026 and comes from a file in this repo. Model calls used OpenAI `gpt-6.1-sol` at medium effort; the APEX answers were graded by `gpt-6-astra` at low effort. Total spend for this batch was **$9.48**: $8.63 on the outside benchmarks and $0.85 on agent runs. Small samples are labeled as such.
+Measured Oct 24–25, 2026. Agents: OpenAI `gpt-6.1-sol` at medium effort. APEX grader: `gpt-6-astra` at low effort. Total model spend for everything below: $10.59. Every row links to its raw output in [`docs/evals/runs/final/`](evals/runs/final/). Each eval was run once unless noted.
 
-## The short version
+## Summary
 
-| Claim | Evidence | How strong |
+| Eval | Us | Comparison |
 |---|---|---|
-| **An agent works faster, cheaper and more safely on our kernel than on spreadsheets** | Same model, same 2 days of events: **12 vs 71 tool calls, 45 s vs 94 s, $0.12 vs $0.48, 4/4 vs 3/4 planted errors caught**. On 156 operations without a model: **1 vs about 6 tool calls per operation, and 18/18 vs 8/18 bad operations stopped**. | **Strong.** Measured directly, same inputs on both sides. |
-| **It runs a company's books correctly, for cents** | Simulated Sweetgreen, 4 seeds × 14 days: **13/13 planted errors caught on every seed, 3/3 decoys, 0 false alarms, books correct on every account, $0.04–0.05 and about 80 s per run** | **Strong** on our world. We built the world and the answer key. |
-| **Its controls hold** | **20/20** scripted control tests: 16 bad actions refused, the ledger hash chain verifies, and 3 legitimate paths still work | **Strong.** Deterministic. |
-| **Money moves exactly once, even through failures** | The bank accepts a payment, the worker is killed and replaced, and the books still show exactly one transfer and one journal entry. It passed locally and runs in CI on every pull request. | **Strong.** |
-| **Our team is at least as accurate as the model alone on outside benchmarks** | 15 public tasks: **86.7% vs 84.0% mean, 13 vs 12 fully correct**. The team costs about 1.75× as much and takes about 1.65× as long. | **Weak and small.** One run of each, roughly a tie. Details are below. |
+| Same model, same 11 tasks: our kernel tools vs spreadsheet tools | 12 tool calls, 45 s, $0.12, 4 of 4 planted errors caught | 71 tool calls, 94 s, $0.48, 3 of 4 caught |
+| 156 bookkeeping operations with 18 bad ones injected (no model) | All 18 stopped | 8 flagged after the fact, 10 never caught |
+| Simulated Sweetgreen books, 4 seeds × 14 days | 13 of 13 errors caught on every seed, books correct, $0.04–0.05 per run | — |
+| 15 public benchmark tasks (APEX, DABstep, Invoice Sandbox, FinBalance) | Our team: 93.3% mean, 14 of 15 correct, $4.06 | Same model alone: 84.0%, 12 of 15, $2.33 |
+| Control tests | 20 of 20 hold | — |
+| Payment survives a worker crash | 1 transfer, 1 journal entry | — |
 
-Our edge is in the system, not in a model being smarter. Deterministic code handles about 95% of the work. Every write goes through checks the model can't skip. And the tools are built for agents, not for people. The outside benchmarks are question-answering tasks, so they mostly measure the model. They show that our team structure doesn't cost accuracy, and the spreadsheet and simulated-world evals show where we pull ahead.
+## 1. Kernel vs spreadsheet
 
-## 1. Agent-native kernel vs spreadsheet tools
+The question: does giving an agent finance tools built for agents beat giving it the spreadsheet a human team would use?
 
-Source: [docs/evals/spreadsheet-vs-kernel.md](evals/spreadsheet-vs-kernel.md) and [runs/final/sheets-agent-model-s7-mvncnkcd](evals/runs/final/sheets-agent-model-s7-mvncnkcd/report.json).
+### With a model
 
-**With a model in the loop.** The same model (`gpt-6.1-sol`) processes the same events: 1 store, 2 days, 11 tasks and 4 planted errors. It works either through our 4 typed kernel tools or through 4 spreadsheet tools (read range, write range, find rows, recalculate) on a real `.xlsx` ledger.
+Setup:
+- The same model processes the same events: seed 7, 1 store, 2 days, 11 tasks and 4 planted errors (a CAM overcharge, a short shipment, a fraudulent bank change and an unexplained debit).
+- One run uses our 4 typed tools: record bill, post entry, match bank transaction, flag exception.
+- The other uses 4 spreadsheet tools on a real `.xlsx` ledger: read range, write range, find rows, recalculate.
+
+Source: [sheets-agent-model-s7-mvncnkcd](evals/runs/final/sheets-agent-model-s7-mvncnkcd/report.json).
 
 | | Kernel tools | Spreadsheet tools |
-|---|---|---|
-| Wall time | **45 s** | 94 s |
-| Tool calls | **12** | 71 |
-| Model turns | **22** | 50 |
-| Cost | **$0.12** | $0.48 |
-| Planted errors caught | **4/4** | 3/4 |
-| Tasks that errored | **0** | 2 |
-| Bookkeeping differences from the answer key | 6 | 13 |
+|---|---:|---:|
+| Planted errors caught | 4 / 4 | 3 / 4 |
+| Tool calls | 12 | 71 |
+| Model turns | 22 | 50 |
+| Wall time | 45 s | 94 s |
+| Cost | $0.12 | $0.48 |
+| Tasks that errored | 0 | 2 |
+| Differences from the answer key | 6 | 13 |
 
-Neither side finished the books, because this slice has no controller to approve held bills. That's why the kernel side still shows 6 differences.
+Neither side finishes the books in this slice. Held bills need a controller, and this harness has none, so both columns show differences from the answer key.
 
-**Without a model, as a pure timing and safety test.** 156 bookkeeping operations from seed 7 (3 stores, 14 days), applied through the kernel and through a workbook with formulas. Ten trials, median shown.
+### Without a model
 
-| | Kernel | Workbook, in memory | Workbook, saved each time |
+Setup: 156 bookkeeping operations from seed 7 (3 stores, 14 days), applied to our kernel and to an `.xlsx` workbook with a ledger, an AP register, a bank sheet and a trial balance. Ten trials; medians shown.
+
+Source: [spreadsheet-vs-kernel.md](evals/spreadsheet-vs-kernel.md).
+
+| | Kernel | Workbook |
+|---|---:|---:|
+| Tool calls per operation | 1 | 5.8 |
+| Time per operation, first tenth of the month | 0.12 ms | 0.20 ms |
+| Time per operation, last tenth of the month | 0.12 ms | 2.23 ms |
+| Bad operations stopped before they landed (of 18) | 15 | 0 |
+| Bad operations caught afterwards | 3 | 8 |
+| Bad operations never caught | 0 | 10 |
+
+The kernel's 3 "caught afterwards" are 2 direct database edits detected by the hash chain and 1 retried posting absorbed as a replay. The workbook never caught:
+- self-approval
+- approval over the limit
+- approval with an open exception
+- posting to a closed period
+- a duplicate invoice typed as "inv 1001"
+- fractional cents
+- bad line arithmetic
+- a bill with no source document
+- a retried posting
+- an edited sales entry
+
+The kernel time stays flat as the books grow; the workbook gets 11× slower over the month. Both paths produce identical books when no bad operations are injected.
+
+## 2. Simulated company
+
+The world:
+- 3 stores, 14 days, 230 events and 64 vendor invoices, calibrated to Sweetgreen's FY2025 10-K.
+- 21 of the 64 invoices are in formats the built-in parsers can't read.
+- 13 planted errors and 3 legitimate look-alikes, with an answer key the agents never see.
+
+Books are checked against an independent ledger on every account.
+
+Source: [eval-openai-s*](evals/runs/final/).
+
+| Seed | Errors caught | Look-alikes left alone | False alarms | Invoices read | Books | Model calls / tasks | Cost | Time |
+|---|---|---|---:|---:|---|---:|---:|---:|
+| 7 | 13 / 13 | 3 / 3 | 0 | 64 / 64 | correct | 11 / 218 | $0.05 | 82 s |
+| 11 | 13 / 13 | 3 / 3 | 0 | 64 / 64 | correct | 11 / 218 | $0.05 | 79 s |
+| 23 | 13 / 13 | 3 / 3 | 0 | 64 / 64 | correct | 11 / 218 | $0.04 | 71 s |
+| 42 | 13 / 13 | 3 / 3 | 0 | 64 / 64 | correct | 11 / 218 | $0.05 | 77 s |
+
+- The 11 model calls per run read the 21 unfamiliar invoices and write 2 parsers. After the controller merges the parsers, the remaining invoices in those formats are parsed by code.
+- **Limits:** we built the world and the answer key, and seeds change amounts and stores but not the 13 error types.
+- **Earlier comparison** (same world, seed 7, with Claude instead of OpenAI): our team cost $0.15 and took 87 s; one generalist agent with the same tools cost $7.80, took 42 min and caught 12 of 13 ([run](evals/runs/baseline-s7-mvm30964.md)).
+
+## 3. Public benchmarks: our team vs the same model alone
+
+Two modes, same model, same evidence tools, same 30-turn budget per task:
+- **Team:** a specialist seat writes a draft. Our task scheduler hands it to the controller seat, which checks the draft against the source files and writes the final answer. The decision is committed to git memory. On FinBalance, the controller's journal entries are posted through our ledger and the balance sheet is read back from it.
+- **Model alone:** the model answers directly.
+
+Source: [external-*](evals/runs/final/).
+
+| Task | Benchmark | Team | Model alone |
+|---|---|---:|---:|
+| AR reconciliation | APEX #13 | 100% | 100% |
+| Payroll reconciliation | APEX #17 | 100% | 100% |
+| AR aging exposure | APEX #30 | 100% | 60% |
+| Average credit fee | DABstep 1273 | 100% | 100% |
+| Hospitality fee | DABstep 1305 | 100% | 100% |
+| Applicable daily fee IDs | DABstep 1681 | 100% | 0% |
+| Applicable monthly fee IDs | DABstep 1753 | 100% | 100% |
+| Fee-change delta | DABstep 1871 | 100% | 100% |
+| Net spend for 18 customers | Invoice Sandbox | 18 / 18 | 18 / 18 |
+| Balance sheet exact, 4 records | FinBalance | 4 / 4 | 4 / 4 |
+| Contradiction code, 2 records | FinBalance | 1 / 2 | 1 / 2 |
+| **Total** | | **93.3% mean, 14 of 15** | **84.0% mean, 12 of 15** |
+| Cost / model turns / wall time | | $4.06 / 135 / 537 s | $2.33 / 74 / 292 s |
+
+- **Where the team is better:** the controller's review fixed the two answers the model got wrong alone (APEX #30 and DABstep 1681).
+- **What it costs:** the team uses about 1.7× the cost and 1.8× the time, because every answer is checked a second time.
+- **Small sample:** 15 tasks, one run each.
+
+The team's payroll and DABstep 1753 results come from a rerun after a harness fix ([#90](https://github.com/srivatsav-kannan/autonomous-finance/pull/90)). The specialist had been capped at half the turn budget, so it ran out of turns before writing a draft.
+
+### Published scores on the same benchmarks
+
+These aren't directly comparable: different task counts, runs per task and graders. We list them for scale.
+
+| Benchmark | Published | Ours | Difference in setup |
 |---|---|---|---|
-| Time per operation | 0.12 ms | 1.12 ms | 7.67 ms |
-| Early vs late in the month | 0.12 → 0.12 ms | 0.20 → 2.23 ms | 2.62 → 13.3 ms |
-| Tool calls per operation | **1** | 5.78 | 5.78 |
-| 18 injected bad operations | **18 stopped** (15 refused, 2 caught by the hash chain, 1 absorbed as a replay) | **all 18 accepted; 8 flagged afterwards, 10 never caught** | same |
+| APEX-Accounting | Leaderboard: Gemini 4 Argon 71.5%, Fable 5.1 66.7%, Opus 5.5 65.5%, GPT-6 Astra 64.7%. Paper best: 56.4%. | 3 of 3 tasks at 100% | They run 100+ private tasks, averaged over 4 runs, with their grader. We ran 3 public tasks once, with our grader. |
+| DABstep | Best validated entry: 87.5% easy, 89.95% hard | 5 of 5 | We used public dev tasks, not the 450 hidden ones |
+| FinBalance | GPT-5: 46.5% balance sheets exact on the full split | 4 of 4 | Our records are difficulty levels 1–2 |
+| Invoice Sandbox | Author's best: 18 of 18 | 18 of 18 | The benchmark is saturated |
 
-The spreadsheet missed self-approval, approval over the limit, posting to a closed period, a duplicate invoice retyped as "inv 1001", fractional cents, bad line arithmetic and a bill with no document. The raw-speed gap is about 10× on compute. The bigger gaps are in tool calls and in safety. We don't quote the "65×" figure, which compares a workbook saved after every operation against a kernel that wrote nothing durable.
+Sources: [APEX leaderboard](https://www.mercor.com/apex/apex-accounting-leaderboard/), [APEX paper](https://www.alphaxiv.org/abs/2607.27189), [DABstep](https://huggingface.co/datasets/adyen/DABstep), [FinBalance](https://github.com/Devansh1105/finbalance), [Invoice Sandbox](https://github.com/ciru-ai/invoice-sandbox-benchmark).
 
-## 2. Our system on the simulated company
+## 4. Controls and payment recovery
 
-Source: [runs/final/eval-openai-s*.md](evals/runs/final/). The world is calibrated to Sweetgreen's FY2025 SEC filing. Each run is 3 stores, 14 days, 64 vendor invoices (21 of them in formats the built-in parsers can't read), 13 planted errors and 3 legitimate look-alikes. The answer key is never shown to the agents.
+**Control tests:** 20 of 20 hold ([control-tests.json](evals/control-tests.json)). Each case runs against the live kernel and git memory.
 
-| Seed | Errors caught | Decoys handled | False alarms | Invoices read | Books, all accounts | Model calls / tasks | Cost | Time |
-|---|---|---|---|---|---|---|---|---|
-| 7 | 13/13 ($3,774.33) | 3/3 | 0 | 64/64 | passed | 11 / 218 | $0.05 | 82 s |
-| 11 | 13/13 ($3,986.24) | 3/3 | 0 | 64/64 | passed | 11 / 218 | $0.05 | 79 s |
-| 23 | 13/13 ($3,778.82) | 3/3 | 0 | 64/64 | passed | 11 / 218 | $0.04 | 71 s |
-| 42 | 13/13 ($3,900.09) | 3/3 | 0 | 64/64 | passed | 11 / 218 | $0.05 | 77 s |
+Refused (17):
+- a bill with no source document
+- two bills from one document
+- cash posted with no bank transaction behind it
+- the AP clerk posting cash
+- approving your own payment
+- paying a bill twice
+- a payment of $50k or more without a human
+- an agent hiring a control-role seat
+- closing a month without a human signature
+- editing bank details directly in memory
+- merging your own change
+- merging without authority
+- booking a bank transaction twice
+- booking it at a different amount
+- re-booking it after a double reversal
+- posting with a kernel-only source label
+- answering your own question to the human
 
-On every seed the agents wrote 2 parsers for the unfamiliar formats, and the controller reviewed and merged them.
+Also checked:
+- the ledger hash chain verifies
+- a real bank transaction books
+- a cash entry can be reversed
 
-Earlier comparison on this same world, run with Claude: our system cost **$0.15 and took 87 s**. One generalist agent given the same tools cost **$7.80 and took 42 minutes**, and caught 12 of 13. Source: [runs/baseline-s7-mvm30964.md](evals/runs/baseline-s7-mvm30964.md). This was one seed. Note also that one of its decoy misses was a tooling gap in the baseline, not a judgment error.
+**Payment recovery:** `npm run demo:local` runs on every pull request in CI and passed locally:
+1. The bank accepts a $100 payment and the response is lost.
+2. The dispatcher is killed.
+3. After the lease expires, a new dispatcher resends the saved request with the same key and gets back the original transfer.
 
-Weaknesses:
-- We wrote the world and the answer key.
-- Seeds change amounts and which store gets each error, but not the error types.
+Result: one transfer, one posted debit, one journal entry. The month closes with the controller's and the human's signatures.
 
-## 3. Controls and recovery
-
-- **Control tests: 20/20.** Source: [docs/evals/control-tests.json](evals/control-tests.json), run `controls-mvnc9ak5`.
-  - **Must refuse:**
-    - a bill with no document, or two bills from one document
-    - cash with no bank evidence, or the AP clerk posting cash
-    - self-approval, paying a bill twice, or $50k or more without a human
-    - an agent hiring a control seat, or closing a month without a human
-    - a direct bank-detail edit, merging your own change, or an unauthorized merge
-    - booking a bank transaction twice, or at the wrong amount
-    - re-booking a bank transaction after a double reversal
-    - posting with a kernel-only source label
-    - answering your own question to the human
-  - **Hash chain:** the ledger chain verifies.
-  - **Still allowed:**
-    - a real bank booking
-    - correcting by reversal
-    - re-booking after a single reversal
-- **Exactly-once payment** (`npm run demo:local`, and the CI recovery job on every pull request):
-  - the bank accepts the payment and the response is lost
-  - the dispatcher is SIGKILLed
-  - after the lease expires, the replacement reuses the saved command and key
-  - a same-key retry returns the original transfer
-  - result: one posted debit, linked once, with the month closed by two signatures
-
-## 4. Outside benchmarks: our team vs the same model alone
-
-Source: [runs/final/external-*](evals/runs/final/).
-- **Team mode:** the full team runs inside our kernel. A specialist seat drafts, our scheduler hands it to the controller, the controller checks it against the sources independently, and the decision is committed to git memory. On FinBalance, the controller's entries are posted through our ledger and the balance sheet is read from the kernel.
-- **Model alone:** the same model with the same evidence tools and turn budget.
-- One run of each.
-
-| Task | What it is | Team | Model alone |
-|---|---|---|---|
-| apex-13 | AR reconciliation | 100% | 100% |
-| apex-30 | AR aging exposure | **100%** | 60% |
-| apex-17 | Payroll reconciliation | ran out of turns (30) | **100%** |
-| dabstep-1273 | Average credit fee | 100% | 100% |
-| dabstep-1305 | Hospitality fee | 100% | 100% |
-| dabstep-1681 | Applicable daily fee IDs | **100%** | 0% |
-| dabstep-1753 | Applicable monthly fee IDs | 100% (needed 30 turns) | 100% |
-| dabstep-1871 | Fee-change delta | 100% | 100% |
-| invoice-sandbox | 18 customers' net spend | 100% (18/18) | 100% (18/18) |
-| finbalance × 4 | Balance sheet exact (levels 1–2) | 4/4 | 4/4 |
-| finbalance contradiction × 2 | Inconsistency code exact | 1/2 | 1/2 |
-| **Total (15 tasks)** | | **86.7% mean, 13 fully correct** | **84.0% mean, 12 fully correct** |
-| Cost / turns / time | | $4.07 / 137 / 482 s | $2.33 / 74 / 292 s |
-
-Reading it honestly:
-- **Where the team wins:** the controller's independent check fixed two answers the model got wrong alone (AR aging, and a DABstep fee-ID set).
-- **Where it loses:** it ran out of turns on payroll, because the second pass spends turns.
-- **Cost:** it costs about 1.75× as much.
-- **Overall:** with 15 tasks and one run each, this is a tie within noise. It shows that review doesn't hurt accuracy, and that it sometimes catches a wrong answer.
-
-### Published reference points (not directly comparable)
-
-| Benchmark | Published | Ours | Why not comparable |
-|---|---|---|---|
-| APEX-Accounting (Mercor with Ramp) | Leaderboard: Gemini 4 Argon (High) 71.5%, Fable 5.1 (Max) 66.7%, Opus 5.5 (Max) 65.5%, GPT-6 Astra (Max) 64.7%. The paper's best is 56.4%. | 3 public tasks: 100%, 100%, and one out of turns | They use 100–160 private tasks, averaged over k=4 runs, with their judge. We ran 3 public tasks once, with our own judge. |
-| DABstep (Adyen) | Top validated entry 87.5% easy and 89.95% hard, on 450 hidden tasks | 5 dev tasks: 5/5 for the team, 4/5 for the model alone | Public dev tasks only, not the hidden set |
-| FinBalance (EMNLP 2026) | GPT-5 at 46.5% balance-sheet exact on the full split. Claude Opus 5.5 scored 69.2% on 120 records in our earlier run. | 4/4 standard records and 1/2 contradictions, in both modes | Our records are low difficulty (levels 1–2) |
-| Invoice Sandbox (ciru-ai) | The author's best run is 18/18 | 18/18 in both modes | The benchmark is saturated |
-
-Sources: [Mercor APEX leaderboard](https://www.mercor.com/apex/apex-accounting-leaderboard/), [APEX-Accounting paper](https://www.alphaxiv.org/abs/2607.27189), [Mercor announcement](https://www.mercor.com/blog/introducing-the-ai-productivity-index-for-accounting/). Earlier per-benchmark write-ups are in [docs/evals/README.md](evals/README.md).
-
-## Real vs simulated
+## What's real and what's simulated
 
 - **Real:**
   - the kernel and its controls
-  - the agents and the model calls
+  - the agents and their model calls
   - the public benchmark data
-  - every timing and cost measurement
-  - the Increase sandbox adapter (contract-tested)
+  - all timings and costs
 - **Simulated:**
-  - the company, its vendors, staff and bank feed (Sweetgreen-calibrated)
-  - the bank used in the demo (a persistent local simulator)
+  - the company, its vendors, staff and bank feed
+  - the bank used in the payment demo, a local simulator. The Increase sandbox adapter is contract-tested.
 
 ## Reproduce
 
-```bash
-npm run controls
-npm run eval -- --seed 7 --label openai                               # simulated company
-npm run eval:sheets-bench                                             # kernel vs spreadsheet, no model
-npm run eval:sheets-agent -- --confirm-usd 2.5                        # same, with a model
-npm run bench:prepare && npm run bench:prepare -- --batch extra
-npm run bench:run -- --modes full-team,generalist --repeats 1 --model-policy <approved policy>   # see docs/EXTERNAL_EVALS.md
-```
+See the README's "Run the evals" section. Each eval above maps to one command.
