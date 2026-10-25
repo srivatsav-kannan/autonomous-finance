@@ -1,3 +1,4 @@
+import { assertGovernedCredits } from "../apSystem/governedCredits";
 import type { Doc, Id } from "../../_generated/dataModel";
 import type { MutationCtx } from "../../_generated/server";
 import type { PaymentExecutionConfig } from "../../../src/payments/contracts";
@@ -19,6 +20,7 @@ export async function assertReservedObligations(ctx: MutationCtx, version: Doc<"
       throw new Error("Stale bill or conflicting reservation");
     }
   }
+  await assertGovernedCredits(ctx, version.scope, version.snapshot.credits, config.beneficiary.vendor);
   for (const item of version.snapshot.credits) {
     const credit = await ctx.db.get(item.creditId); assertRowScope(credit, version.scope);
     if (!credit || credit.vendor !== config.beneficiary.vendor || !Number.isSafeInteger(credit.reservedCents) ||

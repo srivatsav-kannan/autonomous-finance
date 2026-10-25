@@ -1,3 +1,4 @@
+import { assertGovernedCredits } from "../apSystem/governedCredits";
 import type { Doc, Id } from "../../_generated/dataModel";
 import type { MutationCtx } from "../../_generated/server";
 import { assertRowScope, auditDemo, getPaymentConfig, requirePaymentSeat, requirePaymentHuman } from "../demoAuth";
@@ -67,6 +68,7 @@ export async function requestPaymentCommand(ctx: MutationCtx, args: { scope: Ban
       const c = credit as Doc<"demoCredits">;
       if (c.vendor !== config.beneficiary.vendor || c.amountCents - c.reservedCents - c.consumedCents < item.amountCents) throw new Error("Credit unavailable");
     }
+    await assertGovernedCredits(ctx, args.scope, credits, config.beneficiary.vendor);
     const amountCents = safeSum(bills.map(b => b.amountCents)) - safeSum(credits.map(c => c.amountCents)); dollars(amountCents);
     const snapshot = { scope: args.scope, bills, credits, amountCents, currency: "USD" as const, destination: { externalAccountId: config.beneficiary.externalAccountId, version: config.beneficiary.version }, policyVersion: config.policyVersion, ...(args.executionDate !== undefined ? { schedule: { executionDate: args.executionDate, timeZone: "UTC" as const } } : {}) };
     const snapshotHash = await sha256Hex(canonical(snapshot));

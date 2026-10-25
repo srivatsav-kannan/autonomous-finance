@@ -1,3 +1,4 @@
+import { activeBusinessPolicy } from "./lib/apSystem/businessAuthority";
 import { requireNonAPCaseBill } from "./lib/apSystem/legacyGate";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
@@ -156,6 +157,7 @@ export const recordCredit = mutation({
   args: { ...scoped, reference: v.string(), amountCents: v.number(), evidence: v.string(), date: v.string(), expenseAccount: v.string() },
   handler: async (ctx, args) => {
     const { config, seat } = await requirePaymentHuman(ctx, args.scope);
+    if (await activeBusinessPolicy(ctx, args.scope)) throw new Error("Governed credits require the reviewed original-allocation business workflow");
     dollars(args.amountCents);
     if (!validDate(args.date) || !args.reference.trim() || !args.evidence.trim() || !["5000", "5200", "5300", "6000", "6100", "6200"].includes(args.expenseAccount)) throw new Error("Valid credit reference, evidence and expense account required");
     const existing = await ctx.db.query("demoCredits").withIndex("by_reference", q => q.eq("scope.runId", args.scope.runId).eq("vendor", config.beneficiary.vendor).eq("reference", args.reference)).unique();
