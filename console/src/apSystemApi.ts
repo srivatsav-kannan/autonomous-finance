@@ -2,6 +2,9 @@ import { caseDetailSchema, type APCaseDetail, type BillApprovalRequest, type Rev
 import type { PaymentApproval, PaymentSnapshot } from "../../src/payments/contracts";
 import type { BankTransaction, TransferObservation } from "../../src/integrations/contracts";
 
+import type { PaymentRunDetail, PaymentRunRequest, PaymentRunSummary, AccountingStatus } from "../../src/ap-system/workspace-operations";
+import type { QBOReceipt } from "../../src/ap-system/quickbooks/runtime";
+import type { Plan } from "../../src/ap-system/quickbooks/types";
 import { APSystemApiError, apProtectedFetch, closeAPSession } from "./apAuthSession";
 export { APSystemApiError } from "./apAuthSession";
 export type PaymentDetail = { snapshotHash: string; snapshot: PaymentSnapshot; approvals: PaymentApproval[]; observations: TransferObservation[]; transactions: BankTransaction[] };
@@ -75,6 +78,15 @@ export const apSystemApi = {
   preparePayment: (caseId: string, input: APPaymentRequest) => request<{versionId:string;snapshotHash:string}>(`/cases/${encodeURIComponent(caseId)}/payments`, validatePaymentRequest(input)),
   authorizePayment: (caseId:string, versionId:string, input:{expectedRevision:number;snapshotHash:string;paymentSnapshotHash:string}) => request<{commandId:string}>(`/cases/${encodeURIComponent(caseId)}/payments/${encodeURIComponent(versionId)}/authorize`, input),
   cancelPayment: (caseId:string, versionId:string, input:{expectedRevision:number;snapshotHash:string}) => request<unknown>(`/cases/${encodeURIComponent(caseId)}/payments/${encodeURIComponent(versionId)}/cancel`, input),
+  paymentRuns: (signal?:AbortSignal) => request<PaymentRunSummary[]>("/payment-runs",undefined,signal),
+  paymentRun: (runId:string,signal?:AbortSignal) => request<PaymentRunDetail>(`/payment-runs/${encodeURIComponent(runId)}`,undefined,signal),
+  prepareRun: (input:PaymentRunRequest) => request<{runId:string;snapshotHash:string}>("/payment-runs",input),
+  authorizeRun: (runId:string,snapshotHash:string) => request<{commandIds:string[]}>(`/payment-runs/${encodeURIComponent(runId)}/authorize`,{snapshotHash}),
+  cancelRun: (runId:string,snapshotHash:string) => request<{ok:true}>(`/payment-runs/${encodeURIComponent(runId)}/cancel`,{snapshotHash}),
+  accountingStatus: (caseId:string,signal?:AbortSignal) => request<AccountingStatus>(`/cases/${encodeURIComponent(caseId)}/accounting`,undefined,signal),
+  accountingPreview: (caseId:string,paymentVersionId?:string) => request<{plan:Plan;planHash:string;externalWrites:0}>(`/cases/${encodeURIComponent(caseId)}/accounting/preview`,{paymentVersionId}),
+  accountingSubmit: (caseId:string,expectedPlanHash:string,paymentVersionId?:string) => request<{operation:QBOReceipt}>(`/cases/${encodeURIComponent(caseId)}/accounting/submit`,{expectedPlanHash,paymentVersionId}),
+  accountingVerify: (caseId:string,paymentVersionId?:string) => request<{operation:QBOReceipt;verifiedAt:number}>(`/cases/${encodeURIComponent(caseId)}/accounting/verify`,{paymentVersionId}),
   intake: (files: { file: File; kind: SourceDocument["kind"] }[], key: string) => {
     const data = new FormData(); files.forEach(({ file }) => data.append("documents", file));
     data.append("kinds", JSON.stringify(files.map(f => f.kind))); data.append("idempotencyKey", key);

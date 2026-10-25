@@ -83,7 +83,7 @@ describe("AP case workspace evidence boundaries",()=>{
   it("shows separate accounting and payment dimensions and no invented journal",()=>{
     const f=apUIFixture();f.states.document="reviewed";f.states.business="approved";f.states.accounting="recognized";f.states.authorization="awaiting_approval";
     const html=renderToStaticMarkup(<APCaseStatus detail={f}/>)+renderToStaticMarkup(<APAccounting detail={f}/>);
-    expect(html).toContain("Recognized");expect(html).toContain("Awaiting approval");expect(html).toContain("No journal entry is linked");expect(html).toContain("Not connected / not run");
+    expect(html).toContain("Recognized");expect(html).toContain("Awaiting approval");expect(html).toContain("No journal entry is linked");expect(html).toContain("Checking the accounting connection");
   });
   it("keeps incomplete extraction visible and cannot enable bill approval",()=>{
     const f=apUIFixture();f.candidate=null;f.extraction={status:"failed",evidence:[],reasons:["Page 2 missing"]};f.amounts.invoicedCents=null;

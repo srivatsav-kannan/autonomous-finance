@@ -71,7 +71,15 @@ node --env-file=/Users/junjiexiong/Desktop/calhacks/var/ap-environment/providers
 
 This verifies US company, active vendor/account identity, exact names, account types and USD currency where supplied. No accounting writes occur. One local account cannot silently map to the same external account as another. Mapping changes after an operation is frozen produce an immutable-operation conflict.
 
-## 4. Dry-run, then authenticated submission
+## 4. Use the AP browser workspace
+
+The preferred user path is normal Auth0 browser login, described in [AUTH0-SETUP](AUTH0-SETUP.md). No manual JWT is required. The AP gateway creates a new human Convex client for each authenticated request and injects it into `createQBOBridge(human, scope)`; current case exports are loaded through that verified identity. Agent credentials, OAuth grants and mappings remain server-only.
+
+After the owner completes the company consent and mapping steps above, save the reviewed mapping as `mappings.json` in the configured private QuickBooks directory. Start the isolated AP gateway with the same private QBO configuration. Open the case's **Accounting → QuickBooks accounting sync** panel. Inspect configuration, company authorization and mapping readiness. Select bill recognition or an already verified settlement, then **Preview accounting plan**. Check the exact amount, vendor/account mappings, company and linked records. The preview makes no external writes.
+
+Check the explicit approval box and choose **Submit reviewed accounting plan** only for that intended sandbox record. The gateway re-derives and compares the exact preview hash before submission. Successful external IDs come from saved provider receipts; they are not inferred from local settlement. Use **Verify external record** to compare the receipt with QuickBooks. Unknown/conflict states require inspection before retrying. Local FakeBank can preview only with explicitly configured private mappings; external submission and verification are disabled there. Accounting setup failure does not authorize or block the independent bank execution path.
+
+## 5. Optional advanced CLI and synthetic dry-run
 
 A saved synthetic export can be used without credentials for a dry-run:
 
@@ -81,7 +89,7 @@ node --import tsx scripts/ap-system/quickbooks-cli.ts dry-run --input /private/p
 
 This only validates and prints a proposed Bill. It is not evidence that a saved JSON file is authoritative. **Submit rejects `--input`.** Real writes load current facts through the authenticated `apAccountingExport:current` Convex query; its `requirePaymentHuman` + account scope checks cannot be replaced by caller booleans. Deploy that query through the normal integration deployment before using the CLI; this workstream does not deploy it.
 
-For standalone authenticated CLI use, configure private `QBO_CONVEX_URL`, exact `AP_BANK_SCOPE` JSON and a short-lived `QBO_AUTH_TOKEN` issued by the application's normal human sign-in tooling. Do not paste tokens in chat or command arguments. The preferred web composition injects the request-bound authenticated query into `QuickBooksDispatcher`; the shared HTTP/Auth0 composition remains Master-owned.
+For advanced standalone authenticated CLI use only, configure private `QBO_CONVEX_URL`, exact `AP_BANK_SCOPE` JSON and a short-lived `QBO_AUTH_TOKEN` issued by the application's normal human sign-in tooling. Do not paste tokens in chat or command arguments. The normal browser path above needs no `QBO_AUTH_TOKEN`. Never ask an operator to paste a JWT into chat or a browser form.
 
 ```sh
 node --env-file=/Users/junjiexiong/Desktop/calhacks/var/ap-environment/providers.env --import tsx scripts/ap-system/quickbooks-cli.ts submit --case CASE_ID --mappings /private/path/mappings.json

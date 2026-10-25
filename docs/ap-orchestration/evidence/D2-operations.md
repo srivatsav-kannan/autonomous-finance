@@ -1,0 +1,17 @@
+# D2 operations implementation checkpoints
+
+This is engineering evidence, not external workflow, practitioner or D2 acceptance. Canonical registry remains Master-owned.
+
+## Checkpoint 1
+
+Base `6114a03`, branch `codex/ap-system-d2`.
+
+- Payment-run list/detail/prepare/authorize/cancel HTTP and browser API seams use the existing authenticated session, subject and origin/CSRF checks. Requests accept distinct one-to-25 case bindings and validated optional partial amounts, credits and calendar date. Existing backend run mutations own atomic authorization and idempotency.
+- QuickBooks readiness/preview/submit/verify HTTP/API and case panel compose the current request's human Convex client through the existing `createQBOBridge`. Browser-supplied exports/payloads are rejected. Submit requires the reviewed preview hash. Local FakeBank external writes and verification are blocked; explicit mapped previews remain possible.
+- Accounting status and provider receipts remain independent of bank execution. External IDs display only from successful receipts. The case panel no longer reports “not connected” before querying the actual accounting connection.
+- Eligible-looking payment proposals expose an explicit cancel confirmation; the server remains authoritative about whether sending may have begun. Cancellation never silently creates/re-authorizes a replacement proposal.
+- QuickBooks setup now leads with normal Auth0 browser login, with no manual JWT in the user path.
+
+Validation: main and test typechecks pass; 24 targeted HTTP/UI tests pass; console build passes (existing large main-chunk warning remains); static design check 0 FAIL/0 WARN, one existing answered F7; diff whitespace check passes. All HTTP tests use explicit service doubles; no backend/bank/QuickBooks writes occurred.
+
+Remaining D2 work: payment-run selection/review UI, operational summaries/narrative/related-case navigation, B3 governance/acceptance/credit UI once integrated, QBO B3 credit/application/correction holds once C4 contract lands, focused new regressions and responsive light/dark CUA evidence. This first checkpoint has no browser visual acceptance claim.

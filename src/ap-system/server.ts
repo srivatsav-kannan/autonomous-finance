@@ -6,6 +6,8 @@ import {z} from "zod";
 import {ConvexError} from "convex/values";
 import {billApprovalRequestSchema,reviewRequestSchema,type APCaseDetail,type APIntake,type SourceDocument,type CoordinateFrame} from "./contracts";
 
+import type { PaymentRunOperations, AccountingOperations } from "./workspace-operations";
+import { QboError } from "./quickbooks/private-store";
 const PREFIX="/api/ap-system";
 const MAX_ORIGINAL_BYTES=8*1024*1024;
 const MAX_BYTES=MAX_ORIGINAL_BYTES+64*1024;
@@ -24,6 +26,8 @@ export interface APWorkspaceService {
  paymentDetail(versionId:string):Promise<unknown>;
  source(sourceId:string,revision:number,sha256:string):Promise<SourceDocument>;
  renderPage?(source:SourceDocument,page:number):Promise<{bytes:Uint8Array;mimeType:"image/png";frame:CoordinateFrame}>;
+ paymentRuns?:PaymentRunOperations;
+ accounting?:AccountingOperations;
  runtime():unknown;
 }
 export type APExternalAuthentication = {
@@ -101,6 +105,30 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
    }
    // A browser cookie alone never authenticates an external human.
    if(req.method==="GET"&&!sessionValid(req,subject))throw new APHttpError("session_required",403,"Open the AP workspace before reading source or case details.");
+   const runs=/^\/api\/ap-system\/payment-runs(?:\/([^/]+)(?:\/(authorize|cancel))?)?$/.exec(url.pathname);
+   if(runs){
+    if(!service.paymentRuns)throw new APHttpError("capability_unavailable",503,"Payment runs are not available on this AP service.");
+    if(req.method==="GET"&&!runs[1])return send(res,await service.paymentRuns.list());
+    if(req.method==="GET"&&runs[1]&&!runs[2])return send(res,await service.paymentRuns.detail(decodeURIComponent(runs[1])));
+    if(req.method==="POST"&&!runs[1]){
+     const selection=paymentRequest.omit({idempotencyKey:true,executionDate:true}).extend({caseId:z.string().min(1)});
+     const input=z.object({requestKey:z.string().trim().min(1).max(200),selection:z.array(selection).min(1).max(25).refine(items=>new Set(items.map(i=>i.caseId)).size===items.length),executionDate:executionDate.optional()}).parse(await json(req));
+     return send(res,await service.paymentRuns.prepare(input));
+    }
+    if(req.method==="POST"&&runs[1]&&runs[2]){const input={...z.object({snapshotHash:binding.shape.snapshotHash}).parse(await json(req)),runId:decodeURIComponent(runs[1])};return send(res,await service.paymentRuns[runs[2] as "authorize"|"cancel"](input));}
+   }
+   const accounting=/^\/api\/ap-system\/cases\/([^/]+)\/accounting(?:\/(preview|submit|verify))?$/.exec(url.pathname);
+   if(accounting){
+    if(!service.accounting)throw new APHttpError("capability_unavailable",503,"QuickBooks accounting is not configured on this AP service.");
+    const caseId=decodeURIComponent(accounting[1]!);
+    if(req.method==="GET"&&!accounting[2])return send(res,await service.accounting.status(caseId));
+    if(req.method==="POST"&&accounting[2]){
+     const input=z.object({paymentVersionId:z.string().min(1).optional(),expectedPlanHash:binding.shape.snapshotHash.optional()}).strict().parse(await json(req));
+     const request={caseId,...(input.paymentVersionId?{paymentVersionId:input.paymentVersionId}:{})};
+     if(accounting[2]==="submit"){if(!input.expectedPlanHash)throw new APHttpError("approved_preview_required",400,"Preview and confirm the current accounting plan before submitting.");return send(res,await service.accounting.submit(request,input.expectedPlanHash));}
+     return send(res,await service.accounting[accounting[2] as "preview"|"verify"](request));
+    }
+   }
    const source=/^\/api\/ap-system\/sources\/([^/]+)\/revisions\/(\d+)(?:\/pages\/(\d+))?$/.exec(url.pathname);
    if(req.method==="GET"&&source){
     const sha=z.string().regex(/^[a-f0-9]{64}$/).parse(url.searchParams.get("sha256"));const revision=Number(source[2]);
@@ -147,8 +175,8 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
    const business=e instanceof ConvexError ? z.object({code:z.string().max(100),reason:z.string().max(2000)}).safeParse(e.data) : null;
    const status=e instanceof APHttpError?e.status:e instanceof z.ZodError?400:409;
    // Convex error messages contain stable business reasons; redact provider/transport error bodies.
-   const reason=business?.success?business.data.reason:e instanceof APHttpError?e.message:e instanceof z.ZodError?"Request does not match the AP contract.":"The backend rejected this action or is unavailable. Refresh the case and review its current evidence.";
-   send(res,{error:{code:business?.success?business.data.code:e instanceof APHttpError?e.code:e instanceof z.ZodError?"invalid_request":"backend_rejected",reason}},status);
+   const reason=business?.success?business.data.reason:e instanceof APHttpError?e.message:e instanceof QboError?`QuickBooks: ${e.code.replaceAll("_"," ")}. Refresh status and review the accounting setup.`:e instanceof z.ZodError?"Request does not match the AP contract.":"The backend rejected this action or is unavailable. Refresh the case and review its current evidence.";
+   send(res,{error:{code:business?.success?business.data.code:e instanceof APHttpError?e.code:e instanceof QboError?e.code:e instanceof z.ZodError?"invalid_request":"backend_rejected",reason}},status);
   }
  });
  server.requestTimeout=180_000;server.headersTimeout=10_000;return server;

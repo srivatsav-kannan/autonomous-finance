@@ -187,3 +187,8 @@
 @media (prefers-reduced-motion: reduce) {
   .aps-app *, .aps-app *::before, .aps-app *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+.aps-operation-target { display: grid; gap: var(--space-xs); margin-block: var(--space-md); }
+.aps-operation-target select { min-width: 0; max-width: 100%; }
+.aps-accounting-plan { border-block: 1px solid var(--line); padding-block: var(--space-md); margin-block: var(--space-lg); }
+.aps-accounting-plan pre { overflow: auto; max-height: 360px; font-size: var(--text-xs); padding: var(--space-sm); background: var(--bg); }
