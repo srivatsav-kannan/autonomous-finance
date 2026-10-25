@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "createdAt": "2026-10-25T11:58:08.398208+00:00",
+  "classification": "owner-prepared actual sandbox comparison; Claude review pending",
+  "files": [
+    {
+      "path": "C4-funding-reconciliation.jpg",
+      "bytes": 126027,
+      "sha256": "9baaf87fdee19c22cb3431639f10eccb945242adfb2caa2adbf58a8ff4fbd25f"
+    },
+    {
+      "path": "C4-funding-reconciliation.json",
+      "bytes": 6146,
+      "sha256": "344780c9d733903a6b1534f0d943243560502b22b4b402e0798db911c4496558"
+    },
+    {
+      "path": "C4-funding-reconciliation.md",
+      "bytes": 2973,
+      "sha256": "0ec0b3a42eb031c555703c89bfa779581b93cee89ecea7cb9b3e9c0f95e7c597"
+    },
+    {
+      "path": "C4-live-happy-path-qbo.jpg",
+      "bytes": 120475,
+      "sha256": "eb75c37c5573ee5af47307435c95bed601819697ec08b50c8f766f0424bd2064"
+    },
+    {
+      "path": "C4-live-happy-path.json",
+      "bytes": 6225,
+      "sha256": "d955a970f89b1f5b0b6748555f3188cc15593a82c7f7a5292771022c97323d4e"
+    },
+    {
+      "path": "C4-live-happy-path.md",
+      "bytes": 3098,
+      "sha256": "2c20847a0e576a82a2c4b3594a07135ea66bafa66d524b58a401db3160595ff5"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1365,
+      "sha256": "bf5c0fa572b6b836eaa1a2526dd2ee737c799739b5f442a04eea39e1544c7eb7"
+    }
+  ]
+}

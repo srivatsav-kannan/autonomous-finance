@@ -1,6 +1,6 @@
 # Auth0 development tenant for the AP sandbox
 
-This is the C2 browser-login engineering path. Real Auth0 login, Increase funding, transfers, external-workflow acceptance and practitioner review remain separate acceptance steps. Local FakeBank remains on its existing simulated runtime. No JWT needs to be pasted into chat, a terminal, or a form.
+Current status: real Auth0 browser login, explicit scoped identity binding, bill review and user-click payment authorization passed in the synthetic INV-1001 sandbox flow. See [current status](CURRENT-STATUS.md) and [live evidence](evidence/C4-live-happy-path.md). Live logout/expiry/negative-provider acceptance remains separate. Claude independent model review is pending; a practitioner is no longer required. The instructions below describe setup/recreation; no JWT needs to be pasted into chat, a terminal, or a form. Local FakeBank evidence retains its separate simulated identity mode.
 
 ## Register the application
 

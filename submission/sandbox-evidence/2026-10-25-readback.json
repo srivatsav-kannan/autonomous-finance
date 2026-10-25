@@ -1,0 +1,223 @@
+{
+  "version": "ap-sandbox-acceptance-20261025-v1",
+  "baselineReadback": {
+    "checkedAt": "2026-10-25T12:08:12.197Z",
+    "sourceCommit": "0dce4ed",
+    "mode": "read-only provider and local backend checks; existing operation receipts; no new business writes",
+    "checks": {
+      "qboMappings": true,
+      "qboBillEconomicFields": true,
+      "qboBillPaidBalanceZero": true,
+      "qboAmountAndBillLink": true,
+      "oneBillForMarker": true,
+      "oneBillPaymentForMarker": true,
+      "mergedMainBillPaymentVerifier": false,
+      "livePatchedBillPaymentVerifier": true,
+      "increaseAccountAndDestination": true,
+      "increaseTransferScope": true,
+      "increaseSettlementAndDebit": true,
+      "localOneSettledMatchedPayment": true
+    },
+    "failures": [
+      "mergedMainBillPaymentVerifier"
+    ],
+    "notRun": [
+      "fresh merged-main invoice-to-payment run",
+      "signed webhook delivery",
+      "Auth0 negative/expiry/logout matrix",
+      "returns and credits in external sandbox",
+      "formal period close",
+      "human practitioner review"
+    ],
+    "quickbooks": {
+      "companyCountry": "US",
+      "mappingHash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff",
+      "mappingReferences": 9,
+      "bill": {
+        "id": "145",
+        "totalCents": 67860,
+        "balanceCents": 0,
+        "currentSyncToken": "1",
+        "receiptSyncToken": "0",
+        "requestId": "ap-2d1b7545aac02311f6d562e54826d1e3af8c273735bf",
+        "attempts": 1
+      },
+      "payment": {
+        "id": "146",
+        "totalCents": 67860,
+        "syncToken": "0",
+        "requestId": "ap-5e2eaf62b0809e1fd0c0380b0b49e21825bbdc3a8afc",
+        "attempts": 1,
+        "apAccountRefPresent": false
+      },
+      "mainVerify": "external_stale_or_changed",
+      "liveVerify": "PASS",
+      "markerCounts": {
+        "Bill": 1,
+        "BillPayment": 1
+      }
+    },
+    "increase": {
+      "transferId": "sandbox_ach_transfer_spyd2r518l9gutry0hfn",
+      "rawStatus": "submitted",
+      "settledAt": "2026-10-25T11:34:47Z",
+      "amountCents": 67860,
+      "transactionId": "sandbox_transaction_02j4j1ax6a81pw5y034h",
+      "debitCents": -67860,
+      "currentCents": 0,
+      "availableCents": 0,
+      "verification": "authenticated GET polling; no webhook evidence"
+    },
+    "localBackend": {
+      "runId": "ap97-auth0-live-20261025",
+      "payments": [
+        {
+          "commandId": "nx74zqsc9n5cmvswe5napwp6t18gyma9",
+          "versionId": "q17cdf2z1zj9nv2rvmgax3dwtd8gzqyc",
+          "execution": "settled",
+          "posting": "posted",
+          "reconciliation": "matched",
+          "amountCents": 67860
+        }
+      ]
+    },
+    "historicalEvidenceHashes": {
+      "validation-status.json": "d8334c57a446f0f7939dad88fb337b4d22e890a7535435bdc212b4a541459fb0",
+      "validation-happy-path-before-funding.json": "d955a970f89b1f5b0b6748555f3188cc15593a82c7f7a5292771022c97323d4e",
+      "funding-reconciliation-final.json": "e977d678218518b99af58d1a3729d2c162639287726612d5e50afa944936b514"
+    }
+  },
+  "repairedReadback": {
+    "checkedAt": "2026-10-25T12:15:01.393Z",
+    "sourceCommit": "0dce4ed",
+    "workingTreeRepair": true,
+    "connectorSha256": "6c725d3fe5fbf6da2c4e4757f698967d5586499e6569426617ed52a32b567ae7",
+    "mode": "read-only provider and local backend checks; existing operation receipts; no new business writes",
+    "checks": {
+      "qboMappings": true,
+      "qboBillEconomicFields": true,
+      "qboBillPaidBalanceZero": true,
+      "qboAmountAndBillLink": true,
+      "oneBillForMarker": true,
+      "oneBillPaymentForMarker": true,
+      "repairedBillPaymentVerifier": true,
+      "livePatchedBillPaymentVerifier": true,
+      "increaseAccountAndDestination": true,
+      "increaseTransferScope": true,
+      "increaseSettlementAndDebit": true
+    },
+    "failures": [
+      "localBackend:internal_error"
+    ],
+    "notRun": [
+      "fresh merged-main invoice-to-payment run",
+      "signed webhook delivery",
+      "Auth0 negative/expiry/logout matrix",
+      "returns and credits in external sandbox",
+      "formal period close",
+      "human practitioner review"
+    ],
+    "quickbooks": {
+      "companyCountry": "US",
+      "mappingHash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff",
+      "mappingReferences": 9,
+      "bill": {
+        "id": "145",
+        "totalCents": 67860,
+        "balanceCents": 0,
+        "currentSyncToken": "1",
+        "receiptSyncToken": "0",
+        "requestId": "ap-2d1b7545aac02311f6d562e54826d1e3af8c273735bf",
+        "attempts": 1
+      },
+      "payment": {
+        "id": "146",
+        "totalCents": 67860,
+        "syncToken": "0",
+        "requestId": "ap-5e2eaf62b0809e1fd0c0380b0b49e21825bbdc3a8afc",
+        "attempts": 1,
+        "apAccountRefPresent": false
+      },
+      "mainVerify": "PASS",
+      "liveVerify": "PASS",
+      "markerCounts": {
+        "Bill": 1,
+        "BillPayment": 1
+      }
+    },
+    "increase": {
+      "transferId": "sandbox_ach_transfer_spyd2r518l9gutry0hfn",
+      "rawStatus": "submitted",
+      "settledAt": "2026-10-25T11:34:47Z",
+      "amountCents": 67860,
+      "transactionId": "sandbox_transaction_02j4j1ax6a81pw5y034h",
+      "debitCents": -67860,
+      "currentCents": 0,
+      "availableCents": 0,
+      "verification": "authenticated GET polling; no webhook evidence"
+    },
+    "historicalEvidenceHashes": {
+      "validation-status.json": "d8334c57a446f0f7939dad88fb337b4d22e890a7535435bdc212b4a541459fb0",
+      "validation-happy-path-before-funding.json": "d955a970f89b1f5b0b6748555f3188cc15593a82c7f7a5292771022c97323d4e",
+      "funding-reconciliation-final.json": "e977d678218518b99af58d1a3729d2c162639287726612d5e50afa944936b514"
+    }
+  },
+  "historicalFlow": {
+    "runtimeSnapshot": "71853508db2bb95d6d87929ab46c79db1d7b2a0f",
+    "initialRuntimeBase": "b3c3bc6",
+    "caseId": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
+    "invoice": "INV-1001",
+    "amountCents": 67860,
+    "currency": "USD",
+    "identityEvidence": "actual Auth0 user; final payment button clicked by user",
+    "localAccounting": {
+      "execution": "settled",
+      "reconciliation": "matched",
+      "outstandingCents": 0,
+      "recognitionJournalId": "rx713kw9r8sbgn06y8sc9sqe8d8gzrx9",
+      "settlementJournalId": "rx71arac24mhdfs13bvcmwy1a18gzheq",
+      "recognition": {
+        "debit5000": 67860,
+        "credit2000": 67860
+      },
+      "settlement": {
+        "debit2000": 67860,
+        "credit1000": 67860
+      },
+      "evidencePosts": [
+        1,
+        0
+      ]
+    },
+    "fundingReconciliation": {
+      "checkedAt": "2026-10-25T11:50:40.082Z",
+      "fundingTransactionId": "sandbox_transaction_7in7uo3dooxz3307i4cu",
+      "fundingJournalId": "rx73vfsg1t42av182g987kn3c58gytxg",
+      "cashLedgerCents": 0,
+      "checks": {
+        "twoImportedTransactions": true,
+        "allMatched": true,
+        "noBlockers": true,
+        "oneFundingJournal": true,
+        "fundingJournalCorrect": true,
+        "cashMatchesBank": true,
+        "noReplayWrites": true,
+        "oneSettledPayment": true,
+        "threeJournals": true
+      },
+      "limits": [
+        "Bank reconciliation of this synthetic run only; no formal period-close signature.",
+        "Test capital journal is local; QuickBooks Bill145/BillPayment146 remain the prior verified AP round trip. This does not assert QBO bank reconciliation.",
+        "No production money, real-document or webhook/return acceptance."
+      ]
+    }
+  },
+  "validation": {
+    "targetedTests": 156,
+    "testFiles": 19,
+    "applicationTypecheck": "PASS",
+    "testTypecheck": "PASS",
+    "fullSuite": "not run in this pass",
+    "ci": "not run for this branch at capture time"
+  }
+}

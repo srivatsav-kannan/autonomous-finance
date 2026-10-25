@@ -36,7 +36,7 @@ export const paymentSnapshotSchema = z.object({
   scope: bankScopeSchema,
   bills: z.array(z.object({ billId: nonempty, version: positiveCentsSchema, amountCents: positiveCentsSchema }).strict()).min(1),
   credits: z.array(credit), amountCents: positiveCentsSchema, currency: z.literal("USD"),
-  destination, policyVersion: nonempty,
+  destination, policyVersion: nonempty, releasePolicyHash: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   schedule: z.object({ executionDate: businessDateSchema, timeZone: z.literal("UTC") }).strict().optional(),
 }).strict().superRefine((snapshot, ctx) => {
   try { assertAccountingBindingCoverage(snapshot); } catch { ctx.addIssue({code:"custom",message:"Accounting binding must cover exact obligations"}); }

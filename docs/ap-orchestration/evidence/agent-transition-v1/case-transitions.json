@@ -1,0 +1,2315 @@
+{
+  "classification": "owner local integration test; Convex-test plus SQLite FakeBank; simulated human; synthetic text originals; no parser or external provider call",
+  "clock": "controlled test clock",
+  "scope": {
+    "organizationId": "ap-org",
+    "runId": "ap97-b-unit",
+    "provider": "fake",
+    "environment": "local",
+    "accountId": "account-b"
+  },
+  "events": [
+    {
+      "_creationTime": 1792929605001.001,
+      "_id": "0000000000010019apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929605001,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 1,
+      "reason": "Agent claimed the current case under a fenced lease.",
+      "revision": 1,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "c3af165af65e53ccc46585d9c6dca609d0cdca9ac4255c010ca9ee0a0cab0b5c",
+      "stage": "claimed",
+      "transition": {
+        "action": "claim",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 1,
+            "snapshotHash": "c3af165af65e53ccc46585d9c6dca609d0cdca9ac4255c010ca9ee0a0cab0b5c",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "review_required",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": null,
+            "generation": 1,
+            "leaseOwner": "ap_clerk",
+            "leaseUntil": 1792929635001,
+            "nextCheckAt": 1792929635001,
+            "owner": "ap_clerk",
+            "requirements": [],
+            "role": "ap_clerk",
+            "stage": "check_case",
+            "status": "leased",
+            "transitions": 0,
+            "version": "ap-case-agent-v1",
+            "waitSince": null
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 1,
+            "snapshotHash": "c3af165af65e53ccc46585d9c6dca609d0cdca9ac4255c010ca9ee0a0cab0b5c",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "review_required",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": null,
+            "generation": 0,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929600001,
+            "owner": "ap_clerk",
+            "requirements": [],
+            "role": "ap_clerk",
+            "stage": "check_case",
+            "status": "queued",
+            "transitions": 0,
+            "version": "ap-case-agent-v1",
+            "waitSince": null
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:1:claim",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929605001.002,
+      "_id": "0000000000010020apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929605001,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 1,
+      "reason": "missing_receipt Required: accepted_receiving_evidence",
+      "revision": 1,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "c3af165af65e53ccc46585d9c6dca609d0cdca9ac4255c010ca9ee0a0cab0b5c",
+      "stage": "missing_evidence",
+      "transition": {
+        "action": "advance",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 1,
+            "snapshotHash": "c3af165af65e53ccc46585d9c6dca609d0cdca9ac4255c010ca9ee0a0cab0b5c",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "review_required",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016005001,
+            "generation": 1,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929610001,
+            "owner": "receiving_owner",
+            "requirements": [
+              "accepted_receiving_evidence"
+            ],
+            "role": "ap_clerk",
+            "stage": "missing_evidence",
+            "status": "waiting",
+            "transitions": 1,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929605001
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 1,
+            "snapshotHash": "c3af165af65e53ccc46585d9c6dca609d0cdca9ac4255c010ca9ee0a0cab0b5c",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "review_required",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": null,
+            "generation": 1,
+            "leaseOwner": "ap_clerk",
+            "leaseUntil": 1792929635001,
+            "nextCheckAt": 1792929635001,
+            "owner": "ap_clerk",
+            "requirements": [],
+            "role": "ap_clerk",
+            "stage": "check_case",
+            "status": "leased",
+            "transitions": 0,
+            "version": "ap-case-agent-v1",
+            "waitSince": null
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:1:advance",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929625005.001,
+      "_id": "0000000000010028apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929625005,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 2,
+      "reason": "Agent claimed the current case under a fenced lease.",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "claimed",
+      "transition": {
+        "action": "claim",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "review_required",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": 1793016005001,
+            "generation": 2,
+            "leaseOwner": "ap_clerk",
+            "leaseUntil": 1792929655005,
+            "nextCheckAt": 1792929655005,
+            "owner": "receiving_owner",
+            "requirements": [
+              "accepted_receiving_evidence"
+            ],
+            "role": "ap_clerk",
+            "stage": "missing_evidence",
+            "status": "leased",
+            "transitions": 1,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929605001
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "review_required",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016005001,
+            "generation": 1,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929620005,
+            "owner": "receiving_owner",
+            "requirements": [
+              "accepted_receiving_evidence"
+            ],
+            "role": "ap_clerk",
+            "stage": "missing_evidence",
+            "status": "waiting",
+            "transitions": 1,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929605001
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:2:claim",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929625005.002,
+      "_id": "0000000000010029apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929625005,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 2,
+      "reason": "Current original fields require the existing independent review. Required: current_source_field_review",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "field_review",
+      "transition": {
+        "action": "advance",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "review_required",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016025005,
+            "generation": 2,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929630005,
+            "owner": "human_field_reviewer",
+            "requirements": [
+              "current_source_field_review"
+            ],
+            "role": "ap_clerk",
+            "stage": "field_review",
+            "status": "waiting",
+            "transitions": 2,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929625005
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "review_required",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": 1793016005001,
+            "generation": 2,
+            "leaseOwner": "ap_clerk",
+            "leaseUntil": 1792929655005,
+            "nextCheckAt": 1792929655005,
+            "owner": "receiving_owner",
+            "requirements": [
+              "accepted_receiving_evidence"
+            ],
+            "role": "ap_clerk",
+            "stage": "missing_evidence",
+            "status": "leased",
+            "transitions": 1,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929605001
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:2:advance",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929630006.001,
+      "_id": "0000000000010034apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929630006,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 3,
+      "reason": "Agent claimed the current case under a fenced lease.",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "claimed",
+      "transition": {
+        "action": "claim",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2"
+            ],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "reviewed",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": 1793016025005,
+            "generation": 3,
+            "leaseOwner": "ap_clerk",
+            "leaseUntil": 1792929660006,
+            "nextCheckAt": 1792929660006,
+            "owner": "human_field_reviewer",
+            "requirements": [
+              "current_source_field_review"
+            ],
+            "role": "ap_clerk",
+            "stage": "field_review",
+            "status": "leased",
+            "transitions": 2,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929625005
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2"
+            ],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "reviewed",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016025005,
+            "generation": 2,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929630005,
+            "owner": "human_field_reviewer",
+            "requirements": [
+              "current_source_field_review"
+            ],
+            "role": "ap_clerk",
+            "stage": "field_review",
+            "status": "waiting",
+            "transitions": 2,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929625005
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:3:claim",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929630006.002,
+      "_id": "0000000000010035apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929630006,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 3,
+      "reason": "Current bill and coding require the configured approval route before recognition. Required: current_bill_approval",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "bill_approval",
+      "transition": {
+        "action": "advance",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2"
+            ],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "reviewed",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016030006,
+            "generation": 3,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929635006,
+            "owner": "human_business_reviewer",
+            "requirements": [
+              "current_bill_approval"
+            ],
+            "role": "ap_clerk",
+            "stage": "bill_approval",
+            "status": "waiting",
+            "transitions": 3,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929630006
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": null,
+              "creditedCents": 0,
+              "disputedCents": null,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": null,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": null,
+            "commandIds": [],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2"
+            ],
+            "journalIds": [],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "unposted",
+              "authorization": "not_requested",
+              "business": "held",
+              "document": "reviewed",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": 1793016025005,
+            "generation": 3,
+            "leaseOwner": "ap_clerk",
+            "leaseUntil": 1792929660006,
+            "nextCheckAt": 1792929660006,
+            "owner": "human_field_reviewer",
+            "requirements": [
+              "current_source_field_review"
+            ],
+            "role": "ap_clerk",
+            "stage": "field_review",
+            "status": "leased",
+            "transitions": 2,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929625005
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:3:advance",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929635007,
+      "_id": "0000000000010045apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929635007,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 4,
+      "reason": "Prepare one proposal for the current approved outstanding amount; no bank execution.",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "handoff",
+      "transition": {
+        "action": "handoff",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": 7700,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries"
+            ],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "not_requested",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016030006,
+            "generation": 4,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929635007,
+            "owner": "payments",
+            "requirements": [],
+            "role": "payments",
+            "stage": "prepare_payment",
+            "status": "queued",
+            "transitions": 3,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929630006
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": 7700,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries"
+            ],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "not_requested",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016030006,
+            "generation": 3,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929635006,
+            "owner": "human_business_reviewer",
+            "requirements": [
+              "current_bill_approval"
+            ],
+            "role": "ap_clerk",
+            "stage": "bill_approval",
+            "status": "waiting",
+            "transitions": 3,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929630006
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:4:handoff",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929635007.002,
+      "_id": "0000000000010047apCaseWorkEvents",
+      "actor": "payments",
+      "at": 1792929635007,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 5,
+      "reason": "Agent claimed the current case under a fenced lease.",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "claimed",
+      "transition": {
+        "action": "claim",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": 7700,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries"
+            ],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "not_requested",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": 1793016030006,
+            "generation": 5,
+            "leaseOwner": "payments",
+            "leaseUntil": 1792929665007,
+            "nextCheckAt": 1792929665007,
+            "owner": "payments",
+            "requirements": [],
+            "role": "payments",
+            "stage": "prepare_payment",
+            "status": "leased",
+            "transitions": 3,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929630006
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": 7700,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries"
+            ],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "not_requested",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016030006,
+            "generation": 4,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929635007,
+            "owner": "payments",
+            "requirements": [],
+            "role": "payments",
+            "stage": "prepare_payment",
+            "status": "queued",
+            "transitions": 3,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929630006
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:5:claim",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929635008.002,
+      "_id": "0000000000010050apCaseWorkEvents",
+      "actor": "payments",
+      "at": 1792929635008,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 5,
+      "reason": "Exact payment proposal awaits independent human authorization. Required: independent_payment_authorization",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "payment_authorization",
+      "transition": {
+        "action": "advance",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": 7700,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries"
+            ],
+            "paymentVersionIds": [
+              "00000000000000010048demoVersions"
+            ],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "awaiting_approval",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016035008,
+            "generation": 5,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929640008,
+            "owner": "human_payment_authorizer",
+            "requirements": [
+              "independent_payment_authorization"
+            ],
+            "role": "ap_clerk",
+            "stage": "payment_authorization",
+            "status": "waiting",
+            "transitions": 4,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929635008
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 0,
+              "invoicedCents": 7700,
+              "outstandingCents": 7700,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries"
+            ],
+            "paymentVersionIds": [],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "not_requested",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "not_started",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": 1793016030006,
+            "generation": 5,
+            "leaseOwner": "payments",
+            "leaseUntil": 1792929665007,
+            "nextCheckAt": 1792929665007,
+            "owner": "payments",
+            "requirements": [],
+            "role": "payments",
+            "stage": "prepare_payment",
+            "status": "leased",
+            "transitions": 3,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929630006
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:5:advance",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929640008.001,
+      "_id": "0000000000010055apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929640008,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 6,
+      "reason": "Agent claimed the current case under a fenced lease.",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "claimed",
+      "transition": {
+        "action": "claim",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 7700,
+              "invoicedCents": 7700,
+              "outstandingCents": 7700,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [
+              "00000000000000010051demoCommands"
+            ],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries"
+            ],
+            "paymentVersionIds": [
+              "00000000000000010048demoVersions"
+            ],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "authorized",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "queued",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": 1793016035008,
+            "generation": 6,
+            "leaseOwner": "ap_clerk",
+            "leaseUntil": 1792929670008,
+            "nextCheckAt": 1792929670008,
+            "owner": "human_payment_authorizer",
+            "requirements": [
+              "independent_payment_authorization"
+            ],
+            "role": "ap_clerk",
+            "stage": "payment_authorization",
+            "status": "leased",
+            "transitions": 4,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929635008
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 7700,
+              "invoicedCents": 7700,
+              "outstandingCents": 7700,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [
+              "00000000000000010051demoCommands"
+            ],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries"
+            ],
+            "paymentVersionIds": [
+              "00000000000000010048demoVersions"
+            ],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "authorized",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "queued",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016035008,
+            "generation": 5,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929640008,
+            "owner": "human_payment_authorizer",
+            "requirements": [
+              "independent_payment_authorization"
+            ],
+            "role": "ap_clerk",
+            "stage": "payment_authorization",
+            "status": "waiting",
+            "transitions": 4,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929635008
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:6:claim",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929640008.002,
+      "_id": "0000000000010056apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929640008,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 6,
+      "reason": "Observe the original authorized command until bank evidence is posted and matched. Required: verified_bank_debit, settlement_journal",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "bank_settlement",
+      "transition": {
+        "action": "advance",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 7700,
+              "invoicedCents": 7700,
+              "outstandingCents": 7700,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [
+              "00000000000000010051demoCommands"
+            ],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries"
+            ],
+            "paymentVersionIds": [
+              "00000000000000010048demoVersions"
+            ],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "authorized",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "queued",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016040008,
+            "generation": 6,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929645008,
+            "owner": "payment_evidence_worker",
+            "requirements": [
+              "verified_bank_debit",
+              "settlement_journal"
+            ],
+            "role": "ap_clerk",
+            "stage": "bank_settlement",
+            "status": "waiting",
+            "transitions": 5,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929640008
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 7700,
+              "invoicedCents": 7700,
+              "outstandingCents": 7700,
+              "settledCents": 0
+            },
+            "bankTransactionIds": [],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [
+              "00000000000000010051demoCommands"
+            ],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries"
+            ],
+            "paymentVersionIds": [
+              "00000000000000010048demoVersions"
+            ],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "authorized",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "queued",
+              "reconciliation": "unmatched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": 1793016035008,
+            "generation": 6,
+            "leaseOwner": "ap_clerk",
+            "leaseUntil": 1792929670008,
+            "nextCheckAt": 1792929670008,
+            "owner": "human_payment_authorizer",
+            "requirements": [
+              "independent_payment_authorization"
+            ],
+            "role": "ap_clerk",
+            "stage": "payment_authorization",
+            "status": "leased",
+            "transitions": 4,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929635008
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:6:advance",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929645009.001,
+      "_id": "0000000000010066apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929645009,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 7,
+      "reason": "Agent claimed the current case under a fenced lease.",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "claimed",
+      "transition": {
+        "action": "claim",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 7700,
+              "invoicedCents": 7700,
+              "outstandingCents": 0,
+              "settledCents": 7700
+            },
+            "bankTransactionIds": [
+              "txn_1a6c1fa9c9717f99462d5a1d"
+            ],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [
+              "00000000000000010051demoCommands"
+            ],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries",
+              "000000000000010061journalEntries"
+            ],
+            "paymentVersionIds": [
+              "00000000000000010048demoVersions"
+            ],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [
+              "transfer_338c487c21b6a99a645ce5ec"
+            ],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "authorized",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "settled",
+              "reconciliation": "matched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": 1793016040008,
+            "generation": 7,
+            "leaseOwner": "ap_clerk",
+            "leaseUntil": 1792929675009,
+            "nextCheckAt": 1792929675009,
+            "owner": "payment_evidence_worker",
+            "requirements": [
+              "verified_bank_debit",
+              "settlement_journal"
+            ],
+            "role": "ap_clerk",
+            "stage": "bank_settlement",
+            "status": "leased",
+            "transitions": 5,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929640008
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 7700,
+              "invoicedCents": 7700,
+              "outstandingCents": 0,
+              "settledCents": 7700
+            },
+            "bankTransactionIds": [
+              "txn_1a6c1fa9c9717f99462d5a1d"
+            ],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [
+              "00000000000000010051demoCommands"
+            ],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries",
+              "000000000000010061journalEntries"
+            ],
+            "paymentVersionIds": [
+              "00000000000000010048demoVersions"
+            ],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [
+              "transfer_338c487c21b6a99a645ce5ec"
+            ],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "authorized",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "settled",
+              "reconciliation": "matched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": 1793016040008,
+            "generation": 6,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929645008,
+            "owner": "payment_evidence_worker",
+            "requirements": [
+              "verified_bank_debit",
+              "settlement_journal"
+            ],
+            "role": "ap_clerk",
+            "stage": "bank_settlement",
+            "status": "waiting",
+            "transitions": 5,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929640008
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:7:claim",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    },
+    {
+      "_creationTime": 1792929645009.002,
+      "_id": "0000000000010067apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929645009,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 7,
+      "reason": "Verified bank settlement and local accounting match; no outstanding payable.",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "reconciled",
+      "transition": {
+        "action": "advance",
+        "after": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 7700,
+              "invoicedCents": 7700,
+              "outstandingCents": 0,
+              "settledCents": 7700
+            },
+            "bankTransactionIds": [
+              "txn_1a6c1fa9c9717f99462d5a1d"
+            ],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [
+              "00000000000000010051demoCommands"
+            ],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries",
+              "000000000000010061journalEntries"
+            ],
+            "paymentVersionIds": [
+              "00000000000000010048demoVersions"
+            ],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [
+              "transfer_338c487c21b6a99a645ce5ec"
+            ],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "authorized",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "settled",
+              "reconciliation": "matched"
+            }
+          },
+          "work": {
+            "attempts": 0,
+            "deadlineAt": null,
+            "generation": 7,
+            "leaseOwner": null,
+            "leaseUntil": null,
+            "nextCheckAt": 1792929650009,
+            "owner": "accountant",
+            "requirements": [],
+            "role": "ap_clerk",
+            "stage": "reconciled",
+            "status": "complete",
+            "transitions": 6,
+            "version": "ap-case-agent-v1",
+            "waitSince": null
+          }
+        },
+        "before": {
+          "case": {
+            "amounts": {
+              "acceptedCents": 7700,
+              "creditedCents": 0,
+              "disputedCents": 0,
+              "instructedCents": 7700,
+              "invoicedCents": 7700,
+              "outstandingCents": 0,
+              "settledCents": 7700
+            },
+            "bankTransactionIds": [
+              "txn_1a6c1fa9c9717f99462d5a1d"
+            ],
+            "billId": "00000000000000000010036demoBills",
+            "commandIds": [
+              "00000000000000010051demoCommands"
+            ],
+            "decisionIds": [
+              "0000000000000010007apCaseRecords:field:review-2",
+              "0000000000000010007apCaseRecords:bill:bill-2"
+            ],
+            "journalIds": [
+              "000000000000010037journalEntries",
+              "000000000000010061journalEntries"
+            ],
+            "paymentVersionIds": [
+              "00000000000000010048demoVersions"
+            ],
+            "policyVersion": "golden-state-ap-v1",
+            "providerTransferIds": [
+              "transfer_338c487c21b6a99a645ce5ec"
+            ],
+            "revision": 2,
+            "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+            "sourceBindings": [
+              {
+                "revision": 1,
+                "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+                "sourceId": "invoice-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+                "sourceId": "po-GS-1042"
+              },
+              {
+                "revision": 1,
+                "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+                "sourceId": "receipt-GS-1042"
+              }
+            ],
+            "states": {
+              "accounting": "recognized",
+              "authorization": "authorized",
+              "business": "approved",
+              "document": "reviewed",
+              "execution": "settled",
+              "reconciliation": "matched"
+            }
+          },
+          "work": {
+            "attempts": 1,
+            "deadlineAt": 1793016040008,
+            "generation": 7,
+            "leaseOwner": "ap_clerk",
+            "leaseUntil": 1792929675009,
+            "nextCheckAt": 1792929675009,
+            "owner": "payment_evidence_worker",
+            "requirements": [
+              "verified_bank_debit",
+              "settlement_journal"
+            ],
+            "role": "ap_clerk",
+            "stage": "bank_settlement",
+            "status": "leased",
+            "transitions": 5,
+            "version": "ap-case-agent-v1",
+            "waitSince": 1792929640008
+          }
+        },
+        "operationId": "ap-agent:0000000000000010007apCaseRecords:7:advance",
+        "outcome": "applied",
+        "version": "ap-agent-transition-v1"
+      }
+    }
+  ],
+  "versions": [
+    {
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "id": "00000000000000010048demoVersions",
+      "status": "settled",
+      "snapshotHash": "a526ed1dd39c8fd8867ecdeb7b73201624b8adfd98a762810d1d442c39220221",
+      "approvals": [
+        {
+          "at": 1792929635008,
+          "kind": "human",
+          "seatId": "human_cfo",
+          "snapshotHash": "a526ed1dd39c8fd8867ecdeb7b73201624b8adfd98a762810d1d442c39220221",
+          "subject": "https://ap-demo.invalid|reviewer"
+        }
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "id": "00000000000000010051demoCommands",
+      "operationId": "00000000000000010048demoVersions",
+      "execution": "settled",
+      "posting": "posted",
+      "reconciliation": "matched",
+      "attemptCount": 1
+    }
+  ],
+  "journals": [
+    {
+      "id": "000000000000010037journalEntries",
+      "date": "2026-10-19",
+      "source": {
+        "kind": "bill",
+        "ref": "00000000000000000010036demoBills"
+      },
+      "lines": [
+        {
+          "account": "5000",
+          "credit": 0,
+          "debit": 7700,
+          "dims": {
+            "store": "sf-hayes-valley",
+            "vendor": "golden-state-produce"
+          },
+          "memo": "expense; period 2026-10"
+        },
+        {
+          "account": "2000",
+          "credit": 7700,
+          "debit": 0,
+          "dims": {
+            "vendor": "golden-state-produce"
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000000000010061journalEntries",
+      "date": "2026-10-25",
+      "source": {
+        "kind": "payment_settlement",
+        "ref": "ap-org:ap97-b-unit:fake:local:account-b:txn_1a6c1fa9c9717f99462d5a1d:debit"
+      },
+      "lines": [
+        {
+          "account": "2000",
+          "credit": 0,
+          "debit": 7700
+        },
+        {
+          "account": "1000",
+          "credit": 7700,
+          "debit": 0
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "sameCaseResumed": true,
+    "waitedForEvidence": true,
+    "noCommandBeforeHumanAuthorization": true,
+    "oneBill": true,
+    "oneProposal": true,
+    "oneCommand": true,
+    "oneBankTransfer": true,
+    "twoJournals": true,
+    "replayPostedZero": true
+  },
+  "caseId": "0000000000000010007apCaseRecords",
+  "counts": {
+    "bills": 1,
+    "versions": 1,
+    "commands": 1,
+    "journals": 2,
+    "providerTransfers": 1,
+    "bankRecords": 2,
+    "postedBankDebits": 1,
+    "linkedCaseBankTransactions": 1
+  },
+  "finalStates": {
+    "accounting": "recognized",
+    "authorization": "authorized",
+    "business": "approved",
+    "document": "reviewed",
+    "execution": "settled",
+    "reconciliation": "matched"
+  },
+  "finalAmounts": {
+    "acceptedCents": 7700,
+    "creditedCents": 0,
+    "disputedCents": 0,
+    "instructedCents": 7700,
+    "invoicedCents": 7700,
+    "outstandingCents": 0,
+    "settledCents": 7700
+  },
+  "finalLinks": {
+    "bankTransactionIds": [
+      "txn_1a6c1fa9c9717f99462d5a1d"
+    ],
+    "billId": "00000000000000000010036demoBills",
+    "billVersion": 2,
+    "commandIds": [
+      "00000000000000010051demoCommands"
+    ],
+    "duplicateOfCaseId": null,
+    "externalAccountingIds": [],
+    "paymentVersionIds": [
+      "00000000000000010048demoVersions"
+    ],
+    "recognitionJournalId": "000000000000010037journalEntries",
+    "settlementJournalIds": [
+      "000000000000010061journalEntries"
+    ]
+  },
+  "bankRecords": [
+    {
+      "id": "pending_e5d71ea31ac5b7ce0ae8e7b9",
+      "transferId": "transfer_338c487c21b6a99a645ce5ec",
+      "commandId": "00000000000000010048demoVersions",
+      "amountCents": -7700,
+      "currency": "USD",
+      "status": "complete",
+      "purpose": "debit"
+    },
+    {
+      "id": "txn_1a6c1fa9c9717f99462d5a1d",
+      "transferId": "transfer_338c487c21b6a99a645ce5ec",
+      "commandId": "00000000000000010048demoVersions",
+      "amountCents": -7700,
+      "currency": "USD",
+      "status": "posted",
+      "purpose": "debit"
+    }
+  ]
+}

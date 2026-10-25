@@ -13,7 +13,7 @@ describe("V5 independent governed credit versus durable bank execution",()=>{
    vi.useFakeTimers();vi.setSystemTime(Date.parse("2026-10-25T12:00:00Z"));
    const f=await creditFixture(), credit=await f.credit("V5-GOVERNED-RETURN");
    const request=(key:string)=>f.t.mutation(api.demoPayments.requestPayment,{scope:f.scope,seatId:"payments",token:"token-payments",requestKey:key,billIds:[f.original.billId],billAmounts:[{billId:f.original.billId,amountCents:5000}],credits:[{creditId:credit.creditId,amountCents:1200}]});
-   const p=await request("v5-credit-original"),q=await f.humans.finance!.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p});
+   const p=await request("v5-credit-original"),q=await f.payer.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p});
    const bank=openFakeBank({path:":memory:",scope:f.scope,seed:"v5-governed",startTime:new Date(Date.now()).toISOString(),faults:possible?[{operation:"createTransfer",call:1,kind:"accept_then_lost_response"}]:[]});
    try {
      const transport=f.t as unknown as KernelTransport;let n=0;

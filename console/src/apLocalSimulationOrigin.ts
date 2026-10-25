@@ -8,7 +8,8 @@ export function isLocalSimulationOrigin(runtime: unknown, origin: string, develo
   if (!runtime || typeof runtime !== "object") return false;
   const value = runtime as { identityMode?: unknown; runId?: unknown; scope?: { provider?: unknown; environment?: unknown; runId?: unknown; organizationId?: unknown; accountId?: unknown } };
   if (value.identityMode !== "simulated_human") return false;
-  if (origin === "http://127.0.0.1:5193") return true;
+  // 5193 is the isolated AP workspace. 5173 is the combined console started by `npm run demo`. Neither is the Auth0 origin (5192).
+  if (origin === "http://127.0.0.1:5193" || origin === "http://127.0.0.1:5173") return true;
   const rehearsal = Object.hasOwn(DEV_REHEARSALS, origin) ? DEV_REHEARSALS[origin] : undefined;
   return development && !!rehearsal
     && value.runId === rehearsal.runId

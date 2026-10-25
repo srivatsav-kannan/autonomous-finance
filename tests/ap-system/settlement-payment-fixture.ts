@@ -34,8 +34,7 @@ export async function boundPayment(legacy = false, increase = false) {
     credits: [{ creditId: credit.creditId, amountCents: 1000 }],
   };
   const request = await f.t.mutation(api.demoPayments.requestPayment, args);
-  const approved = await f.humans.finance!.mutation(
-    api.demoPayments.approveAndQueue,
+  const approved = await f.payer.mutation(api.demoPayments.approveAndQueue,
     { scope: f.scope, ...request },
   );
   const claim = (key = "dimension-lease-first") =>

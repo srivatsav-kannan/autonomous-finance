@@ -302,8 +302,7 @@ describe("QBO frozen settlement locations", () => {
       credits: [],
       billAmounts: [{ billId: f.original.billId, amountCents: 2000 }],
     });
-    const c2 = await f.humans.finance!.mutation(
-      api.demoPayments.approveAndQueue,
+    const c2 = await f.payer.mutation(api.demoPayments.approveAndQueue,
       { scope: f.scope, ...p2 },
     );
     expect(await f.claim("replacement-dim-lease")).not.toBeNull();

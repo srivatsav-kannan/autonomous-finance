@@ -8,13 +8,13 @@ import { z } from "zod";
 import { AP_POLICY_VERSION } from "./contracts";
 import { PAYMENT_EXECUTOR_VERSION, type BankScope } from "../payments/contracts";
 const URL="http://127.0.0.1:3254",ISSUER="https://ap-demo.invalid";
-const actorIds=["verifier","governor","owner-a","owner-b","finance"] as const;
+const actorIds=["verifier","governor","owner-a","owner-b","finance","field-reviewer","payer"] as const;
 export const localB3Actors=actorIds.map(id=>({id,name:`Simulated ${id.replaceAll("-"," ")}`,subject:`${ISSUER}|ap97-b3-${id}`}));
 const secret=()=>randomBytes(32).toString("hex"),hash=(s:string)=>createHash("sha256").update(s).digest("hex");
 const schema=z.object({scope:z.object({organizationId:z.literal("ap97-b3-synthetic-company"),runId:z.string().regex(/^ap97-b3-[a-zA-Z0-9-]+$/),provider:z.literal("fake"),environment:z.literal("local"),accountId:z.literal("ap97-b3-usd-operating")}).strict(),apToken:z.string().length(64),controllerToken:z.string().length(64),paymentToken:z.string().length(64),dispatchToken:z.string().length(64),evidenceToken:z.string().length(64),createdAt:z.string()}).strict();
 export function assertLocalB3Deployment(input:unknown){return z.object({ports:z.object({cloud:z.literal(3254),site:z.literal(3255)}),adminKey:z.string().min(1)}).parse(input);}
 export async function prepareLocalB3Runtime(root=process.cwd()){
- const runId=process.env.AP_B3_RUN_ID??"ap97-b3-live-20261025";
+ const runId=process.env.AP_B3_RUN_ID??"ap97-b3-controls-v2";
  if(!/^ap97-b3-[a-zA-Z0-9-]+$/.test(runId))throw Error("Owned B3 local simulation run required");
  const deployment=assertLocalB3Deployment(JSON.parse(readFileSync(path.join(root,".convex/local/default/config.json"),"utf8")));
  const admin=process.env.KERNEL_ADMIN_SECRET;if(!admin)throw Error("Private isolated KERNEL_ADMIN_SECRET required");

@@ -47,6 +47,7 @@ export const businessPolicySchema = z
     supplierContactEscalationGroup: id.optional(),
     receiptIdentityApprovalGroup: id.optional(),
     varianceApprovalGroup: id,
+    paymentBands: z.array(z.object({upToCents:cents, groupId:id})).min(1).optional(),
     bands: z
       .array(
         z.object({
@@ -101,6 +102,7 @@ export const businessPolicySchema = z
       ...(p.supplierContactEscalationGroup ? [p.supplierContactEscalationGroup] : []),
       ...(p.receiptIdentityApprovalGroup ? [p.receiptIdentityApprovalGroup] : []),
       p.varianceApprovalGroup,
+      ...(p.paymentBands?.map(b => b.groupId) ?? []),
       ...p.bands.flatMap((b) =>
         b.steps.flatMap((s) => [
           s.groupId,
@@ -109,6 +111,8 @@ export const businessPolicySchema = z
       ),
     ])
       if (!groups.has(group)) fail("Unknown configured approval group");
+    if (p.paymentBands?.some((b,i) => b.upToCents <= 0 || (i > 0 && b.upToCents <= p.paymentBands![i-1]!.upToCents)))
+      fail("Payment thresholds must be positive and strictly increase; the final band is the payment ceiling");
     if (
       p.bands.some(
         (b, i) => i > 0 && b.upToCents <= p.bands[i - 1]!.upToCents,

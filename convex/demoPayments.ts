@@ -25,7 +25,7 @@ const dollars = (n: number) => { if (!Number.isSafeInteger(n) || n <= 0) throw n
 
 /** Trusted setup activates an immutable account, beneficiary, policy and human identity binding. */
 export const configure = mutation({
-  args: { ...scoped, secret: v.string(), paymentExecutorVersion: v.optional(v.string()), provenance: v.optional(provenanceValidator), beneficiary: v.object({ vendor: v.string(), externalAccountId: v.string(), version: v.string() }), policyVersion: v.string(), controllerLimitCents: v.number(), humanSubjects: v.array(v.object({ subject: v.string(), seatId: v.string() })),
+  args: { ...scoped, secret: v.string(), paymentExecutorVersion: v.optional(v.string()), provenance: v.optional(provenanceValidator), beneficiary: v.object({ vendor: v.string(), externalAccountId: v.string(), version: v.string() }), policyVersion: v.string(), controllerLimitCents: v.number(), paymentAuthorizers:v.optional(v.array(v.object({subject:v.string(),maxCents:v.number()}))), humanSubjects: v.array(v.object({ subject: v.string(), seatId: v.string() })),
     // Set for a reused bank account: unlinked activity created before it is prior history, not this run's cash.
     activitySince: v.optional(v.string()) },
   handler: async (ctx, args) => {
@@ -39,6 +39,14 @@ export const configure = mutation({
     if ((args.scope.provider === "fake") !== (args.scope.environment === "local")) throw new Error("Provider/environment mismatch");
     if (![args.scope.organizationId, args.scope.runId, args.scope.accountId, args.beneficiary.vendor, args.beneficiary.externalAccountId, args.beneficiary.version, args.policyVersion].every(s => s.trim().length > 0)) throw new Error("Empty configuration field");
     dollars(args.controllerLimitCents);
+    if (args.paymentAuthorizers) {
+      if (!args.paymentAuthorizers.length || new Set(args.paymentAuthorizers.map(a=>a.subject)).size !== args.paymentAuthorizers.length)
+        throw Error("Distinct payment authorizers with explicit limits required");
+      for (const a of args.paymentAuthorizers) {
+        dollars(a.maxCents);
+        if (!args.humanSubjects.some(h=>h.subject===a.subject)) throw Error("Payment authorizer must be a configured human");
+      }
+    }
     if (!args.humanSubjects.length || new Set(args.humanSubjects.map(p => p.subject)).size !== args.humanSubjects.length) throw new Error("Distinct human identities required");
     // Historical bank outcomes must be resolved, never silently moved into this dispatcher.
     for (const table of ["paymentIntents", "bills", "journalEntries"] as const) {
@@ -157,7 +165,8 @@ export const recordCredit = mutation({
   args: { ...scoped, reference: v.string(), amountCents: v.number(), evidence: v.string(), date: v.string(), expenseAccount: v.string() },
   handler: async (ctx, args) => {
     const { config, seat } = await requirePaymentHuman(ctx, args.scope);
-    if (await activeBusinessPolicy(ctx, args.scope)) throw new Error("Governed credits require the reviewed original-allocation business workflow");
+    if (await activeBusinessPolicy(ctx, args.scope) || await ctx.db.query("apCaseRecords").withIndex("by_run",q=>q.eq("scope.runId",args.scope.runId)).first())
+      throw new Error("AP case credits require the reviewed original-allocation business workflow");
     dollars(args.amountCents);
     if (!validDate(args.date) || !args.reference.trim() || !args.evidence.trim() || !["5000", "5200", "5300", "6000", "6100", "6200"].includes(args.expenseAccount)) throw new Error("Valid credit reference, evidence and expense account required");
     const existing = await ctx.db.query("demoCredits").withIndex("by_reference", q => q.eq("scope.runId", args.scope.runId).eq("vendor", config.beneficiary.vendor).eq("reference", args.reference)).unique();

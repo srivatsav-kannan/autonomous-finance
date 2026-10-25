@@ -26,7 +26,13 @@ Credential files, JWTs, live identity details and raw parser caches with signed 
 - Model review: awaiting external Claude operator; [status](claude-review/03-review-records/status.json).
 - Practitioner review: not required for this delivery; never claimed completed. Prior practitioner packet/expectations are historical preparatory material.
 - CI: deferred by user. PR105 run40187986581 retains regression failure; browser/recovery jobs passed. No CI fix or rerun is part of this handoff.
-- External QBO/Increase: required under prior plan; current reference/auth evidence does not replace accounting transaction or payment acceptance.
+- External QBO/Increase: one synthetic USD invoice/payment round trip and local funding reconciliation passed; broader external lifecycle tests remain separate. See the subsequent live-sandbox supplement below.
 - [Full manifest](claude-review/MANIFEST.json) links immutable bytes to the handoff.
 
 Supplement validation:31 selected existing scenarios passed;74 journal rows exactly match captured databases and balance in integer cents. Source lengths/hashes, archives and separate phase manifests were checked. No product code/test assertion or CI change was made. The initial handoff archives/manifests remain immutable.
+
+## Subsequent live-sandbox comparison addendum (25 October 2026)
+
+After freezing the independent phase1 derivation, include [the actual invoice/payment/QBO round trip](evidence/C4-live-happy-path.md) and [the completed funding reconciliation](evidence/C4-funding-reconciliation.md), with their structured records. These are additional implementation outcomes for comparison, not Claude findings. The original review archives/manifests are unchanged. The funding fact is an official simulated inbound ACH +USD678.60; the user authorized test-capital classification. Expected policy treatment is explicitly synthetic contributed capital. Require Claude to assess journal arithmetic, exact bank links, duplicates and the stated limits, including no formal month close and no QBO export of the test-capital journal.
+
+The separately hashed [live comparison supplement](claude-live-supplement/README.md) packages these actual records and scope limits. Share it only after the corresponding independent source/policy derivation is frozen. This supplement does not alter the original blind/comparison archives.

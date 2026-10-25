@@ -1,3 +1,5 @@
+import { WorkspaceSettings, WorkspaceDataStatus } from "./WorkspaceSettings";
+import { chooseFinanceScenario, rememberedFinanceScenario, rememberFinanceScenario } from "./financeScenario";
 import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useConvexConnectionState, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -12,10 +14,13 @@ import { Bank } from "./Bank";
 import { EvidenceRecord } from "./EvidenceRecord";
 import { FinanceFlow } from "./FinanceFlow";
 import { useUrlState } from "./useUrlState";
-import { InvoiceWorkspace, type InvoiceContext } from "./InvoiceWorkspace";
-import { modeLabel } from "./invoiceFormat";
 import { APAuthGate } from "./APAuthGate";
-import { APSystemWorkspace, type APSystemContext } from "./APSystemWorkspace";
+import { APSystemWorkspace, type APSystemContext, type APWorkspaceSection } from "./APSystemWorkspace";
+import { APDemo } from "./APDemo";
+import { APDecisions } from "./APDecisions";
+import { Connectors, ProofGroups } from "./Proof";
+// Shared header and context styles that used to arrive with the old invoice page.
+import "./invoice.css";
 
 const $ = (cents: number) => (cents < 0 ? "-" : "") + "$" + (Math.abs(cents) / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const ago = (t: number) => {
@@ -23,28 +28,59 @@ const ago = (t: number) => {
   return s < 60 ? `${s}s ago` : s < 3600 ? `${Math.round(s / 60)}m ago` : `${Math.round(s / 3600)}h ago`;
 };
 
-type Tab = "ap-system" | "invoices" | "inbox" | "org" | "activity" | "ledger" | "memory" | "evals" | "control" | "bank" | "flow";
-const TABS: { id: Tab; label: string }[] = [
-  { id: "ap-system", label: "Accounts payable" },
-  { id: "invoices", label: "Invoices" },
-  { id: "inbox", label: "Inbox" },
-  { id: "bank", label: "Bank & cash" },
-  { id: "flow", label: "Finance flow" },
-  { id: "org", label: "Team" },
-  { id: "activity", label: "Live activity" },
-  { id: "ledger", label: "Ledger" },
-  { id: "memory", label: "Memory" },
-  { id: "evals", label: "Evals" },
-  { id: "control", label: "Control room" },
+type Tab = "inbox" | "invoices" | "payments" | "bank" | "close" | "ledger" | "flow" | "org" | "activity" | "memory" | "policy" | "connectors" | "evals" | "control" | "recovery" | "settings";
+type IconName = Parameters<typeof Icon>[0]["name"];
+// One navigation, grouped by the work. Accounts payable sections sit where they belong in the
+// department instead of under a separate tab: invoices are AP cases, payments are released there,
+// and policy and close live with the rest of the setup and books.
+const NAV: { label: string; tabs: { id: Tab; label: string; icon: IconName }[] }[] = [
+  { label: "Work", tabs: [
+    { id: "inbox", label: "Inbox", icon: "inbox" },
+    { id: "invoices", label: "Invoices", icon: "file" },
+    { id: "payments", label: "Payments", icon: "arrow" },
+    { id: "bank", label: "Bank & cash", icon: "bank" },
+    { id: "close", label: "Period close", icon: "check" },
+  ] },
+  { label: "Books", tabs: [
+    { id: "ledger", label: "Ledger", icon: "ledger" },
+    { id: "flow", label: "Finance flow", icon: "flow" },
+  ] },
+  { label: "Agents", tabs: [
+    { id: "org", label: "Team", icon: "org" },
+    { id: "activity", label: "Live activity", icon: "activity" },
+    { id: "memory", label: "Memory", icon: "memory" },
+  ] },
+  { label: "Setup", tabs: [
+    { id: "settings", label: "Settings", icon: "control" },
+    { id: "policy", label: "Policy & suppliers", icon: "control" },
+    { id: "connectors", label: "Connectors", icon: "download" },
+  ] },
+  { label: "Proof", tabs: [
+    { id: "evals", label: "Evals & tests", icon: "evals" },
+    { id: "control", label: "Control room", icon: "control" },
+    { id: "recovery", label: "Crash recovery", icon: "bank" },
+  ] },
 ];
+const TABS = NAV.flatMap((group) => group.tabs);
+const AP_SECTION: Partial<Record<Tab, APWorkspaceSection>> = { invoices: "cases", payments: "runs", policy: "governance", close: "close" };
+const TAB_FOR_SECTION: Record<APWorkspaceSection, Tab> = { cases: "invoices", runs: "payments", governance: "policy", close: "close" };
+// Tabs that read the simulated company's run. AP sections and the static pages don't need the run picker.
+const RUN_TABS: Tab[] = ["inbox", "bank", "ledger", "flow", "org", "activity", "memory", "evals", "control"];
+const LEGACY_VIEWS: Record<string, Tab> = { "ap-system": "invoices" };
 
 function initialRun() {
   try { return decodeURIComponent(location.hash.slice(1)); } catch { return ""; }
 }
 
 function initialTab(): Tab {
-  const value = new URLSearchParams(location.search).get("view");
-  return TABS.find((t) => t.id === value)?.id ?? (location.pathname.replace(/\/$/, "") === "/ap-system" ? "ap-system" : location.pathname.startsWith("/legacy") ? "inbox" : "invoices");
+  const params = new URLSearchParams(location.search);
+  const value = params.get("view") ?? "";
+  const legacy = LEGACY_VIEWS[value] ?? (location.pathname.replace(/\/$/, "") === "/ap-system" ? "invoices" : undefined);
+  if (legacy === "invoices") {
+    const section = params.get("apWorkspace") as APWorkspaceSection | null;
+    if (section && section in TAB_FOR_SECTION) return TAB_FOR_SECTION[section];
+  }
+  return TABS.find((t) => t.id === value)?.id ?? legacy ?? "inbox";
 }
 
 function Loading({ label }: { label: string }) {
@@ -64,26 +100,29 @@ function ConnectedWorkbench() {
 function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { runId: string; label: string }[]; simulationAvailable: boolean; connected?: boolean }) {
   const [runId, setRunId] = useState(initialRun);
   const [tab, setTab] = useState<Tab>(initialTab);
-  const [invoiceContext, setInvoiceContext] = useState<InvoiceContext>();
-  const [invoiceBusy, setInvoiceBusy] = useState(false);
+  const [apBusy, setAPBusy] = useState(false);
   const [apContext, setAPContext] = useState<APSystemContext>();
-  const isAP = tab === "ap-system";
-  const isInvoice = tab === "invoices";
-  const company = isAP ? "Accounts payable" : isInvoice ? invoiceContext?.company ?? "Invoice workspace" : "Sweetgreen, Inc.";
-  const companyCaption = isAP ? "Evidence and obligations" : isInvoice ? "Local simulated identity · USD" : "Simulated company";
+  const section = AP_SECTION[tab];
+  // Keep the AP workspace mounted after its first visit so the signed-in AP seat carries across pages.
+  const [apMounted, setAPMounted] = useState(section !== undefined);
+  useEffect(() => { if (section) setAPMounted(true); }, [section]);
+  const usesRun = RUN_TABS.includes(tab);
+  const group = NAV.find((g) => g.tabs.some((t) => t.id === tab));
   useEffect(() => {
-    if (!isAP && !runId && runs?.length) {
-      const first = runs[0]!.runId;
+    if (!runId && runs?.length) {
+      // The AP workspace keeps its own run. Default the picker to the simulated company.
+      const first = chooseFinanceScenario(runs, runId, rememberedFinanceScenario());
       const url = new URL(location.href);
       url.hash = encodeURIComponent(first);
       history.replaceState(null, "", url);
       setRunId(first);
     }
-  }, [runs, runId, isAP]);
+  }, [runs, runId]);
   useEffect(() => {
     const url = new URL(location.href);
     url.searchParams.set("view", tab);
-    if (tab === "ap-system") url.hash = "";
+    url.searchParams.delete("apWorkspace");
+    if (url.pathname !== "/") url.pathname = "/";
     history.replaceState(null, "", url);
     document.title = `${TABS.find(t => t.id === tab)?.label} · Autonomous Finance`;
   }, [tab]);
@@ -97,25 +136,39 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
     };
   }, []);
   useEffect(() => {
-    if (simulationAvailable && runId && !isInvoice && !isAP) return registerWebMcpTools(runId);
-  }, [runId, isInvoice, isAP, simulationAvailable]);
+    if (simulationAvailable && runId) return registerWebMcpTools(runId);
+  }, [runId, simulationAvailable]);
 
-  const navigate = (next: Tab) => {
-    if (invoiceBusy || next === tab) return;
+  const navigate = (next: Tab, options: { caseId?: string; keepCase?: boolean } = {}) => {
+    if (apBusy || (next === tab && !options.caseId)) return;
     const url = new URL(location.href);
     url.searchParams.set("view", next);
-    url.pathname = next === "ap-system" ? "/ap-system" : "/";
-    url.searchParams.delete("case");
+    url.pathname = "/";
+    if (options.caseId) url.searchParams.set("case", options.caseId);
+    else if (!options.keepCase) url.searchParams.delete("case");
     history.pushState(null, "", url);
     setTab(next);
+    if (options.caseId) window.dispatchEvent(new PopStateEvent("popstate"));
   };
+  const openCase = (caseId: string) => navigate("invoices", { caseId });
   const selectRun = (next: string) => {
+    rememberFinanceScenario(next);
     const url = new URL(location.href);
     url.hash = encodeURIComponent(next);
     url.searchParams.delete("ask");
     history.pushState(null, "", url);
     setRunId(next);
   };
+  const runPicker = <label className="scenario-picker"><span>Scenario</span>
+    <select value={runId} onChange={(e) => selectRun(e.target.value)} aria-label="Scenario" disabled={!runs?.length}>
+      {!runs?.length && <option value={runId}>{!simulationAvailable ? "Backend not configured" : runs ? "No scenarios" : "Loading scenarios…"}</option>}
+      {(runs ?? []).map((r) => <option key={r.runId} value={r.runId}>{r.label} ({r.runId})</option>)}
+      {/* A run linked by URL (e.g. #scenario-1) stays selectable after newer runs push it out of the recent list. */}
+      {!!runs?.length && runId && !runs.some((r) => r.runId === runId) && <option value={runId}>{runId}</option>}
+    </select>
+  </label>;
+  const needsRun = !simulationAvailable ? <div className="empty"><h2>Connect the simulation backend</h2><p>Start everything with <code>npm run demo</code>, or start the backend and restart the console with <code>VITE_CONVEX_URL</code> set.</p></div>
+    : !runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run demo</code> or <code>npm run world</code> to start a simulation.</div> : null;
 
   return (
     <div className="shell finance-workbench">
@@ -125,51 +178,51 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
           <span className="mark" aria-hidden="true">af</span>
           <h1 className="title">Autonomous<br />Finance</h1>
         </div>
-        <div className="company"><span className="company-avatar" aria-hidden="true">{company.charAt(0)}</span><div>{company}<span>{companyCaption}</span></div></div>
+        <div className="company"><span className="company-avatar" aria-hidden="true">S</span><div>Sweetgreen, Inc.<span>Simulated company · USD</span></div></div>
         <nav className="side" aria-label="Console views">
-          <p className="nav-label">Workspace</p>
-          {TABS.map((t) => (
-            <button type="button" key={t.id} className={t.id === tab ? "on" : ""} aria-current={t.id === tab ? "page" : undefined} onClick={() => navigate(t.id)} disabled={invoiceBusy}>
-              <Icon name={t.id === "invoices" || t.id === "ap-system" ? "file" : t.id} /><span>{t.label}</span>
-              {t.id === "inbox" && !isInvoice && !isAP && simulationAvailable && runId && <InboxCount runId={runId} />}
-            </button>
-          ))}
+          {NAV.map((g) => <Fragment key={g.label}>
+            <p className="nav-label">{g.label}</p>
+            {g.tabs.map((t) => (
+              <button type="button" key={t.id} className={t.id === tab ? "on" : ""} aria-current={t.id === tab ? "page" : undefined} onClick={() => navigate(t.id)} disabled={apBusy}>
+                <Icon name={t.icon} /><span>{t.label}</span>
+                {t.id === "inbox" && simulationAvailable && runId && <InboxCount runId={runId} />}
+              </button>
+            ))}
+          </Fragment>)}
         </nav>
-        <div className="sidebar-footer"><span className="operator-avatar" aria-hidden="true">HF</span><div>Human finance lead<span>You oversee. Agents operate.</span></div></div>
+        <div className="sidebar-footer"><span className="operator-avatar" aria-hidden="true">HF</span><div>Human finance lead<span>You make the decisions. Agents do the work.</span></div></div>
       </aside>
       <div className="workspace">
         <header className="workspace-top">
-          <div className="breadcrumb"><span>Workspace</span><Icon name="chevron" /><span>{TABS.find((t) => t.id === tab)?.label}</span></div>
-          {isAP ? <div className="iv-workspace-context"><span>{apContext?.provider ?? "AP workspace"}</span><small>{apContext?.runId ?? "Connect to the AP service"}</small></div> : isInvoice ? <div className="iv-workspace-context"><span>{invoiceContext ? modeLabel[invoiceContext.runtimeMode] : "Connecting to invoices…"}</span><small>{invoiceContext?.runId}</small></div> : <label className="scenario-picker"><span>Scenario</span>
-            <select value={runId} onChange={(e) => selectRun(e.target.value)} aria-label="Scenario" disabled={!runs?.length}>
-              {!runs?.length && <option value={runId}>{!simulationAvailable ? "Backend not configured" : runs ? "No scenarios" : "Loading scenarios…"}</option>}
-              {(runs ?? []).map((r) => <option key={r.runId} value={r.runId}>{r.label} ({r.runId})</option>)}
-              {/* A run linked by URL (e.g. #scenario-1) stays selectable after newer runs push it out of the recent list. */}
-              {!!runs?.length && runId && !runs.some((r) => r.runId === runId) && <option value={runId}>{runId}</option>}
-            </select>
-          </label>}
+          <div className="breadcrumb"><span>{group?.label}</span><Icon name="chevron" /><span>{TABS.find((t) => t.id === tab)?.label}</span></div>
+          {section ? <div className="iv-workspace-context"><span>{apContext?.provider ?? "Accounts payable"}</span><small>{apContext?.runId ?? "Connecting to the AP service…"}</small></div> : usesRun ? runPicker : null}
         </header>
         <div className="workspace-content">
-          <label className="mobile-nav"><span>Autonomous Finance<small>{company} · {companyCaption}</small></span>
-            <select value={tab} onChange={(e) => navigate(e.target.value as Tab)} aria-label="Console view" disabled={invoiceBusy}>
-              {TABS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+          <label className="mobile-nav"><span>Autonomous Finance<small>Sweetgreen, Inc. · Simulated company</small></span>
+            <select value={tab} onChange={(e) => navigate(e.target.value as Tab)} aria-label="Console view" disabled={apBusy}>
+              {NAV.map((g) => <optgroup key={g.label} label={g.label}>{g.tabs.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}</optgroup>)}
             </select>
           </label>
-          {!isInvoice && !isAP && simulationAvailable && !connected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
-          {!isInvoice && !isAP && simulationAvailable && runId && tab !== "bank" && tab !== "flow" && <Kpis runId={runId} />}
-          <main className="main" id="main" tabIndex={-1} key={isAP ? "ap-system" : isInvoice ? "invoices" : runId}>
-            {isAP ? <APAuthGate busy={invoiceBusy}><APSystemWorkspace onContextChange={setAPContext} onBusyChange={setInvoiceBusy} /></APAuthGate> : isInvoice ? <InvoiceWorkspace onContextChange={setInvoiceContext} onBusyChange={setInvoiceBusy} /> : !simulationAvailable ? <div className="empty"><h2>Connect the simulation backend</h2><p>Start the local backend and restart the console with <code>VITE_CONVEX_URL</code> configured. Invoices use their own gateway and remain available.</p><button onClick={() => navigate("invoices")}>Open invoices</button></div> : !runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div> : <>
-              {tab === "inbox" && <Inbox runId={runId} />}
+          {usesRun && simulationAvailable && !connected && <p className="connection-note" role="status">Connecting to the finance backend. <button type="button" onClick={() => navigate("settings")}>Open settings</button></p>}
+          {usesRun && simulationAvailable && connected && runId && <WorkspaceDataStatus runId={runId} onOpenSettings={() => navigate("settings")} />}
+          {usesRun && simulationAvailable && runId && tab !== "bank" && tab !== "flow" && <Kpis runId={runId} />}
+          {apMounted && <div hidden={!section}>
+            <main className="main" id={section ? "main" : undefined} tabIndex={-1}>
+              <APAuthGate busy={apBusy}><APSystemWorkspace section={section ?? "cases"} onSection={(next) => navigate(TAB_FOR_SECTION[next], { keepCase: true })} onContextChange={setAPContext} onBusyChange={setAPBusy} /></APAuthGate>
+            </main>
+          </div>}
+          {!section && <main className="main" id="main" tabIndex={-1} key={usesRun ? runId : tab}>
+            {tab === "settings" ? <WorkspaceSettings runs={runs} runId={runId} simulationAvailable={simulationAvailable} connected={connected} onSelectRun={selectRun} onOpenControl={() => navigate("control")} onOpenInbox={() => navigate("inbox")} /> : tab === "connectors" ? <Connectors /> : tab === "recovery" ? <APDemo embedded /> : tab === "evals" ? <>{needsRun ?? <Evals runId={runId} />}<ProofGroups /></> : needsRun ?? <>
+              {tab === "inbox" && <><Inbox runId={runId} /><APDecisions apReady={apMounted} onOpenCase={openCase} onOpenInvoices={() => navigate("invoices")} /></>}
               {tab === "bank" && <Bank runId={runId} onReview={(askId) => { navigate("inbox"); const url = new URL(location.href); url.searchParams.set("ask", askId); history.replaceState(null, "", url); }} />}
-              {tab === "flow" && <FinanceFlow runId={runId} onNavigate={navigate} />}
+              {tab === "flow" && <FinanceFlow runId={runId} onNavigate={(next) => navigate(next as Tab)} />}
               {tab === "org" && <Org runId={runId} />}
               {tab === "activity" && <Activity runId={runId} />}
               {tab === "ledger" && <Ledger runId={runId} />}
               {tab === "memory" && <Memory runId={runId} />}
-              {tab === "evals" && <Evals runId={runId} />}
-              {tab === "control" && <Control runId={runId} />}
+              {tab === "control" && <Control runId={runId} onOpenRecovery={() => navigate("recovery")} />}
             </>}
-          </main>
+          </main>}
         </div>
       </div>
     </div>
@@ -477,7 +530,7 @@ function inlineMarkdown(text: string) {
     : part);
 }
 
-function Control({ runId }: { runId: string }) {
+function Control({ runId, onOpenRecovery }: { runId: string; onOpenRecovery?: () => void }) {
   const [log, setLog] = useState<string[]>([]);
   const [q, setQ] = useState("Why did we short-pay Golden State Produce?");
   const [answer, setAnswer] = useState<string | null>(null);

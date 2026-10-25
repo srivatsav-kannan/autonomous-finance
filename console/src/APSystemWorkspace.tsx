@@ -1,3 +1,5 @@
+import { APAgentTimeline } from "./APAgentHistory";
+import { decisionAnchor } from "./apAgentHistoryView";
 import {APPaymentDimensions} from "./APDimensions";
 import {APSystemPhysicalLines} from "./APSystemPhysicalLines";
 import {APSystemTimings} from "./APSystemTimings";
@@ -21,11 +23,22 @@ const WORKSPACES = ["cases", "runs", "governance", "close"] as const;
 const VIEWS = ["evidence", "matching", "accounting", "history"] as const;
 const FILTERS = ["all", "attention", "approved", "settled"] as const;
 const dateTime = (value: number) => new Date(value).toLocaleString();
-export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContextChange?: (context: APSystemContext | undefined) => void; onBusyChange?: (busy: boolean) => void }) {
+export type APWorkspaceSection = typeof WORKSPACES[number];
+const SECTION_HEADINGS: Record<APWorkspaceSection, { title: string; lede: string }> = {
+  cases: { title: "Invoices", lede: "Each invoice is one case: the original documents, the checks, the decisions and what happened to the money." },
+  runs: { title: "Payments", lede: "Payments wait for a person to release them. Each one is tied to an approved bill and a fixed destination." },
+  governance: { title: "Policy & suppliers", lede: "Who can approve what, payment limits, and verified supplier bank details." },
+  close: { title: "Period close", lede: "What still blocks the month from closing, and who has to clear it." },
+};
+// The console's main navigation can drive the section. Without it the workspace keeps its own section tabs.
+export function APSystemWorkspace({ onContextChange, onBusyChange, section, onSection }: { onContextChange?: (context: APSystemContext | undefined) => void; onBusyChange?: (busy: boolean) => void; section?: APWorkspaceSection; onSection?: (section: APWorkspaceSection) => void }) {
   const [listResult,setListResult]=useState<{generation:number;cases?:APCaseDetail[];error?:string}>();
   const [detailResult,setDetailResult]=useState<{generation:number;caseId:string;detail?:APCaseDetail;error?:string}>();
   const [selectedId,setSelectedId]=useUrlState("case");
-  const [workspace,setWorkspace]=useUrlState("apWorkspace","cases",WORKSPACES);
+  const [urlWorkspace,setUrlWorkspace]=useUrlState("apWorkspace","cases",WORKSPACES);
+  const workspace=section ?? urlWorkspace;
+  const setWorkspace=(next:APWorkspaceSection)=>{if(section){if(next!==section)onSection?.(next);}else setUrlWorkspace(next);};
+  const headingText=SECTION_HEADINGS[section ?? "cases"];
   const [filter,setFilter]=useUrlState("apFilter","all",FILTERS);
   const [search,setSearch]=useUrlState("apSearch");
   const [view,setView]=useUrlState("apView","evidence",VIEWS);
@@ -57,10 +70,10 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
     return matches && (filter === "all" || filter === "attention" && caseNeedsAttention(c) || filter === "approved" && c.states.business === "approved" || filter === "settled" && c.states.execution === "settled");
   }),[cases,search,filter]);
   return <section className="aps-app" aria-label="Accounts payable workspace">
-    <div className="page-heading"><div><h2>Accounts payable</h2><p className="lede">Inspect the obligation, its approvals and the outcome.</p></div><div className="aps-heading-actions"><button type="button" onClick={refresh} disabled={busy}>Refresh</button><button type="button" className="primary" onClick={()=>setShowUpload(v=>!v)} disabled={busy||!sessionReady} aria-expanded={showUpload}>Upload documents</button></div></div>
+    <div className="page-heading"><div><h2>{section ? headingText.title : "Accounts payable"}</h2><p className="lede">{section ? headingText.lede : "Inspect the obligation, its approvals and the outcome."}</p></div><div className="aps-heading-actions"><button type="button" onClick={refresh} disabled={busy}>Refresh</button><button type="button" className="primary" onClick={()=>setShowUpload(v=>!v)} disabled={busy||!sessionReady} aria-expanded={showUpload}>Upload documents</button></div></div>
     {showUpload && <APUpload sessionReady={sessionReady} onBusy={setBusy} onComplete={id=>{setWorkspace("cases");setSelectedId(id);setShowUpload(false);refresh();}} />}
     {listError && <div className="aps-error" role="alert"><strong>Case list unavailable</strong><p>{listError}</p><button type="button" onClick={refresh} disabled={busy}>Retry connection</button></div>}
-    <div className="aps-tabs" role="group" aria-label="Workspace sections">{WORKSPACES.map(section=><button key={section} disabled={busy} aria-pressed={workspace===section} className={workspace===section?"is-selected":""} onClick={()=>setWorkspace(section)}>{section==="runs"?"Payment runs":section==="governance"?"Policy & suppliers":section==="close"?"Period close":"Cases"}</button>)}</div>
+    {!section && <div className="aps-tabs" role="group" aria-label="Workspace sections">{WORKSPACES.map(section=><button key={section} disabled={busy} aria-pressed={workspace===section} className={workspace===section?"is-selected":""} onClick={()=>setWorkspace(section)}>{section==="runs"?"Payment runs":section==="governance"?"Policy & suppliers":section==="close"?"Period close":"Cases"}</button>)}</div>}
     {cases && <APOperationalMetrics cases={cases} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>}
     {workspace==="close" ? (listResult?.cases?<APSystemClose cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>:!listError&&<APLoading label="Opening period close workspace…"/>) : workspace==="governance" ? (listResult?.cases?<APSystemGovernance cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh}/>:!listError&&<APLoading label="Opening policy and supplier workspace…"/>) : workspace==="runs" ? (listResult?.cases?<APSystemRuns cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>:!listError&&<APLoading label="Opening payment run workspace…"/>) : <div className="aps-workspace-grid">
       <aside className="aps-case-queue" aria-label="AP cases"><div className="aps-queue-controls">
@@ -74,7 +87,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
       </aside>
       <div className="aps-case-content">
         {selectedId && listError ? <p className="aps-empty">Case evidence is unavailable until the workspace connection is restored. Retry the connection above.</p> : selectedId && !detail && !detailError ? <APLoading label="Loading linked case evidence…"/> : detailError ? <div className="aps-error" role="alert"><h3>Case unavailable</h3><p>{detailError}</p><button onClick={refresh} disabled={busy}>Retry case</button></div> : !detail ? <div className="aps-empty aps-case-placeholder"><Icon name="file"/><h3>Select an AP case</h3><p>Originals, review decisions, the bill and payment evidence stay together here.</p></div> : <>
-          <header className="aps-case-header"><div><h3 ref={heading} tabIndex={-1}>{detail.candidate?.invoiceNumber ?? "Document review"}</h3><p>{detail.candidate?.extractedSupplierName ?? "Supplier not established"}</p></div><div className="aps-case-identity"><span>{detail.scope.provider === "fake" ? "Local FakeBank" : "Increase sandbox"}</span><span>{detail.identityMode === "simulated_human" ? "Simulated human identity" : "Authenticated human identity"}</span></div></header>
+          <header className="aps-case-header"><div><h3 id="ap-case-heading" ref={heading} tabIndex={-1}>{detail.candidate?.invoiceNumber ?? "Document review"}</h3><p>{detail.candidate?.extractedSupplierName ?? "Supplier not established"}</p></div><div className="aps-case-identity"><span>{detail.scope.provider === "fake" ? "Local FakeBank" : "Increase sandbox"}</span><span>{detail.identityMode === "simulated_human" ? "Simulated human identity" : "Authenticated human identity"}</span></div></header>
           <p className="aps-caption">Case <code>{detail.caseId}</code> / Revision {detail.revision} / {detail.sources.every(s=>s.provenance.kind === "synthetic") ? "Synthetic documents" : "Document provenance varies; inspect originals"}</p>
           <APRelatedCases detail={detail} cases={cases??[]} onOpenCase={setSelectedId} busy={busy}/>
           <APCaseStatus detail={detail}/>
@@ -84,7 +97,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
           {view === "evidence" && <><APSystemEvidence detail={detail}/><APOriginals detail={detail}/></>}
           {view === "matching" && <><APMatching detail={detail}/><APSystemPhysicalLines key={`physical:${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/><APSystemBusiness key={`business:${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail} cases={cases??[]} busy={busy} onBusy={setBusy} onChanged={refresh} onOpenCase={setSelectedId}/></>}
           {view === "accounting" && <APAccounting key={`accounting:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
-          {view === "history" && <APHistory detail={detail}/>}
+          {view === "history" && <APHistory key={detail.caseId} detail={detail} onOpenAccounting={()=>setView("accounting")}/>}
           <APActions key={`review:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>
         </>}
       </div>
@@ -144,10 +157,10 @@ export function APAccounting({detail,busy=false,onBusy=()=>{},onChanged=()=>{}}:
     <h4>Journal entries</h4><p className="aps-caption">Recognition records the payable. Settlement reduces AP and cash; it does not recognize the purchase again.</p>{detail.journals.length ? detail.journals.map(j=><details className="aps-journal" key={j.entryId} open><summary>{apLabel(j.kind)} / {j.date}</summary><p className="aps-caption">Journal <code>{j.entryId}</code>{j.bankTransactionId && <> / Bank transaction <code>{j.bankTransactionId}</code></>}</p><table><thead><tr><th>GL account</th><th>Debit</th><th>Credit</th></tr></thead><tbody>{j.lines.map((l,i)=><tr key={i}><td data-label="GL account">{l.account}</td><td data-label="Debit">{apMoney(l.debit)}</td><td data-label="Credit">{apMoney(l.credit)}</td></tr>)}</tbody></table></details>) : <p className="aps-empty">No journal entry is linked to this case.</p>}
   </section>;
 }
-export function APHistory({detail}:{detail:APCaseDetail}){
-  return <section className="aps-section"><h3>Recorded decisions</h3>{detail.decisions.length ? <ol className="aps-timeline">{detail.decisions.map(d=><li key={d.decisionId}><div className="aps-section-heading"><strong>{apLabel(d.kind)}: {apLabel(d.outcome)}</strong><time dateTime={new Date(d.at).toISOString()}>{dateTime(d.at)}</time></div><p>{d.reason}</p><span>{d.actor} / {apLabel(d.actorKind)} / Candidate revision {d.candidateRevision}</span><small>Authority: {d.authority}. Policy: {d.policyVersion}.</small><details><summary>Reviewed source bindings</summary>{d.sourceBindings.map(s=><p key={`${s.sourceId}:${s.revision}`}><code>{s.sourceId}</code> / Revision {s.revision}<code>{s.sha256}</code></p>)}</details></li>)}</ol> : <p className="aps-caption">No review decision has been recorded.</p>}
-    <h4>Audit timeline</h4>{detail.timeline.length ? <ol className="aps-timeline">{detail.timeline.map(e=><li key={e.eventId}><div className="aps-section-heading"><strong>{apLabel(e.kind)}</strong><time dateTime={new Date(e.at).toISOString()}>{dateTime(e.at)}</time></div><p>{e.summary}</p><small>{e.actor}</small>{e.references.length>0 && <details><summary>Linked records</summary>{e.references.map(r=><code key={r}>{r}</code>)}</details>}</li>)}</ol> : <p className="aps-caption">No historical events are available.</p>}
-    <details><summary>Case and snapshot identifiers</summary><dl className="aps-record"><div><dt>Run</dt><dd><code>{detail.runId}</code></dd></div><div><dt>Snapshot</dt><dd><code>{detail.snapshotHash}</code></dd></div><div><dt>Policy</dt><dd>{detail.policyVersion}</dd></div><div><dt>Created</dt><dd>{dateTime(detail.createdAt)}</dd></div><div><dt>Last updated</dt><dd>{dateTime(detail.updatedAt)}</dd></div></dl></details>
+export function APHistory({detail,onOpenAccounting}:{detail:APCaseDetail;onOpenAccounting?:()=>void}){
+  return <section className="aps-section"><h3>Recorded decisions</h3>{detail.decisions.length ? <ol className="aps-timeline">{detail.decisions.map(d=><li key={d.decisionId} id={decisionAnchor(d.decisionId)} tabIndex={-1}><div className="aps-section-heading"><strong>{apLabel(d.kind)}: {apLabel(d.outcome)}</strong><time dateTime={new Date(d.at).toISOString()}>{dateTime(d.at)}</time></div><p>{d.reason}</p><span>{d.actor} / {apLabel(d.actorKind)} / Candidate revision {d.candidateRevision}</span><small>Authority: {d.authority}. Policy: {d.policyVersion}.</small><details><summary>Reviewed source bindings</summary>{d.sourceBindings.map(s=><p key={`${s.sourceId}:${s.revision}`}><code>{s.sourceId}</code> / Revision {s.revision}<code>{s.sha256}</code></p>)}</details></li>)}</ol> : <p className="aps-caption">No review decision has been recorded.</p>}
+    <APAgentTimeline detail={detail} onOpenAccounting={onOpenAccounting}/>
+    <details><summary>Current case and snapshot identifiers</summary><dl className="aps-record"><div><dt>Run</dt><dd><code>{detail.runId}</code></dd></div><div><dt>Snapshot</dt><dd><code>{detail.snapshotHash}</code></dd></div><div><dt>Policy</dt><dd>{detail.policyVersion}</dd></div><div><dt>Created</dt><dd>{dateTime(detail.createdAt)}</dd></div><div><dt>Last updated</dt><dd>{dateTime(detail.updatedAt)}</dd></div></dl></details>
   </section>;
 }
 export function APActions({detail,busy,onBusy,onChanged}:{detail:APCaseDetail;busy:boolean;onBusy:(busy:boolean)=>void;onChanged:()=>void}){

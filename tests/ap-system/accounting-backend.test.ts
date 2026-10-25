@@ -26,7 +26,7 @@ describe("source -> field review -> obligation recognition", () => {
     await expect(
       f.t.mutation(refs.review, { scope: f.scope, input: f.request(first) }),
     ).rejects.toThrow("authenticated human");
-    await f.human.mutation(refs.review, {
+    await f.fieldReviewer.mutation(refs.review, {
       scope: f.scope,
       input: f.request(first),
     });
@@ -160,7 +160,7 @@ describe("source -> field review -> obligation recognition", () => {
     expect(d.states.document).toBe("failed");
     expect(await f.t.query(refs.list, f.ap)).toHaveLength(1);
     await expect(
-      f.human.mutation(refs.review, { scope: f.scope, input: f.request(d) }),
+      f.fieldReviewer.mutation(refs.review, { scope: f.scope, input: f.request(d) }),
     ).rejects.toThrow("Incomplete/conflicting");
   });
   it("holds missing receipts after field review and refuses unilateral short-pay", async () => {
@@ -285,7 +285,7 @@ describe("source -> field review -> obligation recognition", () => {
     second.purchasingEvidence[1] = { ...first.purchasingEvidence[1]! };
     const r = await f.t.mutation(refs.ingest, { ...f.ap, input: second });
     const next = await f.get(r.caseId);
-    await f.human.mutation(refs.review, {
+    await f.fieldReviewer.mutation(refs.review, {
       scope: f.scope,
       input: f.request(next, "review-2"),
     });
@@ -316,7 +316,7 @@ describe("source -> field review -> obligation recognition", () => {
         billIds: [approved.billId],
         credits: [],
       });
-      const queued = await f.human.mutation(api.demoPayments.approveAndQueue, {
+      const queued = await f.payer.mutation(api.demoPayments.approveAndQueue, {
         scope: f.scope,
         ...request,
       });
@@ -409,7 +409,7 @@ describe("source -> field review -> obligation recognition", () => {
     ).rejects.toThrow("different input");
     const d = await f.get(r.caseId);
     await expect(
-      f.human.mutation(refs.review, {
+      f.fieldReviewer.mutation(refs.review, {
         scope: f.scope,
         input: { ...f.request(d), evidenceIds: [] },
       }),

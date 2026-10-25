@@ -10,7 +10,7 @@ afterEach(()=>{vi.unstubAllEnvs();vi.useRealTimers();});
 describe("B3 governance versus C3 reservation lifecycle",()=>{
  it.each([false,true])("bank change cancels provably unsent operation, queued=%s",async(queued)=>{
   const f=await businessFixture();const bill=await f.recognize();const r=await f.t.mutation(api.demoPayments.requestPayment,{scope:f.scope,seatId:"payments",token:"token-payments",requestKey:"request",billIds:[bill.billId],credits:[],billAmounts:[{billId:bill.billId,amountCents:4000}]});
-  const command=queued?await f.humans.finance!.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...r}):null;
+  const command=queued?await f.payer.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...r}):null;
   await f.onboard({...f.supplier,expectedRevision:1,externalAccountId:"bank-v2"},"change");
   expect(await f.t.run((ctx)=>ctx.db.get(r.versionId))).toMatchObject({status:"cancelled",reservations:"released"});
   expect((await f.t.run((ctx)=>ctx.db.get(bill.billId as Id<"demoBills">)))?.reservedVersionId).toBeUndefined();
@@ -18,7 +18,7 @@ describe("B3 governance versus C3 reservation lifecycle",()=>{
  });
  it("bank change retains possible-send key, command, request and reservations",async()=>{
   const f=await businessFixture();const bill=await f.recognize();const r=await f.t.mutation(api.demoPayments.requestPayment,{scope:f.scope,seatId:"payments",token:"token-payments",requestKey:"request",billIds:[bill.billId],credits:[]});
-  const command=await f.humans.finance!.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...r});
+  const command=await f.payer.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...r});
   const lease=await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:"test-dispatch",paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"B3-boundary",leaseToken:"B3-possible-send-lease"});expect(lease).not.toBeNull();
   const before=await f.t.run((ctx)=>ctx.db.get(command.commandId));
   await f.onboard({...f.supplier,expectedRevision:1,externalAccountId:"bank-v2"},"change");

@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "recordedAt": "2026-10-25T12:09:39.180330+00:00",
+  "baseCommit": "4a35d3db7ae47083e2152337d15f071f7b2970a0",
+  "codeIdentity": "exact source hashes captured before commit",
+  "verification": {
+    "targetedTests": 15,
+    "regressionTests": 107,
+    "regressionFiles": 11,
+    "failed": 0,
+    "applicationTypecheck": "passed",
+    "backendTypecheck": "passed",
+    "testsTypecheck": "passed",
+    "CI": "skipped by user"
+  },
+  "limits": [
+    "owner engineering verification; not independent Claude review",
+    "Convex-test backend; SQLite FakeBank; simulated human",
+    "actual worker SIGKILL and HTTP transport; controlled lease expiry",
+    "no new parser, external provider or live runtime rollout",
+    "no APEX107 replay; no real messages sent"
+  ],
+  "sourceFiles": [
+    {
+      "path": "convex/apCaseAgent.ts",
+      "bytes": 12315,
+      "sha256": "087698ed36548f34e66fd1067e301bc22cfa4750cfafc4a6e5f0d2ad406563cb"
+    },
+    {
+      "path": "convex/apCasePayments.ts",
+      "bytes": 5177,
+      "sha256": "ed76975e42fe8bc06013b489c1c0050d130aeb00ffc15b869949409a64c6af5c"
+    },
+    {
+      "path": "convex/apCases.ts",
+      "bytes": 23563,
+      "sha256": "657be7bb2c5eb3fe5c64ab8edf9e64e2ef80529dd2e024cdcce463596bbf7db5"
+    },
+    {
+      "path": "convex/apSystemSchema.ts",
+      "bytes": 11949,
+      "sha256": "4fbd1dedcc765f9e3b6b24736fb715a460590d1fce12ab77bf054549c34e9404"
+    },
+    {
+      "path": "convex/lib/apSystem/agentWork.ts",
+      "bytes": 1230,
+      "sha256": "e7ce05ad9cf908ff40f57880fe48544f55096a9580162267806e5d0003d8dc00"
+    },
+    {
+      "path": "convex/lib/apSystem/casePayment.ts",
+      "bytes": 2432,
+      "sha256": "43dde93ebdf2996ce81cdd52518875303e6a1d6486d5863947d3eb23e32f1997"
+    },
+    {
+      "path": "convex/lib/apSystem/projection.ts",
+      "bytes": 10646,
+      "sha256": "a4b0efeccc4fcb8ecfe11abe81835f1fb7800fcaffda6032227d668ddaaccba3"
+    },
+    {
+      "path": "src/ap-system/agent-policy.ts",
+      "bytes": 4724,
+      "sha256": "0e08ba9a378fbd0c847c19c632eefe2a0d15f19df9d306e4e555f5d769f32b15"
+    },
+    {
+      "path": "src/agents/ap-case-tools.ts",
+      "bytes": 1474,
+      "sha256": "1a2ec4a059d1c9676d8986ceda2d63c0ac5156ad4715a2d37decc1a6b860dd5a"
+    },
+    {
+      "path": "src/agents/ap-case-worker.ts",
+      "bytes": 2926,
+      "sha256": "d9d41c294e68c5408e556b6e71362912afbe500d3ac6605ba150813ea4f50cc6"
+    },
+    {
+      "path": "scripts/ap-case-agent.ts",
+      "bytes": 2223,
+      "sha256": "4fca186c7e8ad6634db128e6da5ee6826457e100c2836783340e727835ada836"
+    },
+    {
+      "path": "tests/ap-system/agent-workflow.test.ts",
+      "bytes": 19177,
+      "sha256": "f4269a7f9edc1a9e2815972194e9dd854ce3e68009c3df33cbe6261e145fb036"
+    },
+    {
+      "path": "tests/ap-system/agent-process.test.ts",
+      "bytes": 6780,
+      "sha256": "44e4b1e4cc82c0fc5ee48a3c91d87cd53f822a04123b8e45b2177cbd3a698fc6"
+    },
+    {
+      "path": "package.json",
+      "bytes": 3826,
+      "sha256": "8c840caae778a75311ef2bb74b571cb8f45972d7a076eca0d04fec54d1d78389"
+    }
+  ],
+  "evidenceFiles": [
+    {
+      "path": "docs/ap-orchestration/evidence/agent-case-v1/agent-case-flow.json",
+      "bytes": 88194,
+      "sha256": "b2289824fbb3c4c8dd8cfbc8f80489572d97bd3655bb3adac0dcc3517150773f"
+    },
+    {
+      "path": "docs/ap-orchestration/evidence/agent-case-v1/agent-process-recovery.json",
+      "bytes": 981,
+      "sha256": "0671086a5b74f86e619573869f4549a6f47b22a3a5aacc9b8993a0fa45ce0d66"
+    }
+  ]
+}

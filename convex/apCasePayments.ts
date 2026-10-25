@@ -1,28 +1,17 @@
+import { prepareAPCasePayment } from "./lib/apSystem/casePayment";
 import { mutation, query } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
 import { v } from "convex/values";
 import { scopeValidator } from "./demoSchema";
-import { assertRowScope, auditDemo, requirePaymentHuman, requirePaymentSeat } from "./lib/demoAuth";
-import { requestPaymentCommand, approveAndQueueCommand, cancelUnsent } from "./lib/payments/applyCommand";
+import { assertRowScope, auditDemo, requirePaymentHuman } from "./lib/demoAuth";
+import { approveAndQueueCommand, cancelUnsent } from "./lib/payments/applyCommand";
 
 const binding = {scope:scopeValidator, caseId:v.id("apCaseRecords"), expectedRevision:v.number(), snapshotHash:v.string()};
 /** Resolve a reviewed case to an existing bill inside the same serializable mutation. */
 export const request = mutation({
   args:{...binding,seatId:v.string(),token:v.string(),idempotencyKey:v.string(),executionDate:v.optional(v.string()),amountCents:v.optional(v.number()),credits:v.optional(v.array(v.object({creditId:v.id("demoCredits"),amountCents:v.number()})))},
   handler:async(ctx,args)=>{
-    await requirePaymentSeat(ctx,args,["payments"]);
-    const row=await ctx.db.get(args.caseId);assertRowScope(row,args.scope);
-    const ap=row as Doc<"apCaseRecords">;
-    if(ap.currentRevision!==args.expectedRevision||ap.snapshotHash!==args.snapshotHash)throw Error("Stale AP case payment request");
-    if(ap.businessStatus!=="approved"||ap.documentStatus!=="reviewed"||!ap.fieldReviewId||!ap.billId)throw Error("Reviewed and approved AP case required before payment preparation");
-    const bill=await ctx.db.get(ap.billId);assertRowScope(bill,args.scope);
-    if(!(bill as Doc<"demoBills">).entryId)throw Error("Recognized payable required before payment preparation");
-    const result=await requestPaymentCommand(ctx,{scope:args.scope,seatId:args.seatId,token:args.token,requestKey:args.idempotencyKey,billIds:[ap.billId],credits:args.credits??[],...(args.executionDate!==undefined?{executionDate:args.executionDate}:{}),...(args.amountCents!==undefined?{billAmounts:[{billId:ap.billId,amountCents:args.amountCents}]}:{})});
-    const version=await ctx.db.get(result.versionId);
-    // The existing operation is authoritative on retry; never replace its request key.
-    if(!version||!version.snapshot.bills.some(b=>b.billId===ap.billId))throw Error("Payment does not belong to AP case");
-    await auditDemo(ctx,args.scope,args.seatId,"ap_case_payment_prepared",{caseId:args.caseId,revision:ap.currentRevision,caseSnapshot:ap.snapshotHash,versionId:result.versionId});
-    return result;
+    return prepareAPCasePayment(ctx,args);
   },
 });
 export const authorize = mutation({

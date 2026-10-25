@@ -1,3 +1,5 @@
+import { br, syncPrimary } from "./business-fixture";
+import { creditFixture } from "./quickbooks-business-fixture";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { makeFunctionReference } from "convex/server";
 import { fixture, packet, refs } from "./accounting-fixture";
@@ -26,7 +28,7 @@ afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllEnvs();
 });
-type F = Awaited<ReturnType<typeof fixture>>;
+type F = Pick<Awaited<ReturnType<typeof fixture>>, "t"|"scope"|"payer"|"human"|"ap"|"get"|"request"|"fieldReviewer">;
 async function setup() {
   vi.useFakeTimers();
   vi.setSystemTime(start);
@@ -38,7 +40,7 @@ async function approved(f: F, number = "V3-1") {
     input: packet(number),
   });
   const d = await f.get(ingested.caseId);
-  await f.human.mutation(refs.review, {
+  await f.fieldReviewer.mutation(refs.review, {
     scope: f.scope,
     input: f.request(d, "review-" + number),
   });
@@ -80,7 +82,7 @@ const propose = (
     ...extra,
   });
 const approve = (f: F, c: C, r: any) =>
-  f.human.mutation(authorize, {
+  f.payer.mutation(authorize, {
     ...binding(c),
     versionId: r.versionId,
     paymentSnapshotHash: r.snapshotHash,
@@ -138,17 +140,18 @@ async function runFixture() {
 
 describe("V3 independent payment conservation and schedule", () => {
   it("retains the applied credit when first partial cash is returned after a second settlement", async () => {
-    const f = await setup(),
-      c = await approved(f);
+    vi.useFakeTimers(); vi.setSystemTime(start);
+    const f = await creditFixture();
+    const d = await f.get(f.detail.caseId);
+    const c = {scope:f.scope,caseId:d.caseId,expectedRevision:d.revision,snapshotHash:d.snapshotHash,billId:f.original.billId as Id<"demoBills">};
     const { bank, worker, reconcile } = bankRuntime(f);
-    const { creditId } = await f.human.mutation(api.demoPayments.recordCredit, {
-      scope: f.scope,
-      reference: "V3-CREDIT",
-      amountCents: 1200,
-      evidence: "synthetic explicit approved supplier credit",
-      date: "2026-10-25",
-      expenseAccount: "5000",
-    });
+    const input=packet("V3-CREDIT");const candidate=input.candidate!;
+    candidate.kind="credit_note";input.documents[0]!.kind="credit_note";
+    candidate.lines[0]!.quantity.decimal="1";candidate.lines[0]!.unitPriceCents=1200;candidate.lines[0]!.amountCents=1200;candidate.lines[0]!.allocations[0]!.amountCents=1200;candidate.subtotalCents=1200;candidate.totalCents=1200;
+    syncPrimary(input);const creditCase=await f.reviewed(input);
+    const proposal=await f.t.mutation(br.propose!,{...f.ap,input:{caseId:creditCase.caseId,expectedRevision:creditCase.revision,snapshotHash:creditCase.snapshotHash,idempotencyKey:"v3-linked-credit",policyVersion:f.policy.version,supplierRevision:1,credit:{originalCaseId:f.detail.caseId,originalApprovalId:f.original.proposal.proposalId,freightCents:0,discountCents:0,lines:[{creditLineId:"line-1",originalLineId:"line-1",basis:"price_adjustment",quantity:"0",netCents:1200,taxCents:0,returnEvidence:[]}],reason:"Supplier price adjustment against approved original allocation"}}});
+    let creditResult=await f.vote(proposal);if(creditResult.status==="pending")creditResult=await f.vote(proposal,"finance");
+    const {creditId}=creditResult;
     const first = await propose(f, c, "partial-1", {
       amountCents: 5000,
       credits: [{ creditId, amountCents: 1200 }],
@@ -342,7 +345,7 @@ describe("V3 independent payment conservation and schedule", () => {
       versionId: run.items.at(-1)!.versionId,
     });
     await expect(
-      f.human.mutation(runAuthorize, { scope: f.scope, ...r }),
+      f.payer.mutation(runAuthorize, { scope: f.scope, ...r }),
     ).rejects.toThrow(/Stale/);
     expect(
       await f.t.run((ctx) => ctx.db.query("demoCommands").collect()),
@@ -359,7 +362,7 @@ describe("V3 independent payment conservation and schedule", () => {
       run = (await f.t.run((ctx) =>
         ctx.db.get(r.runId as Id<"apPaymentRuns">),
       ))!;
-    await f.human.mutation(runAuthorize, { scope: f.scope, ...r });
+    await f.payer.mutation(runAuthorize, { scope: f.scope, ...r });
     const commands = await f.t.run((ctx) =>
       ctx.db.query("demoCommands").collect(),
     );

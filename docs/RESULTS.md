@@ -1,14 +1,28 @@
 # Results
 
-Measured Oct 24–25, 2026. Agents: OpenAI `gpt-6.1-sol` at medium effort. APEX grader: `gpt-6-astra` at low effort. Total model spend for everything below: $10.59. Every row links to its raw output in [`docs/evals/runs/final/`](evals/runs/final/). Each eval was run once unless noted.
+Historical benchmark measurements, taken before #105 on Oct 24–25, 2026. Agents: OpenAI `gpt-6.1-sol` at medium effort. APEX grader: `gpt-6-astra` at low effort. Total model spend for that historical benchmark suite: $10.59; this does not price the new AP document/provider workflow. Every row links to its raw output in [`docs/evals/runs/final/`](evals/runs/final/). Each eval was run once unless noted.
 
-## Summary
+## Current AP acceptance after #105
+
+The new `/ap-system` workspace keeps original invoice/PO/receipt evidence with reviewable source-backed fields, explicit accepted/disputed amounts, separate field review, bill recognition and payment authorization, and linked bank/accounting records. QuickBooks records the approved obligation and settled payment; Increase executes the bank instruction. A discrepancy is held for a human decision, never automatically short-paid.
+
+| Scope | Result | Evidence and limit |
+|---|---|---|
+| Reported merged-main scored world, seed 7, model on | **13/13 planted errors caught; 0 false alarms; books check fails/incomplete** | INV-1002 (short shipment) and INV-1004 (price over contract) wait for a CFO decision. The unattended run has no human answer. [Handoff acceptance](../submission/HANDOFF-JJ.md); reported by the other operator, not rerun here. |
+| Reported CI / local suite / kernel controls | 3 CI jobs passed; 1,928 tests locally; 22/22 kernel control checks | [Handoff](../submission/HANDOFF-JJ.md). Passing kernel checks do not cover every AP lifecycle or approval policy. |
+| Independent accounting review | Arithmetic held in the exercised cases; 58 expected entries balance | [Claude independent model review](../submission/review-105/REVIEW.md); not human practitioner sign-off. |
+| AP business controls | **Not accepted** | Three high findings remain: payment release can share the bill/bank approver and has no amount bands (F1); first-wave mode permits one operator and an unlinked credit path (F2); disputed remainders cannot later become payable on the original invoice (F3). F4–F8 are medium findings. |
+| External sandbox | One synthetic $678.60 case completed on the dedicated Auth0 runtime; records rechecked with real provider GETs | [Sandbox acceptance](../submission/SANDBOX-ACCEPTANCE.md). Bill 145, BillPayment 146, one Increase transfer/debit. A missing-AP-reference readback issue reproduced on merged main and is repaired in this branch. No fresh full flow on this branch, signed webhook or formal close is claimed. |
+
+We preserve the no-auto-short-pay rule. The historical books passes below remain historical measurements; they are not a current all-clear. No scripted CFO answer was added to make the current score pass.
+
+## Historical benchmark summary
 
 | Eval | Us | Comparison |
 |---|---|---|
 | Same model, same 11 tasks: our kernel tools vs spreadsheet tools | 12 tool calls, 45 s, $0.12, 4 of 4 planted errors caught | 71 tool calls, 94 s, $0.48, 3 of 4 caught |
 | 156 bookkeeping operations with 18 bad ones injected (no model) | All 18 stopped | 8 flagged after the fact, 10 never caught |
-| Simulated Sweetgreen books, 4 seeds × 14 days | 13 of 13 errors caught on every seed, books correct, $0.04–0.05 per run | — |
+| Simulated Sweetgreen books **before #105**, 4 seeds × 14 days | 13/13 errors caught; books matched in those historical runs; $0.04–0.05 per run | Current unattended seed-7 books check is incomplete; see above |
 | 15 public benchmark tasks (APEX, DABstep, Invoice Sandbox, FinBalance) | Our team: 93.3% mean, 14 of 15 correct, $4.06 | Same model alone: 84.0%, 12 of 15, $2.33 |
 | Control tests | 22 of 22 hold | — |
 | Payment survives a worker crash | 1 transfer, 1 journal entry | — |
@@ -67,7 +81,9 @@ The kernel's 3 "caught afterwards" are 2 direct database edits detected by the h
 
 The kernel time stays flat as the books grow; the workbook gets 11× slower over the month. Both paths produce identical books when no bad operations are injected.
 
-## 2. Simulated company
+## 2. Simulated company (historical, before #105)
+
+These four saved runs predate the requirement to hold quantity/price discrepancies for human authority. They do not predict a books pass on current main. The post-merge seed-7 result is recorded separately above; the other seeds were not remeasured here.
 
 The world:
 - 3 stores, 14 days, 230 events and 64 vendor invoices, calibrated to Sweetgreen's FY2025 10-K.
@@ -78,7 +94,7 @@ Books are checked against an independent ledger on every account.
 
 Source: [eval-openai-s*](evals/runs/final/).
 
-| Seed | Errors caught | Look-alikes left alone | False alarms | Invoices read | Books | Model calls / tasks | Cost | Time |
+| Seed | Errors caught | Look-alikes left alone | False alarms | Invoices read | Books (pre-#105) | Model calls / tasks | Cost | Time |
 |---|---|---|---:|---:|---|---:|---:|---:|
 | 7 | 13 / 13 | 3 / 3 | 0 | 64 / 64 | correct | 11 / 218 | $0.05 | 82 s |
 | 11 | 13 / 13 | 3 / 3 | 0 | 64 / 64 | correct | 11 / 218 | $0.05 | 79 s |
@@ -134,7 +150,7 @@ Sources: [APEX leaderboard](https://www.mercor.com/apex/apex-accounting-leaderbo
 
 ## 4. Controls and payment recovery
 
-**Control tests:** 22 of 22 hold ([control-tests.json](evals/control-tests.json)). Each case runs against the live kernel and git memory.
+**Kernel control tests:** 22 of 22 hold ([control-tests.json](evals/control-tests.json)). Each case runs against the live kernel and git memory. These tests cover the listed legacy kernel boundaries; they do not refute the AP control findings in the current acceptance table. In particular, requester/approver separation does not prevent a human bill approver from releasing its payment.
 
 Refused (19):
 - a bill with no source document
@@ -178,8 +194,9 @@ Result: one transfer, one posted debit, one journal entry. The month closes with
   - all timings and costs
 - **Simulated:**
   - the company, its vendors, staff and bank feed
-  - the bank used in the payment demo, a local simulator. The Increase sandbox adapter is contract-tested.
+  - the bank used in the local payment/recovery demos (FakeBank) and QuickBooks responses in automated tests
+  - money and company books in the external Increase/QuickBooks sandboxes; those use real service APIs, separately verified in the [sandbox report](../submission/SANDBOX-ACCEPTANCE.md)
 
 ## Reproduce
 
-`npm run evals -- --paid --budget-usd 15` reruns every eval above in one command (`npm run evals` alone runs the free part); the payment-recovery run is `npm run demo:local`. See the README's [Quick start](../README.md#quick-start).
+`npm run evals -- --paid --budget-usd 15` runs the benchmark suite against the current code; it does not recreate the old automatic-disposition behavior or run the external sandbox checklist. Expect the unattended simulator books check to remain incomplete while human decisions are outstanding (`npm run evals` alone runs the free part); the payment-recovery run is `npm run demo:local`. See the README's [Quick start](../README.md#quick-start).

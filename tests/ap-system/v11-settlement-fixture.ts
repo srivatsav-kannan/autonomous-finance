@@ -13,7 +13,7 @@ export async function settlementFixture(queue = true, department: string | null 
   const f = await creditFixture(0, {department, scope: 'cost_and_settlement'}), credit = await f.credit();
   const args = {scope: f.scope, seatId: 'payments', token: 'token-payments', requestKey: 'v11-partial-payment', billIds: [f.original.billId as Id<'demoBills'>], billAmounts: [{billId: f.original.billId as Id<'demoBills'>, amountCents: 3000}], credits: [{creditId: credit.creditId, amountCents: 1000}]};
   const request = await f.t.mutation(api.demoPayments.requestPayment, args);
-  const authorize = () => f.humans.finance!.mutation(api.demoPayments.approveAndQueue, {scope: f.scope, ...request});
+  const authorize = () => f.payer.mutation(api.demoPayments.approveAndQueue, {scope: f.scope, ...request});
   const approved = queue ? await authorize() : null;
   const bank = openFakeBank({path: ':memory:', scope: f.scope, seed: 'v11-independent', startTime: new Date(Date.now()).toISOString()}); banks.push(bank);
   const kernel = createConvexPaymentKernel(f.t as unknown as KernelTransport, f.scope, 'test-dispatch');

@@ -825,7 +825,7 @@ describe("B4 adversarial period boundaries", () => {
         idempotencyKey: "late-bank",
       },
     );
-    await f.human.mutation(api.demoPayments.approveAndQueue, {
+    await f.payer.mutation(api.demoPayments.approveAndQueue, {
       scope: f.scope,
       versionId: prepared.versionId,
       snapshotHash: prepared.snapshotHash,
@@ -1114,4 +1114,25 @@ describe("B4 authoritative accounting exports", () => {
       }),
     ).rejects.toThrow(/inactive_approver/);
   });
+});
+
+it("routes source dispositions by the retained invoice exposure and still requires variance approval",async()=>{
+ const f=await setup(false),v=await f.view(),blocker=v.blockers.find(b=>b.code==="source_disposition_required")!;
+ expect(blocker.exposureCents).toBe(7700);
+ const p=await f.proposeClose({kind:"disposition",period:"2026-10",reference:blocker.reference,snapshotHash:v.reconciliationHash,classification:"not_obligation",evidence:[f.proof],reason:"Reviewed duplicate liability with original source evidence"});
+ const stored=await f.t.run(ctx=>ctx.db.get(p.actionId as Id<"apCloseActions">));expect(stored!.amountCents).toBe(7700);expect(p.route.map((s:any)=>s.groupId)).toEqual(["owner","finance"]);
+ await expect(f.voteClose(p,"finance")).rejects.toThrow();
+});
+it("values unrecognized received quantity at its supported agreement price",async()=>{
+ const f=await setup(false);await f.recognize(f.detail,acceptance(f.input,"1"));
+ const v=await f.view(),blocker=v.blockers.find(b=>b.code==="received_not_invoiced"&&b.reference.startsWith("receipt:"))!;
+ expect(blocker.exposureCents).toBe(3850);
+ const p=await f.proposeClose({kind:"disposition",period:"2026-10",reference:blocker.reference,snapshotHash:v.reconciliationHash,classification:"future_period",evidence:[f.proof],reason:"Reviewed period timing for one supported unit"});
+ expect((await f.t.run(ctx=>ctx.db.get(p.actionId as Id<"apCloseActions">)))!.amountCents).toBe(3850);
+});
+it("routes unvalued standalone evidence to the highest amount route instead of treating it as zero",async()=>{
+ const f=await setup();await f.retain("Unpriced service acceptance, valuation outstanding","receipt");
+ const v=await f.view(),blocker=v.blockers.find(b=>b.code==="received_not_invoiced"&&b.reference.startsWith("source:"))!;
+ const p=await f.proposeClose({kind:"disposition",period:"2026-10",reference:blocker.reference,snapshotHash:v.reconciliationHash,classification:"future_period",evidence:[f.proof],reason:"Highest-authority review of unvalued original"});
+ expect((await f.t.run(ctx=>ctx.db.get(p.actionId as Id<"apCloseActions">)))!.amountCents).toBe(Number.MAX_SAFE_INTEGER);expect(p.route.map((s:any)=>s.groupId)).toEqual(["owner","finance"]);
 });

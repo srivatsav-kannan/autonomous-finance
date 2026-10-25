@@ -1,4 +1,5 @@
-import { activeBusinessPolicy } from "./lib/apSystem/businessAuthority";
+import { ensureAPCaseWork } from "./lib/apSystem/agentWork";
+import { activeBusinessPolicy, currentFieldReviewer } from "./lib/apSystem/businessAuthority";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
@@ -15,6 +16,7 @@ import { appendDemoEntry } from "./lib/demoPost";
 import { cancelUnsent } from "./lib/payments/applyCommand";
 import {
   AP_POLICY_VERSION,
+  historicalPaymentSchema,
   intakeSchema,
   decisionSchema,
   reviewRequestSchema,
@@ -280,6 +282,7 @@ export const ingest = mutation({
         sourceHashes: input.documents.map((d) => d.sha256),
       },
     );
+    await ensureAPCaseWork(ctx, row);
     const result = {
       caseId: row._id,
       revision: row.currentRevision,
@@ -397,6 +400,7 @@ export const reviewFields = mutation({
       decisionId,
       kind: "field_review",
       actor: subject,
+      actorSeatId: seat.seatId,
       actorKind: "human",
       authority: "configured_human_cfo",
       at: Date.now(),
@@ -464,6 +468,7 @@ export const approveBill = mutation({
     if (row.domainApprovalId || await activeBusinessPolicy(ctx, args.scope))
       deny("business_route_required", "Configured business governance requires the explicit amount/allocation and sequential group approval route");
     const input = currentReview(row, request);
+    if (row.historicalPayment) deny("historical_source_paid", "This invoice was paid in imported source history and cannot create another payable or payment");
     const c = input.candidate;
     if (row.createdBy === seat.seatId)
       deny(
@@ -499,6 +504,8 @@ export const approveBill = mutation({
         "stale_field_review",
         "Field review is not bound to current evidence",
       );
+    if (await currentFieldReviewer(ctx, args.scope, row) === seat.seatId)
+      deny("approval_segregation", "Field review and bill recognition require distinct human seats");
     if (request.acceptedCents !== c.totalCents)
       deny(
         "adjustment_authority_required",
@@ -669,6 +676,7 @@ export const approveBill = mutation({
       decisionId,
       kind: "bill_approval",
       actor: subject,
+      actorSeatId: seat.seatId,
       actorKind: "human",
       authority: "configured_human_cfo",
       at: Date.now(),
@@ -713,4 +721,22 @@ export const approveBill = mutation({
     );
     return result;
   },
+});
+
+/** Imported settlement evidence is a durable non-payable classification, never new bank activity. */
+export const recordHistoricalPayment = mutation({
+  args:{...agent,caseId:v.id("apCaseRecords"),expectedRevision:v.number(),snapshotHash:v.string(),proof:v.any()},
+  handler:async(ctx,args)=>{
+    const {seat}=await requirePaymentSeat(ctx,args,["ap_clerk"]);
+    const row=await caseRow(ctx,args.scope,args.caseId), proof=historicalPaymentSchema.parse(args.proof);
+    if(row.currentRevision!==args.expectedRevision||row.snapshotHash!==args.snapshotHash)deny("stale_review","Exact imported invoice revision required");
+    const input=intakeSchema.parse(row.intake),candidate=input.candidate;
+    const primary=input.documents.find(d=>d.kind==="invoice");
+    if(!candidate||!primary||proof.amountCents!==candidate.totalCents||proof.paidAt<candidate.invoiceDate||canonical(proof.invoiceSource)!==canonical({sourceId:primary.sourceId,revision:primary.revision,sha256:primary.sha256}))deny("historical_identity_mismatch","Historical settlement must bind this invoice original, date and full amount");
+    if(row.historicalPayment){if(canonical(row.historicalPayment)!==canonical(proof))deny("historical_evidence_conflict","Retained source-paid classification cannot be overwritten");return {caseId:row._id,recorded:true};}
+    if(row.billId||row.domainApprovalId)deny("historical_classification_too_late","Resolve existing approval or financial activity before importing historical classification");
+    await ctx.db.patch(row._id,{historicalPayment:proof,businessStatus:"held",updatedAt:Date.now()});
+    await auditDemo(ctx,args.scope,seat.seatId,"ap_historical_source_paid",{caseId:row._id,proof});
+    return {caseId:row._id,recorded:true};
+  }
 });

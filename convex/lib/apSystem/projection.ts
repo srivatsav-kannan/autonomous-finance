@@ -6,6 +6,8 @@ import {
   AP_POLICY_VERSION,
   intakeSchema,
   decisionSchema,
+  agentTransitionSchema,
+  historicalPaymentSchema,
   type APCaseDetail,
   type SourceDocument,
   type SourceBinding,
@@ -38,6 +40,7 @@ export async function projectCase(
   row: Doc<"apCaseRecords">,
 ): Promise<APCaseDetail & { currentSourceBindings: SourceBinding[] }> {
   const input = intakeSchema.parse(row.intake);
+  const agentEvents = await ctx.db.query("apCaseWorkEvents").withIndex("by_case", q=>q.eq("scope.runId",row.scope.runId).eq("caseId",row._id)).collect();
   const config = await getPaymentConfig(ctx, row.scope);
   const decisions = (
     await ctx.db
@@ -145,8 +148,10 @@ export async function projectCase(
       resolution: null,
     });
   const approved = bill?.approvedCents ?? business?.credit?.amountCents ?? null;
+  if(row.historicalPayment)exceptions.push({exceptionId:`${row._id}:historical-source-paid`,code:"historical_source_paid",reason:"Imported evidence records this invoice as already paid. Historical reference only; no new payable, bank transfer or settlement is created.",ownerRole:"controller",permittedActions:["inspect_historical_evidence"],requiredEvidence:["imported_ledger_and_bank_evidence"],blocking:true,status:"open",resolution:null});
   return {
     ...(business ? { domain: business.domain } : {}),
+    ...(row.historicalPayment ? {historicalPayment:historicalPaymentSchema.parse(row.historicalPayment)} : {}),
     contractVersion: AP_CONTRACT_VERSION,
     caseId: row._id,
     runId: row.scope.runId,
@@ -265,6 +270,11 @@ export async function projectCase(
       duplicateOfCaseId: null,
     },
     timeline: [
+      ...agentEvents.map(e=>({
+        eventId:e._id, at:e.at, actor:e.actor, kind:`agent_${e.stage}`, summary:e.reason,
+        references:[e.snapshotHash,`revision:${e.revision}`, ...(e.transition ? [e.transition.operationId] : [])],
+        ...(e.transition ? {agentTransition:agentTransitionSchema.parse(e.transition)} : {}),
+      })),
       ...revisions.map((r) => ({
         eventId: r._id,
         at: r.at,

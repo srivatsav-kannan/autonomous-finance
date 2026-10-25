@@ -1,3 +1,4 @@
+import { paymentReleaseHash, assertPaymentRelease } from "../apSystem/paymentRelease";
 import { derivePaymentAccountingBinding, assertPaymentAccountingBinding } from "../apSystem/paymentAccountingBinding";
 import { accountingBindingHash } from "../../../src/payments/domain/accounting-binding";
 import { assertGovernedCredits } from "../apSystem/governedCredits";
@@ -34,6 +35,7 @@ export async function versionForApproval(ctx: MutationCtx, scope: Doc<"demoConfi
   assertSnapshotCurrent(config, p.snapshot);
   await assertPaymentAccountingBinding(ctx, scope, p.snapshot);
   await assertReservedObligations(ctx, p, config);
+  if (p.snapshot.releasePolicyHash !== await paymentReleaseHash(ctx, scope, p.snapshot.bills.map(b => b.billId), p.snapshot.amountCents)) throw new Error("Stale payment release policy; cancel and prepare again");
   return p;
 }
 export async function requestPaymentCommand(ctx: MutationCtx, args: { scope: BankScope; seatId: string; token: string; requestKey: string; billIds: Id<"demoBills">[]; billAmounts?: { billId: Id<"demoBills">; amountCents: number }[]; executionDate?: string; credits: { creditId: Id<"demoCredits">; amountCents: number }[] }) {
@@ -74,7 +76,8 @@ export async function requestPaymentCommand(ctx: MutationCtx, args: { scope: Ban
     await assertGovernedCredits(ctx, args.scope, credits, config.beneficiary.vendor);
     const amountCents = safeSum(bills.map(b => b.amountCents)) - safeSum(credits.map(c => c.amountCents)); dollars(amountCents);
     const accountingBinding = await derivePaymentAccountingBinding(ctx, args.scope, bills, credits);
-    const snapshot = { ...(accountingBinding ? {accountingBinding} : {}), scope: args.scope, bills, credits, amountCents, currency: "USD" as const, destination: { externalAccountId: config.beneficiary.externalAccountId, version: config.beneficiary.version }, policyVersion: config.policyVersion, ...(args.executionDate !== undefined ? { schedule: { executionDate: args.executionDate, timeZone: "UTC" as const } } : {}) };
+    const releasePolicyHash = await paymentReleaseHash(ctx, args.scope, args.billIds, amountCents);
+    const snapshot = { ...(releasePolicyHash ? {releasePolicyHash} : {}), ...(accountingBinding ? {accountingBinding} : {}), scope: args.scope, bills, credits, amountCents, currency: "USD" as const, destination: { externalAccountId: config.beneficiary.externalAccountId, version: config.beneficiary.version }, policyVersion: config.policyVersion, ...(args.executionDate !== undefined ? { schedule: { executionDate: args.executionDate, timeZone: "UTC" as const } } : {}) };
     const snapshotHash = await sha256Hex(canonical(snapshot));
     const versionId = await ctx.db.insert("demoVersions", { scope: args.scope, snapshot, snapshotHash, requestedBy: args.seatId, requestKey: args.requestKey, ...(selectedAmounts ? { requestedBillAmounts: selectedAmounts } : {}), status: "awaiting_approval", approvals: [], reservations: "none", createdAt: Date.now() });
     await reserveObligations(ctx, versionId);
@@ -96,6 +99,7 @@ export async function approveAndQueueCommand(ctx: MutationCtx, args: { scope: Ba
     if (e.status === "queued" && e.snapshotHash === args.snapshotHash && e.approvals.some(a => a.subject === subject && a.kind === "human")) return { commandId: (await ctx.db.query("demoCommands").withIndex("by_command", q => q.eq("scope.runId", args.scope.runId).eq("command.commandId", e._id)).unique())!._id };
     const p = await versionForApproval(ctx, args.scope, args.versionId, args.snapshotHash);
     if (p.requestedBy === seat.seatId) throw new Error("Requester cannot approve own payment");
+    await assertPaymentRelease(ctx, args.scope, p.snapshot, subject);
     const request = { ...(p.snapshot.accountingBinding ? {accountingBindingHash: await accountingBindingHash(p.snapshot.accountingBinding)} : {}), commandId: p._id, scope: args.scope, amountCents: p.snapshot.amountCents, currency: "USD" as const, destination: p.snapshot.destination, approvalVersion: p._id, idempotencyKey: `demo:${p._id}` };
     const savedRequest = args.scope.provider === "increase" ? { ...request, providerRequest: buildIncreaseRequestBody(request) } : request;
     const command: BankCommand = { ...savedRequest, requestHash: await commandRequestHash(savedRequest) };

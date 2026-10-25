@@ -1,3 +1,4 @@
+import {fixture as accountingFixture,refs} from "./accounting-fixture";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Id } from "../../convex/_generated/dataModel";
 import { makeFunctionReference } from "convex/server";
@@ -41,7 +42,7 @@ describe("business scheduling bound to independent payment authorization",()=>{
     const f=await setup(),billId=await f.bill();
     await expect(f.t.mutation(api.demoPayments.requestPayment,{...f.payments,requestKey:"invalid",billIds:[billId],credits:[],executionDate})).rejects.toThrow();
     expect(await f.t.run(ctx=>ctx.db.query("demoVersions").collect())).toEqual([]);
-    expect((await f.t.run(ctx=>ctx.db.get(billId)))?.reservedVersionId).toBeUndefined();
+    expect((await f.t.run(ctx=>ctx.db.get(billId as Id<"demoBills">)))?.reservedVersionId).toBeUndefined();
   });
   it.each([undefined,"2026-10-01","2026-10-25"])("preserves immediate and overdue behavior (%s)",async executionDate=>{
     const f=await setup(),r=await requested(f,{executionDate});await approve(f,r);expect(await claim(f)).toMatchObject({action:"submit"});
@@ -125,16 +126,18 @@ describe("explicit partial bill discharge and supplier credit accounting",()=>{
     expect(await claim(f)).toBeNull();expect(await f.t.run(ctx=>ctx.db.get(q.commandId))).toMatchObject({execution:"exception",attemptCount:0});
   });
   it("binds the AP case seam to explicit amount/date and still requires separate authorization",async()=>{
-    const f=await setup(),billId=await f.bill();
-    const caseId=await f.t.run(ctx=>ctx.db.insert("apCaseRecords",{scope:f.scope,primaryHash:"a".repeat(64),currentRevision:1,snapshotHash:"b".repeat(64),intake:{},createdBy:"ap_clerk",documentStatus:"reviewed",businessStatus:"approved",fieldReviewId:"review",billId,acceptedCents:10000,identityMode:"simulated_human",createdAt:1,updatedAt:1}));
+    vi.useFakeTimers();vi.setSystemTime(start);
+    const f=await accountingFixture(),d=await f.reviewed();
+    const {billId}=await f.human.mutation(refs.approve,{scope:f.scope,input:{...f.request(d,"bill"),acceptedCents:7700}});
+    const caseId=d.caseId;
     const request=makeFunctionReference<"mutation">("apCasePayments:request");
-    const r=await f.t.mutation(request,{...f.payments,caseId,expectedRevision:1,snapshotHash:"b".repeat(64),idempotencyKey:"ap-partial",amountCents:2500,executionDate:"2026-10-28"});
+    const r=await f.t.mutation(request,{scope:f.scope,seatId:"payments",token:"token-payments",caseId,expectedRevision:1,snapshotHash:d.snapshotHash,idempotencyKey:"ap-partial",amountCents:2500,executionDate:"2026-10-28"});
     expect((await f.t.run(ctx=>ctx.db.get(r.versionId as Id<"demoVersions">)))?.snapshot).toMatchObject({amountCents:2500,schedule:{executionDate:"2026-10-28"}});
     expect(await f.t.run(ctx=>ctx.db.query("demoCommands").collect())).toEqual([]);
     const cancel=makeFunctionReference<"mutation">("apCasePayments:cancel");
-    const cancelArgs={scope:f.scope,caseId,expectedRevision:1,snapshotHash:"b".repeat(64),versionId:r.versionId};
+    const cancelArgs={scope:f.scope,caseId,expectedRevision:1,snapshotHash:d.snapshotHash,versionId:r.versionId};
     await expect(f.t.mutation(cancel,cancelArgs)).rejects.toThrow(/human/);
     expect(await f.human.mutation(cancel,cancelArgs)).toEqual({ok:true});expect(await f.human.mutation(cancel,cancelArgs)).toEqual({ok:true});
-    expect((await f.t.run(ctx=>ctx.db.get(billId)))?.reservedVersionId).toBeUndefined();
+    expect((await f.t.run(ctx=>ctx.db.get(billId as Id<"demoBills">)))?.reservedVersionId).toBeUndefined();
   });
 });

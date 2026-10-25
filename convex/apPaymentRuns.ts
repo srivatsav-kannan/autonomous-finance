@@ -1,3 +1,5 @@
+import { assertPaymentRelease } from "./lib/apSystem/paymentRelease";
+import { safeSumCents } from "../src/payments/domain/rules";
 import { mutation, query } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
@@ -42,8 +44,11 @@ export const prepare=mutation({
 export const authorize=mutation({
  args:{scope:scopeValidator,runId:v.id("apPaymentRuns"),snapshotHash:v.string()},
  handler:async(ctx,args)=>{
-  const {seat}=await requirePaymentHuman(ctx,args.scope);const row=await ctx.db.get(args.runId);assertRowScope(row,args.scope);const run=row as Doc<"apPaymentRuns">;
+  const {seat,subject}=await requirePaymentHuman(ctx,args.scope);const row=await ctx.db.get(args.runId);assertRowScope(row,args.scope);const run=row as Doc<"apPaymentRuns">;
   if(run.requestedBy===seat.seatId||run.snapshotHash!==args.snapshotHash||await sha256Hex(canonical(frozen(run)))!==run.snapshotHash)throw Error("Stale or self-approved payment run");
+  const versions=await Promise.all(run.items.map(item=>ctx.db.get(item.versionId)));
+  const aggregateAmountCents=safeSumCents(versions.map(version=>{assertRowScope(version,args.scope);if(!version)throw Error("Missing payment run member");return version.snapshot.amountCents;}));
+  for(const version of versions) await assertPaymentRelease(ctx,args.scope,version!.snapshot,subject,{aggregateAmountCents});
   const commands=[];
   // One Convex mutation: a stale member rolls back every newly queued command.
   for(const item of run.items){
