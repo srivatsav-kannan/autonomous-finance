@@ -1,0 +1,310 @@
+{
+  "productionBaseline": "215423431e1f8ba39a2bfa8663d986ed01cc20a1",
+  "replayHead": "cafb9b0034df5e8186aa9ea16090cbda29dfd9dc",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "passed": 55,
+  "failed": 0,
+  "typechecks": {
+    "root": "pass",
+    "backend": "pass",
+    "tests": "pass"
+  },
+  "independentTestHashes": {
+    "tests/ap-system/v6-cost-boundaries.test.ts": "2d7810109ca21e32d1e2e6f8b5548033c23e4a36ae32b1e3b91de97eef94bbc2",
+    "tests/ap-system/v6-cost-browser.fixture.tsx": "b9e9b99fcd08249c16e23c4eb147cdc7999ad6d3ac5d2700885cf51da7858fb5",
+    "tests/ap-system/v6-cost-browser.test.ts": "d521f22d21cc586da1b6657422d0f64a19e3b6175e7bd88bff0097ba1365b0da",
+    "tests/ap-system/v6-cost-ui.test.tsx": "ff48fe7aae1e3667ffcf916742e098cb1cc6663c2d5599721504bf0af40433fd",
+    "tests/ap-system/v6-bootstrap.test.ts": "79e37e43a1a0dc2e6c745c41dd5af4c55f02e73f4f24261fc6d864651bb6d266",
+    "tests/ap-system/v6-credit-browser.fixture.tsx": "19254097c7d980f7b6e42c7699af601e3d417643877f0add16dbc9d05e7eb580",
+    "tests/ap-system/v6-credit-browser.test.ts": "3cd3fdf76986029836b3afa2401ab94b2604af1000e3d59f5d0c8bb01ba3a83d",
+    "tests/ap-system/v6-credit-read.test.ts": "49266567522f0fae7cf4072356f89767b6deccdcab69350fe9065a80ca5718fd"
+  },
+  "allIndependentTestsMatchOriginalBaseline": true,
+  "findings": {
+    "V6-F1": "closed by unchanged independent replay",
+    "V6-F2": "closed by unchanged independent replay"
+  },
+  "testFiles": [
+    {
+      "file": "tests/ap-system-close-transport.test.ts",
+      "assertions": [
+        {
+          "name": "retains only the full exact source loaded through the current human, then invokes the scoped agent",
+          "status": "passed"
+        },
+        {
+          "name": "rejects a source metadata substitution and inaccessible source before any agent mutation",
+          "status": "passed"
+        },
+        {
+          "name": "separates current human reads/votes from controller proposals and fails closed without that controller",
+          "status": "passed"
+        },
+        {
+          "name": "requires the HTTP session and rejects browser file metadata, caller identity and invalid periods",
+          "status": "passed"
+        },
+        {
+          "name": "blocks local close synchronization and validates exact HTTP selectors before service invocation",
+          "status": "passed"
+        },
+        {
+          "name": "queries current cost state with the request human and server scope only",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system-correction-transport.test.ts",
+      "assertions": [
+        {
+          "name": "uses the controller only for proposals and never accepts caller-defined bank amounts/accounts",
+          "status": "passed"
+        },
+        {
+          "name": "loads case-bound authority through the current human and denies a proposal from a different case",
+          "status": "passed"
+        },
+        {
+          "name": "enforces established session, selected case and strict vote identity at HTTP boundary",
+          "status": "passed"
+        },
+        {
+          "name": "reads grouped application evidence through only the request-owned human",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system-correction-ui.test.tsx",
+      "assertions": [
+        {
+          "name": "shows verified bank/journal links, exact amount and current quorum without implying approval sends money",
+          "status": "passed"
+        },
+        {
+          "name": "keeps a correction selector ahead of the original payment link in receipt verification",
+          "status": "passed"
+        },
+        {
+          "name": "renders a balanced return JournalEntry as restoration, and an unbalanced payload as not established",
+          "status": "passed"
+        },
+        {
+          "name": "sends exact correction proposal/vote and verification only after explicit API invocation",
+          "status": "passed"
+        },
+        {
+          "name": "reviews authoritative grouped credit gross and zero cash before independent allocation approval",
+          "status": "passed"
+        },
+        {
+          "name": "keeps zero-cash restored-credit plan and receipt identity distinct from cash repayment",
+          "status": "passed"
+        },
+        {
+          "name": "loads the exact grouped receipt and submits only the credit selector with reviewed allocations",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system-cost-ui.test.tsx",
+      "assertions": [
+        {
+          "name": "preserves exact signed share identities and stores while allowing deliberate reachable splits",
+          "status": "passed"
+        },
+        {
+          "name": "rejects invented routes, duplicate share/accounts, aggregate excess capacity and rounded amounts",
+          "status": "passed"
+        },
+        {
+          "name": "requires explicit review, never fills partial amounts with capacity, and distinguishes evidence loading",
+          "status": "passed"
+        },
+        {
+          "name": "loads exact original cost state using protected transport and encoded ID",
+          "status": "passed"
+        },
+        {
+          "name": "accepts explicit accounting amounts without treating blank as a balance or changing payment limits",
+          "status": "passed"
+        },
+        {
+          "name": "keeps the period accrual fixture free of the separate signed bill discount",
+          "status": "passed"
+        },
+        {
+          "name": "checks signed corrected account capacity including offsetting discount debits at the exact cent boundary",
+          "status": "passed"
+        },
+        {
+          "name": "checks negative discount capacity without treating a positive balance as available debit capacity",
+          "status": "passed"
+        },
+        {
+          "name": "offers an explicit posting date for a governed credit without replacing its original date",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/credit-application-read.test.ts",
+      "assertions": [
+        {
+          "name": "returns the exact group from either component without creating authority or journals",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/sandbox-bootstrap.test.ts",
+      "assertions": [
+        {
+          "name": "prepares only reserved deployment settings, private distinct credentials, and identity-only gateway configuration",
+          "status": "passed"
+        },
+        {
+          "name": "requires explicit same-issuer humans, binds each independent seat once, and replays without mutations",
+          "status": "passed"
+        },
+        {
+          "name": "reconciles a lost admin:createRun reply against exact backend hashes without repeating successful setup",
+          "status": "passed"
+        },
+        {
+          "name": "reconciles a lost demoPayments:configure reply against exact backend hashes without repeating successful setup",
+          "status": "passed"
+        },
+        {
+          "name": "refuses another existing run, changed immutable configuration, and changed deployment secrets",
+          "status": "passed"
+        },
+        {
+          "name": "rejects wrong ports, wrong live instance, symlinked backend config and insecure saved files before backend mutation",
+          "status": "passed"
+        },
+        {
+          "name": "rejects fake or nonowned configuration and never returns input values from validation errors",
+          "status": "passed"
+        },
+        {
+          "name": "uses only the pinned deployment environment protocol and fails closed on a malformed query reply",
+          "status": "passed"
+        },
+        {
+          "name": "protects inspection from unauthenticated callers and returns only comparison hashes",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v6-bootstrap.test.ts",
+      "assertions": [
+        {
+          "name": "reconciles a lost environment-update reply without enrollment, even with explicit human subjects in prepare",
+          "status": "passed"
+        },
+        {
+          "name": "binds an exact deduplicated subject set once and rejects issuer, run and subject drift without mutations",
+          "status": "passed"
+        },
+        {
+          "name": "does not repeat a successful create after lost reply, and refuses changed human-seat authority during recovery",
+          "status": "passed"
+        },
+        {
+          "name": "fails closed on unknown create without observed run; recovers lost configure exactly once without new credentials",
+          "status": "passed"
+        },
+        {
+          "name": "sends no deployment credential before exact instance verification and rejects a redirect without following it",
+          "status": "passed"
+        },
+        {
+          "name": "actual launcher filters inherited admin, worker and human-token authority from gateway child configuration",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v6-cost-boundaries.test.ts",
+      "assertions": [
+        {
+          "name": "rejects UI readiness when net same-account reversals exceed the actual signed position by one cent",
+          "status": "passed"
+        },
+        {
+          "name": "allows exact signed netting and posts only independently reviewed proportional credit shares",
+          "status": "passed"
+        },
+        {
+          "name": "independently rejects a forged one-cent overdraw atomically at the actual backend",
+          "status": "passed"
+        },
+        {
+          "name": "requires an explicit later posting date for a credit issued before a cost correction",
+          "status": "passed"
+        },
+        {
+          "name": "keeps cost reads current-human and scope bound with no ledger or payment mutations",
+          "status": "passed"
+        },
+        {
+          "name": "retains exact accounting parsing while payment amounts always require a real positive safe balance",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v6-cost-browser.test.ts",
+      "assertions": [
+        {
+          "name": "invalidates mounted UI review after editing and parent context changes, ignores late responses and rejects wrong journal IDs",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v6-cost-ui.test.tsx",
+      "assertions": [
+        {
+          "name": "offers an explicit credit posting date because a corrected cost reversal cannot predate its cost history",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v6-credit-browser.test.ts",
+      "assertions": [
+        {
+          "name": "mounted grouped-credit review blocks component sums and stale reads, then submits the canonical group with zero payment calls",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v6-credit-read.test.ts",
+      "assertions": [
+        {
+          "name": "groups only the immutable request key despite same bill, credits and date; selecting either component returns exact total",
+          "status": "passed"
+        },
+        {
+          "name": "rejects group member, zero-cash receipt and consumed-credit corruption rather than showing a trusted partial total",
+          "status": "passed"
+        },
+        {
+          "name": "rejects another bill/case, organization, funding account and retired human from actual query",
+          "status": "passed"
+        },
+        {
+          "name": "requires whole-group exact cents, preserving zero cash and rejecting component totals, negatives and overflow",
+          "status": "passed"
+        }
+      ]
+    }
+  ]
+}
