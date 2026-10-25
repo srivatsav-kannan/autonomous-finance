@@ -1,0 +1,403 @@
+{
+  "runId": "sheets-agent-model-s7-mvncnkcd",
+  "agent": "model",
+  "options": {
+    "seed": 7,
+    "storeCount": 1,
+    "start": "2026-01-01",
+    "days": 2,
+    "plantErrors": true
+  },
+  "model": "gpt-6.1-sol",
+  "provider": "openai",
+  "effort": "medium",
+  "maxTurns": 16,
+  "estimates": {
+    "kernel": {
+      "requests": 22,
+      "expectedUsd": 0.32,
+      "turnCapUsd": 43.22,
+      "maxReservationUsd": 0.65,
+      "baseInputTokens": {
+        "min": 2657,
+        "max": 3065
+      }
+    },
+    "spreadsheet": {
+      "requests": 70,
+      "expectedUsd": 1.35,
+      "turnCapUsd": 43.15,
+      "maxReservationUsd": 0.65,
+      "baseInputTokens": {
+        "min": 2462,
+        "max": 2870
+      }
+    }
+  },
+  "results": {
+    "kernel": {
+      "wallMs": 45248,
+      "toolCalls": 12,
+      "refusedToolCalls": 0,
+      "turns": 22,
+      "inputTokens": 46156,
+      "outputTokens": 2281,
+      "costUsd": 0.115122,
+      "tasksWithErrors": 0,
+      "score": {
+        "booksStatus": "failed",
+        "booksDiffs": 6,
+        "booksReasons": [
+          "Obligation embarcadero-realty/LSE-SF-HAY-202601: differs by -1660000 cents",
+          "Obligation golden-state-produce/INV-1001: differs by -72045 cents",
+          "2000 Accounts Payable (net change): differs by -1732045 cents",
+          "5000 Food, Beverage & Packaging (net change): differs by -72045 cents",
+          "5200 Occupancy (Rent & CAM) (net change): differs by -1660000 cents",
+          "Accrued bill subledger vs independent obligations: differs by -1732045 cents",
+          "2 invoice document(s) lack a complete, supported disposition: doc-LSE-SF-HAY-202601, doc-golden-state-produce-INV-1001"
+        ],
+        "trialBalanceNetsToZero": true,
+        "invoiceDocuments": 5,
+        "billsRecorded": 5,
+        "errors": [
+          {
+            "id": "e-cam-2026-01",
+            "type": "cam_over_cap",
+            "caught": true,
+            "how": "bill held (cam_over_cap: CAM 274000 cents exceeds monthly cap of 210000 cents by 64000 cents; approval_limit_exceeded: total 1724000 cents exceeds 500000-cent approval limit)"
+          },
+          {
+            "id": "e-short-INV-1001",
+            "type": "short_shipment",
+            "caught": true,
+            "how": "bill held (short_shipment: KALE-24 billed 6 cases, received 4; shortage 2 cases (7700 cents).)"
+          },
+          {
+            "id": "e-remit-fraud",
+            "type": "remit_change_fraud",
+            "caught": true,
+            "how": "flagged"
+          },
+          {
+            "id": "e-zenith",
+            "type": "unexplained_debit",
+            "caught": true,
+            "how": "flagged"
+          }
+        ],
+        "caught": 4,
+        "planted": 4,
+        "decoysFlagged": 1,
+        "refusals": 0
+      },
+      "perTask": [
+        {
+          "externalId": "doc-LSE-SF-HAY-202601",
+          "type": "document.received",
+          "ms": 3784,
+          "turns": 2,
+          "toolCalls": 1,
+          "inputTokens": 4138,
+          "outputTokens": 248,
+          "costUsd": 0.010756,
+          "final": "Recorded the $17,240 rent bill on hold: CAM exceeds its cap by $640, and the total exceeds the approval limit."
+        },
+        {
+          "externalId": "sales-sf-hayes-valley-2026-01-01",
+          "type": "sales.daily",
+          "ms": 4174,
+          "turns": 2,
+          "toolCalls": 1,
+          "inputTokens": 4128,
+          "outputTokens": 222,
+          "costUsd": 0.010476,
+          "final": "Posted the January 1, 2026 daily sales entry for sf-hayes-valley, including sales tax and gift card activity."
+        },
+        {
+          "externalId": "dep-sf-hayes-valley-2026-01-01",
+          "type": "bank.transaction",
+          "ms": 3401,
+          "turns": 2,
+          "toolCalls": 1,
+          "inputTokens": 4096,
+          "outputTokens": 174,
+          "costUsd": 0.009932,
+          "final": "Booked the $6,221.82 deposit and $202.84 processing fee; the fee matches the contract."
+        },
+        {
+          "externalId": "sales-sf-hayes-valley-2026-01-02",
+          "type": "sales.daily",
+          "ms": 3785,
+          "turns": 2,
+          "toolCalls": 1,
+          "inputTokens": 4128,
+          "outputTokens": 216,
+          "costUsd": 0.010416,
+          "final": "Posted the balanced daily sales entry for sf-hayes-valley for January 2, 2026."
+        },
+        {
+          "externalId": "doc-golden-state-produce-INV-1001",
+          "type": "document.received",
+          "ms": 4210,
+          "turns": 2,
+          "toolCalls": 1,
+          "inputTokens": 4767,
+          "outputTokens": 315,
+          "costUsd": 0.012684,
+          "final": "Recorded invoice INV-1001 for $797.45 on hold: 6 kale cases billed, but only 4 received ($77.00 discrepancy)."
+        },
+        {
+          "externalId": "doc-bay-farms-protein-BF-20260102-01",
+          "type": "document.received",
+          "ms": 3679,
+          "turns": 2,
+          "toolCalls": 1,
+          "inputTokens": 4529,
+          "outputTokens": 263,
+          "costUsd": 0.011688,
+          "final": "Recorded and approved invoice BF-20260102-01 for $654.10, due January 23, 2026."
+        },
+        {
+          "externalId": "doc-pg-and-e-sim-PGE-SF-HAY-202601",
+          "type": "document.received",
+          "ms": 3494,
+          "turns": 2,
+          "toolCalls": 1,
+          "inputTokens": 4142,
+          "outputTokens": 177,
+          "costUsd": 0.010054,
+          "final": "Recorded and approved utility invoice PGE-SF-HAY-202601 for $2,850.00, due January 23, 2026."
+        },
+        {
+          "externalId": "doc-toastline-pos-TOA-202601-1",
+          "type": "document.received",
+          "ms": 5967,
+          "turns": 2,
+          "toolCalls": 1,
+          "inputTokens": 4134,
+          "outputTokens": 203,
+          "costUsd": 0.010298,
+          "final": "Recorded and approved Toastline POS invoice TOA-202601-1 for $329.00, due February 1, 2026, under Technology & SaaS."
+        },
+        {
+          "externalId": "doc-remit-fraud-2026-01-02",
+          "type": "document.received",
+          "ms": 3995,
+          "turns": 2,
+          "toolCalls": 1,
+          "inputTokens": 4023,
+          "outputTokens": 124,
+          "costUsd": 0.009286,
+          "final": "Flagged the suspicious banking-change request for review; no payment details changed, payments released, or entries recorded."
+        },
+        {
+          "externalId": "doc-remit-legit-2026-01-02",
+          "type": "document.received",
+          "ms": 4982,
+          "turns": 2,
+          "toolCalls": 1,
+          "inputTokens": 4060,
+          "outputTokens": 136,
+          "costUsd": 0.00948,
+          "final": "Flagged the remittance change for human review; recorded no bill and left payment details unchanged."
+        },
+        {
+          "externalId": "opr-zenith-2026-01-02",
+          "type": "bank.transaction",
+          "ms": 3772,
+          "turns": 2,
+          "toolCalls": 2,
+          "inputTokens": 4011,
+          "outputTokens": 203,
+          "costUsd": 0.010052,
+          "final": "Booked the $1,240 ACH debit to suspense and flagged it for review."
+        }
+      ]
+    },
+    "spreadsheet": {
+      "wallMs": 94341,
+      "toolCalls": 71,
+      "refusedToolCalls": 0,
+      "turns": 50,
+      "inputTokens": 128194,
+      "outputTokens": 3925,
+      "costUsd": 0.484182,
+      "tasksWithErrors": 2,
+      "score": {
+        "booksStatus": "failed",
+        "booksDiffs": 13,
+        "booksReasons": [
+          "Obligation embarcadero-realty/LSE-SF-HAY-202601: differs by -1660000 cents",
+          "Obligation golden-state-produce/INV-1001: differs by -72045 cents",
+          "1100 Card Settlements Receivable (net change): differs by -642466 cents",
+          "1110 Delivery Platform Receivable (net change): differs by -147517 cents",
+          "2000 Accounts Payable (net change): differs by -1732045 cents",
+          "2200 Gift Card & Loyalty Liability (net change): differs by -1475 cents",
+          "2300 Sales Tax Payable (net change): differs by -50923 cents",
+          "4000 Revenue - In-Store (net change): differs by -346665 cents",
+          "4010 Revenue - Digital (Owned) (net change): differs by -243403 cents",
+          "4020 Revenue - Delivery Marketplace (net change): differs by -147517 cents",
+          "5000 Food, Beverage & Packaging (net change): differs by -72045 cents",
+          "5200 Occupancy (Rent & CAM) (net change): differs by -1660000 cents"
+        ],
+        "trialBalanceNetsToZero": true,
+        "invoiceDocuments": 5,
+        "billsRecorded": 4,
+        "errors": [
+          {
+            "id": "e-cam-2026-01",
+            "type": "cam_over_cap",
+            "caught": false,
+            "how": "no bill"
+          },
+          {
+            "id": "e-short-INV-1001",
+            "type": "short_shipment",
+            "caught": true,
+            "how": "bill held (short_shipment: KALE-24 invoiced 6 cases, received 4; shortage 2 cases (7700 cents))"
+          },
+          {
+            "id": "e-remit-fraud",
+            "type": "remit_change_fraud",
+            "caught": true,
+            "how": "flagged"
+          },
+          {
+            "id": "e-zenith",
+            "type": "unexplained_debit",
+            "caught": true,
+            "how": "flagged"
+          }
+        ],
+        "caught": 3,
+        "planted": 4,
+        "decoysFlagged": 0,
+        "refusals": 0
+      },
+      "perTask": [
+        {
+          "externalId": "doc-LSE-SF-HAY-202601",
+          "type": "document.received",
+          "ms": 3053,
+          "turns": 2,
+          "toolCalls": 3,
+          "inputTokens": 2044,
+          "outputTokens": 82,
+          "costUsd": 0.099316,
+          "error": "openai request or usage verification failed; budget stopped, reservation retained (no retry)"
+        },
+        {
+          "externalId": "sales-sf-hayes-valley-2026-01-01",
+          "type": "sales.daily",
+          "ms": 3249,
+          "turns": 2,
+          "toolCalls": 2,
+          "inputTokens": 2035,
+          "outputTokens": 73,
+          "costUsd": 0.098936,
+          "error": "openai request or usage verification failed; budget stopped, reservation retained (no retry)"
+        },
+        {
+          "externalId": "dep-sf-hayes-valley-2026-01-01",
+          "type": "bank.transaction",
+          "ms": 10662,
+          "turns": 5,
+          "toolCalls": 8,
+          "inputTokens": 12353,
+          "outputTokens": 473,
+          "costUsd": 0.029436,
+          "final": "Recorded and matched the $6,221.82 settlement and $202.84 contract-compliant fee; all checks passed."
+        },
+        {
+          "externalId": "sales-sf-hayes-valley-2026-01-02",
+          "type": "sales.daily",
+          "ms": 11083,
+          "turns": 5,
+          "toolCalls": 5,
+          "inputTokens": 12341,
+          "outputTokens": 630,
+          "costUsd": 0.030982,
+          "final": "Posted January 2 sales for sf-hayes-valley as JE-5; saved the workbook and verified all checks are OK."
+        },
+        {
+          "externalId": "doc-golden-state-produce-INV-1001",
+          "type": "document.received",
+          "ms": 10021,
+          "turns": 5,
+          "toolCalls": 6,
+          "inputTokens": 13038,
+          "outputTokens": 358,
+          "costUsd": 0.029656,
+          "final": "Recorded INV-1001 for $797.45 as held; flagged 2 missing KALE-24 cases ($77.00), posted no accrual, and verified all checks OK."
+        },
+        {
+          "externalId": "doc-bay-farms-protein-BF-20260102-01",
+          "type": "document.received",
+          "ms": 8786,
+          "turns": 5,
+          "toolCalls": 8,
+          "inputTokens": 12958,
+          "outputTokens": 431,
+          "costUsd": 0.030226,
+          "final": "Approved and booked invoice BF-20260102-01 for 65,410 cents, due January 23, 2026; all checks OK."
+        },
+        {
+          "externalId": "doc-pg-and-e-sim-PGE-SF-HAY-202601",
+          "type": "document.received",
+          "ms": 12600,
+          "turns": 6,
+          "toolCalls": 12,
+          "inputTokens": 19867,
+          "outputTokens": 625,
+          "costUsd": 0.045984,
+          "final": "Recorded and approved the $2,850.00 PG&E bill due January 23, 2026; posted the accrual and verified all checks are OK."
+        },
+        {
+          "externalId": "doc-toastline-pos-TOA-202601-1",
+          "type": "document.received",
+          "ms": 10972,
+          "turns": 6,
+          "toolCalls": 9,
+          "inputTokens": 16243,
+          "outputTokens": 461,
+          "costUsd": 0.037096,
+          "final": "Recorded and approved Toastline invoice TOA-202601-1 for $329.00, due February 1, 2026; posted to Technology & SaaS and Accounts Payable. All checks OK."
+        },
+        {
+          "externalId": "doc-remit-fraud-2026-01-02",
+          "type": "document.received",
+          "ms": 7356,
+          "turns": 5,
+          "toolCalls": 4,
+          "inputTokens": 10987,
+          "outputTokens": 183,
+          "costUsd": 0.023804,
+          "final": "Flagged the suspicious remit-change request; no payment details changed or payments made, and all checks passed."
+        },
+        {
+          "externalId": "doc-remit-legit-2026-01-02",
+          "type": "document.received",
+          "ms": 6037,
+          "turns": 3,
+          "toolCalls": 2,
+          "inputTokens": 6440,
+          "outputTokens": 95,
+          "costUsd": 0.01383,
+          "final": "Reviewed the remittance request; recorded no entries and left payment details unchanged. All checks are OK."
+        },
+        {
+          "externalId": "opr-zenith-2026-01-02",
+          "type": "bank.transaction",
+          "ms": 10503,
+          "turns": 6,
+          "toolCalls": 12,
+          "inputTokens": 19888,
+          "outputTokens": 514,
+          "costUsd": 0.044916,
+          "final": "Recorded the $1,240 debit to suspense, matched the bank transaction, and flagged it for investigation; all checks passed."
+        }
+      ]
+    }
+  },
+  "generatedAt": "2026-10-25T04:52:59.023Z"
+}

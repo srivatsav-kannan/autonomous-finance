@@ -1,0 +1,73 @@
+{
+  "batch": "finance-extra-v1",
+  "tasks": [
+    "finbalance-cov-pro-m1-0000",
+    "finbalance-db-hea-q1-00196",
+    "finbalance-cov-pro-y1-0085",
+    "finbalance-db-pro-m2-00004",
+    "finbalance-neg-bank-closing-01",
+    "finbalance-neg-invoice-total-01",
+    "invoice-sandbox-net-spend"
+  ],
+  "modes": [
+    "full-team",
+    "generalist"
+  ],
+  "repeats": 1,
+  "maxTurns": 24,
+  "modelPolicy": {
+    "version": 1,
+    "approval": {
+      "approvedBy": "srivatsav-kannan",
+      "approvedAt": "2026-10-25T04:40:46Z",
+      "maxCostUsd": 6,
+      "maxRequests": 350,
+      "maxTurnsPerCase": 24
+    },
+    "agent": {
+      "provider": "openai",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "maxInputTokens": 100000,
+      "maxOutputTokens": 4096,
+      "prices": {
+        "input": 2,
+        "output": 10,
+        "cacheRead": 0.1,
+        "cacheWrite": 2.5
+      }
+    },
+    "judge": {
+      "provider": "openai",
+      "model": "gpt-6-astra",
+      "effort": "low",
+      "maxInputTokens": 100000,
+      "maxOutputTokens": 4096,
+      "prices": {
+        "input": 10,
+        "output": 50,
+        "cacheRead": 1,
+        "cacheWrite": 12.5
+      }
+    }
+  },
+  "modelFallbacksEnabled": false,
+  "judge": "off",
+  "paidExecution": "approval-present",
+  "provenanceSha256": "6e1cd06e337e29c4778d37dccc011dfec49739324d5f8724326f801e1614c463",
+  "provenance": {
+    "finance-extra-v1": "6e1cd06e337e29c4778d37dccc011dfec49739324d5f8724326f801e1614c463"
+  },
+  "evidence": {
+    "finbalance-cov-pro-m1-0000": "c1717247e43e1db9732d318ba54d033f27b77adca4dceefa521893801e053a18",
+    "finbalance-db-hea-q1-00196": "2f53d5736c529e142207fefd703732b9b1224c4a0ad841446863659573bff3ee",
+    "finbalance-cov-pro-y1-0085": "b50633efbe787e3b3d2d42bc8c9d5e51b7f4301f5af8f48eb5a6812afb4d1e15",
+    "finbalance-db-pro-m2-00004": "55a650fa3fdb423c0be248f72713c0b1d8e812a32e4ab7baa6d32496ea0dd673",
+    "finbalance-neg-bank-closing-01": "29102706321c3596dc64f7fa64b04954130b2c8392f03120085f4831286ac8c3",
+    "finbalance-neg-invoice-total-01": "2b4045ecafd8b261e8484aa1a764f69b807f0b8f76bc2d223a7487332a1310b7",
+    "invoice-sandbox-net-spend": "1a56de6088707b41fe0b737f17234b339e8e8325ea84732136832fac2e271973"
+  },
+  "expectedRuns": 14,
+  "startedAt": "2026-10-25T04:45:50.334Z",
+  "budgetLedger": "/Users/srivatsavkannan/Documents/calhacks/autonomous-finance/var/benchmarks/approved-final-extra.json.usage.json"
+}

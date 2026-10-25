@@ -74,14 +74,16 @@ npm run agents -- --run demo
 
 ## Evidence we quote, not run
 
+All numbers come from [docs/RESULTS.md](RESULTS.md).
+
 | Claim | Result | Source |
 |---|---|---|
-| Catches planted errors in our simulated world | 13/13 planted errors ($3,774.33), 3/3 decoys, 0 false alarms, books exact on 7/7 checked lines, on seed 7 and three unseen seeds | [docs/evals/README.md](evals/README.md) |
-| Controls hold | 20/20 control tests (16 attacks refused, the hash chain verifies, 3 legitimate paths still work) | [docs/evals/control-tests.json](evals/control-tests.json) |
-| Cheaper than one generalist agent | On the same world: ours $0.15 and 87 s; one plain agent $7.80 and 42 min. One seed only; the accuracy gap is one missed duplicate. | docs/evals/README.md |
-| Works on outside benchmarks | APEX accounting through our team (specialist plus controller review in the real kernel): AR reconciliation 100%, AR aging 100%, payroll reconciliation ran out of turns. DABstep is pending. | #67 |
+| Catches planted errors in our simulated world | 13/13 planted errors, 3/3 decoys, 0 false alarms, books correct on every account, on 4 seeds; $0.04–0.05 and about 80 s per 14-day run | [docs/RESULTS.md](RESULTS.md) §2 |
+| Controls hold | 20/20 control tests: 16 bad actions refused, the hash chain verifies, 3 legitimate paths still work | [docs/RESULTS.md](RESULTS.md) §3 |
+| Cheaper than one generalist agent | On the same world (earlier run, with Claude): ours $0.15 and 87 s; one plain agent $7.80 and 42 min. One seed. | [docs/RESULTS.md](RESULTS.md) §2 |
+| Works on outside benchmarks | 15 public tasks (APEX, DABstep, Invoice Sandbox, FinBalance): our team 86.7% mean (13 fully correct), the same model alone 84.0% (12). The controller's review fixed two wrong answers; the team costs about 1.75× as much. One run each, so call it at least as accurate, not a big win. | [docs/RESULTS.md](RESULTS.md) §4 |
 | Faster and safer than an agent forced into spreadsheets | On the same 156 bookkeeping operations: **1 tool call per operation vs about 6** (156 vs 902). The kernel stays flat at 0.12 ms per operation while the workbook slows from 0.20 to 2.23 ms as the books grow, about 10× faster on compute. Of 18 injected bad operations, **the kernel stopped 18; the workbook accepted all 18 and its own checks missed 10**, including self-approval, approval over the limit and posting to a closed period. | [docs/evals/spreadsheet-vs-kernel.md](evals/spreadsheet-vs-kernel.md) |
-| Adapted outside benchmarks | Invoice Sandbox (18 customers) and 6 FinBalance records run through the same full-team harness. In FinBalance, the controller's entries are posted through our real ledger kernel and the balance sheet comes from the kernel. The scorers match the official ones exactly on saved runs. Built and checked with the free rules mode, but not yet run with a model. | [docs/EXTERNAL_EVALS.md](EXTERNAL_EVALS.md) |
+| Adapted outside benchmarks | The same team runs inside our kernel on outside tasks. In FinBalance, entries are posted through our ledger and the balance sheet comes from the kernel. | [docs/EXTERNAL_EVALS.md](EXTERNAL_EVALS.md) |
 
 **How we adapted outside evals.** A benchmark's source files become a read-only evidence database. The task is assigned to the matching seat; for example, AR reconciliation goes to the revenue accountant. From there:
 1. The specialist drafts an answer with evidence tools.

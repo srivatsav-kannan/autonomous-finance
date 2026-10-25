@@ -1,0 +1,389 @@
+{
+  "runId": "eval-openai-s11-mvncsbo8",
+  "errors": [
+    {
+      "id": "e-cam-2026-01",
+      "type": "cam_over_cap",
+      "caught": true,
+      "amountAtRiskCents": 64000,
+      "how": "approved, approved 1702500 of 1766500"
+    },
+    {
+      "id": "e-short-INV-1002",
+      "type": "short_shipment",
+      "caught": true,
+      "amountAtRiskCents": 7700,
+      "how": "approved, 1 exception(s), approved 91760 of 99460"
+    },
+    {
+      "id": "e-fee-2026-01-03",
+      "type": "card_fee_over",
+      "caught": true,
+      "amountAtRiskCents": 1726,
+      "how": "flagged against contracted rate"
+    },
+    {
+      "id": "e-fee-2026-01-04",
+      "type": "card_fee_over",
+      "caught": true,
+      "amountAtRiskCents": 1555,
+      "how": "flagged against contracted rate"
+    },
+    {
+      "id": "e-fee-2026-01-05",
+      "type": "card_fee_over",
+      "caught": true,
+      "amountAtRiskCents": 2222,
+      "how": "flagged against contracted rate"
+    },
+    {
+      "id": "e-price-INV-1004",
+      "type": "price_over_contract",
+      "caught": true,
+      "amountAtRiskCents": 1467,
+      "how": "approved, 1 exception(s), approved 73705 of 75172"
+    },
+    {
+      "id": "e-fee-2026-01-06",
+      "type": "card_fee_over",
+      "caught": true,
+      "amountAtRiskCents": 2274,
+      "how": "flagged against contracted rate"
+    },
+    {
+      "id": "e-remit-fraud",
+      "type": "remit_change_fraud",
+      "caught": true,
+      "amountAtRiskCents": 0,
+      "how": "remit-to unchanged, request blocked"
+    },
+    {
+      "id": "e-dup-NCD5001",
+      "type": "duplicate_exact",
+      "caught": true,
+      "amountAtRiskCents": 19180,
+      "how": "rejected as duplicate"
+    },
+    {
+      "id": "e-payout-payout-ubereats-sim-w1",
+      "type": "payout_short",
+      "caught": true,
+      "amountAtRiskCents": 18750,
+      "how": "dispute opened"
+    },
+    {
+      "id": "e-credit-INV-1011",
+      "type": "unapplied_credit",
+      "caught": true,
+      "amountAtRiskCents": 7700,
+      "how": "credit applied to 1002"
+    },
+    {
+      "id": "e-zenith",
+      "type": "unexplained_debit",
+      "caught": true,
+      "amountAtRiskCents": 124000,
+      "how": "parked in suspense and escalated"
+    },
+    {
+      "id": "e-ghost",
+      "type": "ghost_employee",
+      "caught": true,
+      "amountAtRiskCents": 148050,
+      "how": "held out of payroll"
+    }
+  ],
+  "decoys": [
+    {
+      "id": "d-same-SP-1",
+      "type": "same_amount_different_delivery",
+      "correct": true,
+      "how": "approved"
+    },
+    {
+      "id": "d-payout-payout-doordash-sim-w1",
+      "type": "explained_payout_adjustment",
+      "correct": true,
+      "how": "accepted itemized refund"
+    },
+    {
+      "id": "d-remit-legit",
+      "type": "legit_remit_change",
+      "correct": true,
+      "how": "verified by callback and merged"
+    }
+  ],
+  "falseAlarms": [],
+  "books": [
+    {
+      "metric": "Bank-confirmed payments vs settled payment subledger",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "1000 Cash - Operating (Bank A) (net change)",
+      "expected": -124000,
+      "actual": -124000,
+      "diff": 0
+    },
+    {
+      "metric": "1010 Cash - Payroll (Bank A) (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "1020 Cash - Store Deposits (Bank B) (net change)",
+      "expected": 26705107,
+      "actual": 26705107,
+      "diff": 0
+    },
+    {
+      "metric": "1100 Card Settlements Receivable (net change)",
+      "expected": 2070509,
+      "actual": 2070509,
+      "diff": 0
+    },
+    {
+      "metric": "1110 Delivery Platform Receivable (net change)",
+      "expected": 18750,
+      "actual": 18750,
+      "diff": 0
+    },
+    {
+      "metric": "1150 Vendor Credits Receivable (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "1200 Inventory - Food & Packaging (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "1300 Prepaid Expenses (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "1500 Property & Equipment (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "1600 Operating Lease ROU Assets (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "2000 Accounts Payable (net change)",
+      "expected": 9151206,
+      "actual": 9151206,
+      "diff": 0
+    },
+    {
+      "metric": "2010 Accrued Liabilities (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "2100 Payroll Liabilities (net change)",
+      "expected": 7280300,
+      "actual": 7280300,
+      "diff": 0
+    },
+    {
+      "metric": "2200 Gift Card & Loyalty Liability (net change)",
+      "expected": 57996,
+      "actual": 57996,
+      "diff": 0
+    },
+    {
+      "metric": "2300 Sales Tax Payable (net change)",
+      "expected": 2002200,
+      "actual": 2002200,
+      "diff": 0
+    },
+    {
+      "metric": "2400 Operating Lease Liabilities (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "3000 Stockholders' Equity (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "4000 Revenue - In-Store (net change)",
+      "expected": 13630282,
+      "actual": 13630282,
+      "diff": 0
+    },
+    {
+      "metric": "4010 Revenue - Digital (Owned) (net change)",
+      "expected": 9570199,
+      "actual": 9570199,
+      "diff": 0
+    },
+    {
+      "metric": "4020 Revenue - Delivery Marketplace (net change)",
+      "expected": 5800120,
+      "actual": 5800120,
+      "diff": 0
+    },
+    {
+      "metric": "4090 Gift Card Breakage (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "5000 Food, Beverage & Packaging (net change)",
+      "expected": 3041520,
+      "actual": 3041520,
+      "diff": 0
+    },
+    {
+      "metric": "5100 Labor & Related (net change)",
+      "expected": 7280300,
+      "actual": 7280300,
+      "diff": 0
+    },
+    {
+      "metric": "5200 Occupancy (Rent & CAM) (net change)",
+      "expected": 5061046,
+      "actual": 5061046,
+      "diff": 0
+    },
+    {
+      "metric": "5300 Other Restaurant Operating Costs (net change)",
+      "expected": 949940,
+      "actual": 949940,
+      "diff": 0
+    },
+    {
+      "metric": "5400 Card Processing Fees (net change)",
+      "expected": 739800,
+      "actual": 739800,
+      "diff": 0
+    },
+    {
+      "metric": "5410 Delivery Platform Commissions (net change)",
+      "expected": 1526631,
+      "actual": 1526631,
+      "diff": 0
+    },
+    {
+      "metric": "6000 General & Administrative (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "6100 Technology & SaaS (net change)",
+      "expected": 98700,
+      "actual": 98700,
+      "diff": 0
+    },
+    {
+      "metric": "6200 Marketing (net change)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "6900 Suspense - Unidentified (net change)",
+      "expected": 124000,
+      "actual": 124000,
+      "diff": 0
+    },
+    {
+      "metric": "Accrued bill subledger vs independent obligations",
+      "expected": 9151206,
+      "actual": 9151206,
+      "diff": 0
+    },
+    {
+      "metric": "AP ledger vs unpaid approved bill subledger",
+      "expected": 9151206,
+      "actual": 9151206,
+      "diff": 0
+    }
+  ],
+  "booksStatus": {
+    "status": "passed",
+    "reasons": []
+  },
+  "controls": [
+    {
+      "metric": "ledger hash chain verifies",
+      "value": 1,
+      "target": "1",
+      "ok": true
+    },
+    {
+      "metric": "trial balance nets to zero (cents)",
+      "value": 0,
+      "target": "0",
+      "ok": true
+    },
+    {
+      "metric": "bills paid more than once",
+      "value": 0,
+      "target": "0",
+      "ok": true
+    },
+    {
+      "metric": "payments approved by their requester",
+      "value": 0,
+      "target": "0",
+      "ok": true
+    },
+    {
+      "metric": "blocked attempts (kernel said no)",
+      "value": 0,
+      "target": "logged",
+      "ok": true
+    }
+  ],
+  "humans": {
+    "asksToHumans": 20,
+    "decisionsAsked": 5,
+    "perHundredEvents": 8.7
+  },
+  "coverage": {
+    "invoiceDocuments": 64,
+    "billsRecorded": 64,
+    "unreadable": 0,
+    "parsersLearned": 2,
+    "unresolvedDocuments": 0
+  },
+  "cost": {
+    "tasks": 218,
+    "llmTurns": 11,
+    "deterministicShare": 0.9495412844036697,
+    "costUsd": 0.047884,
+    "costPerTaskUsd": 0.000219651376146789
+  },
+  "summary": {
+    "caught": 13,
+    "planted": 13,
+    "recall": 1,
+    "dollarsAtRisk": 398624,
+    "dollarsCaught": 398624,
+    "decoysCorrect": 3,
+    "decoys": 3,
+    "falseAlarmCount": 0
+  },
+  "wallSeconds": 79
+}

@@ -1,0 +1,65 @@
+{
+  "batch": "finance-eight-v1",
+  "tasks": [
+    "dabstep-1871",
+    "dabstep-1753",
+    "apex-17"
+  ],
+  "modes": [
+    "full-team",
+    "generalist"
+  ],
+  "repeats": 1,
+  "maxTurns": 30,
+  "modelPolicy": {
+    "version": 1,
+    "approval": {
+      "approvedBy": "srivatsav-kannan",
+      "approvedAt": "2026-10-25T04:58:29Z",
+      "maxCostUsd": 10,
+      "maxRequests": 400,
+      "maxTurnsPerCase": 30
+    },
+    "agent": {
+      "provider": "openai",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "maxInputTokens": 100000,
+      "maxOutputTokens": 4096,
+      "prices": {
+        "input": 2,
+        "output": 10,
+        "cacheRead": 0.1,
+        "cacheWrite": 2.5
+      }
+    },
+    "judge": {
+      "provider": "openai",
+      "model": "gpt-6-astra",
+      "effort": "low",
+      "maxInputTokens": 100000,
+      "maxOutputTokens": 4096,
+      "prices": {
+        "input": 10,
+        "output": 50,
+        "cacheRead": 1,
+        "cacheWrite": 12.5
+      }
+    }
+  },
+  "modelFallbacksEnabled": false,
+  "judge": "llm",
+  "paidExecution": "approval-present",
+  "provenanceSha256": "01a88d6ed7153dd11348631549b4c84aa0a0d92db895c06e51f7f3126460000c",
+  "provenance": {
+    "finance-eight-v1": "01a88d6ed7153dd11348631549b4c84aa0a0d92db895c06e51f7f3126460000c"
+  },
+  "evidence": {
+    "dabstep-1871": "8b8e8a7070dd8f104057f321da5a3e2e0d71ee8dfd20a2419a473ad5c70c1a6c",
+    "dabstep-1753": "8b8e8a7070dd8f104057f321da5a3e2e0d71ee8dfd20a2419a473ad5c70c1a6c",
+    "apex-17": "d9e9d87d0de3d13eb005dd08e3e0a21c35e10bdcd8b1205767d0ec854f96f088"
+  },
+  "expectedRuns": 6,
+  "startedAt": "2026-10-25T04:58:29.765Z",
+  "budgetLedger": "/Users/srivatsavkannan/Documents/calhacks/autonomous-finance/var/benchmarks/approved-final-main2.json.usage.json"
+}
