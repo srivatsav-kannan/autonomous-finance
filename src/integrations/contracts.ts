@@ -48,7 +48,10 @@ export type TransferObservation = {
   rejectionReason?: string;
 };
 
-/** Independent provider evidence. Cash may be posted only from status=posted. */
+/**
+ * Independent provider evidence. Cash may be posted only from status=posted.
+ * A pending hold becomes complete once its transfer settles or is rejected, as Increase does.
+ */
 export type BankTransaction = {
   id: string;
   scope: BankScope;
@@ -56,10 +59,11 @@ export type BankTransaction = {
   commandId: string;
   amountCents: number;
   currency: "USD";
-  status: "pending" | "posted";
+  status: "pending" | "complete" | "posted";
   purpose: "debit" | "return";
   createdAt: string;
   postedAt?: string;
+  completedAt?: string;
   originalTransactionId?: string;
 };
 

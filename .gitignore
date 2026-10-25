@@ -5,6 +5,8 @@ node_modules/
 dist/
 # runtime data: memory repos, world outputs and eval runs are generated
 var/
+*.usage.json
+*.usage.json.tmp
 *.log
 .DS_Store
 var-backend.log

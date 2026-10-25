@@ -1,7 +1,7 @@
 # Finance console
 
 Read `../design.md` before visual changes. Keep the React/Convex architecture,
-all seven console views, scenario routing, gateway actions, and WebMCP tools.
+all nine console views, scenario routing, gateway actions, and WebMCP tools.
 Never fabricate balances, activity, approvals, or evaluation results.
 
 Hallmark is vendored at `../.agents/skills/hallmark/SKILL.md`. For a requested

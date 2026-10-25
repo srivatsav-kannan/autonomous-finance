@@ -112,6 +112,7 @@ describe("persistent FakeBank", () => {
     const debit = await bank.provider.getTransaction(scope, settled.originalTransactionId!);
     expect(debit).toMatchObject({ status: "posted", purpose: "debit", amountCents: -12_500 });
     expect(debit.id).not.toBe(transfer.pendingTransactionId);
+    expect(await bank.provider.getTransaction(scope, transfer.pendingTransactionId!)).toMatchObject({ status: "complete", completedAt: expect.any(String) });
     const returned = bank.harness.returnTransfer(transfer.id); expect(bank.harness.returnTransfer(transfer.id)).toEqual(returned);
     expect(await bank.provider.getTransaction(scope, returned.returnTransactionId!)).toMatchObject({ status: "posted", purpose: "return", amountCents: 12_500, originalTransactionId: debit.id });
     expect((await bank.provider.listTransactions(scope)).items).toHaveLength(2);
@@ -157,6 +158,7 @@ describe("persistent FakeBank", () => {
     await expect(bank.provider.createTransfer(cmd)).rejects.toMatchObject({ errorClass: "unknown", outcomeUnknown: true });
     const transfer = await bank.provider.createTransfer(cmd); const rejected = bank.harness.reject(transfer.id, "invalid_destination");
     expect(rejected.status).toBe("rejected"); expect(rejected.originalTransactionId).toBeUndefined();
+    expect(await bank.provider.getTransaction(scope, transfer.pendingTransactionId!)).toMatchObject({ status: "complete" });
     expect((await bank.provider.listTransactions(scope)).items).toEqual([]);
     expect(await bank.provider.getBalance(scope)).toMatchObject({ currentCents: 1_000_000, availableCents: 1_000_000 });
     expect(() => bank.harness.settle(transfer.id)).toThrow(); expect(() => bank.harness.returnTransfer(transfer.id)).toThrow();

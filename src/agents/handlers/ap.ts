@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { normalizeInvoiceNumber } from "../../../convex/ap";
 import { api } from "../../core/kernel-client";
 import { formatMoney, parseMoney } from "../../core/money";
 import { ParsedInvoice, checkInvoiceMath } from "../../integrations/invoice";
@@ -65,13 +66,20 @@ async function handleCreditMemo(rt: SeatRuntime, task: Task, payload: Record<str
   const v = sender.vendor;
   const alreadyRecorded = v.credits.some((c) => c.id === memo);
   const on = await rt.simDate();
-  const entry = { id: memo, amountCents: parseMoney(amount), reason: /Reason: (.+)/.exec(text)?.[1] ?? "credit memo", issuedOn: on };
+  // A credit acknowledging a shortfall already short-paid on its reference invoice is
+  // consumed there; deducting it again from a later invoice would double-count it.
+  const refNumber = ref ? normalizeInvoiceNumber(ref) : undefined;
+  const shortPaid = refNumber !== undefined && (await rt.kernel.client.query(api.ap.bills, { runId: rt.runId, vendor: v.id }))
+    .some((b) => b.invoiceNumber === refNumber && b.status !== "rejected" && b.exceptions.some((x) => x.startsWith("short_shipment")));
+  const entry = { id: memo, amountCents: parseMoney(amount), reason: /Reason: (.+)/.exec(text)?.[1] ?? "credit memo", issuedOn: on,
+    ...(shortPaid ? { appliedTo: refNumber } : {}) };
   await rt.updateVendor(v.id, (current) => current.credits.some((c) => c.id === memo)
     ? current
     : { ...current, credits: [...current.credits, entry] },
   `Record credit ${memo} from ${v.legalName} (${amount}, ref ${ref})`, { "Task-Id": task._id }, `credit:${v.id}:${memo}`);
   await rt.decide({ kind: "credit_memo", subject: { type: "credit", id: memo }, outcome: "act", confidence: 0.99, task: task._id,
-    summary: alreadyRecorded ? `Credit ${memo} from ${v.legalName} was already recorded; no additional credit added` : `Recorded ${amount} credit from ${v.legalName}; it must be deducted from the next payment`,
+    summary: alreadyRecorded ? `Credit ${memo} from ${v.legalName} was already recorded; no additional credit added` : shortPaid ? `Recorded ${amount} credit from ${v.legalName}; already short-paid on ${ref}, so not deducted again`
+      : `Recorded ${amount} credit from ${v.legalName}; it must be deducted from the next payment`,
     facts: [{ key: "credit.amount", value: amount, source: { kind: "event", ref: String(task.payload.externalId) } }, { key: "credit.ref_invoice", value: ref, source: { kind: "event", ref: String(task.payload.externalId) } }],
     rules: [{ path: "playbooks/ap_clerk.yaml", key: "credits" }] });
   if (alreadyRecorded) return { outcome: "duplicate", summary: `credit ${memo} already recorded` };
