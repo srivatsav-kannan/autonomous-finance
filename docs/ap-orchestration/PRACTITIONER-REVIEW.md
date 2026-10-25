@@ -25,7 +25,7 @@ All supplier contacts, source documents, local identities and FakeBank effects i
 | Suggested vendor bank change | Never substitute into payment from invoice text | Trusted independent verification and authorized destination configuration; current configured beneficiary is immutable for the run. |
 | Vendor notification | No delivery claim from a memory note | Actual communication evidence is needed; this implementation has not sent a supplier communication. |
 
-The first-wave Golden State policy accepts only the full validated amount; zero unexplained price/quantity variance is the versioned company choice. These limits require business review, not implicit adoption from a cited external policy. Expanded non-PO, credit, partial-receipt and allocation rules will be added after B3 verification.
+The first-wave Golden State policy accepts only the full validated amount; zero unexplained price/quantity variance is the versioned company choice. These limits require business review, not implicit adoption from a cited external policy. B3 now provides explicit expanded policies; its implemented rules and synthetic evidence follow below and still require practitioner review.
 
 ## Cases, amounts and expected accounting
 
@@ -43,13 +43,28 @@ For the clean case, expected recognition is **Dr expense5000 $678.60 / Cr AP2000
 
 This immediate expense treatment is the deliberately limited first policy. Inventory, fixed assets, prepayments, tax treatment, posting-period selection and corrections need explicit reviewed policy; they are not inferred merely from the word invoice. B3/B4 must expand this packet with exact supported treatments and exceptions.
 
+## Expanded business policy cases awaiting practitioner review
+
+B3 uses versioned authenticated-human groups, amount thresholds, sequential quorum, escalation deadlines and bounded delegation. The source/proposal creator cannot approve the same proposal; one person or delegated principal cannot fill two required positions. Expired/revoked delegation or a changed supplier/policy invalidates authority for new payment release. Supplier onboarding and bank changes require a previously held independent contact, recorded callback attestation and a different approver. `operator_recorded` means an operator recorded evidence, not that this software placed a call; local tests use explicit `simulated` labels.
+
+| Case | Expected accounting and control | Current evidence |
+| --- | --- | --- |
+| Partial receipt | Original invoice$77.00 for2units; explicitly accept1unit$38.50. Dr configuredcost$38.50 / CrAP$38.50; retain$38.50disputed. No inferred short-pay or bank command. | B3 component and root business-payment integration tests. |
+| Partial cash on approved portion | Independently authorize$20.00 against approved$38.50. DrAP$20 / Crcash$20; outstanding$18.50, original invoice stays$77.00. | Root scheduled FakeBank test; different verified supplier destination. |
+| Non-PO service | Contract and service-acceptance lines support exact supplier, quantity, unit and amount. Missing PO alone grants no authority; missing acceptance holds. | B3 typed backend tests; browser integration pending. |
+| Credit with nonrecoverable tax | Original$77net+$7.70tax=$84.70, expense/inventory split$42.35each. Two$42.35returncredits reverse$21.18/$21.17 then$21.17/$21.18. DrAP for eachcredit; cumulative cost reversal exactlymatchesoriginal. | B3 credit tests; original quantities and retained return capacity bounded. |
+| Credit-only application | Apply recognized$42.35credit to approved$84.70bill: grosspaid$42.35, cash$0, outstanding$42.35; noadditionaljournal and nobankcommand. | B3 application/replay tests. |
+| Verified bank change | Cancel only provably unsent proposal; recertify samebill againstnewverifiedrevision, preservingoriginalrecognition. Possibleprior send keepsoriginaldestination/keyuntilresolved. | Root payment integration plusB3 boundaries. |
+
+Configured policies support USD, selected expense/inventory/prepayment/fixedasset accounts, stores and nonrecoverabletax. Othercurrencies retainoriginalvalues withownedholds; recoverabletax, unconfiguredaccounts/stores, department/projectdimensions and unsupportedperiods are held. These are explicit currentpolicy limits forreview, not assertions of universal accounting/tax treatment. Proposed changes to recognizedamounts/coding require linkedcredits/corrections; originaljournals cannot be rewritten.
+
 ## Scheduling, partial payment and payment-run rules awaiting business review
 
 The C3 engineering policy treats an initiation date as **00:00 UTC on the selected business date**, not a promised arrival date. It is frozen in the authorization hash. Retry timing is separate. Rescheduling requires cancellation of a provably unsent payment and a new exact authorization; an operation that may have been sent must retain its original request and key while the bank outcome is resolved.
 
 A reviewer explicitly chooses the gross payable amount and any recognized available credits. Cash equals gross less credits and must be positive for a bank payment. A full-credit, zero-cash application is a distinct B3 business operation. No unexplained short-pay or credit is inferred from the difference. A later installment requires a new proposal and authorization against the then-outstanding balance. Payment runs hold one immutable payment identity per case; one stale or unavailable member causes atomic preparation/authorization/cancellation to roll back. Cancellation cannot erase a possible bank send.
 
-The C3 automated FakeBank case starts with a $100.00 recognized bill and a $20.00 recognized supplier credit. First discharge $60.00 = $20.00 credit + $40.00 cash; the bill balance becomes $40.00. Second authorized cash payment $40.00 clears it. Expected postings are Dr cost $100 / Cr AP $100; Dr AP $20 / Cr original cost $20; Dr AP $40 / Cr cash $40 twice. Final AP is $0, expense net $80 and cash paid $80. The component test observes two transfers, two posted debits and four journals, with no extra effects on replay. This is synthetic automated evidence, not external bank acceptance or practitioner validation. Independent V3 results are added after Master acceptance.
+The C3 automated FakeBank case starts with a $100.00 recognized bill and a $20.00 recognized supplier credit. First discharge $60.00 = $20.00 credit + $40.00 cash; the bill balance becomes $40.00. Second authorized cash payment $40.00 clears it. Expected postings are Dr cost $100 / Cr AP $100; Dr AP $20 / Cr original cost $20; Dr AP $40 / Cr cash $40 twice. Final AP is $0, expense net $80 and cash paid $80. The component test observes two transfers, two posted debits and four journals, with no extra effects on replay. This is synthetic automated evidence, not external bank acceptance or practitioner validation. Independent V3 confirms a second sequence: bill$77, credit$12, first gross$50 with cash$38, second cash$27, first cash returned$38, then replacementcash$38. Expected finalAP$0 and netcash$65; exactly6journals including the return and replacement, with the$12credit consumed once. See evidence/V3.md.
 
 The corresponding QuickBooks connector currently supports full recognized bills and verified full cash settlements; partial recognition and credit/application coverage are still being integrated. A successful local journal must not be described as an external QuickBooks record. Browser login is implemented with Auth0, but the development tenant and approved real human have not yet been configured.
 
