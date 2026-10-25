@@ -23,11 +23,22 @@ const WORKSPACES = ["cases", "runs", "governance", "close"] as const;
 const VIEWS = ["evidence", "matching", "accounting", "history"] as const;
 const FILTERS = ["all", "attention", "approved", "settled"] as const;
 const dateTime = (value: number) => new Date(value).toLocaleString();
-export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContextChange?: (context: APSystemContext | undefined) => void; onBusyChange?: (busy: boolean) => void }) {
+export type APWorkspaceSection = typeof WORKSPACES[number];
+const SECTION_HEADINGS: Record<APWorkspaceSection, { title: string; lede: string }> = {
+  cases: { title: "Invoices", lede: "Each invoice is one case: the original documents, the checks, the decisions and what happened to the money." },
+  runs: { title: "Payments", lede: "Payments wait for a person to release them. Each one is tied to an approved bill and a fixed destination." },
+  governance: { title: "Policy & suppliers", lede: "Who can approve what, payment limits, and verified supplier bank details." },
+  close: { title: "Period close", lede: "What still blocks the month from closing, and who has to clear it." },
+};
+// The console's main navigation can drive the section. Without it the workspace keeps its own section tabs.
+export function APSystemWorkspace({ onContextChange, onBusyChange, section, onSection }: { onContextChange?: (context: APSystemContext | undefined) => void; onBusyChange?: (busy: boolean) => void; section?: APWorkspaceSection; onSection?: (section: APWorkspaceSection) => void }) {
   const [listResult,setListResult]=useState<{generation:number;cases?:APCaseDetail[];error?:string}>();
   const [detailResult,setDetailResult]=useState<{generation:number;caseId:string;detail?:APCaseDetail;error?:string}>();
   const [selectedId,setSelectedId]=useUrlState("case");
-  const [workspace,setWorkspace]=useUrlState("apWorkspace","cases",WORKSPACES);
+  const [urlWorkspace,setUrlWorkspace]=useUrlState("apWorkspace","cases",WORKSPACES);
+  const workspace=section ?? urlWorkspace;
+  const setWorkspace=(next:APWorkspaceSection)=>{if(section){if(next!==section)onSection?.(next);}else setUrlWorkspace(next);};
+  const headingText=SECTION_HEADINGS[section ?? "cases"];
   const [filter,setFilter]=useUrlState("apFilter","all",FILTERS);
   const [search,setSearch]=useUrlState("apSearch");
   const [view,setView]=useUrlState("apView","evidence",VIEWS);
@@ -59,10 +70,10 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
     return matches && (filter === "all" || filter === "attention" && caseNeedsAttention(c) || filter === "approved" && c.states.business === "approved" || filter === "settled" && c.states.execution === "settled");
   }),[cases,search,filter]);
   return <section className="aps-app" aria-label="Accounts payable workspace">
-    <div className="page-heading"><div><h2>Accounts payable</h2><p className="lede">Inspect the obligation, its approvals and the outcome.</p></div><div className="aps-heading-actions"><button type="button" onClick={refresh} disabled={busy}>Refresh</button><button type="button" className="primary" onClick={()=>setShowUpload(v=>!v)} disabled={busy||!sessionReady} aria-expanded={showUpload}>Upload documents</button></div></div>
+    <div className="page-heading"><div><h2>{section ? headingText.title : "Accounts payable"}</h2><p className="lede">{section ? headingText.lede : "Inspect the obligation, its approvals and the outcome."}</p></div><div className="aps-heading-actions"><button type="button" onClick={refresh} disabled={busy}>Refresh</button><button type="button" className="primary" onClick={()=>setShowUpload(v=>!v)} disabled={busy||!sessionReady} aria-expanded={showUpload}>Upload documents</button></div></div>
     {showUpload && <APUpload sessionReady={sessionReady} onBusy={setBusy} onComplete={id=>{setWorkspace("cases");setSelectedId(id);setShowUpload(false);refresh();}} />}
     {listError && <div className="aps-error" role="alert"><strong>Case list unavailable</strong><p>{listError}</p><button type="button" onClick={refresh} disabled={busy}>Retry connection</button></div>}
-    <div className="aps-tabs" role="group" aria-label="Workspace sections">{WORKSPACES.map(section=><button key={section} disabled={busy} aria-pressed={workspace===section} className={workspace===section?"is-selected":""} onClick={()=>setWorkspace(section)}>{section==="runs"?"Payment runs":section==="governance"?"Policy & suppliers":section==="close"?"Period close":"Cases"}</button>)}</div>
+    {!section && <div className="aps-tabs" role="group" aria-label="Workspace sections">{WORKSPACES.map(section=><button key={section} disabled={busy} aria-pressed={workspace===section} className={workspace===section?"is-selected":""} onClick={()=>setWorkspace(section)}>{section==="runs"?"Payment runs":section==="governance"?"Policy & suppliers":section==="close"?"Period close":"Cases"}</button>)}</div>}
     {cases && <APOperationalMetrics cases={cases} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>}
     {workspace==="close" ? (listResult?.cases?<APSystemClose cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>:!listError&&<APLoading label="Opening period close workspace…"/>) : workspace==="governance" ? (listResult?.cases?<APSystemGovernance cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh}/>:!listError&&<APLoading label="Opening policy and supplier workspace…"/>) : workspace==="runs" ? (listResult?.cases?<APSystemRuns cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>:!listError&&<APLoading label="Opening payment run workspace…"/>) : <div className="aps-workspace-grid">
       <aside className="aps-case-queue" aria-label="AP cases"><div className="aps-queue-controls">

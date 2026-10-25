@@ -32,7 +32,7 @@ function parseScope(text: string): BankScope {
 }
 
 /** Human-only route. JWT lives in memory; no service credentials, bank adapters or simulator controls. */
-export function APDemo() {
+export function APDemo({ embedded = false }: { embedded?: boolean } = {}) {
   const session = useRef<Session | null>(null);
   const [scopeText, setScopeText] = useState("");
   const [jwt, setJwt] = useState("");
@@ -113,7 +113,8 @@ export function APDemo() {
   const operator = review && "operator" in review && review.operator && typeof review.operator === "object" && "name" in review.operator
     ? String(review.operator.name) : "Human CFO assigned to this account";
 
-  return <main className="ap-console">
+  const Root = embedded ? "section" : "main";
+  return <Root className="ap-console">
     <header className="ap-heading">
       <div><a href="/">Autonomous Finance</a><h1>Accounts payable review</h1><p>Approve exact payment details and trace verified bank activity to the journal.</p></div>
       {scope && <button onClick={disconnect}>Disconnect</button>}
@@ -166,7 +167,7 @@ export function APDemo() {
         {!evidence.transactions.length && <p>No verified bank transactions have been imported.</p>}
       </section>}
     </>}
-  </main>;
+  </Root>;
 }
 
 function VersionReview({ version, review, busy, approve }: { version: Snapshot; review: Review; busy: boolean; approve: (version: Snapshot) => Promise<void> }) {
