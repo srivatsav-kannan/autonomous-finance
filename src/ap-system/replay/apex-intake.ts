@@ -9,7 +9,22 @@ import { readTextLayer, TEXT_LAYER_IMPLEMENTATION, type TextPage, type TextWord 
 export type TrustedSupplier = { supplierId: string; legalName: string };
 export type TrustedCoding = { account: string; treatment: "expense" };
 export type TextLayerOptions = { pdftotextPath: string; popplerVersion: string; ocr: OcrOptions };
-const normalizedName = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+// Ignore formatting, not letters: dropping non-ASCII letters could accidentally
+// bind an unfamiliar supplier to a different, similarly printed legal name.
+const normalizedName = (s: string) => s.normalize("NFC").toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+
+/** A name match only selects a catalog ID; it never grants supplier approval. */
+export function resolveTrustedSupplier(printedName: string, suppliers: readonly TrustedSupplier[]): { supplier: TrustedSupplier | null; warning: string | null } {
+  const name = normalizedName(printedName);
+  const matches = name ? suppliers.filter(s => s.supplierId.trim() && normalizedName(s.legalName) === name) : [];
+  if (matches.length === 1) return { supplier: matches[0]!, warning: null };
+  return {
+    supplier: null,
+    warning: matches.length > 1
+      ? "The printed supplier name matches multiple supplier catalog entries; supplier binding requires review."
+      : "The printed supplier name has no exact normalized match in the supplier catalog; supplier binding requires review.",
+  };
+}
 
 async function readSource(upload: Upload, storageRoot: string, options: TextLayerOptions) {
   const { bytes, name, mimeType } = upload;
@@ -43,25 +58,29 @@ async function readSource(upload: Upload, storageRoot: string, options: TextLaye
 }
 
 function evidence(source: SourceDocument, processor: Processor, page: TextPage, fieldPath: string, rawValue: string, normalizedValue: string | number, words: TextWord[]): FieldEvidence {
+  const withinFrame = words.length > 0 && words.every(w => w.xMin >= 0 && w.yMin >= 0 && w.xMax <= page.width && w.yMax <= page.height && w.xMax > w.xMin && w.yMax > w.yMin);
   return {
     evidenceId: `${source.sourceId}:r${source.revision}:${fieldPath}`,
     source: { sourceId: source.sourceId, revision: source.revision, sha256: source.sha256 }, fieldPath, rawValue, normalizedValue,
     contentStatus: "supported", quote: rawValue,
     grounding: {
-      status: "native", method: "native", page: page.page,
+      status: withinFrame ? "native" : "unresolved", method: withinFrame ? "native" : "none", page: page.page,
       frame: { width: page.width, height: page.height, units: "point", origin: "top_left", rotation: 0, transform: [1, 0, 0, 1, 0, 0] },
-      regions: words.map(w => ({ x: w.xMin, y: w.yMin, width: w.xMax - w.xMin, height: w.yMax - w.yMin, granularity: "word" as const, tokenRefs: [w.id] })),
-      contextRegions: [], normalization: "html_decode+nfc+whitespace+casefold;no_character_substitution", processor, failureReason: null, elementPath: null,
+      // Retain extracted text and original token artifact, but never clamp a
+      // word outside the printed page into an invented on-page citation.
+      regions: withinFrame ? words.map(w => ({ x: w.xMin, y: w.yMin, width: w.xMax - w.xMin, height: w.yMax - w.yMin, granularity: "word" as const, tokenRefs: [w.id] })) : [],
+      contextRegions: [], normalization: "html_decode+nfc+whitespace+casefold;no_character_substitution", processor, failureReason: withinFrame ? null : "native_text_outside_source_frame", elementPath: null,
     },
   };
 }
 
-function candidateFrom(invoice: MappedInvoice, source: SourceDocument, processor: Processor, page: TextPage, supplier: TrustedSupplier, coding: TrustedCoding): Candidate {
-  const bound = normalizedName(invoice.supplierName) === normalizedName(supplier.legalName);
+function candidateFrom(invoice: MappedInvoice, source: SourceDocument, processor: Processor, page: TextPage, suppliers: readonly TrustedSupplier[], coding: TrustedCoding): Candidate {
+  const binding = resolveTrustedSupplier(invoice.supplierName, suppliers);
+  const fields = invoice.fields.map(f => evidence(source, processor, page, f.fieldPath, f.rawValue, f.normalizedValue, f.words));
   return {
     candidateId: `${source.sourceId}:candidate:r${source.revision}`, revision: source.revision,
     sources: [{ sourceId: source.sourceId, revision: source.revision, sha256: source.sha256 }],
-    extractedSupplierName: invoice.supplierName, supplierId: bound ? supplier.supplierId : null, invoiceNumber: invoice.invoiceNumber,
+    extractedSupplierName: invoice.supplierName, supplierId: binding.supplier?.supplierId ?? null, invoiceNumber: invoice.invoiceNumber,
     invoiceDate: invoice.invoiceDate, dueDate: invoice.dueDate, terms: invoice.terms, currency: invoice.currency, kind: "invoice", appliesToBillId: null,
     lines: invoice.lines.map(l => ({
       lineId: l.lineId, sku: invoice.matterReference, description: l.description, quantity: { decimal: l.hours, unit: "hour" },
@@ -71,8 +90,8 @@ function candidateFrom(invoice: MappedInvoice, source: SourceDocument, processor
       allocations: [{ account: coding.account, amountCents: l.amountCents, store: null, department: null, project: null, period: invoice.invoiceDate.slice(0, 7), treatment: coding.treatment }],
     })),
     freightAllocations: [], discountAllocations: [], subtotalCents: invoice.subtotalCents, taxCents: 0, freightCents: 0, discountCents: 0, totalCents: invoice.totalCents,
-    evidence: invoice.fields.map(f => evidence(source, processor, page, f.fieldPath, f.rawValue, f.normalizedValue, f.words)),
-    parseWarnings: invoice.warnings,
+    evidence: fields,
+    parseWarnings: [...invoice.warnings, ...(binding.warning ? [binding.warning] : []), ...fields.filter(f => f.grounding.status === "unresolved").map(f => `${f.fieldPath}: native text extends outside the PDF page; precise visual grounding requires review.`)],
   };
 }
 
@@ -100,7 +119,8 @@ function purchasingFrom(source: SourceDocument, page: TextPage, candidate: Candi
 
 export async function apexTextLayerIntake(input: {
   uploads: Upload[]; storageRoot: string; idempotencyKey: string; explicitRevisionOf?: string | null;
-  supplier: TrustedSupplier; coding: TrustedCoding; options: TextLayerOptions;
+  /** A supplied catalog takes precedence over the legacy single-supplier option. */
+  suppliers?: readonly TrustedSupplier[]; supplier?: TrustedSupplier; coding: TrustedCoding; options: TextLayerOptions;
 }): Promise<APIntake> {
   if (input.uploads.length < 1 || input.uploads.length > 10) throw new Error("upload_document_limit");
   if (input.uploads.filter(u => (u.kind ?? "invoice") === "invoice").length !== 1) throw new Error("exactly_one_invoice_required");
@@ -115,7 +135,7 @@ export async function apexTextLayerIntake(input: {
   if (!mapped.ok) extraction = { status: "failed", evidence: [], reasons: [mapped.reason] };
   else if (incomplete) extraction = { status: "incomplete", evidence: [], reasons: ["incomplete_supporting_pages"] };
   else {
-    candidate = candidateFrom(mapped.invoice, invoice.source, invoice.processor, invoice.pages[0]!, input.supplier, input.coding);
+    candidate = candidateFrom(mapped.invoice, invoice.source, invoice.processor, invoice.pages[0]!, input.suppliers ?? (input.supplier ? [input.supplier] : []), input.coding);
     for (const r of read) {
       if (r === invoice) continue;
       const p = r.pages.length === 1 ? purchasingFrom(r.source, r.pages[0]!, candidate) : null;

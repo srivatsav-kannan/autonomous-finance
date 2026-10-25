@@ -1,3 +1,6 @@
+import { APProcessingRun } from "./APProcessingRun";
+import { isApexWorkspace } from "./apRuntime";
+import { APDocumentUpload } from "./APDocumentUpload";
 import { APTraceability } from "./APTraceability";
 import { APDemoTasks, APDemoContext, apexTaskFor } from "./APDemoTasks";
 import {APPaymentDimensions} from "./APDimensions";
@@ -37,7 +40,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
   const sessionReady=cases!==undefined;
   const currentDetail=sessionReady && detailResult?.generation===reload && detailResult.caseId===selectedId ? detailResult : undefined;
   const detail=currentDetail?.detail, detailError=currentDetail?.error;
-  const historical = detail ? apexTaskFor(detail)?.historical === true : false;
+  const historical = detail ? !!detail.sourceOutcome || apexTaskFor(detail)?.historical === true : false;
   const [busy,setBusy]=useState(false);
   const [showUpload,setShowUpload]=useState(false);
   const heading=useRef<HTMLHeadingElement>(null);
@@ -53,6 +56,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
     return ()=>abort.abort();
   },[selectedId,reload,sessionReady]);
   useEffect(()=>{if (cases?.length && !selectedId) setSelectedId((cases.find(c => apexTaskFor(c)?.historical === false) ?? cases[0])!.caseId);},[cases,selectedId,setSelectedId]);
+  useEffect(()=>{if(cases && selectedId && !cases.some(item=>item.caseId===selectedId))setSelectedId(cases[0]?.caseId ?? "");},[cases,selectedId,setSelectedId]);
   useEffect(()=>{onBusyChange?.(busy);return ()=>onBusyChange?.(false);},[busy,onBusyChange]);
   useEffect(()=>{const active=detail ?? cases?.[0];onContextChange?.(active ? {runId:active.runId,organizationId:active.organizationId,provider:active.scope.provider === "fake" ? "Local FakeBank" : "Increase sandbox",identityMode:active.identityMode} : undefined);},[detail,cases,onContextChange]);
   const refresh=useCallback(()=>setReload(n=>n+1),[]);
@@ -62,9 +66,10 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
   }),[cases,search,filter]);
   return <section className="aps-app" aria-label="Accounts payable workspace">
     <div className="page-heading"><div><h2>Accounts payable</h2><p className="lede">Inspect the obligation, its approvals and the outcome.</p></div><div className="aps-heading-actions"><button type="button" onClick={refresh} disabled={busy}>Refresh</button><button type="button" className="primary" onClick={()=>setShowUpload(v=>!v)} disabled={busy||!sessionReady} aria-expanded={showUpload}>Upload documents</button></div></div>
-    {showUpload && <APUpload sessionReady={sessionReady} onBusy={setBusy} onComplete={id=>{setWorkspace("cases");setSelectedId(id);setShowUpload(false);refresh();}} />}
+    {showUpload && <APDocumentUpload sessionReady={sessionReady} onBusy={setBusy} onImported={refresh} onComplete={id=>{setWorkspace("cases");setView("evidence");setSelectedId(id);setShowUpload(false);refresh();}} />}
     {listError && <div className="aps-error" role="alert"><strong>Case list unavailable</strong><p>{listError}</p><button type="button" onClick={refresh} disabled={busy}>Retry connection</button></div>}
     <div className="aps-tabs" role="group" aria-label="Workspace sections">{WORKSPACES.map(section=><button key={section} disabled={busy} aria-pressed={workspace===section} className={workspace===section?"is-selected":""} onClick={()=>setWorkspace(section)}>{section==="runs"?"Payment runs":section==="governance"?"Policy & suppliers":section==="close"?"Period close":"Cases"}</button>)}</div>
+    {listResult?.cases && isApexWorkspace() && <APProcessingRun onChanged={refresh} onBusy={setBusy} onOpenCase={id=>{setSelectedId(id);setWorkspace("cases");setView("evidence");}}/>}
     {cases && <><APDemoTasks cases={cases} selectedId={selectedId} busy={busy} onSelect={id=>{setSelectedId(id);setWorkspace("cases");setView("evidence");}}/><details className="aps-workspace-details"><summary>Workspace totals & extraction coverage</summary><APOperationalMetrics cases={cases} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/></details></>}
     {workspace==="close" ? (listResult?.cases?<APSystemClose cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>:!listError&&<APLoading label="Opening period close workspace…"/>) : workspace==="governance" ? (listResult?.cases?<APSystemGovernance cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh}/>:!listError&&<APLoading label="Opening policy and supplier workspace…"/>) : workspace==="runs" ? (listResult?.cases?<APSystemRuns cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>:!listError&&<APLoading label="Opening payment run workspace…"/>) : <div className="aps-workspace-grid">
       <aside className="aps-case-queue" aria-label="AP cases"><div className="aps-queue-controls">
@@ -89,7 +94,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
           {view === "evidence" && <><APSystemEvidence key={`${detail.caseId}:${detail.revision}`} detail={detail}/><details className="aps-originals-details"><summary>All originals & prior revisions</summary><APOriginals detail={detail}/></details></>}
           {view === "matching" && <><APMatching detail={detail}/><APSystemPhysicalLines key={`physical:${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>{!historical && <APSystemBusiness key={`business:${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail} cases={cases??[]} busy={busy} onBusy={setBusy} onChanged={refresh} onOpenCase={setSelectedId}/>}</>}
           {view === "accounting" && !historical && <APAccounting key={`accounting:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
-          {view === "accounting" && historical && <section className="aps-section"><h3>Historical payment evidence</h3><p>The APEX source records this invoice as paid. No new payment is needed for this walkthrough.</p><p className="aps-caption">Source references: BILL-2024-00327 / OBT-000200 / CHK-2024327. These are historical dataset references, not a new FakeBank settlement.</p><a href="https://github.com/srivatsav-kannan/autonomous-finance/pull/111" target="_blank" rel="noreferrer">Inspect the replay evidence and reconciliation checks ↗</a><APHistory detail={detail}/></section>}
+          {view === "accounting" && historical && <section className="aps-section"><h3>Historical payment evidence</h3><p>The APEX source records this invoice as paid. No new payment is needed for this walkthrough.</p><p className="aps-caption">Source reference: {detail.sourceOutcome?.sourceReference ?? "See recorded source comparison"}. {detail.sourceOutcome?.reason} Historical dataset records are separate from new settlements. Open the corpus comparison above for the linked bank reference and statement.</p><a href="https://github.com/srivatsav-kannan/autonomous-finance/pull/111" target="_blank" rel="noreferrer">Inspect the replay evidence and reconciliation checks ↗</a><APHistory detail={detail}/></section>}
           {view === "history" && <APHistory detail={detail}/>}
           {view === "traceability" && <APTraceability key={`${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail}><APHistory detail={detail}/></APTraceability>}
           {!historical && <APActions key={`review:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
@@ -179,9 +184,4 @@ export function APActions({detail,busy,onBusy,onChanged}:{detail:APCaseDetail;bu
     {decisionRecorded && <p className="aps-success">Bill approved. {detail.states.authorization === "not_requested" ? "Payment has not been requested." : `Payment authorization: ${apLabel(detail.states.authorization)}.`}</p>}
     <p className="aps-caption">Payment release requires the exact amount, verified beneficiary, funding account and independent authorization. Review the proposal under Accounting.</p>
   </section>;
-}
-function APUpload({sessionReady,onBusy,onComplete}:{sessionReady:boolean;onBusy:(busy:boolean)=>void;onComplete:(caseId:string)=>void}){
-  const [files,setFiles]=useState<{file:File;kind:SourceDocument["kind"]}[]>([]);const [error,setError]=useState<string>();const [uploading,setUploading]=useState(false);const key=useRef<string | undefined>(undefined);
-  const submit=async(e:FormEvent)=>{e.preventDefault();setError(undefined);if(!sessionReady){setError("Restore the workspace connection before uploading documents.");return;}if(!files.length)return;if(files.length>10||files.reduce((n,f)=>n+f.file.size,0)>8*1024*1024){setError("Choose up to 10 documents totaling no more than 8 MiB.");return;}onBusy(true);setUploading(true);key.current??=crypto.randomUUID();try{const result=await apSystemApi.intake(files,key.current);onComplete(result.caseId);}catch(e){setError(apError(e));}finally{setUploading(false);onBusy(false);}};
-  return <form className="aps-upload" onSubmit={submit}><h3>Upload a source packet</h3><p>Preserve the supplier invoice with its purchase order, receipt or contract.</p><label htmlFor="ap-source-files">Original documents</label><input id="ap-source-files" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.xml" disabled={uploading} onChange={e=>{key.current=undefined;setFiles(Array.from(e.target.files ?? []).map(file=>({file,kind:"invoice"})));setError(undefined);}}/>{files.length>0 && <ul>{files.map((entry,i)=><li key={`${entry.file.name}:${i}`}><span>{entry.file.name}</span><label>Document kind<select aria-label={`Kind of ${entry.file.name}`} value={entry.kind} disabled={uploading} onChange={e=>{key.current=undefined;setFiles(current=>current.map((f,n)=>n===i ? {...f,kind:e.target.value as SourceDocument["kind"]} : f));}}>{["invoice","purchase_order","receipt","contract","credit_note","correction","other"].map(kind=><option key={kind} value={kind}>{apLabel(kind)}</option>)}</select></label></li>)}</ul>}{!sessionReady && <p className="aps-notice" role="status">Waiting for the workspace connection before upload.</p>}{error && <p className="aps-error" role="alert">{error}</p>}<button type="submit" className="primary" disabled={uploading||!sessionReady||!files.length}>{uploading ? "Preserving and parsing sources…" : "Create AP case"}</button><small>PDF, scanned image or XML. Up to 10 files and 8 MiB per packet. Parsing does not approve a bill.</small></form>;
 }

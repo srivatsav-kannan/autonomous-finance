@@ -229,6 +229,7 @@ export const apSystemTables = {
     .index("by_case", ["scope.runId", "caseId"])
     .index("by_credit", ["scope.runId", "creditId"]),
   apCaseRecords: defineTable({
+    sourceOutcome: v.optional(v.any()),
     scope: scopeValidator,
     obligationKey: v.optional(v.string()),
     primaryHash: v.string(),

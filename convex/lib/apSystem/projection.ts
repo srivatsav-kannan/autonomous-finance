@@ -1,3 +1,4 @@
+import { retainedSourceOutcome, sourceOutcomeException } from "./sourceOutcome";
 import { businessProjection } from "./businessProjection";
 import type { QueryCtx } from "../../_generated/server";
 import type { Doc } from "../../_generated/dataModel";
@@ -38,6 +39,7 @@ export async function projectCase(
   row: Doc<"apCaseRecords">,
 ): Promise<APCaseDetail & { currentSourceBindings: SourceBinding[] }> {
   const input = intakeSchema.parse(row.intake);
+  const sourceOutcome = retainedSourceOutcome(row);
   const config = await getPaymentConfig(ctx, row.scope);
   const decisions = (
     await ctx.db
@@ -131,6 +133,7 @@ export async function projectCase(
     config.beneficiary.vendor,
     row.documentStatus === "reviewed",
   );
+  if (sourceOutcome) exceptions.unshift(sourceOutcomeException(sourceOutcome));
   if (!business && bill?.entryId && row.businessStatus !== "approved")
     exceptions.push({
       exceptionId: "posted_correction_required",
@@ -147,6 +150,7 @@ export async function projectCase(
   const approved = bill?.approvedCents ?? business?.credit?.amountCents ?? null;
   return {
     ...(business ? { domain: business.domain } : {}),
+    ...(sourceOutcome ? {sourceOutcome} : {}),
     contractVersion: AP_CONTRACT_VERSION,
     caseId: row._id,
     runId: row.scope.runId,

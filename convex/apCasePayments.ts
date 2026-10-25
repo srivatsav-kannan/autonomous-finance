@@ -1,3 +1,4 @@
+import { assertSourcePayable } from "./lib/apSystem/sourceOutcome";
 import { mutation, query } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
 import { v } from "convex/values";
@@ -13,6 +14,7 @@ export const request = mutation({
     await requirePaymentSeat(ctx,args,["payments"]);
     const row=await ctx.db.get(args.caseId);assertRowScope(row,args.scope);
     const ap=row as Doc<"apCaseRecords">;
+    assertSourcePayable(ap);
     if(ap.currentRevision!==args.expectedRevision||ap.snapshotHash!==args.snapshotHash)throw Error("Stale AP case payment request");
     if(ap.businessStatus!=="approved"||ap.documentStatus!=="reviewed"||!ap.fieldReviewId||!ap.billId)throw Error("Reviewed and approved AP case required before payment preparation");
     const bill=await ctx.db.get(ap.billId);assertRowScope(bill,args.scope);
@@ -30,6 +32,7 @@ export const authorize = mutation({
   handler:async(ctx,args)=>{
     const {seat}=await requirePaymentHuman(ctx,args.scope);
     const row=await ctx.db.get(args.caseId);assertRowScope(row,args.scope);const ap=row as Doc<"apCaseRecords">;
+    assertSourcePayable(ap);
     if(ap.currentRevision!==args.expectedRevision||ap.snapshotHash!==args.snapshotHash||ap.businessStatus!=="approved"||ap.documentStatus!=="reviewed"||!ap.billId)throw Error("Stale or unapproved AP case payment authorization");
     const version=await ctx.db.get(args.versionId);assertRowScope(version,args.scope);
     const payment=version as Doc<"demoVersions">;

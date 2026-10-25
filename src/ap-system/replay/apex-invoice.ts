@@ -65,9 +65,11 @@ export function mapContractAttorneyInvoice(page: TextPage): MapResult {
   const add = (fieldPath: string, rawWords: TextWord[], normalizedValue: string | number) =>
     fields.push({ fieldPath, rawValue: join(rawWords), normalizedValue, words: rawWords });
 
-  // Supplier: the first printed line in the letterhead column.
+  // Supplier: the first printed line before the right-aligned INVOICE title.
+  // Legal names can cross the page midpoint (for example Westfield's LLC).
   const first = words[0]!;
-  const supplierWords = words.filter(w => sameLine(w, first) && w.xMax < page.width / 2);
+  const title = words.find(w => w.text === "INVOICE" && sameLine(w, first) && w.xMin > page.width / 2);
+  const supplierWords = words.filter(w => sameLine(w, first) && w.xMax < (title?.xMin ?? page.width / 2));
   const supplierName = join(supplierWords);
   add("extractedSupplierName", supplierWords, supplierName);
 

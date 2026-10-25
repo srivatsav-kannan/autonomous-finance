@@ -42,6 +42,15 @@ describe("APEX contract-attorney invoice mapping", () => {
     expect(mapContractAttorneyInvoice({ ...page, words: page.words.filter(w => w.text !== "$180.00") })).toEqual({ ok: false, reason: "service_row_columns_ambiguous" });
     expect(mapContractAttorneyInvoice({ ...page, words: page.words.filter(w => w.text !== "Reference:") })).toEqual({ ok: false, reason: "matter_reference_unresolved" });
   });
+  it("retains a legal-name suffix beyond the midpoint without including the invoice title", () => {
+    const suffix = { id: "p1w99", page: 1, text: "LLC", xMin: 300, yMin: 57.8, xMax: 339, yMax: 76.3 };
+    const r = mapContractAttorneyInvoice({ ...page, words: [...page.words, suffix] });
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.invoice.supplierName).toBe("Jane Roe, Esq. LLC");
+      expect(r.invoice.fields.find(f => f.fieldPath === "extractedSupplierName")?.words).toContain(suffix);
+    }
+  });
   it("normalizes money and decimals exactly", () => {
     expect([moneyCents("$3,000.00"), moneyCents("$200.00"), moneyCents("3000"), moneyCents("$3,00.00")]).toEqual([300000, 20000, null, null]);
     expect([decimalString("15.0"), decimalString("17.50"), decimalString("024"), decimalString("1e3")]).toEqual(["15", "17.5", "24", null]);

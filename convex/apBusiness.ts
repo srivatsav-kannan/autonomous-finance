@@ -1,3 +1,4 @@
+import { assertSourcePayable } from "./lib/apSystem/sourceOutcome";
 import { derivePaymentAccountingBinding } from "./lib/apSystem/paymentAccountingBinding";
 import { assertGovernedCredits } from "./lib/apSystem/governedCredits";
 import { acceptanceAllocations, settlementDimensions, payableDimensions } from "../src/ap-system/settlement-dimensions";
@@ -66,6 +67,7 @@ type Ctx = Parameters<typeof requireBusinessPolicy>[0];
 type Scope = Parameters<typeof requireBusinessPolicy>[1];
 async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
   const row = await caseRow(ctx, scope, request.caseId);
+  assertSourcePayable(row);
   if (
     row.currentRevision !== request.expectedRevision ||
     row.snapshotHash !== request.snapshotHash ||

@@ -1,5 +1,7 @@
 # APEX demo UI
 
+For the live, empty-start demo, use [Live APEX document processing](APEX-LIVE-DEMO.md). The processing button runs the actual parser and creates all available invoice cases after the click. The two-case replay described below remains a separate historical verification.
+
 Use one frontend at `http://127.0.0.1:5192`. The workspace navigation opens the operations inbox, connected AP workspace, and APEX demo on that same origin. The frontend uses a strict port so another instance cannot silently open on a different port.
 
 Start the backend services and the isolated APEX replay described in [the replay runbook](APEX-107-RUNBOOK.md), then run `AP_SYSTEM_GATEWAY_URL=http://127.0.0.1:8825 npm run console` with the existing inbox Vite environment configured. The connected AP proxy retains its own authentication; `/api/apex` routes to the local replay gateway on 8847. Open `http://127.0.0.1:5192/ap-system?view=ap-system&apRuntime=apex` and select a simulated actor explicitly. Runtime switches use a full navigation and discard the previous in-memory session. No additional frontend on 5173 or 5197 is needed.

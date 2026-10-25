@@ -17,14 +17,17 @@ import { createAPWorkspaceService } from "../../src/ap-system/service";
 import { APHttpError, createAPSystemServer, type APWorkspaceService } from "../../src/ap-system/server";
 import { createDurableAPIntake } from "../../src/ap-system/intake-requests";
 import { renderPage } from "../../src/ap-system/ingestion";
+import { createApexProcessing } from "../../src/ap-system/replay/apex-processing";
+import { apexSupplierId, buildApexCorpus, corpusEntryForCase, sourceOutcomeForEntry } from "../../src/ap-system/replay/apex-corpus";
 import { apexTextLayerIntake, simplePdf } from "../../src/ap-system/replay/apex-intake";
 import { mapContractAttorneyInvoice } from "../../src/ap-system/replay/apex-invoice";
 import { APEX_FILES, APEX_SOURCE, cents, historicalPaymentChecks, loadApexWorld } from "../../src/ap-system/replay/apex-sources";
 import { popplerVersion, readTextLayer, TEXT_LAYER_IMPLEMENTATION } from "../../src/ap-system/replay/text-layer";
 
-const RUN = "apex107-replay-20261025";
+const RUN = process.env.APEX_RUN_ID ?? "apex107-replay-20261025";
+if (!/^apex107-(?:replay-20261025|live-[0-9]{8}-[a-z0-9-]{1,40})$/.test(RUN)) throw Error("Use an isolated APEX replay or live run ID");
 const CONVEX = "http://127.0.0.1:3460";
-const GATEWAY_PORT = 8847, GATEWAY = `http://127.0.0.1:${GATEWAY_PORT}`, ORIGIN = "http://127.0.0.1:5197";
+const GATEWAY_PORT = 8847, GATEWAY = `http://127.0.0.1:${GATEWAY_PORT}`, ORIGIN = "http://127.0.0.1:5192";
 const ISSUER = "https://ap-demo.invalid";
 const ROOT = process.cwd();
 const DIR = path.join(ROOT, "var", RUN);
@@ -88,7 +91,7 @@ async function configureBackend() {
   assert.equal(await instance.text(), deployment.deploymentName, "Owned backend identity differs");
   const configured = await fetch(CONVEX + "/api/update_environment_variables", { method: "POST", redirect: "error", headers: { Authorization: `Convex ${deployment.adminKey}`, "Content-Type": "application/json" }, body: JSON.stringify({ changes: Object.entries({ KERNEL_ADMIN_SECRET: saved.admin, AP_DISPATCH_SECRET: saved.dispatcher, AP_EVIDENCE_SECRET: saved.evidence, AP_BANK_SCOPE: JSON.stringify(SCOPE), AP_HUMAN_AUTH_ISSUER: ISSUER, AP_HUMAN_AUTH_AUDIENCE: "ap-apex107-local" }).map(([name, value]) => ({ name, value })) }) });
   assert.equal(configured.ok, true, "Local runtime configuration failed");
-  const created = await agent.mutation(m("admin:createRun"), { secret: saved.admin, runId: RUN, label: "APEX World 9 AP replay (issue #107)", company: "Sterling, Marsh & Associates LLP (APEX synthetic dataset)", simDate: "2026-10-25", periods: ["2024-03", "2024-04", "2024-12", "2025-01", "2026-10", "2026-11"], seats: [
+  const created = await agent.mutation(m("admin:createRun"), { secret: saved.admin, runId: RUN, label: RUN.includes("-live-") ? "APEX World 9 live document processing" : "APEX World 9 AP replay (issue #107)", company: "Sterling, Marsh & Associates LLP (APEX synthetic dataset)", simDate: "2026-10-25", periods: [...Array.from({length:12},(_,i)=>`2024-${String(i+1).padStart(2,"0")}`), "2025-01", "2026-10", "2026-11"], seats: [
     { seatId: "apex107-ap", role: "ap_clerk", name: "APEX replay intake agent", kind: "agent", tokenHash: hash(saved.ap) },
     { seatId: "apex107-controller", role: "controller", name: "APEX replay controller proposals", kind: "agent", tokenHash: hash(saved.controller) },
     { seatId: "apex107-payments", role: "payments", name: "APEX replay payment preparation", kind: "agent", tokenHash: hash(saved.payments) },
@@ -103,19 +106,41 @@ async function serve() {
   const world = await loadApexWorld(APEX_ROOT);
   const vendor = world.vendors.find(v => v["Vendor ID"] === SUPPLIER.vendorId);
   assert.ok(vendor, "APEX vendor master row missing");
-  const supplier = { supplierId: SUPPLIER.supplierId, legalName: vendor["Vendor Name"]! };
+  const suppliers = world.vendors.map(row => ({supplierId:apexSupplierId(row["Vendor ID"]!), legalName:row["Vendor Name"]!}));
+  const corpus = await buildApexCorpus(world, PDFTOTEXT);
+  const runtime = () => ({...runtimeInfo, corpus});
+  const currentCases = await agent.query(q("apCases:list"), {scope:SCOPE, seatId:"apex107-ap",token:saved.ap}) as APCaseDetail[];
+  for (const detail of currentCases) {
+    const entry = corpusEntryForCase(detail, corpus);
+    const sourceOutcome = entry && sourceOutcomeForEntry(entry, detail.sources.filter(source => detail.currentSourceBindings.some(binding => binding.sourceId===source.sourceId && binding.revision===source.revision && binding.sha256===source.sha256)));
+    if (sourceOutcome && !detail.sourceOutcome) await agent.mutation(m("apCases:recordSourceOutcome"), {scope:SCOPE,seatId:"apex107-ap",token:saved.ap,caseId:detail.caseId,sourceOutcome});
+  }
   const poppler = await popplerVersion(PDFTOTEXT);
   const services = new Map<string, APWorkspaceService>();
+  let processing: ReturnType<typeof createApexProcessing> | undefined;
   const serviceFor = (actorId: string) => {
     const existing = services.get(actorId);
     if (existing) return existing;
     let service: APWorkspaceService;
-    const parseUploads = createDurableAPIntake({ directory: DIR, loadCase: id => service.detail(id), parse: input => apexTextLayerIntake({ ...input, storageRoot: SOURCES, supplier, coding: CODING, options: { pdftotextPath: PDFTOTEXT, popplerVersion: poppler, ocr: OCR } }) });
-    service = createAPWorkspaceService({ agent, human: humanFor(actorId), scope: SCOPE, apCredential: { seatId: "apex107-ap", token: saved.ap }, paymentsCredential: { seatId: "apex107-payments", token: saved.payments }, controllerCredential: { seatId: "apex107-controller", token: saved.controller }, parseUploads, renderPage: (source, page) => renderPage({ source, page, storageRoot: SOURCES, options: OCR }), runtime: () => runtimeInfo });
+    const durableParse = createDurableAPIntake({ directory: DIR, loadCase: id => service.detail(id), parse: input => apexTextLayerIntake({ ...input, storageRoot: SOURCES, suppliers, coding: CODING, options: { pdftotextPath: PDFTOTEXT, popplerVersion: poppler, ocr: OCR } }) });
+    const parseUploads: APWorkspaceService["parseUploads"] = async input => {
+      const parsed = await durableParse(input);
+      if (input.explicitRevisionOf && (await service.detail(input.explicitRevisionOf)).sourceOutcome) {
+        const {sourceOutcome: _retained, ...revision} = parsed;
+        return revision;
+      }
+      const invoice = parsed.documents.find(source => source.kind === "invoice");
+      const entry = corpus.entries.find(entry => entry.sha256 === invoice?.sha256);
+      const sourceOutcome = entry && sourceOutcomeForEntry(entry, parsed.documents);
+      return sourceOutcome ? {...parsed, sourceOutcome} : parsed;
+    };
+    service = createAPWorkspaceService({ agent, human: humanFor(actorId), scope: SCOPE, apCredential: { seatId: "apex107-ap", token: saved.ap }, paymentsCredential: { seatId: "apex107-payments", token: saved.payments }, controllerCredential: { seatId: "apex107-controller", token: saved.controller }, parseUploads, renderPage: (source, page) => renderPage({ source, page, storageRoot: SOURCES, options: OCR }), runtime });
+    processing ??= createApexProcessing({runId:RUN, corpus, stateFile:path.join(DIR,"processing-job.json"), loadOriginal:async entry => new Uint8Array(readFileSync(world.invoicePath(entry.file))), parseUploads:input=>service.parseUploads(input), ingest:input=>service.ingest(input), detail:caseId=>service.detail(caseId)});
+    service.demoProcess = processing;
     services.set(actorId, service);
     return service;
   };
-  const server = createAPSystemServer({ runtime: () => runtimeInfo }, { port: GATEWAY_PORT, runId: RUN, storageRoot: SOURCES, allowedOrigins: [ORIGIN, GATEWAY, "http://127.0.0.1:5192"], auth: {
+  const server = createAPSystemServer({ runtime }, { port: GATEWAY_PORT, runId: RUN, storageRoot: SOURCES, allowedOrigins: [ORIGIN, GATEWAY, "http://127.0.0.1:5192"], auth: {
     publicConfig: { mode: "local_simulation", actors: ACTORS.map(({ id, name }) => ({ id, name })) },
     authenticate: async token => {
       const actor = token.startsWith("local:") ? ACTORS.find(a => a.id === token.slice(6)) : undefined;
