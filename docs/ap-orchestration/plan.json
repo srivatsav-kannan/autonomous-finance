@@ -30,8 +30,8 @@
   "external_gates": {
     "openai": "Existing evaluation-worktree key reused in ignored var/ap-environment/providers.env; authentication and one gpt-6.1-sol Responses request verified 2026-10-25. Config import verified in main-browser-recovery; application workflow not run.",
     "llamaparse": "Existing Default-project key reused. Five agentic_plus parse jobs verified 2026-10-25 across three rounds. Clean PDF passes selected content/native grounding. Genuine scan content passes; native description bbox still absent with raw word output, whose OCR has two transcription mismatches. Local Tesseract 5.5.2 eng PSM 6 uniquely matched both description lines and passed original-image overlay review; this is derived geometry on one sample, not a native box or completed adapter. See LLAMAPARSE-GROUNDING.md and prior reports. App adapter/fallback packaging, broader formats and integration acceptance remain pending.",
-    "increase": "Sandbox API/resources available. User selected Auth0 development tenant for real browser login; tenant/app/owner binding not configured. Independent human payment authorization remains required. No outbound transfer yet.",
-    "erp_selection_and_access": "OAuth and read-only CompanyInfo/Account/Vendor verification succeeded 2026-10-25T09:45:48Z for selected US sandbox (89 accounts, 26 vendors, complete, zero external writes). Subsequent QBO OAuth/API reads and writes paused pending owner authorization-scope clarification; preserve existing grant and history. Mappings and external accounting round trip remain unverified.",
+    "increase": "Sandbox resources verified; Auth0 browser path implemented. User is registering/logging into the development tenant and will report Dashboard availability. No real human login or payment authorization yet; no outbound Increase transfer.",
+    "erp_selection_and_access": "Actual OAuth and read-only connection verified for selected US sandbox (89 accounts,26 vendors). Owner subsequently explicitly authorized account/vendor mapping and sandbox accounting write/readback; temporary pause lifted. Mapping work continues. Authoritative transaction submission still requires real Auth0 identity; no QBO accounting transaction yet.",
     "domain_review": "No practitioner currently available. User directs engineering, automated and independent agent verification to continue; prepare practitioner packet, retain external sign-off as pending."
   },
   "tasks": [
@@ -312,16 +312,18 @@
       "session_id": "/root/accounting",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-accounting/calhacks",
       "branch": "codex/ap-system-domain",
-      "commit": "126596b",
+      "commit": "0794406",
       "evidence": [
         "docs/ap-orchestration/evidence/B3-domain.md",
         "tests/ap-system/business.test.ts",
         "tests/ap-system/business-credits.test.ts",
         "tests/ap-system/business-payment-integration.test.ts",
-        "tests/ap-system/business-payment-boundaries.test.ts"
+        "tests/ap-system/business-payment-boundaries.test.ts",
+        "docs/ap-orchestration/evidence/I2-business-flow.json",
+        "docs/ap-orchestration/evidence/B4-cost-corrections.md"
       ],
       "blocker": null,
-      "next_action": "V4 findings repaired with immutable semantic capacity and current distinct-seat checks. Root reran 39 original/adversarial/regression cases PASS; independent repair replay pending. Governed legacy credit bypass separately fixed b0c5b07 with 8 new boundary/recovery tests.",
+      "next_action": "V4 repair independently replayed; actual I2 partial recognition/quorum/partial cash completed locally. New corrected-cost credits require V6 follow-up and UI integration.",
       "source_sha": "4f7d76d"
     },
     {
@@ -343,7 +345,7 @@
         "tests/ap-system/payment-runs.test.ts"
       ],
       "blocker": null,
-      "next_action": "V3 independent payment tests passed; D2 synthetic run review/confirmation exercised with2cases/$211/2026-11-01UTC. Full source-to-business browser journey remains for integration acceptance.",
+      "next_action": "I2 actual source workflow verifies future-date no-send, canceled never-attempted proposal and separate $100 authorization/settlement against $285.60 approved portion. V3 independent tests retained; broader UI acceptance continues.",
       "source_sha": "4f7d76d"
     },
     {
@@ -359,7 +361,7 @@
       "session_id": "/root/p0_inventory",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-evidence/calhacks",
       "branch": "codex/ap-system-qbo-corrections",
-      "commit": "ee29912",
+      "commit": "875fc51",
       "evidence": [
         "docs/ap-orchestration/QUICKBOOKS-SETUP.md",
         "docs/ap-orchestration/evidence/C4-local.md",
@@ -368,10 +370,13 @@
         "tests/ap-system/quickbooks-business.test.ts",
         "tests/ap-system/quickbooks-business-sync.test.ts",
         "docs/ap-orchestration/evidence/C4-live-connection.md",
-        "docs/ap-orchestration/evidence/C4-return-corrections.md"
+        "docs/ap-orchestration/evidence/C4-return-corrections.md",
+        "docs/ap-orchestration/evidence/C4-restored-credit.md",
+        "tests/ap-system/quickbooks-close-runtime.test.ts",
+        "tests/ap-system/quickbooks-query-envelope.test.ts"
       ],
-      "blocker": "New QBO OAuth/data API operations paused pending owner scope clarification; no external accounting writes performed.",
-      "next_action": "OAuth and 89-account/26-vendor read-only inspection verified. Signed discounts and immutable returned-payment corrections implemented locally; restored-credit and B4 exports in progress. Mapping review, authenticated sandbox accounting write/readback and independent new correction verification remain pending.",
+      "blocker": "Real Auth0 tenant/login required for authenticated transaction submission; mappings in progress.",
+      "next_action": "Owner lifted temporary QBO pause. Returned cash/credit corrections, B4 journal export and request-owned close HTTP bridge integrated; ClassRef preservation, final independent replay and live mapped accounting roundtrip remain.",
       "source_sha": "4f7d76d"
     },
     {
@@ -386,13 +391,16 @@
       "session_id": "/root/accounting",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-accounting/calhacks",
       "branch": "codex/ap-system-domain",
-      "commit": "33993a7",
+      "commit": "0794406",
       "evidence": [
         "docs/ap-orchestration/evidence/B4-close.md",
-        "tests/ap-system/close.test.ts"
+        "tests/ap-system/close.test.ts",
+        "docs/ap-orchestration/evidence/B4-cost-corrections.md",
+        "tests/ap-system/cost-corrections.test.ts",
+        "tests/ap-system/close-capacity.test.ts"
       ],
       "blocker": null,
-      "next_action": "Core 17 local close tests integrated; independent close/late-event/reclassification review, B4 external export, broader correction allocation follow-up and browser acceptance remain.",
+      "next_action": "Core close and immutable export integrated. V5 receipt-capacity fix7481337 passed unchanged independent probes; explicit corrected-cost credit/reversal follow-up0794406 and UI require new independent review.",
       "source_sha": "8dce6f4"
     },
     {
@@ -408,13 +416,15 @@
       "session_id": "/root/experience",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-experience/calhacks",
       "branch": "codex/ap-system-d2",
-      "commit": "7730d9a",
+      "commit": "a521e2f",
       "evidence": [
         "docs/ap-orchestration/evidence/D2-operations.md",
-        "docs/ap-orchestration/evidence/I2/accounting-status.png"
+        "docs/ap-orchestration/evidence/I2/accounting-status.png",
+        "docs/ap-orchestration/evidence/I2-business-flow.md",
+        "docs/ap-orchestration/evidence/I2/settled-case.jpg"
       ],
       "blocker": null,
-      "next_action": "Business and explicit local multi-human identity UI integrated; B4 UI checkpoint a2db9a6 ready. Actual isolated B3 packet uploaded/parsed; full partial-recognition/quorum/payment/FakeBank journey in progress. C4 corrections UI in progress.",
+      "next_action": "Actual I2 PDF/multi-human/partial-payment/FakeBank journey settled and matched with $185.60 approved AP remaining. Period-QBO and corrected-cost UI in progress; desktop/mobile light/dark acceptance pending.",
       "source_sha": "6114a03"
     },
     {
@@ -482,8 +492,8 @@
         "tests/ap-system-auth-http.test.ts",
         "tests/ap-system-auth-ui.test.tsx"
       ],
-      "blocker": null,
-      "next_action": "Merged official SDK login and request-bound Convex identity; 73 combined focused tests and app/backend typechecks passed. Independent V4 pending; real tenant/JWKS/browser authorization remains external."
+      "blocker": "Awaiting user development-tenant login and SPA Domain/Client ID.",
+      "next_action": "Official SDK/Convex request identity implemented and independent V4 local negative checks passed. User will register/login Auth0; real signature/JWKS/login/user-click payment acceptance pending."
     },
     {
       "id": "V3",
@@ -517,11 +527,11 @@
         "C2-Auth0"
       ],
       "acceptance": "Immutable baseline adversarial cases and explicit remediation replay; local identities and external login acceptance remain distinct.",
-      "status": "in_progress",
+      "status": "accepted",
       "session_id": "/root/verifier",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks",
       "branch": "codex/ap-system-verification-v4",
-      "commit": "7a60ff7",
+      "commit": "ec600a9",
       "source_sha": "a8ea9ef",
       "evidence": [
         "docs/ap-orchestration/evidence/V4.md",
@@ -531,7 +541,7 @@
         "tests/ap-system/v4-credits.test.ts"
       ],
       "blocker": null,
-      "next_action": "Preserved original baseline (72 pass/4 fail). Root reran exact tests plus owner regressions at126596b:39PASS; independent repair replay and new credit/close/correction adversarial evaluation pending."
+      "next_action": "Independent immutable-baseline repair replay passed:15 original V4+13 owner regressions+13 current V3 QBO=41/41; historical baseline preserved. V5/V6 cover subsequent work."
     }
   ],
   "registry": {
@@ -591,11 +601,12 @@
       "gateway_port": 8826,
       "frontend_port": 5193,
       "backend_exec_session": 69141,
-      "gateway_exec_session": 16077,
+      "gateway_exec_session": 29492,
       "frontend_exec_session": 98990,
       "identity": "five_distinct_simulated_humans",
       "case_id": "k175gds0dypbgeknejs2henw5h8gysw8",
-      "state": "original_packet_parsed_no_recognition_or_payment"
+      "state": "partial_approval_cash10000_settled_matched_outstanding18560",
+      "code": "4ff9be5"
     }
   },
   "contracts": {
@@ -628,22 +639,23 @@
     "environment": "sandbox",
     "protocol": "Accounting API + OAuth 2.0",
     "credential_storage": "server-only private configuration",
-    "status": "connected_read_only_verified_followup_api_paused",
+    "status": "connected_mapping_in_progress",
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true,
     "read_only_verified_at": "2026-10-25T09:45:48.270727+00:00",
     "account_count": 89,
     "vendor_count": 26,
     "external_writes": 0,
-    "mappings": "review_required",
-    "followup_api": "paused_pending_owner_scope_clarification"
+    "mappings": "in_progress",
+    "followup_api": "owner_authorized_sandbox_mapping_and_accounting_verification"
   },
-  "last_updated_at": "2026-10-25T09:53:08.308937+00:00",
+  "last_updated_at": "2026-10-25T10:06:46.722451+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",
-    "status": "implemented_independent_and_external_verification_pending",
+    "status": "implemented_local_independent_verified_external_tenant_pending",
     "flow": "official browser login; Convex issuer/audience validation; no manual JWT sharing",
-    "user_authorizes_sandbox_payment": true
+    "user_authorizes_sandbox_payment": true,
+    "next_action": "User will register/login Auth0 and report Dashboard availability; no JWT requested."
   }
 }

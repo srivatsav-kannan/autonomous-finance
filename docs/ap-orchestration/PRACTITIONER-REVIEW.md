@@ -8,7 +8,7 @@ First case: synthetic Golden State Produce Co. invoice INV-1001, invoice date202
 
 The [V1 independent review](evidence/V1.md) derives values from originals before examining the expected-result file. It is an independent agent engineering review. The [I1 integrated report](evidence/I1-integrated.md) records the observed same-case workflow at code a13b131, contract ap-evidence-v1, policy golden-state-ap-v1 and run ap97-20261025-01a1722e. The requested parser is LlamaParse agentic_plus, version2026-09-28; the provider did not expose its resolved version. Original hashes, native/unresolved counts and exact bill/payment/bank/journal IDs are in [I1 JSON](evidence/I1-integrated.json).
 
-All supplier contacts, source documents, local identities and FakeBank effects in this case are synthetic. Private parser/raw artifacts and credentials are excluded from this review packet. QuickBooks US sandbox is configured and its actual OAuth callback is fixed; OAuth/read-only connection has been verified (89 accounts,26 vendors,zero writes); subsequent API activity is paused pending owner scope clarification. External accounting IDs and practitioner findings remain empty until observed.
+All supplier contacts, source documents, local identities and FakeBank effects in this case are synthetic. Private parser/raw artifacts and credentials are excluded from this review packet. QuickBooks US sandbox is configured and its actual OAuth callback is fixed; OAuth/read-only connection has been verified (89 accounts,26 vendors,zero writes); owner has authorized subsequent mapping and sandbox synchronization verification; authenticated transaction write/readback remains pending. External accounting IDs and practitioner findings remain empty until observed.
 
 ## Business rules for review
 
@@ -66,11 +66,11 @@ A reviewer explicitly chooses the gross payable amount and any recognized availa
 
 The C3 automated FakeBank case starts with a $100.00 recognized bill and a $20.00 recognized supplier credit. First discharge $60.00 = $20.00 credit + $40.00 cash; the bill balance becomes $40.00. Second authorized cash payment $40.00 clears it. Expected postings are Dr cost $100 / Cr AP $100; Dr AP $20 / Cr original cost $20; Dr AP $40 / Cr cash $40 twice. Final AP is $0, expense net $80 and cash paid $80. The component test observes two transfers, two posted debits and four journals, with no extra effects on replay. This is synthetic automated evidence, not external bank acceptance or practitioner validation. Independent V3 confirms a second sequence: bill$77, credit$12, first gross$50 with cash$38, second cash$27, first cash returned$38, then replacementcash$38. Expected finalAP$0 and netcash$65; exactly6journals including the return and replacement, with the$12credit consumed once. See evidence/V3.md.
 
-The corresponding QuickBooks connector has local tests for exact recognized partial bills, supplier credits, partial cash/credit settlements and zero-cash credit applications. Signed cost lines and explicit append-only returned-payment/replacement representations have local tests. Unresolved or unverified corrections remain controller-owned holds; restored-credit and period-close exports are still in progress. Historical successful receipts remain visible separately from these current holds. A successful local journal must not be described as an external QuickBooks record. Browser login is implemented with Auth0, but the development tenant and approved real human have not yet been configured.
+The corresponding QuickBooks connector has local tests for exact recognized partial bills, supplier credits, partial cash/credit settlements and zero-cash credit applications. Signed cost lines and explicit append-only returned-payment/replacement representations have local tests. Unresolved or unverified corrections remain controller-owned holds; restored-credit and period-close exports now have local mock-protocol tests. Historical successful receipts remain visible separately from these current holds. A successful local journal must not be described as an external QuickBooks record. Browser login is implemented with Auth0, but the development tenant and approved real human have not yet been configured.
 
 ## Current independent engineering findings
 
-V4 on immutable a8ea9ef found three implementation defects in that baseline: renamed source/parser line identifiers can reuse original receipt capacity; a retired verification actor can leave a supplier verification accepted at approval; two subjects sharing one human seat can satisfy a quorum. Repairs are integrated at126596b and the root reran39cases successfully; independent replay remains required before accepting those repairs. A further legacy-credit bypass is fixed atb0c5b07 with8 new boundary/recovery tests. No practitioner conclusion is inferred.
+V4 on immutable a8ea9ef found three implementation defects in that baseline: renamed source/parser line identifiers can reuse original receipt capacity; a retired verification actor can leave a supplier verification accepted at approval; two subjects sharing one human seat can satisfy a quorum. Repairs are integrated at126596b; independent replay of15 originalV4,13ownerregressions and13currentV3QBOcases passed41/41. A further legacy-credit bypass is fixed atb0c5b07 with8 new boundary/recovery tests. No practitioner conclusion is inferred.
 
 ## Reviewer questions and completion gaps
 
@@ -81,7 +81,7 @@ V4 on immutable a8ea9ef found three implementation defects in that baseline: ren
 5. Are later source corrections, rejected/returned payments, unmatched bank activity and unpaid AP carryforward treated correctly in the completed B3/B4 evidence?
 6. Are QuickBooks account/vendor mappings and Bill/BillPayment/credit representations appropriate, with Increase retaining payment execution authority?
 
-Pending evidence: B3 broader cases and exact postings; B4 locked-period/close/carryforward; C3 scheduling; C2 real human authorization and Increase sandbox workflow; C4 mapped external accounting writes and record reconciliation (OAuth/read-only already verified). Update each entry with measured results, leaving all unsupported and unresolved cases visible.
+Pending acceptance: final browser/independent corrected-cost and period-close review; broader business cases; C2 real human authorization and Increase sandbox workflow; C4 mapped external accounting writes and record reconciliation (OAuth/read-only already verified). Update each entry with measured results, leaving all unsupported and unresolved cases visible.
 
 ## Review record — unfilled
 
@@ -92,3 +92,9 @@ Pending evidence: B3 broader cases and exact postings; B4 locked-period/close/ca
 - Practitioner sign-off or rejection: pending.
 
 A later practitioner must record their own judgment. Neither the expected outcome file nor an agent's passing test report fills this record.
+
+## Actual I2 partial recognition and payment
+
+[Original-source integration evidence](evidence/I2-business-flow.md) records a $678.60 invoice, explicit acceptance of $285.60, disputed remainder $393.00, three sequential simulated-human votes (two owners then finance), and separately authorized $100.00 cash. Recognition is Dr5000 $285.60 / Cr2000 $285.60; settlement is Dr2000 $100.00 / Cr1000 $100.00; approved AP remaining is $185.60. One FakeBank transfer and posted debit remain after worker replay. A previously authorized future-date payment produced zero transfers before its initiation date and was canceled before any attempt. This is local integration evidence, not real Auth0/Increase/practitioner acceptance.
+
+[B4 corrected-cost cases](evidence/B4-cost-corrections.md) retain the original journal and require explicit signed replacement shares, immutable cost-state hash and current independent approval for credits or accrual reversals after reclassification. The practitioner should assess the policy and exact account/store postings; independent follow-up review is still pending.
