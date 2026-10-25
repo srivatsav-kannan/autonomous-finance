@@ -180,14 +180,17 @@
         "C0"
       ],
       "acceptance": "Source evidence, blockers, decisions, bill/payment/journal status remain visibly linked. Native/derived/unresolved states, correct frame/rotation mapping, separate multiline highlights and honestly labeled coarse context are visible; no amount-only box substituted for description.",
-      "status": "in_progress",
+      "status": "accepted",
       "session_id": "/root/experience",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-experience/calhacks",
       "branch": "codex/ap-system-experience",
-      "commit": null,
-      "evidence": [],
+      "commit": "f62d84c",
+      "evidence": [
+        "docs/ap-orchestration/evidence/D1",
+        "tests/ap-system-ui.test.tsx"
+      ],
       "blocker": null,
-      "next_action": "Implement scoped deliverable against frozen ap-evidence-v1; report exact checks and evidence",
+      "next_action": "Integrated same-case browser check in I1/D2; component fixtures do not establish connected workflow",
       "source_sha": "ac62854"
     },
     {
@@ -452,5 +455,5 @@
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true
   },
-  "last_updated_at": "2026-10-25T08:41:06.581915+00:00"
+  "last_updated_at": "2026-10-25T08:44:44.002703+00:00"
 }
