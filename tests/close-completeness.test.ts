@@ -90,10 +90,11 @@ describe("received invoice completeness at the kernel close boundary", () => {
   });
 
   it("does not trust telemetry, unrelated violations or a cross-run duplicate target", async () => {
-    const f = await fixture(); const doc = await f.source();
-    const record = await f.bill("other-document");
+    const f = await fixture(); const doc = await f.source(); const other = await f.source();
+    const record = await f.bill(other);
     if (!record.ok) throw new Error(record.error);
     await f.h.ctx.db.patch(record.billId, { runId: "other-run" });
+    await f.h.ctx.db.patch(other, { runId: "other-run" });
     await f.h.seed("violations", { runId: f.controller.runId, seatId: f.ap.seatId, operation: "ap.recordBill",
       reason: "duplicate_invoice: alleged duplicate", sourceDocumentId: doc, relatedBillId: record.billId, at: 0 });
     await f.h.seed("activity", { runId: f.controller.runId, seatId: f.ap.seatId, kind: "duplicate_invoice",
@@ -123,7 +124,13 @@ describe("received invoice completeness at the kernel close boundary", () => {
   it("blocks multiple live bills linked to the same source", async () => {
     const f = await fixture(); const source = await f.source();
     await f.bill(source, { invoiceNumber: "one" });
-    await f.bill(source, { idempotencyKey: "another-bill", invoiceNumber: "two" });
+    // The kernel refuses a second bill from one document; the close still catches it if data ever has one.
+    expect(await f.bill(source, { idempotencyKey: "another-bill", invoiceNumber: "two" })).toMatchObject({ ok: false, code: "document_already_billed" });
+    const other = await f.source();
+    const second = await f.bill(other, { idempotencyKey: "another-bill-2", invoiceNumber: "two" });
+    if (!second.ok) throw new Error(second.error);
+    await f.h.ctx.db.patch(second.billId, { documentEventId: source });
+    await f.h.ctx.db.patch(other, { runId: "other-run" });
     expect(await f.readiness()).toMatchObject({ ready: false, blockers: [{ kind: "multiple_bills", documentEventId: source }] });
   });
 

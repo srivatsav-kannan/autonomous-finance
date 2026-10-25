@@ -32,7 +32,8 @@
     "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json",
     "ci:recovery": "node scripts/testing/ci-local-recovery.mjs",
     "test:browser:local": "node scripts/testing/payment-browser-local.mjs",
-    "test:browser:staging": "node scripts/testing/payment-browser-staging.mjs"
+    "test:browser:staging": "node scripts/testing/payment-browser-staging.mjs",
+    "controls": "tsx scripts/control-tests.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

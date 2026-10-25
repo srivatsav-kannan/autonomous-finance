@@ -1,0 +1,130 @@
+{
+  "runId": "controls-mvn7knv1",
+  "at": "2026-10-25T02:28:27.054Z",
+  "held": 20,
+  "total": 20,
+  "results": [
+    {
+      "id": "bill-without-document",
+      "control": "bill must reference a received document",
+      "held": true,
+      "detail": "document never-received was never received"
+    },
+    {
+      "id": "one-document-two-bills",
+      "control": "a document backs at most one bill",
+      "held": true,
+      "detail": "second bill refused"
+    },
+    {
+      "id": "cash-without-bank-evidence",
+      "control": "cash entries require a matching bank transaction",
+      "held": true,
+      "detail": "no bank transaction no-such-bank-txn",
+      "issue": "#4"
+    },
+    {
+      "id": "ap-clerk-cash",
+      "control": "AP clerk has no cash posting rights",
+      "held": true,
+      "detail": "no bank transaction x"
+    },
+    {
+      "id": "self-approval",
+      "control": "requester cannot approve own payment",
+      "held": true,
+      "detail": "the requester of a payment cannot approve it"
+    },
+    {
+      "id": "bill-paid-twice",
+      "control": "a bill can be in only one live payment",
+      "held": true,
+      "detail": "bill CTL1 is already in payment kh7d3fc17830x7f6qag63nad5n8gyd3e (pending_approval)"
+    },
+    {
+      "id": "human-threshold",
+      "control": "≥ $50k needs a human approval",
+      "held": true,
+      "detail": "status after two agent approvals: pending_approval"
+    },
+    {
+      "id": "agent-staffs-controller",
+      "control": "an agent can't hire a control-role seat",
+      "held": true,
+      "detail": "an agent may not staff controller; ask a human"
+    },
+    {
+      "id": "close-without-human",
+      "control": "period close needs a human signature",
+      "held": true,
+      "detail": "status after controller-only signature: open"
+    },
+    {
+      "id": "ledger-chain",
+      "control": "ledger hash chain verifies",
+      "held": true,
+      "detail": "{\"entries\":2,\"head\":\"d64ffc448c5c5ee25ecb75cca8fcbd82fea98a3d300970b9b17acc7c70970f84\",\"ok\":true}"
+    },
+    {
+      "id": "memory-direct-bank-change",
+      "control": "bank details can't be changed directly",
+      "held": true,
+      "detail": "vendor remitTo changes require approval; open a proposal instead"
+    },
+    {
+      "id": "memory-self-merge",
+      "control": "proposer can't merge own change",
+      "held": true,
+      "detail": "sod"
+    },
+    {
+      "id": "memory-unauthorized-merge",
+      "control": "only authorized seats merge bank changes",
+      "held": true,
+      "detail": "forbidden"
+    },
+    {
+      "id": "cash-with-evidence",
+      "control": "a real bank transaction can be booked",
+      "held": true,
+      "detail": "booked"
+    },
+    {
+      "id": "bank-txn-booked-twice",
+      "control": "a bank transaction is booked once",
+      "held": true,
+      "detail": "bank transaction ctl-bank-1 is already booked"
+    },
+    {
+      "id": "cash-amount-mismatch",
+      "control": "cash amount must equal the bank transaction",
+      "held": true,
+      "detail": "bank transaction ctl-bank-1 is 123400 cents but the entry moves 999900"
+    },
+    {
+      "id": "cash-correction-by-reversal",
+      "control": "cash entries can be corrected by reversal (#5)",
+      "held": true,
+      "detail": "reversed",
+      "issue": "#5"
+    },
+    {
+      "id": "bank-txn-reversal-chain",
+      "control": "a re-reversed bank match still counts as booked",
+      "held": true,
+      "detail": "bank transaction ctl-bank-1 is already booked"
+    },
+    {
+      "id": "reserved-source-label",
+      "control": "kernel-only entry labels can't be posted directly",
+      "held": true,
+      "detail": "\"payment_settlement\" entries are created by the kernel, not posted directly"
+    },
+    {
+      "id": "answer-own-ask",
+      "control": "a seat can't answer its own ask",
+      "held": true,
+      "detail": "a seat cannot answer its own ask"
+    }
+  ]
+}

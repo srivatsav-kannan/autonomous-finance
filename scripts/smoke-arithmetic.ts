@@ -12,7 +12,7 @@ assert.equal((await admin.client.mutation(api.admin.createRun, {
 })).ok, true);
 const ap = new SeatClient(runId, "ap", token);
 const max = Number.MAX_SAFE_INTEGER;
-const posting = { ...ap.auth, idempotencyKey: "overflow", date: "2026-01-02", memo: "Synthetic extreme arithmetic", source: { kind: "bill" } };
+const posting = { ...ap.auth, idempotencyKey: "overflow", date: "2026-01-02", memo: "Synthetic extreme arithmetic", source: { kind: "adjustment" } };
 const failed = await ap.client.mutation(api.ledger.postEntry, { ...posting, lines: [
   { account: "5000", debit: max, credit: 0 }, { account: "5000", debit: 2, credit: 0 },
   { account: "2000", debit: 0, credit: max }, { account: "2000", debit: 0, credit: 1 },

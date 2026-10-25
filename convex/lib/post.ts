@@ -27,7 +27,8 @@ export interface PostInput {
 }
 
 // Cash moves only when real money moved: a settled payment or a bank match.
-const CASH_SOURCES = new Set(["payment_settlement", "bank_match", "payroll_funding"]);
+// "reversal" is only produced by ledger.reverseEntry (postEntry refuses it), so corrections to cash work.
+const CASH_SOURCES = new Set(["payment_settlement", "bank_match", "payroll_funding", "reversal"]);
 
 export function validateLines(seat: Seat, source: { kind: string }, lines: LineInput[]): string | null {
   if (lines.length < 2) return "an entry needs at least two lines";

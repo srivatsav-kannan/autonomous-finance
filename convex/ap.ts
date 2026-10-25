@@ -13,6 +13,7 @@ import {
   storeIdempotency,
 } from "./lib/kernel";
 import { appendEntry } from "./lib/post";
+import { billDocument } from "./lib/evidence";
 import { normalizeInvoiceNumber } from "./lib/invoiceIdentity";
 export { normalizeInvoiceNumber } from "./lib/invoiceIdentity";
 
@@ -108,6 +109,21 @@ export const recordBill = mutation({
     const run = await getRun(ctx, args.runId);
     if (!run) return fail("not_found", "run not found");
     const policy = runPolicy(run);
+
+    // Evidence: a bill must come from a document the company received, and a document backs one bill.
+    const evidence = await billDocument(ctx, args.runId, args.documentEventId);
+    if (!evidence.ok) return await recordViolation(ctx, args.runId, args.seatId, op, evidence);
+    if (args.decision !== "reject") {
+      const sameDoc = await ctx.db
+        .query("bills")
+        .withIndex("by_run_document", (q) => q.eq("runId", args.runId).eq("documentEventId", args.documentEventId))
+        .collect();
+      const liveDoc = sameDoc.find((b) => b.status !== "rejected");
+      if (liveDoc) {
+        return await recordViolation(ctx, args.runId, args.seatId, op,
+          fail("document_already_billed", `document ${args.documentEventId} already backs bill ${liveDoc.invoiceNumber}`));
+      }
+    }
     if (args.decision === "approve") {
       if (args.exceptions.length > 0) {
         return await recordViolation(ctx, args.runId, args.seatId, op,

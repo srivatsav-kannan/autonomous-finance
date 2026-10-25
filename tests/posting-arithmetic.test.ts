@@ -5,7 +5,7 @@ import { kernelHarness, mutationHandler } from "./helpers/kernelHarness";
 
 const max = Number.MAX_SAFE_INTEGER;
 const entry = {
-  idempotencyKey: "entry-1", date: "2026-01-02", memo: "arithmetic regression", source: { kind: "bill" },
+  idempotencyKey: "entry-1", date: "2026-01-02", memo: "arithmetic regression", source: { kind: "adjustment" },
   lines: [{ account: "5000", debit: max, credit: 0 }, { account: "2000", debit: 0, credit: max }],
 };
 
@@ -13,6 +13,7 @@ describe("safe aggregate cents", () => {
   it.each([1, 2])("rejects overflow even when floating debit and credit sums compare equal (%i)", async (extraCredit) => {
     const h = kernelHarness();
     const auth = await h.setup();
+    await h.document(auth.runId);
     const result = await mutationHandler(postEntry)(h.ctx, {
       ...auth, ...entry,
       lines: [...entry.lines, { account: "5000", debit: 2, credit: 0 }, { account: "2000", debit: 0, credit: extraCredit }],
@@ -28,6 +29,7 @@ describe("safe aggregate cents", () => {
   it("accepts exactly MAX_SAFE_INTEGER with exact repeated-account accumulation", async () => {
     const h = kernelHarness();
     const auth = await h.setup();
+    await h.document(auth.runId);
     const result = await mutationHandler(postEntry)(h.ctx, {
       ...auth, ...entry,
       lines: [
@@ -43,6 +45,7 @@ describe("safe aggregate cents", () => {
   it.each(["hold", "reject"] as const)("rejects unsafe %s bill totals before inserting AP rows", async (decision) => {
     const h = kernelHarness();
     const auth = await h.setup();
+    await h.document(auth.runId);
     const result = await mutationHandler(recordBill)(h.ctx, {
       ...auth, idempotencyKey: "huge-bill", vendor: "produce", invoiceNumber: "INV-1", invoiceDate: "2026-01-02", dueDate: "2026-01-16",
       lines: [max, 2].map((amountCents) => ({ description: "item", quantity: 1, unitCents: amountCents, amountCents })),
@@ -55,6 +58,7 @@ describe("safe aggregate cents", () => {
   it("rejects bill sums that overflow before later negative lines cancel them", async () => {
     const h = kernelHarness();
     const auth = await h.setup();
+    await h.document(auth.runId);
     const result = await mutationHandler(recordBill)(h.ctx, {
       ...auth, idempotencyKey: "cancelled-overflow", vendor: "produce", invoiceNumber: "INV-1", invoiceDate: "2026-01-02", dueDate: "2026-01-16",
       lines: [max, 2, -max].map((amountCents) => ({ description: "item", quantity: 1, unitCents: amountCents, amountCents })),
@@ -69,6 +73,7 @@ describe("persisted balances", () => {
   it("rejects a later posting that would overflow without advancing the journal or balances", async () => {
     const h = kernelHarness();
     const auth = await h.setup();
+    await h.document(auth.runId);
     expect((await mutationHandler(postEntry)(h.ctx, { ...auth, ...entry })).ok).toBe(true);
     const before = { entries: h.all("journalEntries"), heads: h.all("ledgerHeads"), balances: h.all("balances"), idem: h.all("idempotency") };
     const result = await mutationHandler(postEntry)(h.ctx, { ...auth, ...entry, idempotencyKey: "entry-2", lines: [
@@ -85,6 +90,7 @@ describe("persisted balances", () => {
   it("preflights repeated lines and every account before writing even a valid first account", async () => {
     const h = kernelHarness();
     const auth = await h.setup();
+    await h.document(auth.runId);
     await h.seed("balances", { runId: auth.runId, account: "2000", period: "2026-01", debits: 0, credits: max - 2 });
     const balances = h.all("balances");
     const result = await mutationHandler(postEntry)(h.ctx, { ...auth, ...entry, lines: [
@@ -100,6 +106,7 @@ describe("persisted balances", () => {
   it("removes a provisional approved bill when its accrual would overflow", async () => {
     const h = kernelHarness();
     const auth = await h.setup();
+    await h.document(auth.runId);
     expect((await mutationHandler(postEntry)(h.ctx, { ...auth, ...entry })).ok).toBe(true);
     const result = await mutationHandler(recordBill)(h.ctx, {
       ...auth, idempotencyKey: "bill-after-max", vendor: "produce", invoiceNumber: "INV-1", invoiceDate: "2026-01-02", dueDate: "2026-01-16",

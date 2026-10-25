@@ -14,8 +14,11 @@ import {
   storeIdempotency,
 } from "./lib/kernel";
 import { appendEntry } from "./lib/post";
-import { CHART } from "../src/core/accounts";
+import { bankEvidence } from "./lib/evidence";
+import { CHART, account, isKnownAccount } from "../src/core/accounts";
 import { readCloseReadiness } from "./lib/closeReadiness";
+
+const RESERVED_SOURCES = new Set(["bill", "payment_settlement", "payroll_funding", "reversal"]);
 
 const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 
@@ -39,6 +42,19 @@ export const postEntry = mutation({
     const idem = await checkIdempotency(ctx, args.runId, args.idempotencyKey, "ledger.postEntry", payload);
     if ("conflict" in idem) return await recordViolation(ctx, args.runId, args.seatId, "ledger.postEntry", idem.conflict);
     if (idem.hit) return { ...(idem.result as { ok: true; entryId: Id<"journalEntries">; sequence: number; hash: string }), replayed: true };
+
+    // Sources that only the kernel itself may use (bill accruals, settlements, reversals).
+    if (RESERVED_SOURCES.has(args.source.kind)) {
+      return await recordViolation(ctx, args.runId, args.seatId, "ledger.postEntry",
+        fail("reserved_source", `"${args.source.kind}" entries are created by the kernel, not posted directly`));
+    }
+    // Cash moves only with bank evidence: a real bank transaction for exactly this amount, booked once.
+    if (args.lines.some((l) => isKnownAccount(l.account) && account(l.account).cash)) {
+      const ev = args.source.kind === "bank_match"
+        ? await bankEvidence(ctx, args.runId, args.source.ref, args.lines)
+        : fail("no_bank_evidence", "cash entries must be bank matches citing a bank transaction");
+      if (!ev.ok) return await recordViolation(ctx, args.runId, args.seatId, "ledger.postEntry", ev);
+    }
 
     const res = await appendEntry(ctx, {
       runId: args.runId,

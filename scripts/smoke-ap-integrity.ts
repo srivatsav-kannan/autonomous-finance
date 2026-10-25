@@ -12,11 +12,18 @@ assert.equal((await admin.client.mutation(api.admin.createRun, {
   seats: seats.map(({ role, token }) => ({ seatId: role, role, name: role, kind: "agent" as const, tokenHash: hashToken(token) })),
 })).ok, true);
 const client = (role: typeof roles[number]) => new SeatClient(runId, role, seats.find((seat) => seat.role === role)!.token);
+// Bills must cite a document the company received.
+const received = await admin.client.mutation(api.admin.ingestEvent, {
+  secret: admin.secret, runId, type: "document.received", externalId: "synthetic-doc", occurredOn: "2026-01-02",
+  payload: { kind: "invoice", channel: "email", from: "ar@synthetic.example", subject: "INV-1", text: "INV-1" },
+});
+assert.equal(received.ok, true);
+const docId = String((received as { eventId: string }).eventId);
 const ap = client("ap_clerk");
 const invoice = {
   ...ap.auth, idempotencyKey: "bill-1", vendor: "synthetic-produce", invoiceNumber: "INV-1", invoiceDate: "2026-01-02", dueDate: "2026-01-16",
   lines: [{ description: "Synthetic produce", quantity: 1, unitCents: 10000, amountCents: 10000 }], totalCents: 10000,
-  documentEventId: "synthetic-doc", decision: "approve" as const, exceptions: [], expenseAccount: "9999",
+  documentEventId: docId, decision: "approve" as const, exceptions: [], expenseAccount: "9999",
 };
 const failed = await ap.client.mutation(api.ap.recordBill, invoice);
 assert.equal(failed.ok, false);
@@ -49,5 +56,10 @@ assert.equal((await admin.client.query(api.ap.bills, { runId })).length, 1);
 console.log("PASS auditor and payments cannot create approved, held, or rejected bills");
 
 const lease = client("lease_accountant");
-assert.equal((await lease.client.mutation(api.ap.recordBill, { ...invoice, ...lease.auth, idempotencyKey: "rent", invoiceNumber: "RENT-1", decision: "hold", expenseAccount: "5200" })).ok, true);
+const rentDoc = await admin.client.mutation(api.admin.ingestEvent, {
+  secret: admin.secret, runId, type: "document.received", externalId: "synthetic-rent", occurredOn: "2026-01-02",
+  payload: { kind: "lease_invoice", channel: "email", from: "leases@landlord.example", subject: "RENT-1", text: "RENT-1" },
+});
+assert.equal(rentDoc.ok, true);
+assert.equal((await lease.client.mutation(api.ap.recordBill, { ...invoice, ...lease.auth, idempotencyKey: "rent", invoiceNumber: "RENT-1", decision: "hold", expenseAccount: "5200", documentEventId: String((rentDoc as { eventId: string }).eventId) })).ok, true);
 console.log(`PASS lease accountant can still record held rent bills; run ${runId}`);
