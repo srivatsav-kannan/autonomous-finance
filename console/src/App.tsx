@@ -462,6 +462,14 @@ function Evals({ runId }: { runId: string }) {
   );
 }
 
+/** Renders the **bold** and `code` spans that "why" answers use; everything else stays plain text. */
+function inlineMarkdown(text: string) {
+  return text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, i) =>
+    part.startsWith("**") && part.endsWith("**") && part.length > 4 ? <strong key={i}>{part.slice(2, -2)}</strong>
+    : part.startsWith("`") && part.endsWith("`") && part.length > 2 ? <code key={i}>{part.slice(1, -1)}</code>
+    : part);
+}
+
 function Control({ runId }: { runId: string }) {
   const [log, setLog] = useState<string[]>([]);
   const [q, setQ] = useState("Why did we short-pay Golden State Produce?");
@@ -511,7 +519,7 @@ function Control({ runId }: { runId: string }) {
           <button type="submit" className="primary" disabled={asking || !q.trim()} aria-busy={asking}>{asking ? "Asking…" : "Ask"}</button>
         </div>
       </form>
-      <div className="feedback" aria-live="polite">{answer && <pre className="ask-body">{answer}</pre>}</div>
+      <div className="feedback" aria-live="polite">{answer && <pre className="ask-body">{inlineMarkdown(answer)}</pre>}</div>
     </section>
   );
 }
