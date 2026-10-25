@@ -1,0 +1,408 @@
+{
+  "issue": 112,
+  "implementationCommit": "e1e257a3702c2b3b4fb199037a5368d64291d0e2",
+  "recordedAt": "2026-10-25T13:57:59.745Z",
+  "runId": "apex107-replay-20261025",
+  "provenance": "Replayed in an isolated local Convex/FakeBank checkout while implementing this commit. case2 and reimport were repeated after the final legacy-API guards. Original phase records were written before the implementation commit.",
+  "providerModes": {
+    "bank": "local FakeBank; settlement explicitly simulated",
+    "identities": "simulated local actors",
+    "parser": "local Poppler; no model calls",
+    "externalWrites": "none"
+  },
+  "missingEvidence": {
+    "recordedAt": "2026-10-25T13:47:10.779Z",
+    "status": 409,
+    "error": {
+      "code": "business_policy_hold",
+      "reason": "missing_contract: Each accepted line needs one source-bound PO or contract line.; missing_receipt: Receipt/service allocations must equal the accepted quantity exactly."
+    },
+    "caseId": "kd7c6hr9r7a70tj4t3tkfqanhd8gzj3m"
+  },
+  "historicalCase": {
+    "recordedAt": "2026-10-25T13:53:20.747Z",
+    "invoice": "AVILA-202403-A1",
+    "caseId": "kd7bamsd90c45bdv7f6tj8wqjn8gz24e",
+    "states": {
+      "document": "reviewed",
+      "business": "held",
+      "accounting": "unposted",
+      "authorization": "not_requested",
+      "execution": "not_started",
+      "reconciliation": "unmatched"
+    },
+    "hold": {
+      "version": "historical-payment-hold-v1",
+      "supplierId": "apex-v041",
+      "invoiceNumber": "AVILA-202403-A1",
+      "currency": "USD",
+      "amountCents": 350000,
+      "invoiceSourceSha256": "c974e400eacb221d0a07fae70bd00a3a1f34574b9119c427fae3940f1025c4ff",
+      "paidDate": "2024-04-19",
+      "reference": "BILL-2024-00327",
+      "sourceSystem": "mercor/apex-accounting-harbor",
+      "sourceRevision": "1662b7e4c3b04b8717f2f723df823e7b6cbe2118",
+      "sourceRecordId": "BILL-2024-00327",
+      "evidence": [
+        {
+          "name": "apps_data/quickbooks/ap_bill_ledger_2024.csv",
+          "sha256": "39fb13f4ab2eebf3d00f8e38a3a5e34d37cc75bcdfddfcb18285f1ab970123d9"
+        }
+      ]
+    },
+    "historicalChecks": {
+      "billId": "BILL-2024-00327",
+      "bankTransactionId": "OBT-000200",
+      "reference": "CHK-2024327",
+      "checks": [
+        {
+          "check": "Exactly one AP ledger row for the bill",
+          "passed": true
+        },
+        {
+          "check": "Exactly one bank row for the candidate transaction",
+          "passed": true
+        },
+        {
+          "check": "Ledger status is Paid with zero outstanding",
+          "passed": true
+        },
+        {
+          "check": "Bank row is an AP payment to the same payee",
+          "passed": true
+        },
+        {
+          "check": "Bank amount out equals bill amount and amount paid",
+          "passed": true
+        },
+        {
+          "check": "Bank date equals ledger payment date",
+          "passed": true
+        },
+        {
+          "check": "Bank reference equals the expected reference",
+          "passed": true
+        },
+        {
+          "check": "Bank row offsets AP (2000)",
+          "passed": true
+        },
+        {
+          "check": "GL has one AP credit for the bill",
+          "passed": true
+        },
+        {
+          "check": "GL payment entry debits AP and credits operating cash by the bill amount",
+          "passed": true
+        },
+        {
+          "check": "Bill is absent from the Dec 31, 2024 AP aging open bills",
+          "passed": true
+        },
+        {
+          "check": "Monthly bank statement has exactly one check row with matching reference, date, payee and debit",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "ledger": {
+        "vendorId": "V-041",
+        "vendor": "Marcus Avila, Esq.",
+        "invoiceNumber": "AVILA-202403-A1",
+        "billDate": "2024-03-20",
+        "dueDate": "2024-04-19",
+        "amount": "3500.0",
+        "status": "Paid",
+        "paymentDate": "2024-04-19",
+        "amountPaid": "3500.0",
+        "outstanding": "0.0",
+        "glAccount": "5000 Contract Attorney Fees - Matter Direct",
+        "matter": "M-2024-0004"
+      },
+      "bank": {
+        "transactionId": "OBT-000200",
+        "date": "2024-04-19",
+        "clearDate": "2024-04-19",
+        "type": "ap_payment",
+        "payee": "Marcus Avila, Esq.",
+        "reference": "CHK-2024327",
+        "amountOut": "3500.0",
+        "glOffset": "2000 AP",
+        "source": "AP Payment"
+      },
+      "glEntries": [
+        {
+          "account": "2000",
+          "date": "2024-03-20",
+          "je": "JE-BILL-2024-00327",
+          "debit": "",
+          "credit": "3500"
+        },
+        {
+          "account": "1000",
+          "date": "2024-04-19",
+          "je": "JE-OB-000200",
+          "debit": "",
+          "credit": "3500"
+        },
+        {
+          "account": "2000",
+          "date": "2024-04-19",
+          "je": "JE-OB-000200",
+          "debit": "3500",
+          "credit": ""
+        }
+      ],
+      "sameVendorSameAmountPayments": [
+        {
+          "transactionId": "OBT-000200",
+          "date": "2024-04-19",
+          "reference": "CHK-2024327"
+        },
+        {
+          "transactionId": "OBT-000691",
+          "date": "2024-10-25",
+          "reference": "CHK-2024330"
+        }
+      ],
+      "limits": "These are field matches inside one synthetic dataset. They are consistent with one payment of this bill. They do not independently prove the invoice-to-bank link."
+    },
+    "approvalRefused": {
+      "status": 409,
+      "code": "historical_payment_hold",
+      "reason": "Historical source records report this invoice as already paid. New business approval, credit application and payment are blocked; re-importing or revising the invoice cannot clear this restriction."
+    },
+    "paymentRefused": {
+      "status": 409,
+      "code": "historical_payment_hold",
+      "reason": "Historical source records report this invoice as already paid. New business approval, credit application and payment are blocked; re-importing or revising the invoice cannot clear this restriction."
+    }
+  },
+  "reimport": {
+    "recordedAt": "2026-10-25T13:53:21.417Z",
+    "replays": [
+      {
+        "case": "case1",
+        "expectedCaseId": "kd7c6hr9r7a70tj4t3tkfqanhd8gzj3m",
+        "sameKey": {
+          "status": 201,
+          "caseId": "kd7c6hr9r7a70tj4t3tkfqanhd8gzj3m",
+          "error": null
+        },
+        "newKeyRenamed": {
+          "status": 409,
+          "caseId": null,
+          "error": "explicit_revision_required"
+        }
+      },
+      {
+        "case": "case2",
+        "expectedCaseId": "kd7bamsd90c45bdv7f6tj8wqjn8gz24e",
+        "sameKey": {
+          "status": 201,
+          "caseId": "kd7bamsd90c45bdv7f6tj8wqjn8gz24e",
+          "error": null
+        },
+        "newKeyRenamed": {
+          "status": 201,
+          "caseId": "kd7bamsd90c45bdv7f6tj8wqjn8gz24e",
+          "error": null
+        }
+      }
+    ],
+    "historicalPaymentRefused": {
+      "status": 409,
+      "code": "historical_payment_hold",
+      "reason": "Historical source records report this invoice as already paid. New business approval, credit application and payment are blocked; re-importing or revising the invoice cannot clear this restriction."
+    },
+    "before": {
+      "cases": 2,
+      "bills": 1,
+      "paymentVersions": 1,
+      "commands": 1,
+      "journals": 2,
+      "bankTransactionsPosted": 1,
+      "fakeBankTransfers": 1,
+      "fakeBankCreateCalls": 1,
+      "perCase": [
+        {
+          "caseId": "kd7c6hr9r7a70tj4t3tkfqanhd8gzj3m",
+          "revision": 2,
+          "journals": 2,
+          "payments": 1,
+          "states": {
+            "document": "reviewed",
+            "business": "approved",
+            "accounting": "recognized",
+            "authorization": "authorized",
+            "execution": "settled",
+            "reconciliation": "matched"
+          }
+        },
+        {
+          "caseId": "kd7bamsd90c45bdv7f6tj8wqjn8gz24e",
+          "revision": 1,
+          "journals": 0,
+          "payments": 0,
+          "states": {
+            "document": "reviewed",
+            "business": "held",
+            "accounting": "unposted",
+            "authorization": "not_requested",
+            "execution": "not_started",
+            "reconciliation": "unmatched"
+          }
+        }
+      ]
+    },
+    "after": {
+      "cases": 2,
+      "bills": 1,
+      "paymentVersions": 1,
+      "commands": 1,
+      "journals": 2,
+      "bankTransactionsPosted": 1,
+      "fakeBankTransfers": 1,
+      "fakeBankCreateCalls": 1,
+      "perCase": [
+        {
+          "caseId": "kd7c6hr9r7a70tj4t3tkfqanhd8gzj3m",
+          "revision": 2,
+          "journals": 2,
+          "payments": 1,
+          "states": {
+            "document": "reviewed",
+            "business": "approved",
+            "accounting": "recognized",
+            "authorization": "authorized",
+            "execution": "settled",
+            "reconciliation": "matched"
+          }
+        },
+        {
+          "caseId": "kd7bamsd90c45bdv7f6tj8wqjn8gz24e",
+          "revision": 1,
+          "journals": 0,
+          "payments": 0,
+          "states": {
+            "document": "reviewed",
+            "business": "held",
+            "accounting": "unposted",
+            "authorization": "not_requested",
+            "execution": "not_started",
+            "reconciliation": "unmatched"
+          }
+        }
+      ]
+    }
+  },
+  "tests": {
+    "command": "npm test -- --maxWorkers=4",
+    "passed": 1963,
+    "skipped": 4,
+    "failed": 0,
+    "filesPassed": 205,
+    "filesSkipped": 1,
+    "note": "A prior unconstrained parallel run had one existing 5s timeout and one existing concurrent recovery order failure. Both files passed alone (40 tests); the complete suite then passed with four workers."
+  },
+  "staticChecks": [
+    "npm run typecheck",
+    "npm run typecheck:backend",
+    "npm run typecheck:tests",
+    "npm run build:console",
+    "npm run design:check"
+  ],
+  "browserChecks": [
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "tab": "Matching",
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "tab": "Accounting",
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "tab": "Payment runs",
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "colorScheme": "light",
+      "tab": "Matching",
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "colorScheme": "light",
+      "tab": "Accounting",
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "colorScheme": "light",
+      "tab": "Payment runs",
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "tab": "Matching",
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "tab": "Accounting",
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "tab": "Payment runs",
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "colorScheme": "dark",
+      "tab": "Matching",
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "colorScheme": "dark",
+      "tab": "Accounting",
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "colorScheme": "dark",
+      "tab": "Payment runs",
+      "overflow": false,
+      "errors": []
+    }
+  ],
+  "designReview": {
+    "command": "npm run design:review -- --url http://127.0.0.1:5197/ap-system",
+    "failures": 0,
+    "warnings": [
+      "F19: shell uses four font weights at 1440px"
+    ]
+  }
+}
