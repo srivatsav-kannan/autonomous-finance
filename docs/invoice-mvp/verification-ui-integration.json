@@ -1,0 +1,41 @@
+{
+  "applicationSource": "09336cf4d5c1f6ba11d01c3a40b27d090363b2e8",
+  "uiSourceMerged": "5b9ef923ec91a1f329990d3cb058e8316850d4c9",
+  "date": "2026-10-24",
+  "workspace": "invoice-ui-integration-20261024",
+  "mode": "deterministic",
+  "modelCalls": 0,
+  "checks": {
+    "repositoryTests": 339,
+    "testFiles": 27,
+    "applicationTypecheck": "pass",
+    "convexTypecheck": "pass",
+    "productionBuild": "pass",
+    "staticDesignLint": "clean",
+    "populatedViewRenderFailures": 0,
+    "populatedViewRenderWarnings": 0,
+    "modalSpacingAdvisories": 1,
+    "navigationDestinations": 10,
+    "noSimulationBackendFallback": "pass",
+    "decisionReplay": "pass",
+    "reloadPersistence": "pass",
+    "lateCorrection": "pass",
+    "drawerEscapeFocusRestoration": "pass",
+    "browserHistory": "pass"
+  },
+  "finalDemo": {
+    "netCents": 152500,
+    "customers": {
+      "demo-acorn": 107500,
+      "demo-birch": 45000
+    },
+    "sources": 9,
+    "recorded": 4,
+    "duplicates": 1,
+    "superseded": 1,
+    "evidenceMissing": 1,
+    "humanDecisions": 1
+  },
+  "historicalBenchmarkSource": "d08165c1ad38bb20817ace294c55ed1c50b8c243",
+  "benchmarksRerun": false
+}
