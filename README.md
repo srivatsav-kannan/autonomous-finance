@@ -14,22 +14,9 @@ So we built the ledger for the agents. The agents work through it, and it enforc
 
 ## How it works
 
-The agent works through a **harness**: a run loop with context, available function definitions, retries and waits. Its **environment** is a scoped finance workspace where it can read logs and evidence, inspect database records, and request changes through those functions.
+![Agent, harness and sandbox environment](docs/images/agent-environment.png)
 
-```mermaid
-flowchart LR
-    Agent <--> Harness["Harness<br/>Context, tools, run loop"]
-    subgraph Environment["Finance environment — sandbox run"]
-        Functions["Exposed functions<br/>Inspect and act"]
-        Logs["Case logs and evidence<br/>Events, state diffs, PDFs"]
-        Database["Convex database<br/>Cases, ledger, approvals"]
-        Functions <-->|read| Logs
-        Functions <-->|query and validated writes| Database
-    end
-    Harness <-->|calls and results| Functions
-```
-
-Function access follows the agent's role. The database enforces permissions and required approvals; each recorded result becomes context for the next step. A sandbox run uses local test data or provider test accounts.
+[Edit diagram](docs/images/agent-environment.excalidraw)
 
 - **The ledger (`convex/`).** A Convex database. Every change to the books is one transaction, in integer cents, with double entry, an idempotency key and a hash chain. Each agent has its own login and limits, and the database checks them on every write. For example, a cash entry needs a matching bank transaction, and whoever requests a payment can't approve it. These rules live in the database, not in prompts.
 - **Memory (`src/memory/`).** Company knowledge, like vendors, bank details, policies and every decision, is YAML in a git repo. Each change is a commit by the agent that made it. A change to bank details goes on a branch that a different agent or a human has to merge.
