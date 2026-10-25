@@ -321,7 +321,7 @@
         "tests/ap-system/business-payment-boundaries.test.ts"
       ],
       "blocker": null,
-      "next_action": "Core integrated and original engine bound to B3 authority atd9ade7d; 4 cross-layer tests pass plus full208 AP and174 payment regression at eb264f8. Follow-upreturncapacity controls integrated; independentB3 and D2 journey still pending.",
+      "next_action": "V4 found original-byte capacity bypass via renamed parser line IDs, retired supplier verifier acceptance, and shared-seat quorum aliases. B owner fixing and verifier preserving baseline reproductions; acceptance remains pending.",
       "source_sha": "4f7d76d"
     },
     {
@@ -343,7 +343,7 @@
         "tests/ap-system/payment-runs.test.ts"
       ],
       "blocker": null,
-      "next_action": "18 scheduling/partial and 7 batch tests pass; V3 review concluding; supplier authority integration and D2 browser journey pending.",
+      "next_action": "V3 independent payment tests passed; D2 synthetic run review/confirmation exercised with2cases/$211/2026-11-01UTC. Full source-to-business browser journey remains for integration acceptance.",
       "source_sha": "4f7d76d"
     },
     {
@@ -358,15 +358,18 @@
       "status": "in_progress",
       "session_id": "/root/p0_inventory",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-evidence/calhacks",
-      "branch": "codex/ap-system-qbo",
-      "commit": "6251f57",
+      "branch": "codex/ap-system-qbo-business",
+      "commit": "47e0265",
       "evidence": [
         "docs/ap-orchestration/QUICKBOOKS-SETUP.md",
         "docs/ap-orchestration/evidence/C4-local.md",
-        "tests/ap-system/quickbooks-runtime.test.ts"
+        "tests/ap-system/quickbooks-runtime.test.ts",
+        "docs/ap-orchestration/evidence/C4-callback-browser.md",
+        "tests/ap-system/quickbooks-business.test.ts",
+        "tests/ap-system/quickbooks-business-sync.test.ts"
       ],
-      "blocker": "External live acceptance awaits owner Intuit registration and OAuth grant; credential-independent engineering is not blocked.",
-      "next_action": "Partial recognized bill export integrated eb264f8, original7700 accepted3850 exports38.50; partial cash/credit application and owned return remediation underway. Actual OAuth and external record verification pending.",
+      "blocker": "Real browser Intuit consent awaits owner Connect; no live accounting writes authorized or observed.",
+      "next_action": "US sandbox app configured; actual callback fixed04040d7. Recognized partial bills, supplier credits, partial cash/credit and zero-cash application exports integrateda8ea9ef; bridge preserves owned holds47e0265. Return corrections and signed discount representation still require implementation; live grant/read-only inspection pending owner consent.",
       "source_sha": "4f7d76d"
     },
     {
@@ -400,13 +403,13 @@
       "session_id": "/root/experience",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-experience/calhacks",
       "branch": "codex/ap-system-d2",
-      "commit": "9f49930",
+      "commit": "8f9cecb",
       "evidence": [
         "docs/ap-orchestration/evidence/D2-operations.md",
         "docs/ap-orchestration/evidence/I2/accounting-status.png"
       ],
       "blocker": null,
-      "next_action": "Payment-run and request-bound accounting HTTP/API seams integrated. Live I1 accountingstatus verified, duplicate siblingkey bug fixed8fac287. Complete business/close UI, metrics/narrative, responsive verification and explicit private multi-human Auth0 allowlist.",
+      "next_action": "Business/governance routes integrateda786c7e; confirmation/fixture follow-up integrated. Root CUA desktop/mobile light/dark and synthetic atomic-run UI passed; actualI1 remains one books and oneQBO panel. QBO credit/application targets and B4 UI pending.",
       "source_sha": "6114a03"
     },
     {
@@ -499,6 +502,27 @@
       "blocker": null,
       "next_action": "Independent immutable6251f57 report accepted;19 new tests re-run afterB3 integration. Later V4 will cover newB3/Auth0/QBO business additions.",
       "source_sha": "6251f57"
+    },
+    {
+      "id": "V4",
+      "owner": "independent-verifier",
+      "title": "Independently verify Auth0 request identity and expanded business authority",
+      "depends_on": [
+        "B3",
+        "C2-Auth0"
+      ],
+      "acceptance": "Immutable baseline adversarial cases and explicit remediation replay; local identities and external login acceptance remain distinct.",
+      "status": "in_progress",
+      "session_id": "/root/verifier",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks",
+      "branch": "codex/ap-system-verification-v4",
+      "commit": null,
+      "source_sha": "a8ea9ef",
+      "evidence": [
+        "tests/ap-system/v4-business.test.ts"
+      ],
+      "blocker": null,
+      "next_action": "Six new C2 tests pass; three business authority/capacity findings reproduced and assigned for repair. Preserve failing baseline and rerun exact probes on fix."
     }
   ],
   "registry": {
@@ -543,7 +567,7 @@
     "backend_version": "precompiled-2026-10-10-72ce13c",
     "max_original_packet_bytes": 8388608,
     "backend_exec_session": 18961,
-    "ap_server_exec_session": 35276,
+    "ap_server_exec_session": 13638,
     "frontend_exec_session": 59299,
     "increase_frontend_reserved_port": 5192,
     "increase_backend_reserved_port": 3252,
@@ -585,7 +609,7 @@
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true
   },
-  "last_updated_at": "2026-10-25T09:31:20.109361+00:00",
+  "last_updated_at": "2026-10-25T09:37:53.358475+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",

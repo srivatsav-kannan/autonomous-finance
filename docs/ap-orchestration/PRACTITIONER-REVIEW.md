@@ -8,7 +8,7 @@ First case: synthetic Golden State Produce Co. invoice INV-1001, invoice date202
 
 The [V1 independent review](evidence/V1.md) derives values from originals before examining the expected-result file. It is an independent agent engineering review. The [I1 integrated report](evidence/I1-integrated.md) records the observed same-case workflow at code a13b131, contract ap-evidence-v1, policy golden-state-ap-v1 and run ap97-20261025-01a1722e. The requested parser is LlamaParse agentic_plus, version2026-09-28; the provider did not expose its resolved version. Original hashes, native/unresolved counts and exact bill/payment/bank/journal IDs are in [I1 JSON](evidence/I1-integrated.json).
 
-All supplier contacts, source documents, local identities and FakeBank effects in this case are synthetic. Private parser/raw artifacts and credentials are excluded from this review packet. QuickBooks US sandbox has been selected but not authorized. External accounting IDs and practitioner findings remain empty until observed.
+All supplier contacts, source documents, local identities and FakeBank effects in this case are synthetic. Private parser/raw artifacts and credentials are excluded from this review packet. QuickBooks US sandbox is configured and its actual OAuth callback is fixed; owner consent is pending. External accounting IDs and practitioner findings remain empty until observed.
 
 ## Business rules for review
 
@@ -66,7 +66,11 @@ A reviewer explicitly chooses the gross payable amount and any recognized availa
 
 The C3 automated FakeBank case starts with a $100.00 recognized bill and a $20.00 recognized supplier credit. First discharge $60.00 = $20.00 credit + $40.00 cash; the bill balance becomes $40.00. Second authorized cash payment $40.00 clears it. Expected postings are Dr cost $100 / Cr AP $100; Dr AP $20 / Cr original cost $20; Dr AP $40 / Cr cash $40 twice. Final AP is $0, expense net $80 and cash paid $80. The component test observes two transfers, two posted debits and four journals, with no extra effects on replay. This is synthetic automated evidence, not external bank acceptance or practitioner validation. Independent V3 confirms a second sequence: bill$77, credit$12, first gross$50 with cash$38, second cash$27, first cash returned$38, then replacementcash$38. Expected finalAP$0 and netcash$65; exactly6journals including the return and replacement, with the$12credit consumed once. See evidence/V3.md.
 
-The corresponding QuickBooks connector currently supports full recognized bills and verified full cash settlements; partial recognition and credit/application coverage are still being integrated. A successful local journal must not be described as an external QuickBooks record. Browser login is implemented with Auth0, but the development tenant and approved real human have not yet been configured.
+The corresponding QuickBooks connector has local tests for exact recognized partial bills, supplier credits, partial cash/credit settlements and zero-cash credit applications. Current returned-payment and signed-cost cases produce controller-owned holds; their external correction representation is still incomplete. Historical successful receipts remain visible separately from these current holds. A successful local journal must not be described as an external QuickBooks record. Browser login is implemented with Auth0, but the development tenant and approved real human have not yet been configured.
+
+## Current independent engineering findings
+
+V4 on immutable a8ea9ef found three unresolved implementation defects: renamed source/parser line identifiers can reuse original receipt capacity; a retired verification actor can leave a supplier verification accepted at approval; two subjects sharing one human seat can satisfy a quorum. The intended rules above are not accepted as satisfied until the owner fixes these cases and the independent verifier reruns the exact reproductions. No practitioner conclusion is inferred.
 
 ## Reviewer questions and completion gaps
 
