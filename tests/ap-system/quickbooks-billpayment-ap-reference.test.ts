@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { QboClient } from "../../src/ap-system/quickbooks/client";
 import type { OAuth } from "../../src/ap-system/quickbooks/oauth";
-import { PrivateStore, hash } from "../../src/ap-system/quickbooks/private-store";
+import { PrivateStore, QboError, hash } from "../../src/ap-system/quickbooks/private-store";
 import { SyncJournal } from "../../src/ap-system/quickbooks/sync";
 import type { Mappings, Operation, Plan } from "../../src/ap-system/quickbooks/types";
 const roots: string[] = [];
@@ -59,6 +59,43 @@ describe("QBO BillPayment optional AP account response", () => {
     const f = fixture(); (f.plan.payload.Line as any[])[0].LinkedTxn[0].TxnType = "JournalEntry";
     f.actual.Line[0].LinkedTxn[0].TxnType = "JournalEntry";
     await expect(f.client.create(f.op)).rejects.toThrow("external_response_mismatch");
+  });
+  it("requires every linked payable to prove the same AP, vendor and currency", async () => {
+    const f = fixture();
+    const creditLink = { TxnType: "VendorCredit", TxnId: "147" };
+    (f.plan.payload.Line as any[])[0].LinkedTxn.push(creditLink);
+    f.actual.Line[0].LinkedTxn.push(creditLink);
+    const credit: Record<string, any> = { ...f.bill, Id: "147" };
+    const previous = f.request.getMockImplementation()!;
+    f.request.mockImplementation(async (...args) => args[0] === "vendorcredit/147" ? { VendorCredit: credit } : previous(...args));
+    expect(await f.client.verify({ ...f.op, externalId: "146", syncToken: "0" })).toEqual(f.actual);
+    credit.APAccountRef = { value: "34" };
+    await expect(f.client.verify({ ...f.op, externalId: "146", syncToken: "0" })).rejects.toThrow("external_stale_or_changed");
+  });
+  it("preserves stale-token rejection even when linked accounting agrees", async () => {
+    const f = fixture(); f.actual.SyncToken = "1";
+    await expect(f.client.verify({ ...f.op, externalId: "146", syncToken: "0" })).rejects.toThrow("external_stale_or_changed");
+    expect(f.request.mock.calls.some(([path]) => path === "bill/145")).toBe(false);
+  });
+  it("keeps a successful POST unknown if its linked-bill proof fails, and never reposts it", async () => {
+    const f = fixture(), root = await mkdtemp(join(tmpdir(), "qbo-ap-proof-")); roots.push(root);
+    const journal = new SyncJournal(new PrivateStore(root), f.client);
+    vi.spyOn(f.client, "verifyMappings").mockResolvedValue({ realmId: "123", country: "US", mappingHash: hash(mappings) });
+    let sent = false, readable = false;
+    const previous = f.request.getMockImplementation()!;
+    f.request.mockImplementation(async (...args) => {
+      if (args[0] === "query" && !sent) return { QueryResponse: {} };
+      if (args[0] === "billpayment" && args[1] === "POST") sent = true;
+      if (args[0] === "bill/145" && !readable) throw new QboError("qbo_retry_later");
+      return previous(...args);
+    });
+    await expect(journal.execute(f.plan, mappings, undefined, { subject: "reviewer", planHash: hash(f.plan), decidedAt: Date.now() })).rejects.toThrow("external_response_unverified");
+    expect(await journal.get(f.plan)).toMatchObject({ state: "unknown", attempts: 1 });
+    await expect(journal.execute(f.plan, mappings)).rejects.toThrow("qbo_retry_later");
+    expect(await journal.get(f.plan)).toMatchObject({ state: "unknown", attempts: 1 });
+    readable = true;
+    expect(await journal.execute(f.plan, mappings)).toMatchObject({ state: "succeeded", externalId: "146", attempts: 1 });
+    expect(f.request.mock.calls.filter(([, method]) => method === "POST")).toHaveLength(1);
   });
   it("reconciles an unknown operation by read-only lookup, preserving its one POST attempt and authorization", async () => {
     const f = fixture(), root = await mkdtemp(join(tmpdir(), "qbo-ap-reference-")); roots.push(root);

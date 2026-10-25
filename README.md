@@ -1,6 +1,6 @@
 # Autonomous Finance
 
-AI agents run the finance department of a restaurant chain modeled on Sweetgreen: accounts payable, payments, cash, revenue, payroll, leases and the month-end close. A human CFO only makes the management decisions, like approving a large payment or signing off on the close.
+Autonomous Finance carries an accounts payable case from original supplier documents through field review, bill approval, payment authorization and reconciled accounting. Agents prepare the work; humans make the required business decisions. A separate restaurant-chain simulator, modeled on Sweetgreen, exercises AP, cash, revenue, payroll, leases and month-end close.
 
 Built at Cal Hacks 13.0.
 
@@ -16,7 +16,7 @@ So we built the ledger for the agents. The agents work through it, and it enforc
 
 - **The ledger (`convex/`).** A Convex database. Every change to the books is one transaction, in integer cents, with double entry, an idempotency key and a hash chain. Each agent has its own login and limits, and the database checks them on every write. For example, a cash entry needs a matching bank transaction, and whoever requests a payment can't approve it. These rules live in the database, not in prompts.
 - **Memory (`src/memory/`).** Company knowledge, like vendors, bank details, policies and every decision, is YAML in a git repo. Each change is a commit by the agent that made it. A change to bank details goes on a branch that a different agent or a human has to merge.
-- **The agents (`src/agents/`).** Twelve of them: AP clerk, controller, payments, treasury and others. Routine work is plain code. The model only reads documents the code can't parse and makes judgment calls. In a 14-day run, 92% of tasks never call the model.
+- **The agents (`src/agents/`).** Twelve of them: AP clerk, controller, payments, treasury and others. Routine work is plain code. The model only reads documents the code can't parse and makes judgment calls. In the historical 14-day simulator run, 92% of tasks never called the model. That is not a cost or automation-rate measurement of the document-based AP workspace.
 
 The company is simulated. It's calibrated to Sweetgreen's FY2025 SEC filings: $679.5M revenue, 281 restaurants, $19.9M accounts payable, $354.5M lease liability. We're not affiliated with Sweetgreen, and every transaction, vendor and person in it is made up.
 
@@ -62,15 +62,27 @@ The answer cites the git commits where the decision was recorded. This works wit
   - **Evals:** the score for the run.
   - **Control room:** send in a fraudulent bank-change email, a duplicate invoice or an unknown wire, then ask the agents why they did what they did.
   - **Invoices:** a separate workspace for customer invoices ([guide](docs/invoice-mvp/README.md)).
+  - **`/ap-system`:** the source-backed AP case workspace: original invoice, PO and receipt; reviewable fields; separate field, bill and payment decisions; accounting and bank evidence. See the [demo](docs/DEMO.md) and [Auth0 sandbox setup](docs/ap-orchestration/AUTH0-SETUP.md).
   - **`/ap-demo`:** the CFO's approval screen for the payment crash demo.
+
+## The AP system and its sandboxes
+
+An invoice states what a supplier claims. In `/ap-system`, source-backed fields remain reviewable against the original documents, with uncertain locations left visible. The PO, receipt and approved supplier context support the business decision. Reviewing fields does not approve a bill; approving a bill records the obligation; authorizing a payment approves an exact amount and destination. A quantity or price discrepancy stays held until an authorized decision: **no automatic short-pay**. These are separate actions, but independent-person enforcement is incomplete; see the control gaps below.
+
+The internal ledger records recognition and settlement. The QuickBooks connector exports an approved Bill and records the settled payment as a linked BillPayment. Increase is the bank API that executes the payment; the QuickBooks accounting record does not send money again. Settlement reduces AP and cash without expensing the purchase twice.
+
+QuickBooks and Increase sandboxes are real provider APIs with test books and simulated money. Automated tests use FakeBank and mocked QuickBooks responses. External sandbox checks verify the actual service contracts separately. One synthetic **$678.60** case completed on the dedicated Auth0 runtime: QuickBooks Bill **145**, BillPayment **146**, one Increase transfer and matching debit, and local bank reconciliation. Read-only provider checks confirmed the records again on Oct 25. They also exposed a missing-`APAccountRef` compatibility issue on merged main; the narrow repair here passes the same external readback. This is not a fresh end-to-end run on this branch. Signed webhook delivery, external returns/credits and formal period close remain unverified. [Acceptance report and evidence](submission/SANDBOX-ACCEPTANCE.md).
 
 ## Results
 
-All from [docs/RESULTS.md](docs/RESULTS.md), which links every raw output:
-- **Simulated company, 4 seeds:** 13 of 13 planted errors caught on every seed, books correct on every account, $0.04–0.05 and about 80 seconds per 14-day run.
+See [docs/RESULTS.md](docs/RESULTS.md) for historical raw outputs and the reported current acceptance:
+- **Current reported simulator result after #105, seed 7, model on:** 13 of 13 planted errors caught, 0 false alarms; **books check fails/incomplete** because INV-1002 (short shipment) and INV-1004 (price over contract) await a human. The unattended run supplies no CFO answer.
+- **Historical simulator result before #105, 4 seeds:** 13/13 errors caught and books matched every account, at $0.04–0.05 and 71–82 seconds per run. These historical results do not establish current books correctness or AP-workspace cost.
 - **Same model, our ledger's tools vs spreadsheet tools, 11 tasks:** 12 vs 71 tool calls, 45 vs 94 seconds, $0.12 vs $0.48.
 - **15 public benchmark tasks:** our agents scored 93.3% (14 of 15) and the same model alone scored 84.0% (12 of 15), at about 1.7× the cost.
-- **Controls:** 22 of 22 control tests pass.
+- **Kernel controls:** 22 of 22 tests pass in the reported merged-main acceptance. This is not complete AP control coverage.
+
+The [independent Claude model review](submission/review-105/REVIEW.md) found sound arithmetic in its probes and **three open high-severity control gaps**: a bill or supplier-bank approver can release the payment without payment amount bands; first-wave mode permits one human to review, approve, pay and post an unlinked credit; and a disputed remainder cannot later become payable on its original invoice. Medium findings remain too. Separate decision buttons and balanced journals do not establish independent approval or production readiness. This is not human accountant sign-off.
 
 ## Prerequisites
 
@@ -97,6 +109,7 @@ API keys go in `.env.local`, which git ignores. With `OPENAI_API_KEY`, agents us
 | `src/payments/` | The payment worker and the bank evidence worker |
 | `src/integrations/` | Invoice parsers, the bank simulator, the Increase adapter |
 | `src/human/` | The CFO gateway and "ask why" |
+| `src/ap-system/` | Source-backed supplier AP cases, review workflow, Auth0 gateway and QuickBooks accounting sync |
 | `src/invoice-mvp/` | The customer invoice workspace |
 | `console/` | The web console (Vite, React, Convex live queries) |
 | `scripts/` | What the npm commands run |
@@ -112,7 +125,8 @@ API keys go in `.env.local`, which git ignores. With `OPENAI_API_KEY`, agents us
 
 | Doc | What's in it |
 |---|---|
-| [docs/RESULTS.md](docs/RESULTS.md) | Every number we measured, with links to the raw output |
+| [docs/RESULTS.md](docs/RESULTS.md) | Current acceptance and historical measurements, with evidence links |
+| [submission/SANDBOX-ACCEPTANCE.md](submission/SANDBOX-ACCEPTANCE.md) | Actual QuickBooks/Increase results, runtime provenance and unverified checks |
 | [docs/DEMO.md](docs/DEMO.md) | Demo runbook, scenario menu and Q&A prep |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | How each part is built |
 | [docs/AUDIT.md](docs/AUDIT.md) | Known bugs and gaps, by severity |
@@ -140,7 +154,7 @@ To run a second copy of the repo next to the first, give its backend other ports
 
 ### Scenario and questions
 
-**`npm run scenario`** creates the run `scenario-1`, plays all 14 days, closes the month, waits for the agents, scores the run and prints the briefing. The score is saved to `var/evals/scenario-1.md` and shows up in the console's Evals view. Running it again reprints the briefing, and an interrupted run picks up where it stopped. Use `--run scenario-2` for a separate run, for example after adding a model key.
+**`npm run scenario`** creates the run `scenario-1`, plays all 14 days, attempts the month-end close, waits for the agents, scores the run and prints the briefing. Unresolved human decisions can leave the close blocked. The score is saved to `var/evals/scenario-1.md` and shows up in the console's Evals view. Running it again reprints the briefing, and an interrupted run picks up where it stopped. Use `--run scenario-2` for a separate run, for example after adding a model key.
 
 **`npm run ask -- "question" [--run id]`** uses the same code as the console's "Ask why". With a model, it reads git memory and the ledger and writes an answer with citations. Without one, it lists the decision commits that best match your question's keywords. That version only reads git memory, so it doesn't need the backend.
 
@@ -159,7 +173,7 @@ Results go to `var/evals/suite-<time>/`, with a summary table in `var/evals/summ
 - the spreadsheet comparison with a model
 - our agents vs the model alone on all 15 public tasks
 
-It won't start without `--budget-usd` and `OPENAI_API_KEY`. The budget is split 2.5% per seed, 15% to the spreadsheet comparison and 75% to the public benchmarks, and each part stops at its share. Everything in [docs/RESULTS.md](docs/RESULTS.md) cost $10.59 in model spend.
+It won't start without `--budget-usd` and `OPENAI_API_KEY`. The budget is split 2.5% per seed, 15% to the spreadsheet comparison and 75% to the public benchmarks, and each part stops at its share. The historical benchmark suite in [docs/RESULTS.md](docs/RESULTS.md) cost $10.59 in model spend; this excludes the newer AP document/provider workflow.
 
 ### Console and gateway
 
@@ -183,7 +197,7 @@ npm run controls                                                # the 22 control
 npm run smoke                                                   # ledger and memory checks against the live backend
 ```
 
-`npm run eval` exits with an error if the books are wrong or incomplete. Unread invoices never count as correct books, and they block the close ([how the checks work](docs/evals/close-correctness.md)). The agents can request payments but can't send them.
+`npm run eval` exits with an error if the books are wrong or incomplete. Unread invoices and unresolved quantity/price holds never count as complete books, and they block the close ([how the checks work](docs/evals/close-correctness.md)). The agents can request payments but can't send them.
 
 ### Payment crash demo
 

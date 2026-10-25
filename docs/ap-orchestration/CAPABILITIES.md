@@ -1,5 +1,6 @@
 # AP capability and verification matrix
 
+> **Current acceptance, Oct 25:** The matrix below retains earlier workstream checkpoints. The [merged-main handoff](../../submission/HANDOFF-JJ.md), [completed independent Claude model review](../../submission/review-105/REVIEW.md) and [sandbox acceptance update](../../submission/SANDBOX-ACCEPTANCE.md) supersede its pending-review, deferred-CI and no-external-transaction status statements. The other operator reports all three CI jobs passing, 1,928 tests and 22/22 kernel checks. F1–F3 high findings and F4–F8 medium findings remain open. One synthetic Auth0/QuickBooks/Increase flow completed on the dedicated runtime; fresh provider readbacks and the narrow QBO verifier repair are recorded separately. A fresh complete flow on the updated branch, signed webhooks and broader external cases are still unverified. No practitioner sign-off is claimed.
 This is the live implementation matrix for issue #97. A capability is not integrated-verified until the same uploaded source case passes its dependent gates. Canonical task status: plan.json. Current delivery summary: [CURRENT-STATUS.md](CURRENT-STATUS.md); full roadmap and agent integration gaps: [ISSUE-97-GAP-MAP.md](ISSUE-97-GAP-MAP.md).
 
 | Capability | Current status | Evidence / remaining gate |
