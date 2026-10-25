@@ -2,6 +2,18 @@
 
 Branch `integrate/one-console`. Start everything with `npm run demo` and open the console it prints.
 
+## Workspace settings and empty pages
+
+Open **Setup → Settings** (or `/?view=settings#finance-workbench`). Finance data and the human gateway have separate live status indicators. The finance scenario supplies Inbox, Ledger, Bank, Team and activity. The AP gateway supplies its own cases and payment records; choosing a finance scenario does not merge these datasets.
+
+An explicit scenario URL takes precedence. A remembered available selection is restored, otherwise the console prefers `finance-workbench` over a newer test/benchmark run. The Settings selector loads existing records; **Use finance demo** returns to the recorded demonstration. Empty or missing scenarios are identified rather than described as a loading failure.
+
+Memory drill-in, Evals and Control use the human gateway. Generate its local console access token with `npm run gateway:token`, keep `.env.local` private, and start the gateway and Vite with matching settings. Set `VITE_GATEWAY_URL` to the running gateway and `GATEWAY_ALLOWED_ORIGINS` to the exact browser origin. Do not remove the token check to hide a configuration error. The gateway process must use the working directory that contains the selected scenario's `var/runs`, `var/memory` and `var/evals`. Provider and seat credentials remain on the server.
+
+The existing Mac Studio demo was verified at `5192`: the selected test run had zero ledger entries; `finance-workbench` has 141 entries and 220 agent turns. After configuring the authenticated local gateway, its read-only eval and memory calls returned 200 and an unauthenticated call returned 401. Browser checks covered Settings, switching to the empty run and back, refresh persistence, Evals and opening a specific memory record. These are existing simulation records, not a new payment or model run. [Settings capture](../docs/ap-orchestration/evidence/workspace-settings-20261025/settings-live.png).
+
+The #118 integration variant passed application/test typechecks, four scenario-selection regressions and the console build. The full static design check still reports nine existing spacing failures in `proof.css`; no new Settings failure appears in that whole-console check. CI remains skipped. The browser capture is from the running live-demo shell; it does not establish a fresh combined #118 + #117 deployment.
+
 ## What changed
 
 Before, there were four separate surfaces, each with its own gateway:
@@ -35,7 +47,7 @@ Old links still work: `/ap-system` and `?view=ap-system` open Invoices, and `/ap
 
 - **#116** (JJ): the USD AP rollup. It already contains #106, #109, #110, #111 and #113, and it re-implements #114's historical-paid hold. It also closes review findings F1, F2 and F4: payment groups and cent limits, plus independent field review, recognition, supplier verification and payment release.
 - **#115** (JJ): the agent-history view inside each case (before and after for every step).
-- **#114** was left out because #116 already covers it.
+- **#114** remains open: #116 only partially overlaps it. Unlinked legacy-bill guards, late-arriving historical-paid evidence and the real APEX statement layout still need reconciliation.
 - **JJ's `codex/ap-system-live-auth0` branch:** only its evidence folder (`docs/ap-orchestration/evidence/agent-live-20261025`). That's the $77 invoice that went through the real Increase and QuickBooks sandboxes end to end. JJ's handoff says its code isn't a tested merge with the other branches, so the code isn't here.
 
 ## One backend

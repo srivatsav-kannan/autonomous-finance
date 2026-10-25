@@ -1,0 +1,25 @@
+.workspace-settings { max-width: 880px; }
+.workspace-settings h2 { margin: 0; }
+.workspace-settings p { margin: var(--space-xs) 0; color: var(--muted); font-size: var(--text-sm); line-height: 1.6; }
+.workspace-settings-section { padding: var(--space-lg) 0; border-bottom: 1px solid var(--line); }
+.workspace-settings-section h3 { margin: 0; font-size: var(--text-md); font-weight: 600; }
+.workspace-settings-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-sm); }
+.workspace-settings-connection { color: var(--muted); font-size: var(--text-xs); }
+.workspace-settings-scenario strong { color: var(--ink); font-weight: 600; }
+.workspace-settings-metrics { display: flex; flex-wrap: wrap; gap: var(--space-md) var(--space-lg); margin: var(--space-md) 0; }
+.workspace-settings-metrics > div { display: flex; align-items: baseline; gap: var(--space-xs); }
+.workspace-settings-metrics dt { color: var(--muted); font-size: var(--text-sm); }
+.workspace-settings-metrics dd { margin: 0; font-size: var(--text-md); font-variant-numeric: tabular-nums; }
+.workspace-settings-selection { margin: var(--space-lg) 0 var(--space-sm); }
+.workspace-settings-selection label { display: block; font-size: var(--text-sm); font-weight: 500; margin-bottom: var(--space-xs); }
+.workspace-settings-selection select { width: 100%; max-width: 560px; }
+.workspace-settings-selection p { font-size: var(--text-xs); }
+.workspace-settings-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); }
+.workspace-settings-actions a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-size: var(--text-sm); text-underline-offset: 3px; }
+.workspace-settings-gateway { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-sm); }
+.workspace-settings-gateway p { flex: 1 1 280px; }
+.workspace-data-status { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); border-bottom: 1px solid var(--line); padding: var(--space-sm) 0; margin-bottom: var(--space-lg); }
+.workspace-data-status > div { display: grid; gap: var(--space-2xs); min-width: 0; }
+.workspace-data-status strong { color: var(--ink); font-size: var(--text-sm); font-weight: 500; overflow-wrap: anywhere; }
+.workspace-data-status span, .workspace-data-status p { color: var(--muted); font-size: var(--text-xs); margin: 0; }
+.workspace-data-status button { flex-shrink: 0; }
