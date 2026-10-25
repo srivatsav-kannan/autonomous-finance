@@ -10,6 +10,8 @@
     "agents": "tsx src/agents/main.ts",
     "world": "tsx src/world/main.ts",
     "eval": "tsx src/evals/main.ts",
+    "eval:sheets-bench": "tsx src/evals/spreadsheet/bench.ts",
+    "eval:sheets-agent": "tsx src/evals/spreadsheet/agent.ts",
     "bench:prepare": "tsx src/evals/external/main.ts prepare",
     "bench:list": "tsx src/evals/external/main.ts list",
     "bench:run": "tsx src/evals/external/main.ts run",
@@ -50,12 +52,13 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "convex-test": "0.0.65",
+    "exceljs": "4.4.0",
     "puppeteer-core": "^25.16.0",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
-    "vitest": "^5.0.5",
-    "convex-test": "0.0.65"
+    "vitest": "^5.0.5"
   },
   "engines": {
     "node": ">=24.18.0"
