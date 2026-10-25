@@ -1,32 +1,66 @@
-import { useEffect, useMemo, useState } from "react";
-import type { APCaseDetail, FieldEvidence } from "../../src/ap-system/contracts";
-import { apError, downloadOriginal, loadPage } from "./apSystemApi";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import type { APCaseDetail, FieldEvidence, SourceDocument } from "../../src/ap-system/contracts";
+import { apError, downloadOriginal, loadPage, loadOriginal } from "./apSystemApi";
 import { apFieldLabel, apFieldValue, apLabel, displayedFrame, evidenceForCase, regionPolygon, sourceForEvidence } from "./apSystemView";
+
+const PdfViewer = lazy(() => import("./PdfViewer"));
 
 export function APSystemEvidence({ detail }: { detail: APCaseDetail }) {
   const fields = useMemo(() => evidenceForCase(detail), [detail]);
   const [selectedId, setSelectedId] = useState(fields[0]?.evidenceId ?? "");
   const [query, setQuery] = useState("");
+  const [sourceId, setSourceId] = useState("");
+  const [mode, setMode] = useState<"original" | "citation">("original");
   const selected = fields.find(e=>e.evidenceId===selectedId) ?? fields[0];
   const visibleFields = fields.filter(e=>`${apFieldLabel(e.fieldPath)} ${apFieldValue(e)} ${e.fieldPath}`.toLowerCase().includes(query.trim().toLowerCase()));
   const pageKey = selected ? `${detail.caseId}:${selected.source.sourceId}:${selected.source.revision}:${selected.source.sha256}:${selected.grounding.page}:${JSON.stringify(selected.grounding.frame)}` : "";
+  const sources = detail.sources.filter(s => detail.currentSourceBindings.some(b => b.sourceId === s.sourceId && b.revision === s.revision && b.sha256 === s.sha256));
+  const selectedSource = sources.find(s => `${s.sourceId}:${s.revision}` === sourceId) ?? (selected ? sourceForEvidence(detail, selected) : sources[0]);
+  const selectField = (id: string) => { setSelectedId(id); setSourceId(""); };
   return <div className="aps-evidence-grid">
     <div className="aps-field-list" aria-label="Extracted fields">
       <h3>Source fields</h3>
       <p className="aps-caption">{fields.length} fields. Select one to inspect its original evidence.</p>
       {fields.length === 0 ? <p className="aps-empty">No field evidence is available. The original files remain below.</p> : <>
         <label className="aps-field-search">Find a field<input type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Name or value" /></label>
-        <label className="aps-field-select">Selected field<select aria-label="Selected field" value={selected?.evidenceId} onChange={event=>setSelectedId(event.target.value)}>{fields.map(e=><option key={e.evidenceId} value={e.evidenceId}>{apFieldLabel(e.fieldPath)}: {apFieldValue(e)}</option>)}</select></label>
+        <label className="aps-field-select">Selected field<select aria-label="Selected field" value={selected?.evidenceId} onChange={event=>selectField(event.target.value)}>{fields.map(e=><option key={e.evidenceId} value={e.evidenceId}>{apFieldLabel(e.fieldPath)}: {apFieldValue(e)}</option>)}</select></label>
         <div className="aps-field-options" role="region" aria-label="Field search results" tabIndex={0}>
-          {visibleFields.length === 0 ? <p className="aps-empty" role="status">No matching fields. Your selected source remains visible.</p> : visibleFields.map(e=><button key={e.evidenceId} type="button" aria-pressed={selected?.evidenceId===e.evidenceId} className={selected?.evidenceId===e.evidenceId ? "is-selected" : ""} onClick={()=>setSelectedId(e.evidenceId)}>
+          {visibleFields.length === 0 ? <p className="aps-empty" role="status">No matching fields. Your selected source remains visible.</p> : visibleFields.map(e=><button key={e.evidenceId} type="button" aria-pressed={selected?.evidenceId===e.evidenceId} className={selected?.evidenceId===e.evidenceId ? "is-selected" : ""} onClick={()=>selectField(e.evidenceId)}>
             <span>{apFieldLabel(e.fieldPath)}</span><strong>{apFieldValue(e)}</strong><small>{apLabel(e.contentStatus)} content <span className="aps-field-separator">/</span> {e.grounding.status === "unresolved" ? "Location unresolved" : `${apLabel(e.grounding.status)} location`}</small>
           </button>)}
         </div>
       </>}
     </div>
-    <div className="aps-source-view">{selected ? <EvidencePage key={pageKey} detail={detail} evidence={selected} /> : <p className="aps-empty">A source citation will appear when fields are extracted.</p>}</div>
+    <div className="aps-source-view">
+      <div className="aps-source-controls"><label>Original document<select aria-label="Original document" value={selectedSource ? `${selectedSource.sourceId}:${selectedSource.revision}` : ""} onChange={event => { setSourceId(event.target.value); setMode("original"); }}>{sources.map(s => <option key={`${s.sourceId}:${s.revision}`} value={`${s.sourceId}:${s.revision}`}>{s.name} · Revision {s.revision}</option>)}</select></label>
+        <div className="aps-tabs" role="group" aria-label="Evidence display"><button aria-pressed={mode === "original"} className={mode === "original" ? "is-selected" : ""} onClick={() => setMode("original")}>Original PDF</button><button disabled={!selected} aria-pressed={mode === "citation"} className={mode === "citation" ? "is-selected" : ""} onClick={() => { setSourceId(""); setMode("citation"); }}>Field citation</button></div>
+      </div>
+      {mode === "original" ? selectedSource ? <OriginalPreview key={`${detail.caseId}:${selectedSource.sourceId}:${selectedSource.revision}:${selectedSource.sha256}`} source={selectedSource}/> : <p className="aps-empty">No current source document is available.</p> : selected ? <EvidencePage key={pageKey} detail={detail} evidence={selected} /> : <p className="aps-empty">A source citation will appear when fields are extracted.</p>}
+      {mode === "original" && selected && selectedSource?.sourceId === selected.source.sourceId && selectedSource?.revision === selected.source.revision && selectedSource?.sha256 === selected.source.sha256 && <p className="aps-caption"><strong>{apFieldLabel(selected.fieldPath)}:</strong> {apFieldValue(selected)}{selected.grounding.page ? ` · Page ${selected.grounding.page}` : ""}. Open Field citation to inspect its location.</p>}
+    </div>
   </div>;
 }
+
+export function OriginalPreview({ source }: { source: SourceDocument }) {
+  const [url, setUrl] = useState<string>();
+  const [error, setError] = useState<string>();
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    const abort = new AbortController(); let objectUrl: string | undefined;
+    setUrl(undefined); setError(undefined);
+    if (source.mimeType !== "application/pdf") return;
+    void loadOriginal(source, AbortSignal.any([abort.signal, AbortSignal.timeout(30_000)])).then(blob => {
+      if (abort.signal.aborted) return;
+      objectUrl = URL.createObjectURL(blob); setUrl(objectUrl);
+    }).catch(e => { if (!abort.signal.aborted) setError(apError(e)); });
+    return () => { abort.abort(); if (objectUrl) URL.revokeObjectURL(objectUrl); };
+  }, [source.sourceId, source.revision, source.sha256, source.mimeType, attempt]);
+  return <section aria-label="Stored original document">
+    <p className="aps-caption">{source.pageCount} {source.pageCount === 1 ? "page" : "pages"} · Revision {source.revision} · Parser: {source.parser ? `${source.parser.provider} ${source.parser.version}` : "Not recorded"}</p>
+    {source.mimeType !== "application/pdf" ? <p className="aps-notice">This source is {source.mimeType}. Inspect Field citation or download the original below.</p> : error ? <div className="aps-error" role="alert"><p>{error}</p><button onClick={() => setAttempt(n => n + 1)}>Retry original</button></div> : url ? <Suspense fallback={<p role="status">Opening PDF viewer…</p>}><PdfViewer url={url} name={source.name}/></Suspense> : <p className="aps-empty" role="status">Loading and verifying the stored original…</p>}
+  </section>;
+}
+
 export function EvidencePage({ detail, evidence }: { detail: APCaseDetail; evidence: FieldEvidence }) {
   const source = sourceForEvidence(detail, evidence);
   const g = evidence.grounding;

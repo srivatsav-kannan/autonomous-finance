@@ -87,3 +87,16 @@ explicit implementation pass; the canvas is not automatically synchronized.
 The Bank & cash and Finance flow frames are drafts: some neutral controls have
 black fills and money lacks grouping and two decimals. These issues are in the
 canvas only, not the React app.
+
+## AP document review
+
+The AP workspace opens the authenticated original PDF beside extracted fields.
+Use continuous scrolling and page/zoom controls; preserve exact field highlights
+in the separate Field citation view. Parser labels come from stored provenance.
+Collapse source history and operational metrics to keep the review focused.
+The APEX walkthrough identifies its two exact source invoices and shows current
+case outcomes; historical dataset evidence stays distinct from new execution.
+
+Traceability compares retained source snapshots and proposal requests, preserves
+source-hash identity, and links approvals, payment evidence and journal rows.
+Expose unavailable history as a coverage limitation, never a fabricated diff.

@@ -1,3 +1,5 @@
+import { APTraceability } from "./APTraceability";
+import { APDemoTasks, APDemoContext, apexTaskFor } from "./APDemoTasks";
 import {APPaymentDimensions} from "./APDimensions";
 import {APSystemPhysicalLines} from "./APSystemPhysicalLines";
 import {APSystemTimings} from "./APSystemTimings";
@@ -18,7 +20,7 @@ import "./apSystem.css";
 
 export type APSystemContext = { runId: string; organizationId: string; provider: string; identityMode: APCaseDetail["identityMode"] };
 const WORKSPACES = ["cases", "runs", "governance", "close"] as const;
-const VIEWS = ["evidence", "matching", "accounting", "history"] as const;
+const VIEWS = ["evidence", "matching", "accounting", "traceability", "history"] as const;
 const FILTERS = ["all", "attention", "approved", "settled"] as const;
 const dateTime = (value: number) => new Date(value).toLocaleString();
 export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContextChange?: (context: APSystemContext | undefined) => void; onBusyChange?: (busy: boolean) => void }) {
@@ -35,6 +37,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
   const sessionReady=cases!==undefined;
   const currentDetail=sessionReady && detailResult?.generation===reload && detailResult.caseId===selectedId ? detailResult : undefined;
   const detail=currentDetail?.detail, detailError=currentDetail?.error;
+  const historical = detail ? apexTaskFor(detail)?.historical === true : false;
   const [busy,setBusy]=useState(false);
   const [showUpload,setShowUpload]=useState(false);
   const heading=useRef<HTMLHeadingElement>(null);
@@ -49,6 +52,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
     apSystemApi.detail(selectedId,abort.signal).then(value=>{if(!abort.signal.aborted){setDetailResult({generation:reload,caseId:selectedId,detail:value});heading.current?.focus();}}).catch(e=>{if(!abort.signal.aborted)setDetailResult({generation:reload,caseId:selectedId,error:apError(e)});});
     return ()=>abort.abort();
   },[selectedId,reload,sessionReady]);
+  useEffect(()=>{if (cases?.length && !selectedId) setSelectedId((cases.find(c => apexTaskFor(c)?.historical === false) ?? cases[0])!.caseId);},[cases,selectedId,setSelectedId]);
   useEffect(()=>{onBusyChange?.(busy);return ()=>onBusyChange?.(false);},[busy,onBusyChange]);
   useEffect(()=>{const active=detail ?? cases?.[0];onContextChange?.(active ? {runId:active.runId,organizationId:active.organizationId,provider:active.scope.provider === "fake" ? "Local FakeBank" : "Increase sandbox",identityMode:active.identityMode} : undefined);},[detail,cases,onContextChange]);
   const refresh=useCallback(()=>setReload(n=>n+1),[]);
@@ -61,7 +65,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
     {showUpload && <APUpload sessionReady={sessionReady} onBusy={setBusy} onComplete={id=>{setWorkspace("cases");setSelectedId(id);setShowUpload(false);refresh();}} />}
     {listError && <div className="aps-error" role="alert"><strong>Case list unavailable</strong><p>{listError}</p><button type="button" onClick={refresh} disabled={busy}>Retry connection</button></div>}
     <div className="aps-tabs" role="group" aria-label="Workspace sections">{WORKSPACES.map(section=><button key={section} disabled={busy} aria-pressed={workspace===section} className={workspace===section?"is-selected":""} onClick={()=>setWorkspace(section)}>{section==="runs"?"Payment runs":section==="governance"?"Policy & suppliers":section==="close"?"Period close":"Cases"}</button>)}</div>
-    {cases && <APOperationalMetrics cases={cases} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>}
+    {cases && <><APDemoTasks cases={cases} selectedId={selectedId} busy={busy} onSelect={id=>{setSelectedId(id);setWorkspace("cases");setView("evidence");}}/><details className="aps-workspace-details"><summary>Workspace totals & extraction coverage</summary><APOperationalMetrics cases={cases} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/></details></>}
     {workspace==="close" ? (listResult?.cases?<APSystemClose cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>:!listError&&<APLoading label="Opening period close workspace…"/>) : workspace==="governance" ? (listResult?.cases?<APSystemGovernance cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh}/>:!listError&&<APLoading label="Opening policy and supplier workspace…"/>) : workspace==="runs" ? (listResult?.cases?<APSystemRuns cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>:!listError&&<APLoading label="Opening payment run workspace…"/>) : <div className="aps-workspace-grid">
       <aside className="aps-case-queue" aria-label="AP cases"><div className="aps-queue-controls">
         <label className="search-field"><Icon name="search"/><input type="search" placeholder="Supplier, invoice or source" aria-label="Search AP cases" value={search} onChange={e=>setSearch(e.target.value)} /></label>
@@ -75,17 +79,20 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
       <div className="aps-case-content">
         {selectedId && listError ? <p className="aps-empty">Case evidence is unavailable until the workspace connection is restored. Retry the connection above.</p> : selectedId && !detail && !detailError ? <APLoading label="Loading linked case evidence…"/> : detailError ? <div className="aps-error" role="alert"><h3>Case unavailable</h3><p>{detailError}</p><button onClick={refresh} disabled={busy}>Retry case</button></div> : !detail ? <div className="aps-empty aps-case-placeholder"><Icon name="file"/><h3>Select an AP case</h3><p>Originals, review decisions, the bill and payment evidence stay together here.</p></div> : <>
           <header className="aps-case-header"><div><h3 ref={heading} tabIndex={-1}>{detail.candidate?.invoiceNumber ?? "Document review"}</h3><p>{detail.candidate?.extractedSupplierName ?? "Supplier not established"}</p></div><div className="aps-case-identity"><span>{detail.scope.provider === "fake" ? "Local FakeBank" : "Increase sandbox"}</span><span>{detail.identityMode === "simulated_human" ? "Simulated human identity" : "Authenticated human identity"}</span></div></header>
-          <p className="aps-caption">Case <code>{detail.caseId}</code> / Revision {detail.revision} / {detail.sources.every(s=>s.provenance.kind === "synthetic") ? "Synthetic documents" : "Document provenance varies; inspect originals"}</p>
-          <APRelatedCases detail={detail} cases={cases??[]} onOpenCase={setSelectedId} busy={busy}/>
+          {historical && <APDemoContext detail={detail}/>}
+          <details className="aps-case-metadata"><summary>Case details & related records</summary>{!historical && <APDemoContext detail={detail}/>}<p className="aps-caption">Case <code>{detail.caseId}</code> / Revision {detail.revision} / {detail.sources.every(s=>s.provenance.kind === "synthetic") ? "Synthetic documents" : "Document provenance varies; inspect originals"}</p>
+          <APRelatedCases detail={detail} cases={cases??[]} onOpenCase={setSelectedId} busy={busy}/></details>
           <APCaseStatus detail={detail}/>
           <APAmounts detail={detail}/>
           {detail.links.duplicateOfCaseId && <p className="aps-notice">This delivery is linked to an existing obligation. <button className="aps-text-button" onClick={()=>setSelectedId(detail.links.duplicateOfCaseId!)} disabled={busy}>Open original case</button></p>}
           <div className="aps-tabs" role="group" aria-label="Case sections">{VIEWS.map(v=><button type="button" key={v} disabled={busy} onClick={()=>setView(v)} aria-pressed={view===v} className={view===v ? "is-selected" : ""}>{v === "evidence" ? "Source & fields" : apLabel(v)}</button>)}</div>
-          {view === "evidence" && <><APSystemEvidence detail={detail}/><APOriginals detail={detail}/></>}
-          {view === "matching" && <><APMatching detail={detail}/><APSystemPhysicalLines key={`physical:${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/><APSystemBusiness key={`business:${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail} cases={cases??[]} busy={busy} onBusy={setBusy} onChanged={refresh} onOpenCase={setSelectedId}/></>}
-          {view === "accounting" && <APAccounting key={`accounting:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
+          {view === "evidence" && <><APSystemEvidence key={`${detail.caseId}:${detail.revision}`} detail={detail}/><details className="aps-originals-details"><summary>All originals & prior revisions</summary><APOriginals detail={detail}/></details></>}
+          {view === "matching" && <><APMatching detail={detail}/><APSystemPhysicalLines key={`physical:${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>{!historical && <APSystemBusiness key={`business:${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail} cases={cases??[]} busy={busy} onBusy={setBusy} onChanged={refresh} onOpenCase={setSelectedId}/>}</>}
+          {view === "accounting" && !historical && <APAccounting key={`accounting:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
+          {view === "accounting" && historical && <section className="aps-section"><h3>Historical payment evidence</h3><p>The APEX source records this invoice as paid. No new payment is needed for this walkthrough.</p><p className="aps-caption">Source references: BILL-2024-00327 / OBT-000200 / CHK-2024327. These are historical dataset references, not a new FakeBank settlement.</p><a href="https://github.com/srivatsav-kannan/autonomous-finance/pull/111" target="_blank" rel="noreferrer">Inspect the replay evidence and reconciliation checks ↗</a><APHistory detail={detail}/></section>}
           {view === "history" && <APHistory detail={detail}/>}
-          <APActions key={`review:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>
+          {view === "traceability" && <APTraceability key={`${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail}><APHistory detail={detail}/></APTraceability>}
+          {!historical && <APActions key={`review:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
         </>}
       </div>
     </div>}
