@@ -24,5 +24,21 @@
     "Native accessible review drawer with evidence retrieval and anchored actions",
     "Searchable ledger tabs with filtered CSV export",
     "Native editable Figma frames and prototype"
-  ]
+  ],
+  "connectedCaseRun": {
+    "date": "2026-10-25",
+    "reference": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396715265",
+    "preserve": [
+      "design.md:7 green accent and warm neutrals",
+      "console/src/App.tsx:24 all nine views",
+      "console/src/App.tsx:262 gateway response semantics",
+      "console/src/tokens.css:1 semantic light and dark palettes"
+    ],
+    "introduce": [
+      "queue preview",
+      "case evidence/payment/history sections",
+      "PDF.js lazy viewer with page scrolling and zoom"
+    ],
+    "scope": "fast app redesign, local changes preserved"
+  }
 }

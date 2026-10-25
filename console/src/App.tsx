@@ -8,7 +8,8 @@ import { Icon } from "./Icon";
 import { ReviewDrawer } from "./ReviewDrawer";
 import { Ledger } from "./Ledger";
 import { Bank } from "./Bank";
-import { EvidenceRecord } from "./EvidenceRecord";
+import { CaseSummary, CaseWorkspace } from "./CaseWorkspace";
+import { caseRecords, type CaseRecords } from "./case-model";
 import { FinanceFlow } from "./FinanceFlow";
 import { useUrlState } from "./useUrlState";
 
@@ -96,7 +97,7 @@ export function App() {
       <div className="workspace">
         <header className="workspace-top">
           <div className="breadcrumb"><span>Workspace</span><Icon name="chevron" /><span>{TABS.find((t) => t.id === tab)?.label}</span></div>
-          <label className="scenario-picker"><span>Scenario</span>
+          <label className="scenario-picker"><span>{runs?.find((r) => r.runId === runId)?.simDate ?? "Scenario"}</span>
             <select value={runId} onChange={(e) => setRunId(e.target.value)} aria-label="Scenario" disabled={!runs?.length}>
               {!runs?.length && <option value={runId}>{runs ? "No scenarios" : "Loading scenarios…"}</option>}
               {(runs ?? []).map((r) => <option key={r.runId} value={r.runId}>{r.label} ({r.runId})</option>)}
@@ -110,7 +111,7 @@ export function App() {
             </select>
           </label>
           {!connection.isWebSocketConnected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
-          {runId && tab !== "bank" && tab !== "flow" && <Kpis runId={runId} />}
+          {runId && tab !== "bank" && tab !== "flow" && tab !== "inbox" && <Kpis runId={runId} />}
           <main className="main" id="main" tabIndex={-1} key={runId}>
             {!runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div> : <>
               {tab === "inbox" && <Inbox runId={runId} />}
@@ -177,6 +178,9 @@ function Inbox({ runId }: { runId: string }) {
   const [sort, setSort] = useUrlState("inboxSort", "priority", INBOX_SORTS);
   const [selectedId, setSelectedId] = useUrlState("ask");
   const [responseRecorded, setResponseRecorded] = useState(false);
+  const [previewId, setPreviewId] = useUrlState("case");
+  const bills = useQuery(api.ap.bills, { runId });
+  const payments = useQuery(api.payments.intents, { runId });
   const openRecord = (id: string) => { setResponseRecorded(false); setSelectedId(id); };
   const asks = useQuery(api.asks.list, { runId, to: "human_cfo" });
   const belongs = (ask: Doc<"asks">, group: InboxFilter) => group === "answered" ? ask.status === "answered" : ask.status === "open" && (group === "updates" ? ask.severity === "info" : ask.severity !== "info");
@@ -192,6 +196,8 @@ function Inbox({ runId }: { runId: string }) {
       .sort((a, b) => (sort === "priority" ? rank[a.severity] - rank[b.severity] : 0) || b.createdAt - a.createdAt);
   }, [asks, filter, search, sort]);
   const selected = asks?.find((a) => a._id === selectedId);
+  const preview = ordered.find((a) => a._id === previewId) ?? ordered[0];
+  const recordsFor = (a: Doc<"asks">) => caseRecords(a, bills ?? [], payments ?? []);
   const next = (asks ?? []).filter((a) => belongs(a, "review")).sort((a, b) => Number(b.severity === "urgent") - Number(a.severity === "urgent") || a.createdAt - b.createdAt)[0];
   const close = () => setSelectedId("");
   return (
@@ -202,6 +208,7 @@ function Inbox({ runId }: { runId: string }) {
         </div>
         {next && <button type="button" className="primary button-icon" onClick={() => openRecord(next._id)}>Review next<Icon name="arrow" /></button>}
       </div>
+      <div className="inbox-workbench"><div className="inbox-queue">
       <div className="tab-strip" role="group" aria-label="Filter inbox">
         {groups.map((g) => <button type="button" key={g.id} className={`tab-item ${filter === g.id ? "is-active" : ""}`} aria-pressed={filter === g.id} onClick={() => setFilter(g.id)}>{g.label}<span>{asks === undefined ? "—" : g.count}</span></button>)}
       </div>
@@ -213,25 +220,35 @@ function Inbox({ runId }: { runId: string }) {
         <div className="table-scroll queue-table"><table className="grid decision-table">
           <caption className="visually-hidden">{groups.find((g) => g.id === filter)?.label} in {runId}</caption>
           <thead><tr><th>Decision</th><th>From</th><th>Status</th><th>Evidence</th><th>Received</th></tr></thead>
-          <tbody>{ordered.map((a) => <tr key={a._id}>
-            <td className="decision-subject"><button type="button" className="decision-link" onClick={() => openRecord(a._id)} aria-label={`Review ${a.title}`}><span>{a.title}</span><Icon name="chevron" /></button><p className="decision-excerpt">{a.body.split("\n")[0]}</p></td>
+          <tbody>{ordered.map((a) => <tr key={a._id} className={preview?._id === a._id ? "case-selected" : ""}>
+            <td className="decision-subject"><button type="button" className="decision-link" onClick={() => setPreviewId(a._id)} aria-pressed={preview?._id === a._id} aria-label={`Review ${a.title}`}><span>{a.title}</span><Icon name="chevron" /></button><p className="decision-excerpt">{a.body.split("\n")[0]}</p></td>
             <td className="decision-from"><span className="agent-avatar" aria-hidden="true">{a.from.slice(0, 2).toUpperCase()}</span><span>{seatName(a.from)}</span></td>
-            <td className="decision-state"><span className={`status-label ${a.status === "answered" ? "answered" : a.severity}`}><span className="status-dot" />{askStatus(a)}</span></td>
+            <td className="decision-state"><span className={`status-label ${a.status === "answered" ? "answered" : a.severity}`}>{askStatus(a)}</span></td>
             <td className="decision-evidence">{a.evidence.length ? <span className="evidence-count"><Icon name="file" />{a.evidence.length} {a.evidence.length === 1 ? "record" : "records"}</span> : <span className="muted">None</span>}</td>
             <td className="decision-time muted"><time dateTime={new Date(a.createdAt).toISOString()} title={new Date(a.createdAt).toLocaleString()}>{ago(a.createdAt)}</time></td>
           </tr>)}</tbody>
         </table></div>
       )}
       {asks !== undefined && <p className="table-summary" role="status">{ordered.length} {ordered.length === 1 ? "record" : "records"}{search ? " matching your search" : ` in ${groups.find((g) => g.id === filter)?.label.toLowerCase()}`}<span>Live from the selected simulation</span></p>}
-      <ReviewDrawer open={!!selected} onClose={close} labelledBy="review-title" fallbackFocusId="inbox-heading" preferFallbackFocus={responseRecorded}>
-        {selected && <AskDetail key={selected._id} runId={runId} ask={selected} onAnswered={() => setResponseRecorded(true)} />}
+      </div>
+      <aside className="case-preview" aria-label="Selected case preview">
+        {preview ? <>
+          {bills === undefined || payments === undefined ? <Loading label="Loading case records…" /> : <CaseSummary ask={preview} records={recordsFor(preview)} />}
+          <h4>Why this needs attention</h4><p className="case-preview-body">{preview.body}</p>
+          <h4>Related evidence</h4>{preview.evidence.length ? preview.evidence.map((e) => <div className="preview-evidence" key={e.ref}><Icon name="file" /><span>{e.label}</span><span>Linked</span></div>) : <p className="muted">Open the case to review linked bills and payments.</p>}
+          <button type="button" className="primary open-case" onClick={() => openRecord(preview._id)}>Open case<Icon name="chevron" /></button>
+          <p className="source-caption">Your queue position is kept when you close the case.</p>
+        </> : <p className="muted">Select a decision to see its context and evidence.</p>}
+      </aside></div>
+      <ReviewDrawer wide open={!!selected} onClose={close} labelledBy="review-title" fallbackFocusId="inbox-heading" preferFallbackFocus={responseRecorded}>
+        {selected && <AskDetail key={selected._id} runId={runId} ask={selected} asks={asks ?? []} records={recordsFor(selected)} onAnswered={() => setResponseRecorded(true)} />}
       </ReviewDrawer>
     </section>
   );
 }
 
 
-function AskDetail({ runId, ask, onAnswered }: { runId: string; ask: Doc<"asks">; onAnswered: () => void }) {
+function AskDetail({ runId, ask, asks, records, onAnswered }: { runId: string; ask: Doc<"asks">; asks: Doc<"asks">[]; records: CaseRecords; onAnswered: () => void }) {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
@@ -252,12 +269,9 @@ function AskDetail({ runId, ask, onAnswered }: { runId: string; ask: Doc<"asks">
   const answered = ask.status === "answered" || submitted !== null;
   useEffect(() => { if (answered) confirmation.current?.focus({ preventScroll: true }); }, [answered]);
   return <article className="review-detail">
-    <header className="drawer-header"><h2 id="review-title">{ask.title}</h2><span className={`status-label ${answered ? "answered" : ask.severity}`}><span className="status-dot" />{answered ? "Answered" : askStatus(ask)}</span></header>
-    <div className="drawer-body">
-      <dl className="request-meta"><div><dt>Requested by</dt><dd><span className="agent-avatar" aria-hidden="true">{ask.from.slice(0, 2).toUpperCase()}</span>{seatName(ask.from)}</dd></div><div><dt>Received</dt><dd><time dateTime={new Date(ask.createdAt).toISOString()}>{new Date(ask.createdAt).toLocaleString()}</time></dd></div></dl>
-      <section className="review-section"><h3>From your team</h3><pre className="ask-body">{ask.body}</pre></section>
-      <section className="review-section"><h3>Supporting evidence <span>{ask.evidence.length}</span></h3>{ask.evidence.length ? ask.evidence.map((e) => <EvidenceRecord key={e.ref} runId={runId} reference={e.ref} label={e.label} />) : <p className="muted evidence-empty">No source records attached to this update.</p>}</section>
-      {ask.answer && <section className="review-section"><h3>Response recorded</h3><p>{ask.options.find((o) => o.id === ask.answer?.optionId)?.label ?? ask.answer.optionId}</p><p className="muted response-meta">{seatName(ask.answer.by)} · {new Date(ask.answer.at).toLocaleString()}</p></section>}
+    <header className="drawer-header"><h2 id="review-title">{ask.title}</h2><span className={`status-label ${answered ? "answered" : ask.severity}`}>{answered ? "Answered" : askStatus(ask)}</span></header>
+    <div className="drawer-body case-body">
+      <CaseWorkspace runId={runId} ask={ask} asks={asks} records={records} />
     </div>
     <footer className="drawer-footer">
       {result && <p className={`feedback ${failed ? "error" : ""}`} role={failed ? "alert" : "status"}>{result}</p>}

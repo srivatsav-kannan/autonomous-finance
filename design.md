@@ -21,8 +21,13 @@ records. Keep all figures attached to the selected simulation.
   Bank & cash and Finance flow have their own focused summaries. Operational counts live in an
   accessible Simulation activity disclosure, with the simulation date visible.
 - The inbox uses underlined status filters, search, sort, and compact decision
-  rows. Each row opens a native modal drawer with the full request, real source
-  evidence, and actions anchored at the bottom. Escape and close restore focus.
+  rows. Selecting a row updates a persistent case preview; Open case opens a wide
+  native modal with overview, evidence, decisions, payment, reconciliation and
+  history tabs. Source documents sit beside bill lines and decision records, with
+  actions anchored at the bottom. PDF.js supports continuous page scrolling, zoom,
+  page navigation and download. Locally selected PDFs are explicitly previews,
+  not uploaded or attached case evidence. Case joins use recorded identities,
+  never vendor-name guesses. Escape and close restore focus.
   Source decision records load from the human gateway. A response succeeds only
   after the gateway accepts it; completed records remain in Answered.
 - The ledger has searchable Journal entries and Trial balance views. CSV export

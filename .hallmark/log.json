@@ -1,5 +1,41 @@
 [
   {
+    "date": "2026-10-25",
+    "mode": "redesign",
+    "depth": "full",
+    "scope": "app",
+    "shape": "app screen",
+    "theme": "brand",
+    "axes": "warm neutral/system sans/green",
+    "nav": "existing nine-view sidebar and mobile selector",
+    "signature": "persistent decision preview with connected case tabs and continuous PDF scroll",
+    "sections": [
+      "inbox queue",
+      "case preview",
+      "evidence and matching",
+      "decisions",
+      "payment",
+      "reconciliation",
+      "history"
+    ],
+    "prompt": "Use Hallmark to implement the connected case reference in issue 97 comment 6396715265, quickly, with PDF scrolling.",
+    "preserved": [
+      "existing unrelated working changes",
+      "Convex queries",
+      "gateway answer actions",
+      "scenario URLs",
+      "all routes and WebMCP tools"
+    ],
+    "verification": {
+      "typecheck": "passed",
+      "productionBuild": "passed",
+      "caseIdentityTests": "4 passed",
+      "hallmark": "0 FAIL, 0 WARN; existing bank.css malformed waiver rejected",
+      "finish": "skipped under requested fast mode",
+      "browser": "Passed on existing finance-workbench scenario: queue, real multi-bill source, six case tabs, two-page PDF scroll/page jump/zoom, retained PDF across tabs, desktop and phone, light and dark, Escape, no page errors."
+    }
+  },
+  {
     "mode": "redesign",
     "depth": "full",
     "scope": "app",
