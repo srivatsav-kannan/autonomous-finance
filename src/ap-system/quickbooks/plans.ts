@@ -52,6 +52,56 @@ function line(account: string, amount: number, m: Mappings) {
 export function assertExport(e: AccountingExport, request: ExportRequest) {
   const d = caseDetailSchema.parse(e.detail),
     c = d.candidate;
+  const recognized = e.recognizedInvoice;
+  if (recognized) {
+    if (
+      e.version !== "ap-qbo-export-v1" ||
+      !e.authorizedSubject ||
+      !e.billRecordHash ||
+      d.caseId !== request.caseId ||
+      recognized.caseId !== d.caseId ||
+      recognized.billId !== d.links.billId ||
+      recognized.journalId !== d.links.recognitionJournalId ||
+      d.states.business !== "approved" ||
+      d.states.document !== "reviewed" ||
+      d.states.accounting !== "recognized" ||
+      d.amounts.acceptedCents !== recognized.amountCents ||
+      !recognized.approvalId ||
+      !Number.isSafeInteger(recognized.sourceRevision) ||
+      recognized.sourceRevision < 1 ||
+      !/^[a-f0-9]{64}$/.test(recognized.sourceSnapshotHash) ||
+      recognized.amountCents <= 0 ||
+      !recognized.allocations.length
+    )
+      throw new QboError("approved_recognition_required");
+    let total = 0n;
+    for (const a of recognized.allocations) {
+      if (!Number.isSafeInteger(a.amountCents) || a.account === "2000")
+        throw new QboError("recognition_allocation_mismatch");
+      total += BigInt(a.amountCents);
+    }
+    if (total !== BigInt(recognized.amountCents))
+      throw new QboError("recognition_allocation_mismatch");
+    const expected = [
+      ...recognized.allocations.map((a) => ({
+        account: a.account,
+        debit: Math.max(0, a.amountCents),
+        credit: Math.max(0, -a.amountCents),
+      })),
+      { account: "2000", debit: 0, credit: recognized.amountCents },
+    ];
+    const journal = d.journals.find(
+      (j) => j.entryId === recognized.journalId && j.kind === "recognition",
+    );
+    if (!journal || canonical(journal.lines) !== canonical(expected))
+      throw new QboError("recognition_journal_mismatch");
+    if (
+      request.paymentVersionId &&
+      e.settlement?.paymentVersionId !== request.paymentVersionId
+    )
+      throw new QboError("verified_settlement_required");
+    return d;
+  }
   if (
     e.version !== "ap-qbo-export-v1" ||
     !e.authorizedSubject ||
@@ -100,14 +150,24 @@ export function billPlan(e: AccountingExport, m: Mappings): Plan {
     c = d.candidate!;
   validateMappings(m, m.realmId);
   if (m.apAccount !== "2000") throw new QboError("local_ap_account_mismatch");
-  const vendor = m.vendors[c.supplierId!];
+  const r = e.recognizedInvoice;
+  const vendor = m.vendors[r?.supplierId ?? c.supplierId!];
   if (!vendor) throw new QboError("vendor_mapping_missing");
-  const lines = recognitionLines(c).filter((l) => l.account !== "2000");
+  const lines = r
+    ? r.allocations.map((a) => ({
+        account: a.account,
+        debit: Math.max(0, a.amountCents),
+        credit: Math.max(0, -a.amountCents),
+      }))
+    : recognitionLines(c).filter((l) => l.account !== "2000");
+  if (r?.allocations.some((a) => a.amountCents < 0))
+    throw new QboError("signed_cost_allocation_requires_review");
   const net = lines.reduce(
     (n, l) => n + BigInt(l.debit) - BigInt(l.credit),
     0n,
   );
-  if (net !== BigInt(c.totalCents)) throw new QboError("bill_amount_mismatch");
+  if (net !== BigInt(r?.amountCents ?? c.totalCents))
+    throw new QboError("bill_amount_mismatch");
   const identity = `Bill:${d.scope.organizationId}:${d.scope.runId}:${d.links.billId}`;
   return {
     version: "ap-qbo-operation-v1",
@@ -130,12 +190,12 @@ export function billPlan(e: AccountingExport, m: Mappings): Plan {
       VendorRef: { value: vendor.id },
       APAccountRef: { value: m.accounts[m.apAccount]!.id },
       CurrencyRef: { value: "USD" },
-      TxnDate: c.invoiceDate,
-      ...(c.dueDate ? { DueDate: c.dueDate } : {}),
+      TxnDate: r?.date ?? c.invoiceDate,
+      ...(!r && c.dueDate ? { DueDate: c.dueDate } : {}),
       DocNumber: `AP${hash(identity).slice(0, 18)}`,
-      PrivateNote: `ap-sync:${hash(identity)}; invoice ${c.invoiceNumber}; recognition ${d.links.recognitionJournalId}`,
+      PrivateNote: `ap-sync:${hash(identity)}; invoice ${r?.reference ?? c.invoiceNumber}; recognition ${d.links.recognitionJournalId}`,
       Line: lines.map((l) => line(l.account, l.debit - l.credit, m)),
-      TotalAmt: money(c.totalCents),
+      TotalAmt: money(r?.amountCents ?? c.totalCents),
     },
   };
 }

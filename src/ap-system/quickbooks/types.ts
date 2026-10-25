@@ -10,6 +10,22 @@ export type Settlement = {
   amountCents: number;
   date: string;
 };
+/** Exact immutable B3 recognition, not a rewritten invoice candidate. */
+export type RecognizedInvoice = {
+  kind: "invoice";
+  caseId: string;
+  billId: string;
+  journalId: string;
+  supplierId: string;
+  reference: string;
+  date: string;
+  amountCents: number;
+  allocations: Array<{ account: string; amountCents: number }>;
+  approvalId: string;
+  sourceRevision: number;
+  sourceSnapshotHash: string;
+  creditId: null;
+};
 export type AccountingExport = {
   version: "ap-qbo-export-v1";
   exportedAt: number;
@@ -17,6 +33,7 @@ export type AccountingExport = {
   detail: APCaseDetail;
   billRecordHash: string;
   settlement: Settlement | null;
+  recognizedInvoice?: RecognizedInvoice;
 };
 export type CreditExport = {
   creditId: string;

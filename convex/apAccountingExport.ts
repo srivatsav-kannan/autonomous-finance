@@ -2,6 +2,7 @@ import { query } from "./_generated/server";
 import { v } from "convex/values";
 import { scopeValidator } from "./demoSchema";
 import { assertRowScope, requirePaymentHuman } from "./lib/demoAuth";
+import { loadRecognizedBusinessExport } from "./lib/apSystem/businessExport";
 import { projectCase } from "./lib/apSystem/projection";
 import { canonical, sha256Hex } from "./lib/kernel";
 import { recognitionLines } from "../src/ap-system/accounting";
@@ -47,34 +48,41 @@ export const current = query({
     const detail = await projectCase(ctx, row);
     const c = detail.candidate;
     const journal = await ctx.db.get(bill.entryId);
+    const recognized = row.domainApprovalId
+      ? await loadRecognizedBusinessExport(ctx, args.scope, row._id)
+      : null;
+    if (recognized && recognized.kind !== "invoice")
+      throw Error("Invoice recognition required");
     if (
-      !c ||
-      c.kind !== "invoice" ||
-      c.supplierId !== bill.vendor ||
-      bill.originalCents !== c.totalCents ||
-      bill.approvedCents !== c.totalCents ||
-      !journal ||
-      journal.runId !== args.scope.runId ||
-      journal.status !== "posted" ||
-      journal.source.kind !== "bill" ||
-      journal.source.ref !== bill._id ||
-      canonical(
-        journal.lines.map(({ account, debit, credit }) => ({
-          account,
-          debit,
-          credit,
-        })),
-      ) !==
+      !recognized &&
+      (!c ||
+        c.kind !== "invoice" ||
+        c.supplierId !== bill.vendor ||
+        bill.originalCents !== c.totalCents ||
+        bill.approvedCents !== c.totalCents ||
+        !journal ||
+        journal.runId !== args.scope.runId ||
+        journal.status !== "posted" ||
+        journal.source.kind !== "bill" ||
+        journal.source.ref !== bill._id ||
         canonical(
-          recognitionLines(c).map(({ account, debit, credit }) => ({
+          journal.lines.map(({ account, debit, credit }) => ({
             account,
             debit,
             credit,
           })),
-        )
+        ) !==
+          canonical(
+            recognitionLines(c).map(({ account, debit, credit }) => ({
+              account,
+              debit,
+              credit,
+            })),
+          ))
     )
       throw Error("Recognition evidence mismatch");
     if (
+      !recognized &&
       !detail.decisions.some(
         (d) =>
           d.kind === "bill_approval" &&
@@ -231,6 +239,15 @@ export const current = query({
       detail,
       billRecordHash: bill.recordHash,
       settlement,
+      ...(recognized
+        ? {
+            recognizedInvoice: {
+              ...recognized,
+              kind: "invoice" as const,
+              creditId: null,
+            },
+          }
+        : {}),
     };
   },
 });
