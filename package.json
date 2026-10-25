@@ -29,7 +29,8 @@
     "worker:dispatch": "tsx scripts/ap-worker.ts dispatch",
     "worker:evidence": "tsx scripts/ap-worker.ts evidence",
     "typecheck:backend": "tsc --noEmit -p convex/tsconfig.json",
-    "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json"
+    "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json",
+    "ci:recovery": "node scripts/testing/ci-local-recovery.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

@@ -1,0 +1,80 @@
+name: AP CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ap-ci-${{ github.event.pull_request.number || github.ref }}
+  # Supersede stale PR runs only; every push to main must finish its own check.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  regression:
+    name: Typechecks, full tests, console build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.18.0'
+          package-manager-cache: false
+      - id: install
+        run: npm ci --no-audit --no-fund
+      - id: application
+        run: npm run typecheck
+      - id: backend
+        run: npm run typecheck:backend
+      - id: tests_typecheck
+        run: npm run typecheck:tests
+      # Includes multiprocess FakeBank and Prism; do not repeat focused suites.
+      - id: tests
+        run: npm test
+      - id: console
+        run: npm run build:console
+      - name: Record outcomes without environment or test payloads
+        if: always()
+        env:
+          CI_CHECKS: >-
+            {"install":"${{ steps.install.outcome }}","applicationTypecheck":"${{ steps.application.outcome }}","backendTypecheck":"${{ steps.backend.outcome }}","testsTypecheck":"${{ steps.tests_typecheck.outcome }}","fullTests":"${{ steps.tests.outcome }}","consoleBuild":"${{ steps.console.outcome }}"}
+        run: node scripts/testing/ci-report.mjs
+      - name: Retain check evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2, Node 24
+        with:
+          name: ap-regression-${{ github.run_id }}-${{ github.run_attempt }}
+          path: var/ci/checks.json
+          if-no-files-found: error
+          retention-days: 14
+
+  recovery:
+    name: Isolated local Convex + FakeBank recovery
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.18.0'
+          package-manager-cache: false
+      - run: npm ci --no-audit --no-fund
+      - run: npm run ci:recovery
+        timeout-minutes: 7
+      - name: Retain only sanitized recovery evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2, Node 24
+        with:
+          name: ap-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: var/ci/recovery.json
+          if-no-files-found: error
+          retention-days: 14

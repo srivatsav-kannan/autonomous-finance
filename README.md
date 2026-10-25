@@ -105,13 +105,12 @@ npm run typecheck
 npm run typecheck:backend
 npm run typecheck:tests
 npm test
-npm run test:bank
-npm run test:payments
-npm run test:contracts
-npx vite build --config console/vite.config.ts
+npm run build:console
 ```
 
 The AP guide maps these suites to authorization, concurrent dispatch, response loss, worker restart, reconciliation and return scenarios. Simulator and Prism results do not establish live sandbox success.
+
+The [CI guide](docs/ci.md) documents automated pull-request gates and `npm run ci:recovery`, which runs the persistent local Convex/FakeBank proof in fresh isolated state and retains sanitized machine-readable evidence.
 
 ### External benchmark batch
 
