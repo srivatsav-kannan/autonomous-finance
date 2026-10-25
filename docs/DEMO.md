@@ -6,6 +6,8 @@ Cal Hacks 13.0 · Hyphenate track · Narrative updated for [issue #97](https://g
 
 This is the current AP narrative. Use [the synchronized three-person pitch](../submission/PITCH.md) for the timed English script, speaker handoffs and screen cues. This document provides the fuller walkthrough and evidence boundaries. Current implementation evidence takes precedence over the issue's original planning baseline.
 
+For a more ambitious opening and sponsor questions, use the [vision and judge Q&A supplement](#supplement-vision-and-judge-qa). It includes the newer $77 sandbox case; keep that case separate from the I2 walkthrough below.
+
 ## The opening
 
 > A supplier sends an invoice. Before anyone pays it, the finance team has to establish what was ordered, what arrived, what the company actually owes, and who can authorize the payment. Then it has to prove what happened at the bank and in the books.
@@ -142,3 +144,62 @@ The [Claude independent model review](../submission/review-105/REVIEW.md) found 
 - **“What does it cost?”** We are prioritizing correct outcomes, useful automation and review latency. The older simulator's cost figures are not an estimate for this document/OCR/approval workflow.
 
 **Closing line:** “For every payment, we want a clear answer: what we owe, why we owe it, who authorized it, and what happened next.”
+
+## Supplement: vision and judge Q&A
+
+Use the vision in the opening or closing, then select questions as needed. This supplement is not additional material to read in full during the three-minute pitch.
+
+### The vision
+
+> Today, people are the glue between invoices, contracts, approvals, bank transactions, and accounting systems. They remember what happened, chase missing information, and restart work when something changes.
+>
+> Our vision is a shared finance environment where agents carry that work forward. They can inspect the evidence, take permitted actions, wait for a decision, and resume with the full history.
+>
+> We're starting with accounts payable. The same foundation could eventually support reconciliation, collections, and close. Over time, reviewed exceptions could improve our parsers, operating rules, and models.
+>
+> We want finance teams to spend their attention on judgment, while the system handles the work surrounding each decision.
+
+Transition: **“Here's one invoice that demonstrates that foundation.”**
+
+### The concrete example
+
+The newer [recorded $77 run](ap-orchestration/evidence/agent-live-20261025/ROLLOUT.md), invoice `INV-AGENT-20261025-01`, connects missing-receipt wait, receipt arrival, review, user bill approval, separate user payment authorization, Increase settlement, QuickBooks Bill **147** and BillPayment **148**, and reconciliation. The case has one payment, two case journal entries and zero outstanding payable. Open the [case trace in the local workspace](http://127.0.0.1:5192/ap-system?case=kd70djc8wdam76s7dxz0jxdgv98gzmq4&apView=traceability).
+
+Describe it as a completed sandbox run navigated live. Its documents are synthetic and its recorded progression is deterministic. It does not establish a fresh LlamaParse-to-payment run or a demonstrated model-driven decision loop. The [remaining integration work](ap-orchestration/evidence/agent-live-20261025/ISSUE-108-REMAINING.md) is explicit. The [Avila upload](ap-orchestration/AUTH0-LIVE-PROCESSING.md) separately demonstrates actual LlamaParse processing and an incomplete-extraction hold.
+
+### Questions Hyphenate may ask
+
+These are anticipated questions, not an official sponsor rubric. They follow Hyphenate's public emphasis on shared financial context, integration with existing systems, auditability and continuous improvement. [Hyphenate platform](https://hyphenate.ai/platform). The event allocates three minutes for the pitch and two for questions. [Cal Hacks 13.0](https://cal-hacks-13-0.devpost.com/).
+
+| Question | Answer to practice |
+| --- | --- |
+| What did you actually build? | “A persistent AP case connecting original documents, review, approval, payment and accounting. Our $77 synthetic case completed through Auth0, Increase sandbox and QuickBooks, with recorded evidence.” |
+| What makes this more than an invoice parser? | “Parsing produces candidate facts. Our contribution is carrying the obligation forward: what evidence is missing, what action is permitted, who must decide, and what happened afterward.” |
+| Where is the agent intelligence? | “The architecture supports bounded tool use. The demonstrated $77 progression is deterministic; a real model-driven decision loop remains integration work. We're building the execution environment that makes those decisions usable and measurable.” |
+| Why build an environment instead of improving the model? | “A better model still needs trustworthy state, usable actions, permissions and feedback. We make those explicit so different models can operate against the same financial rules.” |
+| Does this replace the ERP? | “Our vision is to coordinate work across existing systems. Today we use Convex for case state and local accounting, with a verified QuickBooks sandbox integration.” |
+| What improves over time? | “Our simulator already has bounded parser-rule adaptation. Next are reviewed precedents, better tool selection and evaluated model updates. Those are separate from simply accumulating logs.” |
+| How would you measure improvement? | “Correct outcomes on unseen cases, missed exceptions, unnecessary escalations, human touches, time and cost. A correctly blocked payment counts as success. Balanced accounting alone isn't enough.” |
+| What's the business? | “Workflow software first. Later, customer-authorized datasets and training environments could support another revenue stream. That opportunity depends on data rights and demonstrated quality.” |
+| Is this recursive self-improvement? | “We have a bounded parser adaptation path, not a demonstrated recursive model-improvement system. The broader roadmap is review, curate, train or revise, evaluate, and approve deployment. Learning does not expand payment authority.” |
+
+The [pitch's component table](../submission/PITCH.md#what-can-improve-from-experience) distinguishes implemented parser adaptation from future improvements to extraction, decisions, case knowledge, harness behavior and evaluation.
+
+### Edge-case questions
+
+Answer with the expected behavior, the mechanism and what was verified. Do not imply all tests ran against the same external case.
+
+| Edge case | Answer | Evidence and boundary |
+| --- | --- | --- |
+| Missing receipt | “Persist a hold, retain the history, and resume when evidence arrives.” | Demonstrated in the $77 run. The matching and progression in that run are deterministic. |
+| Duplicate invoice | “Known repeat deliveries attach to the existing obligation. Reusing an intake key with changed content is rejected.” | [I3](ap-orchestration/evidence/I3-process-recovery.md) verifies replay without changed financial state. Arbitrary disguised or semantic duplicate detection is not established. |
+| Invoice changes after approval | “Approval binds a particular version. Changed evidence requires renewed review. Posted accounting gets a linked correction rather than an overwrite.” | Version/hash binding is implemented and tested. If a payment might already have been submitted, preserve its original command until its outcome is known. Not every revision path was demonstrated on the live $77 case. |
+| Bank accepts payment, then the worker crashes | “A timeout leaves the outcome unknown. Recover the existing instruction by its saved identity before considering another action.” | I3 tested an actual worker kill against local FakeBank, with one transfer and settlement. This is separate from the Increase sandbox run. |
+| Bad PDF or conflicting totals | “Keep the original, expose uncertainty, check arithmetic and source support, and hold for review.” | Avila demonstrates incomplete extraction being held. Broad PDF accuracy is not established. |
+| Invoice says to change the bank and pay now | “Document text has no authority to approve a beneficiary change. That requires trusted verification and the applicable approval process.” | Supplier-change governance and authority checks have bounded tests. Do not claim universal prompt-injection immunity or an automated verification callback. |
+| Partial delivery, credit or partial payment | “Track claimed, accepted, disputed, credited, paid and outstanding amounts separately.” | [I2](ap-orchestration/evidence/I2-business-flow.md) demonstrates partial acceptance/payment locally; credits have separate tests. Broader external acceptance remains work, and the disputed remainder lifecycle has a documented gap. |
+| Can one person approve everything? | “Separate decision stages exist, but that doesn't automatically guarantee different people at every stage. Approval independence depends on enforced policy.” | The $77 run records separate bill/payment decisions. The [independent review](../submission/review-105/REVIEW.md) still identifies control gaps; do not claim all role combinations are correctly separated. |
+
+If challenged on the diagram, say:
+
+> The diagram shows the architecture we're building toward. The demo establishes one supported workflow. Our next milestone is broader document coverage and a verified model-driven loop on that same foundation.
