@@ -1,3 +1,4 @@
+import {createQBOCloseBridge} from "./quickbooks/close-runtime";
 import type {ConvexHttpClient} from "convex/browser";
 import {makeFunctionReference} from "convex/server";
 import type {BankScope} from "../payments/contracts";
@@ -17,6 +18,7 @@ export function createAPWorkspaceService(options:{
  parseUploads:APWorkspaceService["parseUploads"];renderPage?:APWorkspaceService["renderPage"];runtime:()=>unknown;
 }):APWorkspaceService{
  const{agent,human,scope}=options;const payments=createAPCasePayments(agent,human,scope,options.paymentsCredential);
+ const closeQbo=createQBOCloseBridge(human,scope);
  const qbo=createQBOBridge(human,scope),externalWritesAllowed=scope.provider==="increase"&&scope.environment==="sandbox";
  const requireExternal=()=>{if(!externalWritesAllowed)throw new APHttpError("external_accounting_required",403,"External accounting writes and verification require the authenticated Increase sandbox workspace. Local FakeBank supports explicit mapped previews only.");};
  const paymentRuns:PaymentRunOperations={
@@ -60,6 +62,7 @@ export function createAPWorkspaceService(options:{
  };
  return{
   paymentRuns,domain,close,corrections,
+  closeAccounting:{status:closeQbo.status,preview:closeQbo.preview,submit:(request,hash)=>{requireExternal();return closeQbo.submit(request,hash);},verify:request=>{requireExternal();return closeQbo.verify(request);}},
   accounting:{status:async caseId=>({...await qbo.status(caseId),externalWritesAllowed}),preview:qbo.preview,submit:(request,hash)=>{requireExternal();return qbo.submit(request,hash);},verify:request=>{requireExternal();return qbo.verify(request);}},
   async list(){const rows=await human.query(makeFunctionReference<"query">("apCases:list"),{scope});return caseDetailSchema.array().parse(rows);},
   async detail(caseId){return caseDetailSchema.parse(await human.query(makeFunctionReference<"query">("apCases:detail"),{scope,caseId}));},

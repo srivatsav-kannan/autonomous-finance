@@ -66,6 +66,7 @@ export function createQBOBridge(human:ConvexHttpClient,scope:BankScope,env:NodeJ
    const d=await dispatcher();await d.checkHolds(request,{verify:true});const result=await d.run(request,"dry-run");if("hold" in result&&result.hold)return {hold:result.hold};if(!("plan" in result)||!result.plan)throw new QboError("plan_required");
    const op=await d.journal.get(result.plan);if(!op||op.state!=="succeeded")throw new QboError("successful_operation_required");
    await d.journal.client.verify(op);
+   await d.checkHolds(request,{verify:true});
    if(op.entity==="JournalEntry"&&op.links.correctionId)await d.checkHolds({caseId:request.caseId},{verify:true});
    return {operation:receipt(op),verifiedAt:Date.now()};
   },

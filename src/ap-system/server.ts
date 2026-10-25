@@ -1,3 +1,5 @@
+import {closeExportRequestSchema} from "./close-contracts";
+import type {QBOCloseBridge} from "./quickbooks/close-runtime";
 import http, {type IncomingMessage,type ServerResponse} from "node:http";
 import {createHash,randomBytes,timingSafeEqual} from "node:crypto";
 import {readFile,realpath} from "node:fs/promises";
@@ -33,6 +35,7 @@ export interface APWorkspaceService {
  accounting?:AccountingOperations;
  domain?:DomainOperations;
  close?:CloseOperations;
+ closeAccounting?:QBOCloseBridge;
  corrections?:CorrectionOperations;
  runtime():unknown;
 }
@@ -120,6 +123,13 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
      if(data&&typeof data==="object"&&["actor","subject","scope","seatId","token","approvedBy"].some(k=>k in data))throw new APHttpError("invalid_request",400,"Caller identity and scope cannot be supplied in close requests.");
      return send(res,await service.close.execute(operation,closeOperationSchemas[operation].parse(data)));
     }
+   }
+   const closeAccounting=/^\/api\/ap-system\/close\/accounting\/(status|preview|submit|verify)$/.exec(url.pathname);
+   if(req.method==="POST"&&closeAccounting){
+    if(!service.closeAccounting)throw new APHttpError("capability_unavailable",503,"Period accounting synchronization is unavailable.");
+    const body=z.object({request:closeExportRequestSchema.strict(),expectedPlanHash:binding.shape.snapshotHash.optional()}).strict().parse(await json(req));
+    if(closeAccounting[1]==="submit"){if(!body.expectedPlanHash)throw new APHttpError("approved_preview_required",400,"Preview and confirm the current period accounting plan first.");return send(res,await service.closeAccounting.submit(body.request,body.expectedPlanHash));}
+    return send(res,await service.closeAccounting[closeAccounting[1] as "status"|"preview"|"verify"](body.request));
    }
    const domain=/^\/api\/ap-system\/business(?:\/([a-zA-Z]+))?$/.exec(url.pathname);
    if(domain){
