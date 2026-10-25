@@ -260,6 +260,7 @@ export const domainCaseProjectionSchema = z.object({
   ),
   acceptance: businessAcceptanceSchema.nullable(),
   credit: creditPlanSchema.nullable(),
+  creditApplications: z.array(z.object({applicationId:id,billId:id,creditId:id,amountCents:cents,actor:id,at:timestamp})).optional(),
   creditLinks: z.array(
     z.object({
       caseId: id,

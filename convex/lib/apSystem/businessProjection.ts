@@ -50,6 +50,7 @@ export async function businessProjection(ctx: QueryCtx, row: Doc<"apCaseRecords"
     approvalId: approval?._id ?? null, approvalHash: approval?.hash ?? null, approvalStatus: status,
     route: approval?.route ?? [], stage: approval?.stage ?? 0, stageStartedAt: approval?.stageStartedAt ?? null,
     votes: (approval?.votes ?? []) as BusinessVote[], acceptance: request?.acceptance ?? null, credit: request?.credit ?? null, creditLinks,
+    creditApplications: direct.map((a) => ({applicationId:a._id,billId:a.billId,creditId:a.creditId,amountCents:a.amountCents,actor:a.actor,at:a.at})),
     recognizedCents: bill?.approvedCents ?? credit?.amountCents ?? 0, appliedCreditCents,
     availableSupplierCreditCents: supplierCredits.reduce((n, c) => n + c.amountCents - c.consumedCents - c.reservedCents, 0),
     cashSettledCents: Math.max(0, (bill?.paidCents ?? 0) - appliedCreditCents),

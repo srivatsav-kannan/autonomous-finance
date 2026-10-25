@@ -475,6 +475,7 @@ export const view = query({
         .query("apBusinessPolicies")
         .withIndex("by_run", (q) => q.eq("scope.runId", args.scope.runId))
         .collect(),
+      contacts: await ctx.db.query("apSupplierContacts").withIndex("by_supplier", (q) => q.eq("scope.runId", args.scope.runId)).collect(),
       suppliers: await ctx.db
         .query("apSuppliers")
         .withIndex("by_supplier", (q) => q.eq("scope.runId", args.scope.runId))
