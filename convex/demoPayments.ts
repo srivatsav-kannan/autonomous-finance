@@ -2,7 +2,7 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
-import { scopeValidator, provenanceValidator } from "./demoSchema";
+import { scopeValidator, provenanceValidator, providerCheckValidator } from "./demoSchema";
 import { accountingSeat, assertRowScope, auditDemo, requireDemoSeat, requireHuman, requirePaymentSeat, requirePaymentHuman } from "./lib/demoAuth";
 import { canonical, getRun, requireAdmin, sha256Hex } from "./lib/kernel";
 import { appendDemoEntry, validDemoDate } from "./lib/demoPost";
@@ -11,7 +11,7 @@ import { normalizeInvoiceNumber } from "./lib/invoiceIdentity";
 import { PAYMENT_EXECUTOR_VERSION } from "../src/payments/contracts";
 import { assertPaymentExecutor } from "../src/payments/domain/rules";
 
-import { cancelUnsent, requestPaymentCommand, approveWithinPolicyCommand, approveAndQueueCommand, resumePayment } from "./lib/payments/applyCommand";
+import { cancelUnsent, requestPaymentCommand, approveWithinPolicyCommand, approveAndQueueCommand, resumePayment, releaseUnsentPayment } from "./lib/payments/applyCommand";
 
 import { claimEffect, completeEffect, failEffect, heartbeatEffect } from "./lib/payments/applyEffect";
 
@@ -23,9 +23,12 @@ const dollars = (n: number) => { if (!Number.isSafeInteger(n) || n <= 0) throw n
 
 /** Trusted setup activates an immutable account, beneficiary, policy and human identity binding. */
 export const configure = mutation({
-  args: { ...scoped, secret: v.string(), paymentExecutorVersion: v.optional(v.string()), provenance: v.optional(provenanceValidator), beneficiary: v.object({ vendor: v.string(), externalAccountId: v.string(), version: v.string() }), policyVersion: v.string(), controllerLimitCents: v.number(), humanSubjects: v.array(v.object({ subject: v.string(), seatId: v.string() })) },
+  args: { ...scoped, secret: v.string(), paymentExecutorVersion: v.optional(v.string()), provenance: v.optional(provenanceValidator), beneficiary: v.object({ vendor: v.string(), externalAccountId: v.string(), version: v.string() }), policyVersion: v.string(), controllerLimitCents: v.number(), humanSubjects: v.array(v.object({ subject: v.string(), seatId: v.string() })),
+    // Set for a reused bank account: unlinked activity created before it is prior history, not this run's cash.
+    activitySince: v.optional(v.string()) },
   handler: async (ctx, args) => {
     const denied = requireAdmin(args.secret); if (denied) throw new Error(denied.error);
+    if (args.activitySince !== undefined && (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(args.activitySince) || !Number.isFinite(Date.parse(args.activitySince)))) throw new Error("activitySince must be an ISO UTC timestamp");
     if (args.paymentExecutorVersion !== undefined) assertPaymentExecutor(args.paymentExecutorVersion);
     if (args.provenance && (!args.provenance.decisionPath.trim() || !args.provenance.knowledgeCommit.trim())) throw new Error("Execution provenance must name the reviewed decision and commit");
     if (!await getRun(ctx, args.scope.runId)) throw new Error("Create run before configuring demo");
@@ -201,6 +204,12 @@ export const fail = mutation({
 export const resume = mutation({
   args: { ...scoped, commandId: v.id("demoCommands"), reason: v.string() },
   handler: resumePayment,
+});
+/** Human operator releases a claimed-but-never-sent command after the safety window and a
+ * fresh provider check. A transfer that appears later is flagged and never posted. */
+export const releaseUnsent = mutation({
+  args: { ...scoped, commandId: v.id("demoCommands"), reason: v.string(), providerCheck: providerCheckValidator },
+  handler: releaseUnsentPayment,
 });
 
 /** Human review includes exact immutable amount, bills, credits and beneficiary reference. */

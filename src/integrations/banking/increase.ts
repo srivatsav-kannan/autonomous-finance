@@ -2,12 +2,36 @@ import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import {
   BankProviderError, BankResourceOutsideScope, buildIncreaseRequestBody, canonicalJson, commandRequestHash, sameBankScope,
-  type BankCommand, type BankScope, type BankTransaction, type BankingProvider,
+  type BankCommand, type BankItemFailure, type BankScope, type BankTransaction, type BankingProvider,
   type BankingEvents, type BankPagination, type BankPage, type BankEvent, type TransferObservation,
 } from "../contracts.js";
-import type { PaymentRail, RailRecoveryCapability, TransferLookup } from "../../payments/ports/payment-rail";
+import type { PaymentRail, PossibleSendScan, RailRecoveryCapability, TransferLookup, UnsentPaymentScanner } from "../../payments/ports/payment-rail";
 
 export const INCREASE_SANDBOX_ORIGIN = "https://sandbox.increase.com";
+/** Parallel transfer lookups per transaction page; keeps a 100-row page well under rate limits. */
+const LOOKUP_CONCURRENCY = 5;
+
+async function mapWithConcurrency<T, R>(values: readonly T[], limit: number, fn: (value: T) => Promise<R>) {
+  const results: ({ ok: true; value: R } | { ok: false; error: unknown })[] = new Array(values.length);
+  let next = 0;
+  const run = async () => {
+    while (next < values.length) {
+      const index = next++;
+      try { results[index] = { ok: true, value: await fn(values[index]!) }; }
+      catch (error) { results[index] = { ok: false, error }; }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, values.length) }, run));
+  return results;
+}
+/** Normalized, credential-free failure for one listed row. */
+function itemFailure(id: string, error: unknown): BankItemFailure {
+  if (error instanceof BankProviderError) {
+    return { id, errorClass: error.errorClass, error: error.message, ...(error.retryAfterMs !== undefined ? { retryAfterMs: error.retryAfterMs } : {}) };
+  }
+  if (error instanceof BankResourceOutsideScope) return { id, errorClass: "validation", error: "Linked bank resource belongs to another account" };
+  return { id, errorClass: "unknown", error: "Increase transaction could not be verified" };
+}
 const id = z.string().min(1);
 const time = z.iso.datetime({ offset: true });
 const transferSchema = z.object({
@@ -102,7 +126,7 @@ export type IncreaseOptions = {
 };
 
 /** Trusted server/dispatcher only. No simulator methods or credential-bearing public fields. */
-export class IncreaseSandboxBank implements BankingProvider, BankingEvents, PaymentRail {
+export class IncreaseSandboxBank implements BankingProvider, BankingEvents, PaymentRail, UnsentPaymentScanner {
   readonly recovery: RailRecoveryCapability = Object.freeze({ lookup: "operation_key", sameKeyResend: Object.freeze({
     kind: "never", reason: "Provider retention not established for this recovery window",
   }) });
@@ -276,6 +300,37 @@ export class IncreaseSandboxBank implements BankingProvider, BankingEvents, Paym
     catch (error) { throw this.#recoveryError(error); }
     return { ...identity(), kind: "found", observation };
   }
+  /** Operator release evidence. Any ACH transfer to the same beneficiary for the same amount
+   * (or carrying this key), and any posted debit of the same amount, counts as a possible send.
+   * Raw rows only: no per-row lookups, so one bad row cannot hide another. */
+  async scanForPossibleSend(command: BankCommand, since: number): Promise<PossibleSendScan> {
+    await this.#assertCommand(command);
+    if (!Number.isSafeInteger(since) || since < 0) throw new BankProviderError("validation", "Invalid release scan start");
+    const after = new Date(since).toISOString();
+    const scan: PossibleSendScan = { complete: true, transfersScanned: 0, transactionsScanned: 0, matchingTransferIds: [], matchingTransactionIds: [] };
+    const pages = async <T>(path: string, params: Record<string, string>, schema: z.ZodType<T>, visit: (row: T) => void) => {
+      let cursor: string | null = null;
+      for (let page = 0; page < 20; page++) {
+        const query = new URLSearchParams({ ...params, limit: "100", ...(cursor ? { cursor } : {}) });
+        const response = parse(z.object({ data: z.array(schema), next_cursor: id.nullable() }), await this.#request(`${path}?${query}`));
+        response.data.forEach(visit);
+        cursor = response.next_cursor;
+        if (!cursor) return;
+      }
+      scan.complete = false;
+    };
+    await pages("/ach_transfers", { account_id: this.#scope.accountId, external_account_id: command.destination.externalAccountId, "created_at.on_or_after": after },
+      transferSchema, transfer => {
+        scan.transfersScanned++;
+        if (transfer.account_id === this.#scope.accountId && (transfer.idempotency_key === command.idempotencyKey ||
+            (transfer.amount === command.amountCents && transfer.external_account_id === command.destination.externalAccountId))) scan.matchingTransferIds.push(transfer.id);
+      });
+    await pages("/transactions", { account_id: this.#scope.accountId, "created_at.on_or_after": after }, transactionSchema, transaction => {
+      scan.transactionsScanned++;
+      if (transaction.account_id === this.#scope.accountId && transaction.amount === -command.amountCents) scan.matchingTransactionIds.push(transaction.id);
+    });
+    return scan;
+  }
   #recoveryError(error: unknown): unknown {
     if (error instanceof BankProviderError && (["idempotency_conflict", "validation"].includes(error.errorClass) ||
         error.message === "Increase response failed the pinned AP contract")) {
@@ -313,11 +368,31 @@ export class IncreaseSandboxBank implements BankingProvider, BankingEvents, Paym
     this.#assertScope(scope);
     const query = new URLSearchParams({ account_id: scope.accountId, limit: String(this.#limit(page.limit)) });
     if (page.cursor) query.set("cursor", page.cursor);
+    if (page.createdOnOrAfter !== undefined) {
+      if (!Number.isFinite(Date.parse(page.createdOnOrAfter))) throw new BankProviderError("validation", "Invalid transaction activity boundary");
+      query.set("created_at.on_or_after", page.createdOnOrAfter);
+    }
     const response = parse(z.object({ data: z.array(transactionSchema), next_cursor: id.nullable() }), await this.#request(`/transactions?${query}`));
-    const items = await Promise.all(response.data.map(transaction => this.#normalizeTransaction(transaction)));
-    // Transactions are newest-first and have no tail cursor. At end, rescan all history next poll;
-    // backend transaction-id deduplication makes this safe and catches activity beyond event retention.
-    return { items, nextCursor: response.next_cursor, cursor: response.next_cursor };
+    // Each ACH-linked row needs a transfer GET. Bound concurrency, stop new lookups after a
+    // rate limit, and return failed rows separately so one bad row cannot discard the page.
+    let throttled: BankProviderError | undefined;
+    const results = await mapWithConcurrency(response.data, LOOKUP_CONCURRENCY, async transaction => {
+      if (throttled) throw throttled;
+      try { return await this.#normalizeTransaction(transaction); }
+      catch (error) {
+        if (error instanceof BankProviderError && error.errorClass === "rate_limit") throttled = error;
+        throw error;
+      }
+    });
+    const items: BankTransaction[] = [];
+    const failures: BankItemFailure[] = [];
+    results.forEach((result, index) => {
+      if (result.ok) items.push(result.value);
+      else failures.push(itemFailure(response.data[index]!.id, result.error));
+    });
+    // Transactions are newest-first and have no tail cursor. At end, rescan the run's window next
+    // poll; backend transaction-id deduplication makes this safe and catches activity beyond event retention.
+    return { items, nextCursor: response.next_cursor, cursor: response.next_cursor, ...(failures.length ? { failures } : {}) };
   }
   async listEvents(scope: BankScope, page: BankPagination = {}): Promise<BankPage<BankEvent>> {
     this.#assertScope(scope);

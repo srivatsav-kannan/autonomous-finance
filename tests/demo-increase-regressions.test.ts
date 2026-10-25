@@ -5,6 +5,7 @@ import fixtures from "../src/integrations/fixtures/increase/lifecycle.json";
 import { IncreaseSandboxBank, verifyIncreaseWebhook } from "../src/integrations/banking/increase";
 import { EvidenceWorker, type KernelTransport } from "../src/payments/evidence";
 import { PaymentDispatcher } from "../src/payments/dispatcher";
+import { increaseMock, increaseRun } from "./helpers/increase-mock";
 
 afterEach(() => vi.unstubAllEnvs());
 
@@ -180,4 +181,74 @@ it("keeps unselected funding unexplained and rolls back a failed funding journal
   await f.human.mutation(api.demoEvidence.approveSandboxFunding, args);
   const evidence = await f.human.query(api.demoEvidence.humanView, { scope: f.scope });
   expect(evidence.blockers).toEqual([{ kind: "transaction", id: "transaction_unselected", reason: "Unmatched bank transaction" }]);
+});
+
+// #74: the sandbox demo must work more than once per Increase account.
+describe("reused Increase account", () => {
+  const cashFor = (journal: { runId: string; lines: { account: string; debit: number; credit: number }[] }[], runId: string) =>
+    journal.filter(entry => entry.runId === runId).flatMap(entry => entry.lines).filter(line => line.account === "1000");
+  async function closeBoth(run: Awaited<ReturnType<typeof increaseRun>>) {
+    expect(await run.t.mutation(api.demoEvidence.signClose, { ...run.controller, period: "2026-10" })).toEqual({ status: "open" });
+    expect(await run.human.mutation(api.demoEvidence.signClose, { scope: run.scope, period: "2026-10" })).toEqual({ status: "closed" });
+  }
+
+  it("closes a second run without blockers and never posts the first run's debit in it", async () => {
+    const mock = increaseMock(); // Ignores created_at filters: the worst case of a full history rescan.
+    mock.setClock("2026-10-22T10:00:00Z");
+    const run1 = await increaseRun("reuse-run-1", mock, { activitySince: "2026-10-22T00:00:00Z" });
+    await run1.queued(2500);
+    const first = (await run1.dispatcher.tick()).providerTransferId!;
+    const firstDebit = mock.settle(first, "2026-10-22T10:05:00Z");
+    expect(await run1.worker.tick()).toEqual({ posted: 1, errors: [] });
+    await closeBoth(run1);
+
+    // Same deployment and bank account; the operator rebinds AP_BANK_SCOPE to the fresh run.
+    mock.setClock("2026-10-24T10:00:00Z");
+    const run2 = await increaseRun("reuse-run-2", mock, { t: run1.t, activitySince: "2026-10-24T00:00:00Z" });
+    await run2.queued(4000);
+    const second = (await run2.dispatcher.tick()).providerTransferId!;
+    mock.settle(second, "2026-10-24T10:05:00Z");
+    expect(await run2.worker.tick()).toEqual({ posted: 1, errors: [] });
+    expect(await run2.worker.tick()).toEqual({ posted: 0, errors: [] });
+
+    const evidence = await run2.human.query(api.demoEvidence.humanView, { scope: run2.scope });
+    expect(evidence.blockers).toEqual([]);
+    const prior = evidence.transactions.find(row => row.transaction.id === firstDebit)!;
+    expect(prior).toMatchObject({ state: "prior_activity", transaction: { purpose: "other", commandId: "", transferId: first } });
+    expect(prior.entryId).toBeUndefined();
+    const journal = await run2.t.run(ctx => ctx.db.query("journalEntries").collect());
+    // Run 2 holds its accrual and exactly its own debit; run 1's debit is never cash in run 2.
+    expect(journal.filter(entry => entry.runId === "reuse-run-2")).toHaveLength(2);
+    expect(cashFor(journal, "reuse-run-2")).toEqual([expect.objectContaining({ debit: 0, credit: 4000 })]);
+    expect(cashFor(journal, "reuse-run-1")).toEqual([expect.objectContaining({ debit: 0, credit: 2500 })]);
+    // The worker also asks Increase to start the scan at the run's boundary.
+    expect(mock.requests.some(({ url }) => url.pathname === "/transactions" &&
+      url.searchParams.get("created_at.on_or_after") === "2026-10-24T00:00:00Z")).toBe(true);
+    await closeBoth(run2);
+  });
+
+  it("still blocks a genuinely unexplained debit created during the current run", async () => {
+    const mock = increaseMock();
+    mock.setClock("2026-10-24T10:00:00Z");
+    const run = await increaseRun("reuse-unexplained", mock, { activitySince: "2026-10-24T00:00:00Z" });
+    await run.queued(2500);
+    mock.settle((await run.dispatcher.tick()).providerTransferId!, "2026-10-24T10:05:00Z");
+    mock.addTransaction({ ...fixtures.unknown, id: "transaction_current", created_at: "2026-10-24T11:00:00Z" });
+    mock.addTransaction({ ...fixtures.unknown, id: "transaction_history", created_at: "2026-10-20T11:00:00Z" });
+    mock.addTransaction({ ...fixtures.unknown, id: "transaction_wire", amount: 100000, created_at: "2026-10-20T09:00:00Z",
+      source: { category: "inbound_wire_transfer", inbound_wire_transfer: { id: "inbound_wire_transfer_funding" } } });
+    expect((await run.worker.tick()).posted).toBe(1);
+    const evidence = await run.human.query(api.demoEvidence.humanView, { scope: run.scope });
+    expect(evidence.blockers).toEqual([{ kind: "transaction", id: "transaction_current", reason: "Unmatched bank transaction" }]);
+    expect(evidence.transactions.find(row => row.transaction.id === "transaction_history")!.state).toBe("prior_activity");
+    await expect(run.human.mutation(api.demoEvidence.signClose, { scope: run.scope, period: "2026-10" })).rejects.toThrow("AP close blocked");
+    // Explicitly reviewed capital from before the run can still be classified, as demo:sandbox does.
+    await run.human.mutation(api.demoEvidence.approveSandboxFunding, { scope: run.scope, transactionId: "transaction_wire", expectedAmountCents: 100000, reason: "Reviewed capital" });
+    const wire = (await run.human.query(api.demoEvidence.humanView, { scope: run.scope })).transactions.find(row => row.transaction.id === "transaction_wire")!;
+    expect(wire).toMatchObject({ state: "posted", fundingApproval: { reason: "Reviewed capital" } });
+  });
+
+  it("rejects a malformed activity boundary at configuration", async () => {
+    await expect(demoFixture("reuse-bad-boundary", {}, { activitySince: "yesterday" })).rejects.toThrow("activitySince");
+  });
 });

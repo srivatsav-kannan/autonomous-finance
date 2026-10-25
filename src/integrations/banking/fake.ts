@@ -7,7 +7,7 @@ import {
   type BankingProvider, type BankPage, type BankPagination, type BankScope,
   type BankTransaction, type TransferObservation,
 } from "../contracts.js";
-import type { PaymentRail, TransferLookup } from "../../payments/ports/payment-rail";
+import type { PaymentRail, PossibleSendScan, TransferLookup, UnsentPaymentScanner } from "../../payments/ports/payment-rail";
 import { assertObservationMatchesCommand } from "../../payments/domain/rules";
 import { assertFrozenBankCommand } from "../../payments/domain/validation";
 
@@ -48,7 +48,7 @@ const fail = (message: string): never => { throw new BankProviderError("validati
 
 /** Independent SQLite bank. Only provider/events capabilities should enter application workers. */
 export function openFakeBank(options: FakeBankOptions): {
-  provider: BankingProvider & PaymentRail;
+  provider: BankingProvider & PaymentRail & UnsentPaymentScanner;
   events: BankingEvents;
   harness: FakeBankHarness;
   close(): void;
@@ -175,7 +175,7 @@ export function openFakeBank(options: FakeBankOptions): {
     const cursor = `${prefix}${selected.at(-1)?.seq ?? checkpoint}`;
     return { items: selected.map((row) => JSON.parse(row.value) as T), cursor, nextCursor: rows.length > limit ? cursor : null };
   }
-  const provider: BankingProvider & PaymentRail = Object.freeze({
+  const provider: BankingProvider & PaymentRail & UnsentPaymentScanner = Object.freeze({
     recovery: { lookup: "operation_key" as const, sameKeyResend: { kind: "durable" as const,
       documentation: "docs/ap-demo/fake-bank.md: unique transfers.idem and original request persist in this same scoped SQLite store; replacing/deleting the store invalidates recovery." } },
     async lookupTransfer(command: BankCommand, providerTransferId?: string): Promise<TransferLookup> {
@@ -194,6 +194,20 @@ export function openFakeBank(options: FakeBankOptions): {
         catch { throw new BankProviderError("configuration", "Stored FakeBank observation conflicts with frozen command"); }
         return { ...identity, kind: "found" as const, observation };
       }));
+    },
+    /** The virtual clock is unrelated to Convex wall time, so `since` is ignored: every transfer
+     * and posted debit in this per-run store is scanned, which can only add matches. */
+    async scanForPossibleSend(command: BankCommand, _since: number): Promise<PossibleSendScan> {
+      assertScope(command.scope);
+      await assertFrozenBankCommand(command);
+      return atomic(() => {
+        const transfers = (db.prepare("SELECT value FROM transfers").all() as Row[]).map(row => JSON.parse(row.value) as TransferObservation);
+        const transactions = (db.prepare("SELECT value FROM transactions WHERE posted = 1").all() as Row[]).map(row => JSON.parse(row.value) as BankTransaction);
+        return { complete: true, transfersScanned: transfers.length, transactionsScanned: transactions.length,
+          matchingTransferIds: transfers.filter(t => t.idempotencyKey === command.idempotencyKey ||
+            (t.amountCents === command.amountCents && t.destination.externalAccountId === command.destination.externalAccountId)).map(t => t.id),
+          matchingTransactionIds: transactions.filter(t => t.amountCents === -command.amountCents).map(t => t.id) };
+      });
     },
     async getBalance(candidate: BankScope) { assertScope(candidate); return invoke("getBalance", () => atomic(balance)); },
     async createTransfer(command: BankCommand) {

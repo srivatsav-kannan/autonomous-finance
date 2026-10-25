@@ -11,25 +11,32 @@ function fixture() {
       profile: 'local', status: 'passed', identityMode: 'local_admin_simulated_human', scope,
       faultSchedule: ['accept_then_lost_response', 'worker_exit', 'missing_webhook'],
       processRecovery: { signal: 'SIGKILL', exitCode: null, acceptedBeforeKill: true, completionAbsentBeforeKill: true,
-        unpaidBeforeSettlement: true, frozenCommandSha256: 'a'.repeat(64), acceptedCommandSha256: 'a'.repeat(64), lookupCommandSha256: 'a'.repeat(64) },
+        unpaidBeforeSettlement: true, frozenCommandSha256: 'a'.repeat(64), acceptedCommandSha256: 'a'.repeat(64), lookupCommandSha256: 'a'.repeat(64),
+        recoveredTransferId: 'transfer', restartCreateTransferCalls: 0, recordedTransferId: 'transfer', originalTransferId: 'transfer',
+        replay: { transferId: 'transfer', errorClass: null } },
       commandId: 'row', fixtureHash: 'fixture',
-      review: { commands: [{ _id: 'row', command, attemptCount: 2, execution: 'settled', posting: 'posted', reconciliation: 'matched' }] },
-      bankEvidence: { calls: { createTransfer: 1, lookupTransfer: 1 }, transfers: [{ ...command, id: 'transfer' }], transactions: [debit] },
+      review: { commands: [{ _id: 'row', command, attemptCount: 2, execution: 'settled', posting: 'posted', reconciliation: 'matched', providerTransferId: 'transfer' }] },
+      bankEvidence: { calls: { createTransfer: 2, lookupTransfer: 1 }, transfers: [{ ...command, id: 'transfer' }], transactions: [debit],
+        notifications: { generated: 2, delivered: 0 } },
       evidence: { transactions: [{ transaction: debit, state: 'posted', entryId: 'journal' }], blockers: [] },
     },
     journal: [{ _id: 'journal', runId: 'fixture', source: { kind: 'payment_settlement' }, lines: [{ account: '1000', debit: 0, credit: 66290 }] }],
+    tables: { inbox: [], cursors: [{ scope, cursor: 'transactions:binding:2', updatedAt: 2, scanCompletedAt: 2 }] },
   };
 }
+const verify = data => recoveryEvidence(data.report, data.journal, data.tables);
 
 describe('CI recovery evidence boundary', () => {
   it('exports only verified counts and hashes, even when raw evidence contains credentials', () => {
-    const { report, journal } = fixture();
+    const data = fixture();
+    const { report, journal } = data;
     report.secret = 'admin-secret-canary';
     report.review.commands[0].leaseToken = 'lease-token-canary';
     report.bankEvidence.transfers[0].payload = 'provider-payload-canary';
     journal[0].memo = 'raw-memo-canary';
-    const result = recoveryEvidence(report, journal);
-    expect(result).toMatchObject({ attempts: 2, createTransferCalls: 1, lookupTransferCalls: 1, acceptedTransferRecoveredWithoutResend: true,
+    const result = verify(data);
+    expect(result).toMatchObject({ attempts: 2, createTransferCalls: 2, restartCreateTransferCalls: 0, lookupTransferCalls: 1, acceptedTransferRecoveredWithoutResend: true,
+      sameKeyReplayReturnedOriginalTransfer: true, recordedTransferIsOriginal: true, droppedNotifications: 2, ingestedNotifications: 0,
       transfers: 1, postedDebits: 1, cashJournalEntries: 1, amountCents: 66290 });
     expect(result.idempotencyKeySha256).toMatch(/^[a-f0-9]{64}$/);
     expect(JSON.stringify(result)).not.toContain('canary');
@@ -37,7 +44,20 @@ describe('CI recovery evidence boundary', () => {
   it.each([
     ['a changed retry key', ({ report }) => { report.bankEvidence.transfers[0].idempotencyKey = 'different'; }],
     ['missing crash recovery', ({ report }) => { report.review.commands[0].attemptCount = 1; }],
-    ['a blind recovery resend', ({ report }) => { report.bankEvidence.calls.createTransfer = 2; }],
+    ['a blind recovery resend', ({ report }) => { report.processRecovery.restartCreateTransferCalls = 1; }],
+    ['an extra bank create call', ({ report }) => { report.bankEvidence.calls.createTransfer = 3; }],
+    ['a missing same-key replay', ({ report }) => { report.bankEvidence.calls.createTransfer = 1; }],
+    // #77: with FakeBank's replay branch disabled, the retry hits the UNIQUE key and returns nothing.
+    ['a same-key retry that errored', ({ report }) => { report.processRecovery.replay = { transferId: null, errorClass: 'ERR_SQLITE_ERROR' }; }],
+    ['a same-key retry that returned a different transfer', ({ report }) => { report.processRecovery.replay.transferId = 'transfer-2'; }],
+    ['a restart that recovered a different transfer', ({ report }) => { report.processRecovery.recoveredTransferId = 'transfer-2'; }],
+    ['a command recording a different transfer', ({ report }) => { report.review.commands[0].providerTransferId = 'transfer-2'; }],
+    ['a second transfer for the key', ({ report }) => { report.bankEvidence.transfers.push({ ...report.bankEvidence.transfers[0], id: 'transfer-2' }); }],
+    ['an ingested webhook', ({ tables }) => { tables.inbox.push({ eventId: 'event' }); }],
+    ['no completed polling scan', ({ tables }) => { delete tables.cursors[0].scanCompletedAt; }],
+    ['a missing polling cursor', ({ tables }) => { tables.cursors = []; }],
+    ['undropped notifications', ({ report }) => { report.bankEvidence.notifications.delivered = 1; }],
+    ['missing table evidence', data => { delete data.tables; }],
     ['missing recovery lookup', ({ report }) => { report.bankEvidence.calls.lookupTransfer = 0; }],
     ['a graceful exit instead of SIGKILL', ({ report }) => { report.processRecovery.signal = null; report.processRecovery.exitCode = 86; }],
     ['missing before-record checkpoint', ({ report }) => { report.processRecovery.completionAbsentBeforeKill = false; }],
@@ -52,7 +72,15 @@ describe('CI recovery evidence boundary', () => {
     ['a missing report', data => { data.report = {}; }],
   ])('rejects %s', (_description, change) => {
     const data = fixture(); change(data);
-    expect(() => recoveryEvidence(data.report, data.journal)).toThrow();
+    expect(() => verify(data)).toThrow();
+  });
+  it('names the broken idempotent retry in a fixed message without leaking values', () => {
+    const data = fixture();
+    data.report.processRecovery.replay = { transferId: null, errorClass: 'ERR_SQLITE_ERROR' };
+    const error = (() => { try { verify(data); } catch (e) { return e; } })();
+    expect(error).toMatchObject({ code: 'ERR_ASSERTION', generatedMessage: false });
+    expect(error.message.split('\n')[0]).toBe('Same-key retry after a lost response must not error (UNIQUE or idempotency conflict)');
+    expect(error.message.split('\n')[0]).not.toContain('ERR_SQLITE_ERROR'); // The runner keeps only this first line.
   });
 });
 
@@ -69,6 +97,13 @@ describe('CI failure diagnostic boundary', () => {
     expect(result.events).toContainEqual({ code: 'MODULE_NOT_FOUND', file: 'scripts/ap-demo.ts' });
     expect(JSON.stringify(result)).not.toMatch(/CANARY|credential-canary|Authorization|Bearer|providerBody/);
     expect(result.rawOutputRetained).toBe(false);
+  });
+  it('classifies a same-key retry hitting the bank unique key as an idempotency conflict without raw text', () => {
+    const diagnostics = diagnosticCollector(['scripts/ap-demo.ts']);
+    diagnostics.consume('Error: UNIQUE constraint failed: transfers.idem KEY_CANARY\n');
+    const result = diagnostics.snapshot();
+    expect(result.events).toContainEqual({ code: 'IDEMPOTENCY_CONFLICT' });
+    expect(JSON.stringify(result)).not.toContain('CANARY');
   });
   it('bounds diagnostic input, event count and output size under noisy failures', () => {
     const diagnostics = diagnosticCollector(['scripts/ap-demo.ts']);

@@ -208,7 +208,7 @@ describe("persistent FakeBank", () => {
 
   it("exposes no harness, database, credentials or truth through provider capabilities", async () => {
     const bank = open(options());
-    expect(Object.keys(bank.provider).sort()).toEqual(["createTransfer", "getBalance", "getTransaction", "getTransfer", "listTransactions", "lookupTransfer", "recovery"].sort());
+    expect(Object.keys(bank.provider).sort()).toEqual(["createTransfer", "getBalance", "getTransaction", "getTransfer", "listTransactions", "lookupTransfer", "recovery", "scanForPossibleSend"].sort());
     expect(Object.keys(bank.events).sort()).toEqual(["listEvents", "verifyWebhook"]);
     expect(JSON.parse(JSON.stringify(bank.provider))).toEqual({ recovery: bank.provider.recovery });
   });

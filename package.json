@@ -28,6 +28,7 @@
     "demo:sandbox": "tsx scripts/ap-demo.ts sandbox",
     "worker:dispatch": "tsx scripts/ap-worker.ts dispatch",
     "worker:evidence": "tsx scripts/ap-worker.ts evidence",
+    "ops:release-unsent": "tsx scripts/ap-release-unsent.ts",
     "typecheck:backend": "tsc --noEmit -p convex/tsconfig.json",
     "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json",
     "ci:recovery": "node scripts/testing/ci-local-recovery.mjs",

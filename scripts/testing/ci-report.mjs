@@ -27,6 +27,7 @@ const diagnosticPatterns = [
   ['CONNECTION_REFUSED', /ECONNREFUSED/],
   ['ADDRESS_IN_USE', /EADDRINUSE|address already in use/i],
   ['ASSERTION_FAILED', /AssertionError|ERR_ASSERTION/],
+  ['IDEMPOTENCY_CONFLICT', /UNIQUE constraint failed|idempotency_conflict|Idempotency key was already used/i],
   ['FUNCTION_NOT_FOUND', /could not find.*function|function.*not found/i],
 ];
 

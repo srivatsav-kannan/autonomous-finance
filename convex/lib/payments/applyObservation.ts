@@ -22,7 +22,13 @@ export async function saveObservation(ctx: MutationCtx, scope: BankScope, observ
   scoped(scope, observation.scope);
   parseTransferObservation(observation);
   const command = await commandFor(ctx, scope, observation.commandId);
-  if (command) { await assertFrozenBankCommand(command.command); checkObservation(command, observation); }
+  if (command) {
+    await assertFrozenBankCommand(command.command);
+    // A released command is cancelled, so the dispatch-context check would reject (and roll back)
+    // the very evidence that must be recorded. Verify identity only, then flag it below.
+    if (command.release) assertObservationMatchesCommand(command.command, observation);
+    else checkObservation(command, observation);
+  }
   const old = await ctx.db.query("demoObservations").withIndex("by_transfer", q => q.eq("scope.runId", scope.runId).eq("transferId", observation.id)).unique();
   if (old) {
     const { status: _s, updatedAt: _u, pendingTransactionId: _p, originalTransactionId: _o, returnTransactionId: _r, rejectionReason: _rr, ...identity } = old.observation;
@@ -38,6 +44,7 @@ export async function saveObservation(ctx: MutationCtx, scope: BankScope, observ
     await ctx.db.patch(old._id, { observation, importedAt: Date.now() });
   } else await ctx.db.insert("demoObservations", { scope, transferId: observation.id, observation, importedAt: Date.now() });
   if (!command) return; // A verified early notice is retained until the command is recoverable.
+  if (command.release) { await flagLateTransfer(ctx, scope, command, observation.id); return; }
   if (observation.status === "rejected") {
     const activity = await ctx.db.query("demoTransactions").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect();
     if (activity.some(t => t.transaction.transferId === observation.id || t.transaction.commandId === command.command.commandId)) throw new Error("Rejection conflicts with economic evidence");
@@ -51,17 +58,62 @@ export async function saveObservation(ctx: MutationCtx, scope: BankScope, observ
     await ctx.db.patch(command._id, { providerTransferId: observation.id, execution, reconciliation: (execution === "returned" && command.posting !== "returned") || (execution === "settled" && command.posting === "unposted") ? "unmatched" : command.reconciliation, leaseToken: undefined, leaseExpiresAt: undefined });
   }
 }
-export async function saveTransaction(ctx: MutationCtx, scope: BankScope, transaction: BankTransaction) {
+/** A transfer for a released command can mean a duplicate payment. Record it loudly; never post it. */
+async function flagLateTransfer(ctx: MutationCtx, scope: BankScope, command: Doc<"demoCommands">, transferId: string) {
+  if (command.lateTransferId === transferId) return;
+  await ctx.db.patch(command._id, { lateTransferId: transferId,
+    lastError: "Bank transfer appeared after operator release; possible duplicate payment. Escalate; do not repost or resend." });
+  await auditDemo(ctx, scope, "evidence-service", "released_payment_transfer_appeared", {
+    commandId: command._id, transferId, releasedBy: command.release?.seatId, releasedAt: command.release?.at,
+  });
+}
+/** Resolve any open fetch-failure record once the exact transaction is durably imported. */
+async function resolveRetry(ctx: MutationCtx, scope: BankScope, transactionId: string) {
+  const retry = await ctx.db.query("demoEvidenceRetries").withIndex("by_transaction", q => q.eq("scope.runId", scope.runId).eq("transactionId", transactionId)).unique();
+  if (retry?.open) await ctx.db.patch(retry._id, { open: false, resolvedAt: Date.now() });
+}
+/** Pass the run's activitySince. Unlinked activity created earlier belongs to account history
+ * (for example an earlier demo run on the same account): retained, never posted, never a blocker.
+ * Anything linked to this run's commands is kept regardless of timestamps or clock skew. */
+export async function saveTransaction(ctx: MutationCtx, scope: BankScope, transaction: BankTransaction, activitySince?: string) {
   scoped(scope, transaction.scope);
   parseBankTransaction(transaction);
   if (transaction.status !== "posted") throw new Error("Pending transaction is not economic evidence");
   const old = await transactionFor(ctx, scope, transaction.id);
   if (old) {
     if (canonicalJson(old.transaction) !== canonicalJson(transaction)) throw new Error("Immutable bank transaction changed");
+    await resolveRetry(ctx, scope, transaction.id);
     return;
   }
   const command = await commandFor(ctx, scope, transaction.commandId);
-  await ctx.db.insert("demoTransactions", { scope, transaction, commandRowId: command?._id, state: command ? "ready" : "unmatched", importedAt: Date.now() });
+  const prior = !command && activitySince !== undefined && Date.parse(transaction.createdAt) < Date.parse(activitySince);
+  if (command?.release) {
+    await ctx.db.insert("demoTransactions", { scope, transaction, commandRowId: command._id, state: "exception",
+      error: "Bank activity for a released payment; escalate", importedAt: Date.now() });
+    await flagLateTransfer(ctx, scope, command, transaction.transferId);
+  } else {
+    await ctx.db.insert("demoTransactions", { scope, transaction, commandRowId: command?._id,
+      state: command ? "ready" : prior ? "prior_activity" : "unmatched", importedAt: Date.now() });
+  }
+  await resolveRetry(ctx, scope, transaction.id);
+}
+const RETRY_CLASSES = ["validation", "authentication", "configuration", "rate_limit", "transport", "unknown", "idempotency_conflict", "not_found"];
+/** Persist one listed row that failed verification. Already-imported rows are immutable evidence,
+ * so a transient failure while rescanning them is not recorded. */
+export async function recordTransactionFailure(ctx: MutationCtx, scope: BankScope, failure: { id: string; errorClass: string; error: string; retryAfterMs?: number }) {
+  if (!failure.id.trim() || failure.id.length > 200 || !RETRY_CLASSES.includes(failure.errorClass) ||
+      (failure.retryAfterMs !== undefined && (!Number.isSafeInteger(failure.retryAfterMs) || failure.retryAfterMs < 0))) {
+    throw new Error("Invalid bank transaction failure");
+  }
+  if (await transactionFor(ctx, scope, failure.id)) return;
+  const now = Date.now();
+  const old = await ctx.db.query("demoEvidenceRetries").withIndex("by_transaction", q => q.eq("scope.runId", scope.runId).eq("transactionId", failure.id)).unique();
+  const attempts = (old?.open ? old.attempts : 0) + 1;
+  // Exponential backoff capped at 15 minutes; a provider Retry-After always wins when longer.
+  const nextAttemptAt = now + Math.max(failure.retryAfterMs ?? 0, Math.min(15 * 60_000, 1000 * 2 ** Math.min(attempts - 1, 10)));
+  const fields = { open: true, errorClass: failure.errorClass, error: failure.error.slice(0, 300), attempts, lastFailedAt: now, nextAttemptAt, resolvedAt: undefined };
+  if (old) await ctx.db.patch(old._id, { ...fields, firstFailedAt: old.open ? old.firstFailedAt : now });
+  else await ctx.db.insert("demoEvidenceRetries", { scope, transactionId: failure.id, firstFailedAt: now, ...fields });
 }
 
 export async function postVerifiedTransaction(ctx: MutationCtx, args: { scope: BankScope; token: string; transactionId: string }) {
@@ -72,6 +124,7 @@ export async function postVerifiedTransaction(ctx: MutationCtx, args: { scope: B
     const tx = evidence.transaction;
     const command = await commandFor(ctx, args.scope, tx.commandId);
     if (!command) throw new Error("Unmatched bank transaction");
+    if (command.release) throw new Error("Released payment cannot post; escalate the late bank transfer");
     const observed = await ctx.db.query("demoObservations").withIndex("by_transfer", q => q.eq("scope.runId", args.scope.runId).eq("transferId", tx.transferId)).unique();
     if (!observed) throw new Error("Verified transfer observation missing");
     const observation = observed.observation;

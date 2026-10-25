@@ -22,7 +22,7 @@ const evidenceKernel = mode === "evidence" ? createConvexPaymentEvidence(client,
 const increase = scope.provider === "increase" ? new IncreaseSandboxBank({scope,apiKey:process.env.INCREASE_SANDBOX_API_KEY ?? "",signingSecret:process.env.INCREASE_SANDBOX_WEBHOOK_SECRET,resolveCommand: key => evidenceKernel?.resolveCommand({idempotencyKey:key}) ?? Promise.resolve(null)}) : undefined;
 const provider = fake?.provider ?? increase!;
 const dispatcher = mode === "dispatch" ? createPaymentDispatcher(client,scope,token,provider,`dispatcher-${process.pid}`) : undefined;
-const evidence = mode === "evidence" ? createEvidenceWorker(client,scope,token,provider) : undefined;
+const evidence = mode === "evidence" ? createEvidenceWorker(client,scope,token,provider,`evidence-${process.pid}`) : undefined;
 const once = process.argv.includes("--once");
 let stopped = false;
 let server: http.Server | undefined;

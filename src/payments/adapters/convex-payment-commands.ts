@@ -30,5 +30,7 @@ export function createConvexPaymentCommands(client: KernelTransport, binding: Ba
     }),
     async cancel({ command }) { await client.mutation(api.demoPayments.cancel, { ...human(), versionId: command.versionId as Id<"demoVersions"> }); },
     async resume({ command }) { await client.mutation(api.demoPayments.resume, { ...human(), commandId: command.commandId as Id<"demoCommands">, reason: command.reason }); },
+    async releaseUnsent({ command }) { await client.mutation(api.demoPayments.releaseUnsent, { ...human(),
+      commandId: command.commandId as Id<"demoCommands">, reason: command.reason, providerCheck: command.providerCheck }); },
   };
 }

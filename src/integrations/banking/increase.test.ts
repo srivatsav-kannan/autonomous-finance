@@ -167,6 +167,46 @@ describe("Increase sandbox adapter contracts", () => {
     expect(url.searchParams.get("account_id")).toBe(scope.accountId);
     expect(url.searchParams.get("cursor")).toBe("opaque cursor");
   });
+  it("returns failed rows separately, bounds lookup concurrency and stops new lookups after a rate limit", async () => {
+    const rows = Array.from({ length: 12 }, (_, i) => ({ ...fixtures.debit, id: `transaction_${i}`,
+      source: { category: "ach_transfer_intention", ach_transfer_intention: { transfer_id: `ach_transfer_${i}` } } }));
+    let inFlight = 0, peak = 0;
+    const http = vi.fn<typeof fetch>(async input => {
+      const path = new URL(String(input)).pathname;
+      if (path === "/transactions") return response({ data: rows, next_cursor: null });
+      inFlight++; peak = Math.max(peak, inFlight);
+      await new Promise(resolve => setTimeout(resolve, 5));
+      inFlight--;
+      const index = Number(path.split("_").at(-1));
+      if (index === 6) return response({}, 429, { "Retry-After": "3" });
+      return response({ ...fixtures.settled, id: `ach_transfer_${index}`, idempotency_key: `other-${index}`, transaction_id: `transaction_${index}` });
+    });
+    const { provider } = await bank({}, { fetch: http });
+    const page = await provider.listTransactions(scope, { createdOnOrAfter: "2026-10-24T00:00:00Z" });
+    expect(new URL(String(http.mock.calls[0]![0])).searchParams.get("created_at.on_or_after")).toBe("2026-10-24T00:00:00Z");
+    expect(peak).toBeLessThanOrEqual(5);
+    expect(page.failures).toContainEqual({ id: "transaction_6", errorClass: "rate_limit", error: "Increase rate limit", retryAfterMs: 3000 });
+    // Every row is either verified or reported; nothing is silently dropped.
+    expect(page.items.length + page.failures!.length).toBe(12);
+    expect(page.items.map(item => item.id)).toContain("transaction_0");
+    expect(page.failures!.every(failure => failure.errorClass === "rate_limit")).toBe(true);
+    expect(http.mock.calls.length - 1).toBeLessThan(12); // Throttled rows were not fetched.
+    await expect(provider.listTransactions(scope, { createdOnOrAfter: "not-a-time" })).rejects.toMatchObject({ errorClass: "validation" });
+  });
+  it("scans the account for possible sends before an operator release, read-only and filtered from the first attempt", async () => {
+    const since = Date.parse("2026-10-22T00:00:00Z");
+    const other = { ...fixtures.pending, id: "ach_transfer_other", idempotency_key: "someone-else", amount: 999 };
+    const { provider, saved, http } = await bank({ "/ach_transfers": { data: [other], next_cursor: null }, "/transactions": { data: [fixtures.unknown], next_cursor: null } });
+    expect(await provider.scanForPossibleSend(saved, since)).toEqual({ complete: true, transfersScanned: 1, transactionsScanned: 1, matchingTransferIds: [], matchingTransactionIds: [] });
+    const transfers = new URL(String(http.mock.calls[0]![0]));
+    expect(transfers.searchParams.get("external_account_id")).toBe(saved.destination.externalAccountId);
+    expect(transfers.searchParams.get("created_at.on_or_after")).toBe("2026-10-22T00:00:00.000Z");
+    expect(http.mock.calls.every(([, init]) => init?.method === "GET")).toBe(true);
+    const matched = await bank({ "/ach_transfers": { data: [{ ...other, amount: 2500, id: "ach_transfer_same" }], next_cursor: null }, "/transactions": { data: [fixtures.debit], next_cursor: null } });
+    expect(await matched.provider.scanForPossibleSend(matched.saved, since)).toMatchObject({ matchingTransferIds: ["ach_transfer_same"], matchingTransactionIds: ["transaction_debit"] });
+    const endless = await bank({ "/ach_transfers": { data: [], next_cursor: "more" }, "/transactions": { data: [], next_cursor: null } });
+    expect((await endless.provider.scanForPossibleSend(endless.saved, since)).complete).toBe(false);
+  });
   it("preserves event tail cursor after empty page and polls oldest first", async () => {
     const { provider, http } = await bank({ "/events": { data: [], next_cursor: "tail2" } });
     expect(await provider.listEvents(scope, { cursor: "tail1" })).toEqual({ items: [], nextCursor: null, cursor: "tail2" });

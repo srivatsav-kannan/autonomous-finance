@@ -96,6 +96,41 @@ not an accounting repair. A return is a separate compensating entry tied to the
 original posted debit. Neither delayed pending notifications nor duplicate feed
 pages may remove that economic history.
 
+### Releasing a command that was claimed but never sent ([#76](https://github.com/srivatsav-kannan/autonomous-finance/issues/76))
+
+A dispatcher can die after the claim records an attempt but before the provider
+POST. Increase is configured never to resend after an attempt, so recovery finds
+nothing and the command lands in `exception`; `resume` repeats the same lookup
+and `cancel` is refused once an attempt exists. The bills would stay reserved
+forever. `demoPayments.releaseUnsent` is the audited way out:
+
+- Human JWT only. Agent seats and service secrets are refused. A reason is required.
+- Only an `exception` command with a first attempt and no provider transfer ID.
+- Only after `RELEASE_SAFETY_WINDOW_MS` (24 h) since `firstAttemptAt`. Increase
+  guarantees at most one object per idempotency key but documents no key
+  retention or read-visibility window, and advises against automating on list
+  reads ([idempotency keys](https://increase.com/documentation/idempotency-keys)).
+  Our own bounds are far shorter (15 s request timeout, 30 s lease, 24 h
+  automatic recovery budget), so the window adds margin rather than proof.
+- A fresh provider check (at most 15 minutes old, taken after the window):
+  operation-key lookup returns `not_found`, and a complete read-only scan from
+  `firstAttemptAt` finds no ACH transfer to the beneficiary with this amount or
+  key and no posted debit of this amount. Convex holds no bank credentials, so
+  the trusted operator harness (`npm run ops:release-unsent -- <commandId> "<reason>"`,
+  `ReleaseUnsentPayment` in `src/payments/application/`) performs the check and
+  the mutation re-validates it, plus local evidence (no accepted attempt,
+  observation, imported transaction or unprocessed notice for the run).
+- On release the command becomes `cancelled`, the payment version is cancelled,
+  bill and credit reservations are released, and `unsent_payment_released` is
+  audited with the operator, reason, original key/request hash and the check.
+- A transfer that later appears for the released command is never posted. It
+  sets `lateTransferId`, records `released_payment_transfer_appeared`, keeps its
+  transaction in `exception` and blocks close as a possible duplicate payment.
+
+The same-key resubmit alternative was not taken: Increase's documentation does
+not state how long a key is retained, so a resubmit could not be proven safe.
+Tests: `tests/payments/release-unsent.test.ts`.
+
 ## Evidence levels
 
 | Level | Required evidence | Current status |
