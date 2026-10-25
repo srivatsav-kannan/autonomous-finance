@@ -179,6 +179,9 @@ def build_database(files, output):
                 content += '\n' + '\n'.join('\t'.join(c.text for c in row.cells) for row in table.rows)
         elif suffix in ('.txt', '.md'):
             content = source.read_text(encoding='utf-8-sig')
+        elif suffix in ('.eml', '.mbox'):
+            # Raw RFC 822 text, headers included; attachments are not decoded.
+            content = source.read_text(encoding='utf-8', errors='replace')
         else:
             raise ValueError(f'No evidence converter for {name}')
         con.execute('INSERT INTO documents VALUES(?,?)', (name, content))

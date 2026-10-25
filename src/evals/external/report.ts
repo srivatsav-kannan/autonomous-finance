@@ -1,4 +1,4 @@
-import type { Mode, Result } from "./types";
+import { BENCHMARKS, type Mode, type Result } from "./types";
 
 export function summarize(results: Result[], expectedRuns = results.length) {
   const progress = { completedRuns: results.length, expectedRuns, complete: results.length === expectedRuns };
@@ -22,7 +22,7 @@ export function summarize(results: Result[], expectedRuns = results.length) {
       wallSeconds: rows.reduce((s, r) => s + r.wallSeconds, 0),
     };
   });
-  const paired = (["generalist", "rules-only"] as Mode[]).flatMap((baseline) => (["apex", "dabstep"] as const).map((benchmark) => {
+  const paired = (["generalist", "rules-only"] as Mode[]).flatMap((baseline) => BENCHMARKS.map((benchmark) => {
     const team = results.filter((r) => r.mode === "full-team" && r.benchmark === benchmark);
     const pairs = team.flatMap((r) => {
       const other = results.find((x) => x.mode === baseline && x.taskId === r.taskId && x.repeat === r.repeat);
@@ -37,11 +37,14 @@ export function formatComparison(results: Result[], expectedRuns = results.lengt
   const { progress, groups, paired } = summarize(results, expectedRuns);
   const pct = (value: number | null) => value === null ? "pending" : `${(value*100).toFixed(1)}%`;
   const cell = (value: unknown) => String(value ?? "").replaceAll("|", "\\|").replaceAll("\n", " ");
+  const present = new Set(results.map((r) => r.benchmark));
+  const extra = present.has("invoice-sandbox") || present.has("finbalance");
   return [
-    "# Finance eight-task comparison", "",
+    extra ? "# External finance benchmark comparison" : "# Finance eight-task comparison", "",
     `Run progress: ${progress.completedRuns}/${progress.expectedRuns} task runs recorded. ${progress.complete ? "Execution complete; grading coverage is shown below." : "INCOMPLETE — aggregate scores and paired deltas are withheld."}`, "",
     "Local development-subset evaluation, not an official APEX or DABstep leaderboard score. APEX uses mean rubric credit; DABstep uses exact sets and numeric tolerances. Results remain separate by benchmark.", "",
-    "Full-team uses the real seat scheduler, specialist → controller handoff, and Git decision records. External cases produce answers, not ledger mutations. Generalist has the same evidence tools and total turn cap. Rules-only has task-specific deterministic procedures for all eight cases. Errors and abstentions receive zero.", "",
+    ...(extra ? ["Invoice Sandbox uses the benchmark's official per-customer net-spend metric ($0.01 tolerance; score = share of customers exact). FinBalance uses its own BS_exact on standard records and exact contradiction-code match on negative controls; full-team FinBalance balance sheets come from booking the controller's entries through the ledger kernel.", ""] : []),
+    `Full-team uses the real seat scheduler, specialist → controller handoff, and Git decision records. ${extra ? "Only FinBalance answers are booked to the kernel; other external cases produce answers, not ledger mutations." : "External cases produce answers, not ledger mutations."} Generalist has the same evidence tools and total turn cap. Rules-only has task-specific deterministic procedures for every case. Errors and abstentions receive zero.`, "",
     "| Mode | Benchmark | Runs | Answered | Graded | Mean score | Fully passed | Abstained | Errors | Agent turns | Agent $ est. | Judge $ est. | Seconds |",
     "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ...groups.map((g) => `| ${g.mode} | ${g.benchmark} | ${g.runs} | ${g.answered} | ${g.graded} | ${pct(g.meanScore)} | ${g.fullyPassed} | ${g.abstained} | ${g.errors} | ${g.agentTurns} | ${g.estimatedAgentCostUsd.toFixed(4)} | ${g.estimatedJudgeCostUsd.toFixed(4)} | ${g.wallSeconds.toFixed(1)} |`), "",

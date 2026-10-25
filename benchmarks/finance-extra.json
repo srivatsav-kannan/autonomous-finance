@@ -1,0 +1,43 @@
+{
+  "id": "finance-extra-v1",
+  "version": 1,
+  "sources": {
+    "invoice-sandbox": {
+      "repo": "ciru-ai/invoice-sandbox-benchmark",
+      "commit": "b8cb58ff9747486e86c623e867b76fad5d8d075f",
+      "license": "No license file at this commit; fetched for local evaluation only and not redistributed",
+      "extract": ["README.md", "gold_master/", "answer_key/"],
+      "pins": {
+        "README.md": "c14e9c0609ab3667f3ba4305e5b7a4ba577bacaa56aada633e842e7010003ae8",
+        "gold_master/": "a691fc8d670eb3346bd866e9ec2aafa433085ebb20a70901507a0e2ff9d87342",
+        "answer_key/customer_totals.csv": "e8e4315b9d58ff1979ee9cd4610796f565b9e6f76b69882945bb54b53abbfef5",
+        "answer_key/invoices.csv": "05fed4fdf5ac095dd0144ebc8cf9bfabf4462a90fa18223a703da4f6812034d8",
+        "answer_key/traps.json": "ed2f1e6cb6ed49707244598046f12a0070278eea3c66aebfa0b84126acb68d35"
+      }
+    },
+    "finbalance": {
+      "repo": "Devansh1105/finbalance",
+      "commit": "a1062b7b392eaf53311308c2f63cf748b68bb8cf",
+      "license": "Apache-2.0 code, CC-BY-4.0 data",
+      "dataset": "data/main/records.jsonl",
+      "extract": ["LICENSE", "DATA_LICENSE.md", "data/main/records.jsonl", "finbalance/inconsistencies.py", "finbalance/accounts.py", "finbalance/benchmark/prompt.py"],
+      "pins": {
+        "LICENSE": "9568a2b155e66ac3e0ba1fd80b52b827b9460e6cf6f233125e7cbca8e206ddc3",
+        "DATA_LICENSE.md": "c3103b5aac603bebc267ac4433b4840ec2b4eb342ba93fe16a530a9fc8f86c1b",
+        "data/main/records.jsonl": "54b303c79ac6bc34ece6c2be9a77c31f86d6633dbf0e8967c8d16b47677c32bf",
+        "finbalance/inconsistencies.py": "9e3633f16998f041ff64d674154da68c4602ee17624f377d397f7cfafc44b34d",
+        "finbalance/accounts.py": "d012b47b0ee965a2b8fa37a4bf091e3fb8ac77c305b65a5b86a4b40544bd3248",
+        "finbalance/benchmark/prompt.py": "6101649af3c6f2677ddd6c769309aaf1ab42f021e1ad8bc5fe78ae078db16a4c"
+      }
+    }
+  },
+  "tasks": [
+    { "id": "invoice-sandbox-net-spend", "benchmark": "invoice-sandbox", "sourceId": "b8cb58f", "label": "Customer net spend from AR documents", "role": "revenue_accountant", "answerType": "customer-net-spend" },
+    { "id": "finbalance-cov-pro-m1-0000", "benchmark": "finbalance", "sourceId": "COV_PRO_M1_0000", "label": "L1 month, professional services, USD", "role": "revenue_accountant", "answerType": "finbalance-standard" },
+    { "id": "finbalance-db-hea-q1-00196", "benchmark": "finbalance", "sourceId": "DB_HEA_Q1_00196", "label": "L1 quarter, healthcare clinic, USD", "role": "revenue_accountant", "answerType": "finbalance-standard" },
+    { "id": "finbalance-cov-pro-y1-0085", "benchmark": "finbalance", "sourceId": "COV_PRO_Y1_0085", "label": "L1 year, property management, EUR", "role": "revenue_accountant", "answerType": "finbalance-standard" },
+    { "id": "finbalance-db-pro-m2-00004", "benchmark": "finbalance", "sourceId": "DB_PRO_M2_00004", "label": "L2 month, professional services, VAT and settlements", "role": "revenue_accountant", "answerType": "finbalance-standard" },
+    { "id": "finbalance-neg-bank-closing-01", "benchmark": "finbalance", "sourceId": "MAIN_NEG_01_BANK_CLOSING_MISMATCH", "label": "Contradiction: bank closing balance", "role": "revenue_accountant", "answerType": "finbalance-contradiction" },
+    { "id": "finbalance-neg-invoice-total-01", "benchmark": "finbalance", "sourceId": "MAIN_NEG_01_INVOICE_TOTAL_MISMATCH", "label": "Contradiction: invoice total", "role": "revenue_accountant", "answerType": "finbalance-contradiction" }
+  ]
+}

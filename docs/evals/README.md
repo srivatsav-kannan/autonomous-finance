@@ -172,6 +172,7 @@ Our application agents call Claude (`ANTHROPIC_API_KEY`). The eight-task externa
 | Live demo, and "why" answers in the console | `npm run agents`, `npm run gateway` | not measured | Same document reading as above. Each "why" question is one short tool loop. |
 | Invoice Sandbox A or B | `npx tsx evals/external/invoice-sandbox/run.ts --system a --run-id <id>` (or `--system b ... --sample <n>`) | A $1.29–1.47, B $1.55–1.68 | Claude only. Finishing the stopped fresh-seed runs: about $3.20. |
 | FinBalance | see its [harness README](../../evals/external/finbalance/README.md) | $12.54 per 178 records | Claude only. |
+| Invoice Sandbox + FinBalance through our system (opt-in) | `npm run bench:run -- --tasks finbalance,invoice-sandbox` with an approved policy file (see [EXTERNAL_EVALS.md](../EXTERNAL_EVALS.md#opt-in-cases-invoice-sandbox-and-finbalance)) | est. $2–5 per repeat of all 7 cases (not measured) | Full team and generalist need a model; rules-only is free. |
 | DABstep dev × 3 | `npx tsx evals/external/dabstep/run.ts --label dev-x3 --runs 3 --concurrency 5 --budget-usd 15` | $0.71–0.99 per 10 tasks | Claude only. |
 | Vals Finance Agent | `npx tsx evals/external/vals-finance-agent/src/run.ts --run-id main --all --reuse-from pilot --concurrency 8`, then `src/grade.ts --run-id main --samples 3` | est. about $1 to finish the 6 missing questions; about $13 for a full rerun | Claude answers and Claude grades. Set `SEC_USER_AGENT="name email"` first. |
 
@@ -179,7 +180,7 @@ These run without credit:
 - `npm run controls`: the 20 control tests (with #72).
 - `npm test`: the unit tests (558 on main with #72). The `scripts/smoke-*.ts` suites need the local backend.
 - `AGENT_LLM=off npm run eval -- --seed 7 --label claude-off`: our system with Claude off. On seed 7 it catches 13/13 errors and reads 43/64 invoices.
-- `npm run bench:run -- --modes rules-only --repeats 1 --judge off`: the rules-only row of the eight-task eval.
+- `npm run bench:run -- --modes rules-only --repeats 1 --judge off`: the rules-only row of the eight-task eval. Add `--tasks finbalance,invoice-sandbox` for the opt-in cases (after `npm run bench:prepare -- --batch extra`).
 - Rescoring saved outputs:
   - Invoice Sandbox: `score.py` and `report.ts`, plus `run.ts --system b --offline`
   - DABstep: `score.py`
@@ -208,7 +209,11 @@ These are list prices; billed amounts are on the Usage page of the Anthropic con
 1. **The eight-task APEX + DABstep comparison (#68),** once #67's budget is approved. It's the first outside benchmark that runs our actual team, so it's the most useful next number. APEX also has published scores to compare against.
 2. **Held-out error types, run blind.** Someone who didn't write the agents adds new kinds of errors to the simulator. We run our system once with no code changes and publish the first-pass result before fixing anything. Cost is cents per run.
 3. **More head-to-head seeds,** with the baseline given a way to approve a legitimate bank change. That shows whether the single missed duplicate is a pattern.
-4. **Parked:** System C on Invoice Sandbox (above), and FinBalance through our kernel. For FinBalance the expected gain is near zero: Opus 5.5 has no aggregation gap there, and its misses are entry choice and citations, which a kernel doesn't fix.
+4. **Invoice Sandbox and FinBalance through our system: adapters built, not yet run.** These are seven opt-in cases in the same external framework ([EXTERNAL_EVALS.md](../EXTERNAL_EVALS.md#opt-in-cases-invoice-sandbox-and-finbalance)): one Invoice Sandbox case and six FinBalance records (four standard, two contradictions). Each runs as full team vs generalist vs rules. In full-team FinBalance, the controller's entries are booked through the ledger kernel, and the balance sheet comes from the kernel's trial balance, not the model. Scoring uses each benchmark's own metric, ported and checked against the saved runs above: 0 differences on 218 FinBalance responses and 8 Invoice Sandbox runs.
+   - **Free rules-only run:** 7/7. Treat it as a harness check, not a baseline: the rules were written by someone who had seen these records' keys while picking them.
+   - **Model runs:** not done; waiting on budget. Estimated $2–5 for one repeat (ceiling $40.48), $5–17 for three (ceiling $121.44).
+   - **Expected gain:** still small for FinBalance. Opus 5.5 has no aggregation gap there, and its misses are entry choice and citations, which a kernel doesn't fix. These are also low-difficulty records.
+   - **Supersedes System C:** this replaces the parked System C idea; the old branch `evals-and-hardening` is untouched.
 
 ## Reproduce
 

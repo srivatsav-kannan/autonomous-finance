@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { runAdapter } from "./adapters";
 import { BudgetedModelClient, type ModelClient } from "../../agents/model-client";
-import { DEFAULT_DATA, evidencePath } from "./evidence";
+import { DEFAULT_DATA, DEFAULT_EXTRA_DATA, evidencePath } from "./evidence";
 import { convex, api } from "../../core/kernel-client";
 import { MemoryStore } from "../../memory/store";
 import { memoryDir } from "../../world/scenario";
@@ -22,6 +22,23 @@ const runTools: ModelClient["runTools"] = vi.fn(async (opts) => {
     return "INTEGRATION TEST STUB — not a benchmark prediction";
   });
 const model: ModelClient = { model: "integration-stub", runTools, extract: async () => { throw new Error("Unexpected judge"); } };
+
+describe.runIf(process.env.EXTERNAL_BENCH_INTEGRATION === "1" && fs.existsSync(path.join(DEFAULT_EXTRA_DATA, "tasks.json")))("real kernel FinBalance booking (model stub)", () => {
+  it("books the controller's entries through the kernel and reports the kernel's balance sheet", async () => {
+    const data = JSON.parse(fs.readFileSync(path.join(DEFAULT_EXTRA_DATA, "tasks.json"), "utf8"));
+    const task = data.tasks.find((t: BenchmarkTask) => t.id === "finbalance-cov-pro-m1-0000") as BenchmarkTask;
+    const stub = JSON.stringify({ has_inconsistency: false, inconsistency_codes: [], inconsistency_notes: [], entries: [{ doc_refs: ["D002"], debit_account: "Accounts Receivable", credit_account: "Service Revenue", amount: 1 }], balance_sheet: { assets: {}, liabilities: {}, equity: {} } });
+    const finbalanceModel: ModelClient = { model: "integration-stub", runTools: async (opts) => { opts.usage.turns++; return stub; }, extract: async () => { throw new Error("Unexpected judge"); } };
+    const result = await runAdapter("full-team", task, evidencePath(DEFAULT_EXTRA_DATA, task), 6, finbalanceModel);
+    expect(result.status, result.reason).toBe("answered");
+    const booking = result.trace.find((t) => t.tool === "kernel_book_entries")!;
+    expect(booking.seat).toBe("controller");
+    expect((booking.output as { posted: unknown[] }).posted).toHaveLength(1);
+    expect(JSON.parse(result.answer).balance_sheet.equity["Retained Earnings"]).toBe(1);
+    const tb = await convex().query(api.ledger.trialBalance, { runId: result.kernelRunId! });
+    expect(tb.map((r) => r.net).sort((a, b) => a - b)).toEqual([-100, 100]);
+  }, 30000);
+});
 
 describe.runIf(process.env.EXTERNAL_BENCH_INTEGRATION === "1")("real kernel external adapter (model stub)", () => {
   it("routes specialist → controller, persists evidence, and isolates repeat runs", async () => {
