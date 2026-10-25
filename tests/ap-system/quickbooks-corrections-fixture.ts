@@ -14,8 +14,9 @@ export async function returnedFixture(
     f: Awaited<ReturnType<typeof creditFixture>>,
     s: Awaited<ReturnType<typeof seedSettled>>,
   ) => Promise<void>,
+  initial?: Awaited<ReturnType<typeof creditFixture>>,
 ) {
-  const f = await creditFixture();
+  const f = initial ?? (await creditFixture());
   const s = await seedSettled(f, 2000, 2000);
   await beforeReturn?.(f, s);
   const ids = await f.t.run(async (ctx) => {

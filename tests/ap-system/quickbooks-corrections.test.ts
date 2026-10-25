@@ -42,6 +42,21 @@ describe("controller-proposed immutable QBO return authority", () => {
       originalBillCents: 1000,
       amountCents: 2000,
     });
+    const originalOnly = await seedSettled(f, 1000, 1000, [], "-original-only");
+    const o = await f.proposeCorrection({
+      ...input,
+      paymentVersionId: originalOnly.versionId,
+      originalBillCents: 1000,
+      restoredPayables: [],
+      idempotencyKey: "original-only",
+    });
+    await f.voteCorrection(o);
+    await f.voteCorrection(o, "finance");
+    expect(await f.currentCorrection(o.proposalId)).toMatchObject({
+      kind: "payment_allocation",
+      originalBillCents: 1000,
+      restoredPayables: [],
+    });
     const second = await seedSettled(f, 1001, 1001, [], "-second");
     await expect(
       f.proposeCorrection({

@@ -26,7 +26,6 @@ export const accountingCorrectionRequestSchema = z.discriminatedUnion("kind", [
             .object({ correctionId: id, amountCents: cents.positive() })
             .strict(),
         )
-        .min(1)
         .max(20),
     })
     .strict(),

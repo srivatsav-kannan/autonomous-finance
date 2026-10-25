@@ -241,6 +241,87 @@ async function applicationFixture() {
   return { f, c, a: a!, s, load };
 }
 describe("QBO business dispatcher HTTP protocol (mocked)", () => {
+  it("preserves cash+credit economics across original Bill and restored JournalEntry", async () => {
+    let p!: Awaited<ReturnType<typeof protocol>>;
+    const base = await creditFixture();
+    const c = await base.credit();
+    const f = await returnedFixture(async (f, s) => {
+      p = await protocol(({ caseId, ...rest }) => s.load(caseId, rest));
+      await p.submit({ caseId: f.detail.caseId });
+      await p.submit({
+        caseId: f.detail.caseId,
+        paymentVersionId: s.versionId,
+      });
+    }, base);
+    const credit = await p.submit({ caseId: c.caseId });
+    const r = await f.proposeCorrection();
+    await f.voteCorrection(r);
+    await f.voteCorrection(r, "finance");
+    const je = await p.submit({
+      caseId: f.detail.caseId,
+      correctionId: r.proposalId,
+    });
+    expect(
+      await p.dispatcher.checkHolds(
+        { caseId: f.detail.caseId },
+        { verify: true },
+      ),
+    ).toEqual([]);
+    const s = await seedSettled(
+      f,
+      1150,
+      5000,
+      [{ creditId: c.creditId, amountCents: 3850 }],
+      "-cash-credit",
+    );
+    const a = await f.proposeCorrection({
+      kind: "payment_allocation",
+      caseId: f.detail.caseId,
+      paymentVersionId: s.versionId,
+      originalBillCents: 3000,
+      restoredPayables: [{ correctionId: r.proposalId, amountCents: 2000 }],
+      idempotencyKey: "cash-credit-allocation",
+      reason:
+        "Cash plus recognized credit against exact original and restored principal",
+    });
+    await f.voteCorrection(a);
+    await f.voteCorrection(a, "finance");
+    const op = await p.submit({
+      caseId: f.detail.caseId,
+      correctionId: a.proposalId,
+    });
+    expect(op.payload).toMatchObject({
+      TotalAmt: 11.5,
+      Line: [
+        { Amount: 30, LinkedTxn: [{ TxnType: "Bill" }] },
+        {
+          Amount: 20,
+          LinkedTxn: [{ TxnType: "JournalEntry", TxnId: je.externalId }],
+        },
+        {
+          Amount: 38.5,
+          LinkedTxn: [{ TxnType: "VendorCredit", TxnId: credit.externalId }],
+        },
+      ],
+    });
+    expect(op.links).toMatchObject({
+      appliedCreditIds: [c.creditId],
+      restoredCorrectionIds: [r.proposalId],
+      correctionId: a.proposalId,
+    });
+    expect(await p.journal.client.journalAppliedCents(je, "5")).toBe(2000);
+    // A truncated vendor history must not be treated as a complete available balance.
+    for (let i = 0; i < 1000; i++)
+      p.rows.set(`BillPayment:${1000 + i}`, {
+        Id: String(1000 + i),
+        VendorRef: { value: "5" },
+        Line: [],
+      });
+    await expect(p.journal.client.journalAppliedCents(je, "5")).rejects.toThrow(
+      "restored_balance_incomplete",
+    );
+  });
+
   it("replicates approved return, resolves held evidence only after readback, and pays exact restored allocation", async () => {
     let p!: Awaited<ReturnType<typeof protocol>>;
     let original!: Operation;
