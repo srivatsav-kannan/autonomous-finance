@@ -1,0 +1,278 @@
+{
+  "schema": "ap-agent-live-flow-summary-v1",
+  "updatedAt": "2026-10-25T14:38:39.785548+00:00",
+  "status": "minimal_synthetic_full_flow_passed",
+  "fullFlowPassed": true,
+  "case": {
+    "caseId": "kd70djc8wdam76s7dxz0jxdgv98gzmq4",
+    "invoiceNumber": "INV-AGENT-20261025-01",
+    "revision": 2.0,
+    "amountCents": 7700,
+    "currency": "USD",
+    "synthetic": true
+  },
+  "observed": {
+    "source": "independently read saved local/provider receipts; no provider requests performed by evidence preparer",
+    "states": {
+      "accounting": "recognized",
+      "authorization": "authorized",
+      "business": "approved",
+      "document": "reviewed",
+      "execution": "settled",
+      "reconciliation": "matched"
+    },
+    "amounts": {
+      "acceptedCents": 7700.0,
+      "creditedCents": 0.0,
+      "disputedCents": 0.0,
+      "instructedCents": 7700.0,
+      "invoicedCents": 7700.0,
+      "outstandingCents": 0.0,
+      "settledCents": 7700.0
+    },
+    "agentWork": {
+      "status": "complete",
+      "stage": "reconciled",
+      "requirements": [],
+      "updatedAt": 1792938940303.0
+    },
+    "paymentCount": 1,
+    "caseJournalCount": 2,
+    "journals": [
+      {
+        "bankTransactionId": null,
+        "date": "2026-10-25",
+        "entryId": "rx7e01ehw8kz1388bm9fz3q5b18gzwp0",
+        "kind": "recognition",
+        "lines": [
+          {
+            "account": "5000",
+            "credit": 0.0,
+            "debit": 7700.0
+          },
+          {
+            "account": "2000",
+            "credit": 7700.0,
+            "debit": 0.0
+          }
+        ]
+      },
+      {
+        "bankTransactionId": "sandbox_transaction_r8hbiuowvzm2dq0o7s7g",
+        "date": "2026-10-25",
+        "entryId": "rx7atffq428wt3z2ey0t81j4r98gyv8g",
+        "kind": "settlement",
+        "lines": [
+          {
+            "account": "2000",
+            "credit": 0.0,
+            "debit": 7700.0
+          },
+          {
+            "account": "1000",
+            "credit": 7700.0,
+            "debit": 0.0
+          }
+        ]
+      }
+    ],
+    "timeline": [
+      {
+        "at": 1792930826440.0,
+        "kind": "source_revision"
+      },
+      {
+        "at": 1792930826440.0,
+        "kind": "source_delivery"
+      },
+      {
+        "at": 1792930826440.0,
+        "kind": "source_delivery"
+      },
+      {
+        "at": 1792930826440.0,
+        "kind": "source_delivery"
+      },
+      {
+        "at": 1792930827403.0,
+        "kind": "agent_missing_evidence"
+      },
+      {
+        "at": 1792930838730.0,
+        "kind": "source_revision"
+      },
+      {
+        "at": 1792930838730.0,
+        "kind": "source_delivery"
+      },
+      {
+        "at": 1792930838847.0,
+        "kind": "agent_field_review"
+      },
+      {
+        "at": 1792930953456.0,
+        "kind": "field_review"
+      },
+      {
+        "at": 1792930953705.0,
+        "kind": "agent_bill_approval"
+      },
+      {
+        "at": 1792938774758.0,
+        "kind": "bill_approval"
+      },
+      {
+        "at": 1792938779643.0,
+        "kind": "agent_payment_authorization"
+      },
+      {
+        "at": 1792938909275.0,
+        "kind": "agent_bank_settlement"
+      },
+      {
+        "at": 1792938924788.0,
+        "kind": "agent_bank_settlement"
+      },
+      {
+        "at": 1792938940303.0,
+        "kind": "agent_reconciled"
+      }
+    ],
+    "billApprovalRecorded": true,
+    "independentPaymentAuthorizationRecorded": true,
+    "userPersonallyClickedApprovals": "parent observed user performed bill approval and separate payment authorization"
+  },
+  "increase": {
+    "transferId": "sandbox_ach_transfer_8mguyq0upoyjbjoa0516",
+    "paymentVersionId": "q175ng25mn4x5jbxtj102jmnz18gzyb9",
+    "debitTransactionId": "sandbox_transaction_r8hbiuowvzm2dq0o7s7g",
+    "amountCents": 7700,
+    "nativeStatus": "submitted",
+    "settlementPresent": true,
+    "normalizedStatus": "settled",
+    "checkedAt": "2026-10-25T14:35:33.644131+00:00",
+    "independentReadback": {
+      "checkedAt": "2026-10-25T14:37:58.859Z",
+      "passed": true,
+      "settledAt": "2026-10-25T14:35:32Z",
+      "currentBalanceCents": 0,
+      "availableBalanceCents": 0,
+      "oldTransferPreserved": true
+    }
+  },
+  "quickbooks": {
+    "bill": {
+      "id": "147",
+      "state": "succeeded",
+      "attempts": 1,
+      "amount": 77,
+      "currency": "USD",
+      "payloadHash": "422ced26813979ba7d649684fa441c15c61f22b53032605590dd01dbcd392315",
+      "responseHash": "551905e95be688629a71caf26a4fcc94d16fe4ee386cdae1a3c7d201989ab3c3",
+      "balance": 0,
+      "readbackCheckedAt": "2026-10-25T14:37:58.859Z"
+    },
+    "billPayment": {
+      "status": "verified",
+      "id": "148",
+      "total": 77,
+      "currency": "USD",
+      "linkedBillId": "147",
+      "readbackCheckedAt": "2026-10-25T14:37:58.859Z",
+      "uiVerifiedAt": "2026-10-25T07:37:35-07:00"
+    }
+  },
+  "funding": {
+    "amountCents": 7700,
+    "inboundTransferId": "sandbox_inbound_ach_transfer_v6d19ejq15jofeg01w6f",
+    "creditTransactionId": "sandbox_transaction_oy9m8onuj9jyvcxbpgik",
+    "nativeStatus": "accepted",
+    "classification": "simulated_contributed_capital",
+    "reconciliationClosed": true,
+    "journalId": "rx7e33cyp8s2a5b2asbthrr89n8gz3m8",
+    "journalLines": [
+      {
+        "account": "1000",
+        "debit": 7700,
+        "credit": 0
+      },
+      {
+        "account": "3000",
+        "debit": 0,
+        "credit": 7700
+      }
+    ]
+  },
+  "evidenceArtifacts": [
+    {
+      "name": "settled-local.json",
+      "sha256": "6b8e22357e2d5c42e7fbe275fd336b579d98c6955432cb8107144cad2c66a19c",
+      "handling": "raw private; do not commit"
+    },
+    {
+      "name": "new-transfer-summary-20261025T143529592822Z.json",
+      "sha256": "5fb24a2ac3a6648722cfecf9f89cb6e0093c7bc94426650536798643434a2ae7",
+      "handling": "raw private; do not commit"
+    },
+    {
+      "name": "new-funding-receipt.json",
+      "sha256": "b59fbb99570ef2146660baa549473483bf58c28191e8aecca10cd7239f2fe979",
+      "handling": "raw private; do not commit"
+    },
+    {
+      "name": "qbo-Bill-receipt.json",
+      "sha256": "38446ef1c325e5e12c4ecddd4b3b4221a395e7c0dcf84fabdf38e5d941a53caa",
+      "handling": "raw private; do not commit"
+    },
+    {
+      "name": "final-provider-readback.json",
+      "sha256": "1bb18c0fda3b4f98bc798d642cfcc7cc46706a88962e3f1dc98ac9aa14f019ec",
+      "handling": "sanitized result or UI evidence"
+    },
+    {
+      "name": "final-bank-reconciliation.txt",
+      "sha256": "89e09f190cd356f6945ef7aeb56f865c5d1d6eb6a231aa833f68f47e93704d2f",
+      "handling": "sanitized result or UI evidence"
+    },
+    {
+      "name": "qbo-billpayment-148-verified.png",
+      "sha256": "3369b27a00eddad63edb5157435264cc48876d9fb2e9e5fbb42eb0f9eb80bf40",
+      "handling": "sanitized result or UI evidence"
+    },
+    {
+      "name": "final-bank-reconciliation.png",
+      "sha256": "5a536b9298274e6738d6a165d48f229df66a536f477fe723bd84302f518ada41",
+      "handling": "sanitized result or UI evidence"
+    }
+  ],
+  "remaining": [],
+  "limits": [
+    "Forensic recovery copy serves the sandbox; original malformed database is preserved. Exact five orphan index versions removed with surviving 1,672 documents unchanged. SQLite .recover cannot prove no wholly missing records.",
+    "Current agent progression is deterministic; real model decision/tool loop remains missing, so issue108 cannot close.",
+    "Synthetic native PDFs; this run is not a new LlamaParse validation.",
+    "CI skipped by user. No Claude independent model review or practitioner sign-off."
+  ],
+  "minimalSyntheticFlowPassed": true,
+  "issue108Complete": false,
+  "bankReconciliation": {
+    "importedTransactionCount": 4,
+    "allMatchedAndPosted": true,
+    "cashLedgerCents": 0,
+    "importedNetActivityCents": 0,
+    "unresolvedItemCount": 0,
+    "formalPeriodCloseClaimed": false
+  },
+  "independentFinalEvidence": {
+    "method": "Read final independent provider JSON and reconciliation text; visually inspected both final screenshots.",
+    "providerVerifierBusinessWrites": 0,
+    "providerCheckPassed": true,
+    "qboScreenshotVerified": true,
+    "bankScreenshotVerified": true
+  },
+  "remainingForIssue108": [
+    "Real model decision/tool loop; current progression is deterministic.",
+    "Consume issue107 shared APEX packet through the intended adapter.",
+    "Remaining crash/retry/duplicate/denied-action evidence.",
+    "Before/after actual model/tool traces and handoff review."
+  ]
+}

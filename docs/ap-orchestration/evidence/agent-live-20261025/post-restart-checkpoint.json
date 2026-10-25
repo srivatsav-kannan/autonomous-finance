@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-25T14:21:51.491978+00:00",
+  "waitingAfterWorkerRestart": true,
+  "workStage": "bill_approval",
+  "states": {
+    "accounting": "unposted",
+    "authorization": "not_requested",
+    "business": "held",
+    "document": "reviewed",
+    "execution": "not_started",
+    "reconciliation": "unmatched"
+  },
+  "paymentCount": 0,
+  "journalCount": 0,
+  "originalMalformedDatabaseUnchanged": true,
+  "browserAuth0Readback": "Workspace rendered exact same revision-2 case with 17 fields and original sources; approval not performed",
+  "flowPassed": false
+}

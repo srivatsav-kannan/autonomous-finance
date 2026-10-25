@@ -1,0 +1,38 @@
+[
+  {
+    "entity": "BillPayment",
+    "externalId": "148",
+    "state": "succeeded",
+    "requestId": "ap-4ad15f9269225d427d322cce59b56aa33e40d890e700",
+    "attempts": 1,
+    "links": {
+      "bankTransactionId": "sandbox_transaction_r8hbiuowvzm2dq0o7s7g",
+      "billId": "ns75jv83yjx3ef4kez0x6en6cn8gya8e",
+      "caseId": "kd70djc8wdam76s7dxz0jxdgv98gzmq4",
+      "commandId": "nx72wvpsrdd2gb5336jsekkf558gy89s",
+      "creditId": null,
+      "paymentVersionId": "q175ng25mn4x5jbxtj102jmnz18gzyb9",
+      "recognitionJournalId": "rx7e01ehw8kz1388bm9fz3q5b18gzwp0",
+      "settlementJournalId": "rx7atffq428wt3z2ey0t81j4r98gyv8g"
+    },
+    "responseHash": "a8d26c82e64f9494e9926d39b09352bcd0c5702e0a981c1cb0ce5d0db457b5d9"
+  },
+  {
+    "entity": "Bill",
+    "externalId": "147",
+    "state": "succeeded",
+    "requestId": "ap-ee5f6120ad1ad131bc3c775a2891ee6d78618a4f3880",
+    "attempts": 1,
+    "links": {
+      "bankTransactionId": null,
+      "billId": "ns75jv83yjx3ef4kez0x6en6cn8gya8e",
+      "caseId": "kd70djc8wdam76s7dxz0jxdgv98gzmq4",
+      "commandId": null,
+      "creditId": null,
+      "paymentVersionId": null,
+      "recognitionJournalId": "rx7e01ehw8kz1388bm9fz3q5b18gzwp0",
+      "settlementJournalId": null
+    },
+    "responseHash": "551905e95be688629a71caf26a4fcc94d16fe4ee386cdae1a3c7d201989ab3c3"
+  }
+]

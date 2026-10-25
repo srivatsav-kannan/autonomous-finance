@@ -1,0 +1,412 @@
+{
+  "schema": "ap-recovered-business-checkpoint-v1",
+  "extractedAt": "2026-10-25T13:53:41.029067+00:00",
+  "observationMethod": "Independently read and sanitized saved scoped-query responses, forensic copy-repair audit and runtime manifest. Evidence preparer performed no provider call or backend/database mutation.",
+  "recoveryBackendPort": 3252,
+  "originalDatabaseReplaced": false,
+  "databaseRecoveryComplete": false,
+  "priorCase": {
+    "sourceArtifact": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/prior-case-recovered.json",
+    "sourceArtifactSha256": "18d3eed409d10161179b6aa028d273b9733dfb871a6c68917beca3e2e93bca0b",
+    "caseId": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
+    "invoiceNumber": "INV-1001",
+    "currency": "USD",
+    "candidateRevision": 1,
+    "revision": 1,
+    "snapshotHash": "a49d072d746833cbb2e26ba8040e37e94440623b2b08bba3ee1d00bc5fbf5c68",
+    "amounts": {
+      "acceptedCents": 67860,
+      "creditedCents": 0,
+      "disputedCents": 0,
+      "instructedCents": 67860,
+      "invoicedCents": 67860,
+      "outstandingCents": 0,
+      "settledCents": 67860
+    },
+    "states": {
+      "accounting": "recognized",
+      "authorization": "authorized",
+      "business": "approved",
+      "document": "reviewed",
+      "execution": "settled",
+      "reconciliation": "matched"
+    },
+    "paymentCount": 1,
+    "journalCount": 2,
+    "paymentStatuses": [
+      "settled"
+    ],
+    "journalKinds": [
+      "recognition",
+      "settlement"
+    ],
+    "linkCounts": {
+      "bankTransactionIds": 1,
+      "commandIds": 1,
+      "externalAccountingIds": 0,
+      "paymentVersionIds": 1,
+      "settlementJournalIds": 1
+    },
+    "billPresent": true,
+    "timeline": [
+      {
+        "at": 1792924581913,
+        "kind": "source_revision",
+        "summary": "Source case revision 1 retained"
+      },
+      {
+        "at": 1792924581913,
+        "kind": "source_delivery",
+        "summary": "Received invoice.pdf"
+      },
+      {
+        "at": 1792924581913,
+        "kind": "source_delivery",
+        "summary": "Received purchase-order.pdf"
+      },
+      {
+        "at": 1792924581913,
+        "kind": "source_delivery",
+        "summary": "Received receipt.pdf"
+      },
+      {
+        "at": 1792924581913,
+        "kind": "source_delivery",
+        "summary": "Received contract.pdf"
+      },
+      {
+        "at": 1792925977234,
+        "kind": "field_review",
+        "summary": "Recorded review decision; personal actor identity omitted."
+      },
+      {
+        "at": 1792925991852,
+        "kind": "bill_approval",
+        "summary": "Recorded review decision; personal actor identity omitted."
+      }
+    ],
+    "decisions": [
+      {
+        "kind": "field_review",
+        "outcome": "approved",
+        "candidateRevision": 1
+      },
+      {
+        "kind": "bill_approval",
+        "outcome": "approved",
+        "candidateRevision": 1
+      }
+    ]
+  },
+  "newCase": {
+    "sourceArtifact": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/new-business-case-recovered.json",
+    "sourceArtifactSha256": "f7fe0a2ded606be1027f8f256d7d68e7299125ee4e8cee7d5f2ec0ec9d69ea6f",
+    "caseId": "kd70djc8wdam76s7dxz0jxdgv98gzmq4",
+    "invoiceNumber": "INV-AGENT-20261025-01",
+    "currency": "USD",
+    "candidateRevision": 2,
+    "revision": 2,
+    "snapshotHash": "e646c6b50f7f9b385a275e6cc00d3147cd0172d42247d70146703606777acce9",
+    "amounts": {
+      "acceptedCents": null,
+      "creditedCents": 0,
+      "disputedCents": null,
+      "instructedCents": 0,
+      "invoicedCents": 7700,
+      "outstandingCents": null,
+      "settledCents": 0
+    },
+    "states": {
+      "accounting": "unposted",
+      "authorization": "not_requested",
+      "business": "held",
+      "document": "reviewed",
+      "execution": "not_started",
+      "reconciliation": "unmatched"
+    },
+    "paymentCount": 0,
+    "journalCount": 0,
+    "paymentStatuses": [],
+    "journalKinds": [],
+    "linkCounts": {
+      "bankTransactionIds": 0,
+      "commandIds": 0,
+      "externalAccountingIds": 0,
+      "paymentVersionIds": 0,
+      "settlementJournalIds": 0
+    },
+    "billPresent": false,
+    "timeline": [
+      {
+        "at": 1792930826440,
+        "kind": "source_revision",
+        "summary": "Source case revision 1 retained"
+      },
+      {
+        "at": 1792930826440,
+        "kind": "source_delivery",
+        "summary": "Received invoice.pdf"
+      },
+      {
+        "at": 1792930826440,
+        "kind": "source_delivery",
+        "summary": "Received purchase_order.pdf"
+      },
+      {
+        "at": 1792930826440,
+        "kind": "source_delivery",
+        "summary": "Received contract.pdf"
+      },
+      {
+        "at": 1792930827403,
+        "kind": "agent_missing_evidence",
+        "summary": "missing_receipt Required: accepted_receiving_evidence"
+      },
+      {
+        "at": 1792930838730,
+        "kind": "source_revision",
+        "summary": "Source case revision 2 retained"
+      },
+      {
+        "at": 1792930838730,
+        "kind": "source_delivery",
+        "summary": "Received receipt.pdf"
+      },
+      {
+        "at": 1792930838847,
+        "kind": "agent_field_review",
+        "summary": "Current original fields require the existing independent review. Required: current_source_field_review"
+      },
+      {
+        "at": 1792930953456,
+        "kind": "field_review",
+        "summary": "Recorded review decision; personal actor identity omitted."
+      },
+      {
+        "at": 1792930953705,
+        "kind": "agent_bill_approval",
+        "summary": "Current bill and coding require the configured approval route before recognition. Required: current_bill_approval"
+      }
+    ],
+    "decisions": [
+      {
+        "kind": "field_review",
+        "outcome": "approved",
+        "candidateRevision": 2
+      }
+    ]
+  },
+  "limits": [
+    "The repair removes exactly five orphan index versions on a recovered copy, preserving all 1,672 surviving documents and other audited rows. It is not an official Convex repair.",
+    "Cannot prove SQLite .recover omitted no completely missing records. Full historical database completeness is unproven.",
+    "Original malformed database has not been replaced; the repaired copy serves sandbox ports 3252/3253.",
+    "No fresh Increase or QuickBooks provider success is represented here.",
+    "New case still has no bill approval, payment authorization, payment, or journal.",
+    "No personal actor identities, session tokens, credentials, or account configuration are copied into this checkpoint."
+  ],
+  "recoveryBackendStatus": "repaired_recovery_copy_serving_existing_ports",
+  "recoveryBackendStatusObservedBy": "independently read active-recovery-runtime.json and repaired-readback-summary-3252.json; runtime existence not re-polled by evidence preparer",
+  "updatedAt": "2026-10-25T14:22:29.122779+00:00",
+  "recoverySitePort": 3253,
+  "historicalAgentQueueError": {
+    "operation": "apCaseAgent:inspect",
+    "meaning": "Recovered business projection is readable, but the agent work-queue index still references a missing document; safe full-flow resume is not established.",
+    "evidence": {
+      "timestamp": "2026-10-25T13:50:30.238586Z",
+      "error": "Dangling index reference for IndexKeyBytes([16, 97, 112, 57, 55, 45, 97, 117, 116, 104, 48, 45, 108, 105, 118, 101, 45, 50, 48, 50, 54, 49, 48, 50, 53, 0, 16, 107, 100, 55, 48, 100, 106, 99, 56, 119, 100, 97, 109, 55, 54, 115, 55, 100, 120, 122, 48, 106, 120, 100, 103, 118, 57, 56, 103, 122, 109, 113, 52, 0, 13, 194, 122, 23, 48, 20, 140, 135, 10, 16, 116, 53, 55, 54, 49, 101, 55, 57, 114, 109, 112, 48, 107, 57, 57, 97, 102, 102, 102, 122, 51, 49, 57, 103, 99, 115, 56, 103, 122, 98, 119, 115, 0]) Timestamp(1792931146672960000)",
+      "logSha256": "884f37b83595a5f21259228db44ec86488117555b252d0f7f796cd3e4973a834",
+      "logPath": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/candidate-backend.log"
+    },
+    "status": "targeted_index_blocker_resolved_by_copy_only_repair"
+  },
+  "repair": {
+    "method": "forensic copy-only removal of five orphan index versions; not official Convex repair",
+    "removedIndexRows": 5,
+    "before": {
+      "documents": {
+        "rows": 1672,
+        "sha256": "330eb4d0d356f5b7579208b0d1f5e283d9057db76adc09d5f32cfce163c5c0bf"
+      },
+      "persistence_globals": {
+        "rows": 10,
+        "sha256": "2e4d3a02ae535a2393bd6b03b975d5f69997bad33e443ae8d7fee5db08866559"
+      },
+      "unaffected_indexes": {
+        "rows": 1863,
+        "sha256": "7eda5b6de562f88d850da9681ad6d9bbde510a19cb216899dace1f277db2d4e4"
+      },
+      "dangling_latest_index_references": 4
+    },
+    "after": {
+      "documents": {
+        "rows": 1672,
+        "sha256": "330eb4d0d356f5b7579208b0d1f5e283d9057db76adc09d5f32cfce163c5c0bf"
+      },
+      "persistence_globals": {
+        "rows": 10,
+        "sha256": "2e4d3a02ae535a2393bd6b03b975d5f69997bad33e443ae8d7fee5db08866559"
+      },
+      "unaffected_indexes": {
+        "rows": 1863,
+        "sha256": "7eda5b6de562f88d850da9681ad6d9bbde510a19cb216899dace1f277db2d4e4"
+      },
+      "dangling_latest_index_references": 0
+    },
+    "businessDocumentsUnchanged": true,
+    "originalCandidateUnchanged": true,
+    "originalMalformedDatabaseUnchanged": true,
+    "sourceDatabaseSha256": "0b74cc536f020385a485fc44612d96c6294326a2797b69cf0cbb3f482eff0555",
+    "repairedDatabaseSha256AtRepair": "ec7e13940e75e4ec8081a3bafd51410c416b7574924845527b4a423e6ca386d7",
+    "limitation": "Cannot prove sqlite recovery omitted no completely lost records. No document, approval, payment or journal was created or changed."
+  },
+  "latestRepairedReadback": {
+    "port": 3252,
+    "cases": {
+      "old": {
+        "caseId": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
+        "states": {
+          "accounting": "recognized",
+          "authorization": "authorized",
+          "business": "approved",
+          "document": "reviewed",
+          "execution": "settled",
+          "reconciliation": "matched"
+        },
+        "amounts": {
+          "acceptedCents": 67860.0,
+          "creditedCents": 0.0,
+          "disputedCents": 0.0,
+          "instructedCents": 67860.0,
+          "invoicedCents": 67860.0,
+          "outstandingCents": 0.0,
+          "settledCents": 67860.0
+        },
+        "paymentCount": 1,
+        "journalCount": 2,
+        "work": null
+      },
+      "new": {
+        "caseId": "kd70djc8wdam76s7dxz0jxdgv98gzmq4",
+        "states": {
+          "accounting": "unposted",
+          "authorization": "not_requested",
+          "business": "held",
+          "document": "reviewed",
+          "execution": "not_started",
+          "reconciliation": "unmatched"
+        },
+        "amounts": {
+          "acceptedCents": null,
+          "creditedCents": 0.0,
+          "disputedCents": null,
+          "instructedCents": 0.0,
+          "invoicedCents": 7700.0,
+          "outstandingCents": null,
+          "settledCents": 0.0
+        },
+        "paymentCount": 0,
+        "journalCount": 0,
+        "work": {
+          "caseId": "kd70djc8wdam76s7dxz0jxdgv98gzmq4",
+          "deadlineAt": 1793017353705.0,
+          "owner": "human_business_reviewer",
+          "reason": "Current bill and coding require the configured approval route before recognition.",
+          "requirements": [
+            "current_bill_approval"
+          ],
+          "stage": "bill_approval",
+          "status": "waiting",
+          "updatedAt": 1792930953705.0,
+          "waitSince": 1792930953705.0
+        }
+      }
+    },
+    "verifiedSources": [
+      {
+        "sourceId": "source-agent-20261025-01-invoice",
+        "bytes": 2345,
+        "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+        "matches": true
+      },
+      {
+        "sourceId": "source-agent-20261025-01-purchase_order",
+        "bytes": 2421,
+        "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+        "matches": true
+      },
+      {
+        "sourceId": "source-agent-20261025-01-contract",
+        "bytes": 2419,
+        "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+        "matches": true
+      },
+      {
+        "sourceId": "source-agent-20261025-01-receipt",
+        "bytes": 2475,
+        "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+        "matches": true
+      }
+    ],
+    "caseListReadSucceeded": true
+  },
+  "latestSourceArtifacts": [
+    {
+      "path": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/repair-audit.json",
+      "sha256": "9bd1c2a6d845e8537860917571b61ef3b5c3b11dc563a83d38c4a9106cd82389"
+    },
+    {
+      "path": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/repaired-readback-summary-3252.json",
+      "sha256": "d3ca313c24efc1a0de58770a02d20e828638b2e5032f4cc614eceb1147043de5"
+    },
+    {
+      "path": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/active-recovery-runtime.json",
+      "sha256": "c2acde8bb314579a2d116df97fe78ce0d48ba608c6c3c202b5cbbf6ec5f59ad0"
+    }
+  ],
+  "parentObservedChecks": {
+    "independentDatabaseAgentReview": "passed_targeted_copy_repair_review",
+    "apAgentOnceResult": [],
+    "apAgentOnceMeaning": "normal AP agent tick completed without new transition; case remains waiting for bill approval",
+    "browserRestoration": "completed_normal_Auth0_login_and_Chrome_5192_case_render",
+    "browserVisibleState": {
+      "document": "reviewed",
+      "business": "held",
+      "authorization": "not_requested",
+      "execution": "not_started"
+    },
+    "browserEvidenceFields": 17,
+    "browserReviewControls": "rendered",
+    "apWorker": "resident_worker_restarted_after_successful_once",
+    "nextUserAction": "Enter reason, confirm the bill-review checkbox, and click Approve bill $77.00. Prior automatic-review denial of agent clicking remains applicable.",
+    "screenshot": {
+      "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/recovered-ap-page.png",
+      "exists": true,
+      "sha256": "1e88cae1a1d5429306c075157fec6c48b3a76c1afcc47b7a28a3b0936d96cbd6"
+    }
+  },
+  "postRestartCheckpoint": {
+    "source": {
+      "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/post-restart-checkpoint.json",
+      "sha256": "a5fac8fa79cc5f81927353349bae44b49bde02e4bcfc9ffc7fab84d0fa82a9e7"
+    },
+    "data": {
+      "checkedAt": "2026-10-25T14:21:51.491978+00:00",
+      "waitingAfterWorkerRestart": true,
+      "workStage": "bill_approval",
+      "states": {
+        "accounting": "unposted",
+        "authorization": "not_requested",
+        "business": "held",
+        "document": "reviewed",
+        "execution": "not_started",
+        "reconciliation": "unmatched"
+      },
+      "paymentCount": 0,
+      "journalCount": 0,
+      "originalMalformedDatabaseUnchanged": true,
+      "browserAuth0Readback": "Workspace rendered exact same revision-2 case with 17 fields and original sources; approval not performed",
+      "flowPassed": false
+    },
+    "observation": "independently read saved post-restart check"
+  }
+}
