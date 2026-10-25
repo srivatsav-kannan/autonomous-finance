@@ -107,6 +107,11 @@ command is needed; the obsolete `memory:init` script has been removed.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/TEAM.md](docs/TEAM.md).
 
+For the proposed next implementation, see [Finance backend and integration design](docs/INTEGRATION_DESIGN.md):
+Convex data ownership, the AP-first Increase sandbox integration, placement of
+Stripe/ERP/billing/ledger/mock tools, and failure-recovery acceptance gates. This
+is a design proposal; the new integrations are not implemented by that document.
+
 ## Frontend design
 
 The console uses [Hallmark](https://github.com/Nutlope/hallmark) as project-local
