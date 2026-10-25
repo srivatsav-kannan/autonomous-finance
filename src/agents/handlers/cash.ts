@@ -59,14 +59,21 @@ export const matchBankTxn: Handler = async (rt, task) => {
     const reportId = t.description.split(" PAYOUT ")[1]!.trim();
     const report = (await rt.eventsOfType("payout.report")).find((r) => (r.payload as { reportId: string }).reportId === reportId);
     if (!report) return { outcome: "retry", summary: `payout report ${reportId} not in yet` };
-    const lines = (report.payload as { lines: { store: string; grossCents: number; commissionCents: number; refundsCents: number; adjustmentsCents: number; netCents: number }[] }).lines;
+    const { lines, notes = [] } = report.payload as { lines: { store: string; grossCents: number; commissionCents: number; refundsCents: number; adjustmentsCents: number; netCents: number }[]; notes?: { store: string; adjustmentCents: number }[] };
     const gross = lines.reduce((s, l) => s + l.grossCents, 0);
     const fees = lines.reduce((s, l) => s + l.commissionCents + l.refundsCents - l.adjustmentsCents, 0);
     if (gross - fees !== t.amountCents) return { outcome: "mismatch", summary: `deposit ${t.amountCents} != report net ${gross - fees}` };
-    await post(rt, `bank:${t.txnId}`, t.date, `Delivery payout ${reportId}`, t.txnId, [
+    // Only itemized adjustments are expenses. A material unexplained shortfall is what
+    // reconcilePayout disputes, so it stays receivable from the platform until resolved.
+    const tol = (await rt.mem.read<{ payoutToleranceCents: number }>("policies/materiality.yaml"))?.payoutToleranceCents ?? 500;
+    const disputed = lines.reduce((s, l) => {
+      const unexplained = l.adjustmentsCents - notes.filter((n) => n.store === l.store).reduce((sum, n) => sum + n.adjustmentCents, 0);
+      return Math.abs(unexplained) > tol ? s - unexplained : s;
+    }, 0);
+    await post(rt, `bank:${t.txnId}`, t.date, `Delivery payout ${reportId}${disputed ? ` (${formatMoney(disputed)} disputed, held in receivable)` : ""}`, t.txnId, [
       { account: "1020", debit: t.amountCents, credit: 0 },
-      { account: "5410", debit: fees, credit: 0 },
-      { account: "1110", debit: 0, credit: gross },
+      { account: "5410", debit: fees - disputed, credit: 0 },
+      { account: "1110", debit: 0, credit: gross - disputed },
     ]);
     return { outcome: "posted", summary: `${reportId} ${formatMoney(t.amountCents)}` };
   }
