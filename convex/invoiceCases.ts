@@ -2,6 +2,7 @@ import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/s
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { authSeat, checkIdempotency, fail, getRun, storeIdempotency, type Fail } from "./lib/kernel";
+import { extractTextDocument, type CustomerIdentity } from "../src/invoice-mvp/text-extraction";
 import { evidenceValidator, modeValidator, invoiceSourceValidator as sourceValidator, conclusionValidator, toolCallValidator } from "./schema";
 import type { BackendResult, CaseDetail, CaseStatus, CaseSummary, Conclusion, Contribution, DecisionResult, EvidenceRef, IngestBatchResult, ModelBudget, ModelReservationResult, Proposal, SeatAuth, SourceInput, SourceVersion, SubmitProposalResult, WorkspaceSnapshot } from "../src/invoice-mvp/contracts";
 
@@ -241,7 +242,14 @@ function containsToken(text: string, value: string) {
   const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return new RegExp(`(?:^|[^a-z0-9])${escaped}(?:$|[^a-z0-9])`, "i").test(text);
 }
-function sourceSupports(source: Source, conclusion: Conclusion, customer: Doc<"customers">): boolean {
+function sourceSupports(source: Source, conclusion: Conclusion, customer: Doc<"customers">, customers: readonly CustomerIdentity[]): boolean {
+  if (["text/plain", "application/pdf"].includes(source.mimeType)) {
+    const extracted = extractTextDocument(source, { documentId: source._id, version: source.version, contentHash: source.contentHash }, customers)?.conclusion;
+    // For recognized layouts validate the actual fields, not mere occurrence of an amount
+    // somewhere in the packet. This also blocks choosing a subtotal or resolving a conflict by omission.
+    if (extracted) return extracted.treatment === conclusion.treatment && !extracted.missingEvidence.length
+      && extracted.customerId === conclusion.customerId && extracted.documentNumber === conclusion.documentNumber && extracted.amountCents === conclusion.amountCents;
+  }
   const text = source.text;
   const head = text.trim().split(/\r?\n/).slice(0, 5).join("\n");
   const title = conclusion.treatment === "include_invoice" ? /\binvoice\b/i : /\bcredit (?:memo|note)\b/i;
@@ -260,12 +268,13 @@ async function validateConclusion(ctx: QueryCtx, runId: string, c: Case, conclus
   if (conclusion.supersedesDocumentId && !conclusion.treatment.startsWith("include_")) return fail("invalid_replacement", "Only a proposed replacement invoice or credit can supersede another source");
   if (!conclusion.treatment.startsWith("include_")) return null;
   if (!Number.isSafeInteger(conclusion.amountCents) || conclusion.amountCents! <= 0 || !conclusion.customerId?.trim() || !conclusion.documentNumber?.trim() || !normalizeDocumentNumber(conclusion.documentNumber)) return fail("invalid_amount", "Inclusion requires customer, document number, and positive safe integer cents");
-  const customer = await ctx.db.query("customers").withIndex("by_run_customer", (q) => q.eq("runId", runId).eq("customerId", conclusion.customerId!)).unique();
+  const customers = await ctx.db.query("customers").withIndex("by_run_customer", (q) => q.eq("runId", runId)).collect();
+  const customer = customers.find((row) => row.customerId === conclusion.customerId);
   if (!customer || customer.status !== "active") return fail("unknown_customer", "Customer must first be registered from evidence or a human decision");
   const source = (await sourceOf(ctx, runId, c.documentId))!;
   if (/Currency\s*:\s*(?!USD\b)[A-Z]{3}\b|\b(?:EUR|GBP|CAD|AUD|JPY|CHF|CNY)\s*\d/i.test(source.text)) return fail("unsupported_currency", "This workspace only accepts USD documents");
   if (supportingOnly(source)) return fail("unsupported_document", "Supporting emails, statements and bank exports cannot constitute an invoice or credit");
-  if (!sourceSupports(source, conclusion, customer)) return fail("unsupported_conclusion", "Source must contain the invoice/credit identity, registered customer and proposed amount");
+  if (!sourceSupports(source, conclusion, customer, customers.filter((row) => row.status === "active"))) return fail("unsupported_conclusion", "Source must support one invoice/credit identity, registered customer and final total without unresolved field conflicts");
   if (conclusion.supersedesDocumentId) {
     const target = await sourceOf(ctx, runId, conclusion.supersedesDocumentId);
     if (!target || target._id === c.documentId) return fail("invalid_replacement", "Replacement target must be another source in this workspace");

@@ -260,7 +260,7 @@ describe("invoice invariants and persistent budgets", () => {
 
   it("requires exact positive integer cents and guards aggregate safe-integer overflow", async () => {
     const f = await setup(); const big = Number.MAX_SAFE_INTEGER - 10;
-    const src = { ...document(), text: `INVOICE\nCustomer ID: C001\nCustomer: Acme\nInvoice Number: INV-1\nAmount Cents: ${big}` };
+    const src = { ...document(), text: `INVOICE\nCustomer ID: C001\nCustomer: Acme\nInvoice Number: INV-1\nCurrency: USD\nAmount Cents: ${big}` };
     const { caseId } = await f.start(src); unwrap(await f.propose(caseId, { amountCents: big }));
     const next = (await f.ingest([document("INV-2")])).caseIds[0]!; await f.begin(next);
     expect(unwrap(await f.propose(next)).case.status).toBe("needs_review");
@@ -322,6 +322,18 @@ describe("invoice replacement and currency validation", () => {
     const f = await setup(); const { caseId } = await f.start(document("INV-1", "100.00", "\nCurrency: EUR"));
     expect(await f.propose(caseId, {}, "mock_model")).toMatchObject({ ok: false, code: "unsupported_currency" });
     expect((await f.workspace()).customerTotals[0]!.netCents).toBe(0);
+  });
+  it("validates final totals and conflicting fields even if an investigator omits warnings", async () => {
+    const f = await setup();
+    const { caseId } = await f.start(document("INV-1", "120.00", "\nSubtotal: USD 100.00\nDiscount: USD 0.00\nTax: USD 20.00"));
+    expect(await f.propose(caseId, { amountCents: 10000 }, "mock_model")).toMatchObject({ ok: false, code: "unsupported_conclusion" });
+    expect(unwrap(await f.propose(caseId, { amountCents: 12000 }, "mock_model")).case.status).toBe("needs_review");
+    const conflicting = (await f.ingest([document("INV-2", "120.00", "\nGrand Total: USD 100.00")])).caseIds[0]!;
+    await f.begin(conflicting);
+    expect(await f.propose(conflicting, { amountCents: 12000, contradictions: [] }, "mock_model")).toMatchObject({ ok: false, code: "unsupported_conclusion" });
+    const currencyMissing = (await f.ingest([{ ...document("INV-3"), text: document("INV-3").text.replace("Total: USD 100.00", "Amount Cents: 10000") }])).caseIds[0]!;
+    await f.begin(currencyMissing);
+    expect(await f.propose(currencyMissing)).toMatchObject({ ok: false, code: "unsupported_conclusion" });
   });
 });
 

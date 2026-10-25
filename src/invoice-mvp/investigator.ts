@@ -43,7 +43,7 @@ async function investigateWithObservations(backend: InvoiceBackend, initial: Cas
     await backend.recordToolCall(c.caseId, c.evidenceVersion, call, idempotency("tool", [c.caseId, c.evidenceVersion, mode, unique, call]));
   };
   const snapshot = await backend.workspace();
-  const parsed = parseSupportedSource(initial.source, refFor(initial));
+  const parsed = parseSupportedSource(initial.source, refFor(initial), snapshot.customerTotals);
   const related = async (customerId?: string, documentNumber?: string, offset = 0, limit = 25) => {
     const candidates = snapshot.cases.filter((s) => s.caseId !== c.caseId && !["superseded", "duplicate"].includes(s.status) && (!customerId || !s.customerId || s.customerId === customerId));
     const results: RelatedFact[] = [];

@@ -1,17 +1,13 @@
 import type { Conclusion, EvidenceRef, SourceInput } from "./contracts";
+import { decimalCents } from "./money";
+import { extractTextDocument, type CustomerIdentity } from "./text-extraction";
+export { decimalCents } from "./money";
 
 /** A deliberately narrow parser, not a model or a learned document extractor. */
 export interface ParseResult {
   conclusion: Conclusion;
   supported: boolean;
   customers: { customerId: string; customerName: string; aliases: string[] }[];
-}
-
-export function decimalCents(value: string): number | undefined {
-  const m = /^(?:USD\s*|\$)?((?:\d{1,3}(?:,\d{3})+|\d+))(?:\.(\d{1,2}))?$/.exec(value.trim());
-  if (!m) return undefined;
-  const n = Number(m[1]!.replaceAll(",", "")) * 100 + Number((m[2] ?? "").padEnd(2, "0"));
-  return Number.isSafeInteger(n) && n > 0 ? n : undefined;
 }
 
 /** RFC4180-style quoted fields, including doubled quotes and embedded newlines. */
@@ -41,7 +37,7 @@ export function csvRows(text: string): string[][] {
 
 const key = (s: string) => s.trim().toLowerCase().replace(/[ _-]/g, "");
 
-export function parseSupportedSource(source: SourceInput, ref: EvidenceRef): ParseResult {
+export function parseSupportedSource(source: SourceInput, ref: EvidenceRef, customers: readonly CustomerIdentity[] = []): ParseResult {
   const text = source.text.trim();
   const evidence = [{ ...ref, quote: text.slice(0, 500) || undefined }];
   const missing = (reason: string, details: string[] = []): ParseResult => ({
@@ -50,8 +46,12 @@ export function parseSupportedSource(source: SourceInput, ref: EvidenceRef): Par
       question: `Please supply the issued invoice or credit memo for “${source.name}” with its customer ID, document number, USD currency and final total, or exclude this source if it is only supporting evidence.`,
     },
   });
-  if (!["text/plain", "application/json", "text/csv", "application/pdf"].includes(source.mimeType)) return missing("This source type is supporting evidence or requires an explicit supported-text import.");
+  if (!["text/plain", "application/json", "text/csv", "application/pdf", "message/rfc822"].includes(source.mimeType)) return missing("This source type is supporting evidence or requires an explicit supported-text import.");
   if (!text) return missing("No extracted text is available. Original bytes alone are not verified invoice evidence.");
+  if (!["application/json", "text/csv"].includes(source.mimeType) && !text.startsWith("{")) {
+    const extracted = extractTextDocument(source, ref, customers);
+    if (extracted) return extracted;
+  }
   let fields: Record<string, unknown> = {}, title = text.split(/\r?\n/)[0]!.trim();
   const contradictions: string[] = [];
   if (source.mimeType === "application/json" || text.startsWith("{")) {

@@ -1,0 +1,665 @@
+{
+  "applicationCommit": "3645c003e2463f1db28ca23ef78a154f9890ec5c",
+  "baseCommit": "27680f6",
+  "protocol": "extraction-validation-protocol.md",
+  "cohort": "post-fix original previously seen fixture",
+  "runtimeMode": "deterministic",
+  "modelCalls": 0,
+  "apiCostUsd": 0,
+  "wallSeconds": 61.569,
+  "runId": "invoice-extraction-original-3645c00",
+  "progress": {
+    "duplicate": 0,
+    "evidenceMissing": 4,
+    "excluded": 32,
+    "needsReview": 112,
+    "pending": 0,
+    "recorded": 0,
+    "superseded": 0,
+    "total": 148
+  },
+  "proposalExtraction": {
+    "allCandidateFieldsExact": 109,
+    "eligibleDocuments": 107,
+    "eligibleDocumentsWithExactCandidate": 107,
+    "financialCandidates": 109,
+    "ineligibleCandidateActiveEffects": 0,
+    "ineligibleDocumentsWithFinancialCandidate": 2,
+    "metric": "persisted_proposal_fields_not_acceptance_or_official_accuracy",
+    "scoredDocuments": 112
+  },
+  "official": {
+    "customer_accuracy": "0.0000",
+    "customers_exact": "0",
+    "customers_scored": "18",
+    "missing_customers": "0",
+    "total_absolute_error_usd": "3566177.15",
+    "unexpected_customers": "0"
+  },
+  "sourcePreservation": {
+    "detail": [],
+    "expectedSourceVersions": 148,
+    "missingExternalIds": [],
+    "missingVersions": 0,
+    "observedSourceVersions": 148,
+    "pass": true,
+    "retentionErrors": 0,
+    "unexpectedExternalIds": [],
+    "unexpectedVersions": 0
+  },
+  "structuralAudit": {
+    "duplicateAccountingEffects": 0,
+    "humanInterventions": 0,
+    "sourceCount": 148,
+    "unresolvedCases": 116,
+    "unsupportedAcceptedEffectsStructural": 0,
+    "visibleSourceCount": 148
+  },
+  "restart": {
+    "attestation": {
+      "backendRestarted": true,
+      "command": "Stopped owned invoice gateways 8813/8814 and Convex 3230; confirmed all three ports unbound. Restarted same local DB using convex dev --codegen disable, then same runtime.env gateway commands. No source change.",
+      "gatewayRestarted": true,
+      "operator": "root Codex",
+      "restartedAt": "2026-10-25T05:35:45.354165+00:00"
+    },
+    "comparisonMode": "read_only_persisted_state",
+    "liveModel": "NOT RUN",
+    "runIdSame": true,
+    "status": "PASS"
+  },
+  "developmentCorpus": {
+    "before": {
+      "kind": "public_development_regressions_not_unseen_accuracy",
+      "modelCalls": 0,
+      "cases": 36,
+      "passed": 13,
+      "fixtureSha256": "d5ca7b9fa4f998b114e00ecec47271bfedba54a6c4730c0d4bb83e24f604cf10",
+      "results": [
+        {
+          "id": "routine",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "pdf-packet",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "letterhead",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "column-spaces",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "alias-match",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "registered-id-only",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "paid-total",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Document status \u201cpaid\u201d is not a verified issued status"
+          ]
+        },
+        {
+          "id": "credit-minus",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "credit-parentheses",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "credit-dollar-minus",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "currency-suffix",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "crlf-and-nbsp",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "safe-integer-boundary",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "repeated-page-title",
+          "pass": false,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "dollar-currency-review",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "arithmetic-review",
+          "pass": false,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "revision-review",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Source contains a revision or conflict claim requiring a human decision; it does not authorize replacement"
+          ]
+        },
+        {
+          "id": "void",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "draft",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "statement",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "email-attachment-request",
+          "pass": false,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "conflicting-totals",
+          "pass": false,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "alias-collision",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "id-name-disagree",
+          "pass": false,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "unknown-customer-id",
+          "pass": false,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "foreign-currency",
+          "pass": false,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "mixed-currency",
+          "pass": false,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "two-invoices",
+          "pass": false,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Repeated Total fields in source"
+          ]
+        },
+        {
+          "id": "invoice-and-credit",
+          "pass": false,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "negative-invoice",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "ambiguous-decimal",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "ocr-digit-ambiguity",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "balance-is-not-total",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "missing-number",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "unsafe-integer",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "unknown-layout",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        }
+      ]
+    },
+    "after": {
+      "kind": "public_development_regressions_not_unseen_accuracy",
+      "modelCalls": 0,
+      "cases": 36,
+      "passed": 36,
+      "fixtureSha256": "d5ca7b9fa4f998b114e00ecec47271bfedba54a6c4730c0d4bb83e24f604cf10",
+      "results": [
+        {
+          "id": "routine",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "pdf-packet",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "letterhead",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "column-spaces",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "alias-match",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "registered-id-only",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "paid-total",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "credit-minus",
+          "pass": true,
+          "treatment": "include_credit",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "credit-parentheses",
+          "pass": true,
+          "treatment": "include_credit",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "credit-dollar-minus",
+          "pass": true,
+          "treatment": "include_credit",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "currency-suffix",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "crlf-and-nbsp",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "safe-integer-boundary",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "repeated-page-title",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Repeated documentNumber fields in source agree; verify that this is one document."
+          ]
+        },
+        {
+          "id": "dollar-currency-review",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "The printed $ symbol does not specify USD. Confirm USD currency before accepting this proposal."
+          ]
+        },
+        {
+          "id": "arithmetic-review",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Printed subtotal minus discount plus tax and shipping does not equal the printed total; the total was not recomputed."
+          ]
+        },
+        {
+          "id": "revision-review",
+          "pass": true,
+          "treatment": "include_invoice",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Source contains a revision or conflict claim requiring a human decision; it does not authorize replacement"
+          ]
+        },
+        {
+          "id": "void",
+          "pass": true,
+          "treatment": "exclude",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Printed customer identity does not uniquely match the registered customer records."
+          ]
+        },
+        {
+          "id": "draft",
+          "pass": true,
+          "treatment": "exclude",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Printed customer identity does not uniquely match the registered customer records."
+          ]
+        },
+        {
+          "id": "statement",
+          "pass": true,
+          "treatment": "exclude",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "email-attachment-request",
+          "pass": true,
+          "treatment": "exclude",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "conflicting-totals",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Conflicting total values appear in the source; no value was selected."
+          ]
+        },
+        {
+          "id": "alias-collision",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Printed customer identity does not uniquely match the registered customer records."
+          ]
+        },
+        {
+          "id": "id-name-disagree",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Printed customer identity does not uniquely match the registered customer records."
+          ]
+        },
+        {
+          "id": "unknown-customer-id",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Printed customer identity does not uniquely match the registered customer records."
+          ]
+        },
+        {
+          "id": "foreign-currency",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "mixed-currency",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "two-invoices",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Conflicting documentNumber values appear in the source; no value was selected.",
+            "Conflicting total values appear in the source; no value was selected."
+          ]
+        },
+        {
+          "id": "invoice-and-credit",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": [
+            "Repeated documentNumber fields in source agree; verify that this is one document."
+          ]
+        },
+        {
+          "id": "negative-invoice",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "ambiguous-decimal",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "ocr-digit-ambiguity",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "balance-is-not-total",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "missing-number",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "unsafe-integer",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        },
+        {
+          "id": "unknown-layout",
+          "pass": true,
+          "treatment": "needs_evidence",
+          "fieldQuotesValid": true,
+          "warnings": []
+        }
+      ]
+    }
+  },
+  "checks": {
+    "repositoryTestsPassed": 849,
+    "repositoryTestsSkipped": 4,
+    "testFilesPassed": 71,
+    "testFilesSkipped": 1,
+    "pythonEvaluatorTestsPassed": 31,
+    "applicationTypecheck": "PASS",
+    "backendTypecheck": "PASS",
+    "testTypecheck": "PASS",
+    "consoleBuild": "PASS with existing 500 kB chunk advisory"
+  },
+  "browser": {
+    "url": "http://localhost:5184/?view=invoices",
+    "runId": "invoice-extraction-browser-d75aa1b",
+    "grossCents": 104525,
+    "creditCents": 4525,
+    "netCents": 100000,
+    "humanDecisions": 2,
+    "activeContributions": 2,
+    "replayAddedEffect": false,
+    "unresolvedConflictingTotal": true,
+    "reload": "PASS",
+    "backendAndGatewayRestart": "PASS",
+    "stableStateSha256": "36bbadd60da2fff2aa758159534df8ddb61fc33dfb205448623da8c05149b5a3",
+    "consoleErrors": 0
+  },
+  "artifacts": {
+    "extraction-3645c00-original/artifact-manifest.json": "43d5445fb79871855edd44ee817d3ff5151cfc6d946ab7a2ac547993ee31cbdc",
+    "extraction-3645c00-original-score/score.json": "a594060b03e528ab3907f6dc66bd27f36125f80c335df89fffa35c5f26d7d093",
+    "extraction-3645c00-original-fields/extraction.json": "4f4abe25176cf7016571c3e9cf514343c2a728f39d66df781ab1c5e94020cc21",
+    "extraction-3645c00-restarted/artifact-manifest.json": "ebcbec11772dbd9e41f42065d5b410716f10dab534689fca4b680139197241c8"
+  },
+  "limitations": [
+    "Previously seen original fixture; regression corpus authored with implementation.",
+    "109 exact printed candidates include two ineligible duplicate/superseded candidates requiring review; no accepted effects.",
+    "No new live-model or held-out score; no OCR accuracy measurement.",
+    "Local bulk import reached the Convex 4 MiB/s write-rate limit, retried, and settled with zero pending cases.",
+    "Historical immutable evaluation directories and spend ledgers were preserved."
+  ]
+}

@@ -32,7 +32,7 @@ describe("deterministic supported-format parser (not model validation)", () => {
     expect(parse(`${invoice}\nNotes: Replaces E-0`).conclusion.question).toBeTruthy();
   });
   it("never treats an email body or bank export as an invoice", () => {
-    expect(parse(invoice, "message/rfc822").conclusion.treatment).toBe("needs_evidence");
+    expect(parse(invoice, "message/rfc822").conclusion.treatment).toBe("exclude");
     expect(parse("BANK EXPORT\nDeposit: 12345").conclusion.treatment).toBe("exclude");
   });
   it("preserves gaps and blocks non-USD and ambiguous totals", () => {

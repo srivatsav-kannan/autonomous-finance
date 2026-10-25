@@ -1,5 +1,12 @@
 # Invoice investigator and application boundary
 
+**Extraction follow-up:** the current printed-text extractor supports additional
+invoice layouts and exact registered aliases, while preserving human approval for
+non-routine candidates. Complete candidates do not spend optional model calls;
+gaps can still enter the bounded investigator. See [measured extraction results](extraction-results.md).
+The NOT RUN statements below preserve the original worker handoff; the subsequent
+[OpenAI evaluation](evaluation-openai-results.md) ran once with limited coverage.
+
 The invoice MVP uses one bounded Investigator. The default is **deterministic supported-format processing**, not a language model. Unknown formats remain unresolved with a specific evidence request. Synthetic mock-model tests exercise the observe → tool → result → next action loop. One capped live OpenAI batch has run; see [evaluation-openai-results.md](evaluation-openai-results.md).
 
 ## Startup

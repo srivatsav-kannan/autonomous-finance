@@ -84,6 +84,15 @@ Status: issued
 
 First supply a customer master with `customer_id,legal_name` (optional `aliases` separated by `;` or `|`). Credits use `CREDIT MEMO`. Unknown layouts and conflicting fields require investigation or review. An invoice number does not establish payment.
 
+The extractor also prepares reviewable candidates from letterheads, PDF page text,
+split label/value lines, `Bill To` aliases, `Invoice Total`/`Grand Total`, and signed
+`CREDIT NOTE`/`CREDIT MEMO` totals. It matches names/aliases exactly against the
+customer registry and keeps the full invoice total separate from the balance due.
+These broader layouts require human approval. A `$` without explicit USD asks for
+currency confirmation; contradictory totals or customer identities remain Evidence
+missing. See [extraction measurements and limits](extraction-results.md). This does
+not add native PDF extraction or OCR to the browser.
+
 A source object has `externalId`, `name`, `mimeType`, `text` and optional `contentBase64`. Original PDF bytes require extracted text supplied by an upstream extractor; the browser does not claim native OCR. The benchmark uses pinned pypdf extraction with original bytes preserved. UTF-8 CRLF normalization is permitted while original bytes remain unchanged. Source limits are exposed at `/api/invoice-mvp/runtime`; split large collections into bounded batches.
 
 An unchanged `externalId` plus changed contents creates a new version. Re-importing exact old bytes is an idempotent historical retry. A different external ID with identical bytes becomes a visible duplicate. Use explicit replacement metadata only for an intentional correction; textual claims alone do not replace accepted amounts.
