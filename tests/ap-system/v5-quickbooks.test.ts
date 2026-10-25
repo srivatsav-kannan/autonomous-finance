@@ -107,7 +107,7 @@ describe("V5 independent external accounting safeguards",()=>{
  });
  it("does not treat a malformed successful vendor-query envelope as proof that restored principal is unused",async()=>{
    const r=await replacement();r.h.setVendorResponse({time:"synthetic-response-without-query-result"});
-   await expect(r.h.submit(r.replacementRequest)).rejects.toThrow(/restored_balance_incomplete|response/);
+   await expect(r.h.submit(r.replacementRequest)).rejects.toThrow(/restored_balance_incomplete|response|qbo_query_envelope_invalid/);
    expect(r.h.posts).toHaveLength(3);
  });
  it.each(["duplicate", "mixed_links", "fractional_cent"] as const)("refuses %s external application evidence before a replacement POST",async mode=>{
