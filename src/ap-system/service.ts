@@ -7,6 +7,7 @@ import { createQBOBridge } from "./quickbooks/runtime";
 import { APHttpError } from "./server";
 import { domainOperationSchemas, type DomainOperations } from "./domain-operations";
 import { closeOperationSchemas,periodSchema,type CloseOperations } from "./close-operations";
+import {accountingCorrectionRequestSchema,domainVoteSchema,type CorrectionOperations,type CorrectionProposal} from "./correction-operations";
 import type { PaymentRunOperations } from "./workspace-operations";
 import type {APWorkspaceService} from "./server";
 /** Per-run composition with a request-owned human client in external mode. Agent credentials never reach the browser or human client. */
@@ -51,8 +52,14 @@ export function createAPWorkspaceService(options:{
    return (credential?agent:human).mutation(makeFunctionReference<"mutation">(`apClose:${operation}`),{scope,...(credential??{}),...(operation==="proposeStatement"?parsed:{input:parsed})});
   },
  };
+ const correctionRows=(caseId:string)=>human.query(makeFunctionReference<"query">("apAccountingCorrections:proposals"),{scope,caseId}) as Promise<CorrectionProposal[]>;
+ const corrections:CorrectionOperations={
+  list:async caseId=>({proposals:await correctionRows(caseId),controllerProposalAvailable:!!options.controllerCredential}),
+  propose:async input=>{if(!options.controllerCredential)throw new APHttpError("controller_unavailable",503,"A separate scoped controller agent is required to propose accounting corrections.");return agent.mutation(makeFunctionReference<"mutation">("apAccountingCorrections:propose"),{scope,...options.controllerCredential,input:accountingCorrectionRequestSchema.parse(input)});},
+  vote:async(caseId,input)=>{const parsed=domainVoteSchema.strict().parse(input);if(!(await correctionRows(caseId)).some(p=>p._id===parsed.proposalId&&p.caseId===caseId))throw new APHttpError("case_mismatch",409,"This correction proposal is not linked to the selected case.");return human.mutation(makeFunctionReference<"mutation">("apAccountingCorrections:vote"),{scope,input:parsed});},
+ };
  return{
-  paymentRuns,domain,close,
+  paymentRuns,domain,close,corrections,
   accounting:{status:async caseId=>({...await qbo.status(caseId),externalWritesAllowed}),preview:qbo.preview,submit:(request,hash)=>{requireExternal();return qbo.submit(request,hash);},verify:request=>{requireExternal();return qbo.verify(request);}},
   async list(){const rows=await human.query(makeFunctionReference<"query">("apCases:list"),{scope});return caseDetailSchema.array().parse(rows);},
   async detail(caseId){return caseDetailSchema.parse(await human.query(makeFunctionReference<"query">("apCases:detail"),{scope,caseId}));},

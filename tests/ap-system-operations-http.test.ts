@@ -31,6 +31,8 @@ describe("payment run and accounting HTTP boundaries",()=>{
   const f=await fixture();expect((await f.post("/cases/c/accounting/preview",{paymentVersionId:"p"})).status).toBe(200);expect(f.accounting.preview).toHaveBeenCalledWith({caseId:"c",paymentVersionId:"p"});
   expect((await f.post("/cases/c/accounting/preview",{creditApplicationId:"application"})).status).toBe(200);expect(f.accounting.preview).toHaveBeenCalledWith({caseId:"c",creditApplicationId:"application"});
   expect((await f.post("/cases/c/accounting/preview",{paymentVersionId:"p",creditApplicationId:"application"})).status).toBe(400);
+  expect((await f.post("/cases/c/accounting/preview",{correctionId:"correction"})).status).toBe(200);expect(f.accounting.preview).toHaveBeenCalledWith({caseId:"c",correctionId:"correction"});
+  for(const selector of [{paymentVersionId:"p",correctionId:"correction"},{creditApplicationId:"application",correctionId:"correction"}])expect((await f.post("/cases/c/accounting/preview",selector)).status).toBe(400);
   expect((await f.post("/cases/c/accounting/submit",{})).status).toBe(400);expect((await f.post("/cases/c/accounting/submit",{expectedPlanHash:"a".repeat(64),payload:{TotalAmt:1}})).status).toBe(400);expect(f.accounting.submit).not.toHaveBeenCalled();
   expect((await f.post("/cases/c/accounting/submit",{expectedPlanHash:"a".repeat(64)})).status).toBe(200);expect(f.accounting.submit).toHaveBeenCalledWith({caseId:"c"},"a".repeat(64));
   expect((await f.post("/cases/c/accounting/verify",{paymentVersionId:"p"})).status).toBe(200);expect(f.accounting.verify).toHaveBeenCalledWith({caseId:"c",paymentVersionId:"p"});

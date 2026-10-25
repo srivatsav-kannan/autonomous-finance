@@ -1,4 +1,6 @@
 import {closeOperationSchemas,periodSchema,type CloseOperation,type CloseInputs,type CloseView} from "../../src/ap-system/close-operations";
+import {accountingCorrectionRequestSchema,domainVoteSchema,type CorrectionView,type CorrectionVote} from "../../src/ap-system/correction-operations";
+import type {AccountingCorrectionRequest} from "../../src/ap-system/quickbooks/corrections";
 import type {QBOPreview,QBOSubmit,QBOVerify} from "../../src/ap-system/quickbooks/runtime";
 import { ZodError } from "zod";
 import { domainOperationSchemas, type DomainOperation, type DomainInputs, type GovernanceView, type BusinessProposal } from "../../src/ap-system/domain-operations";
@@ -67,13 +69,16 @@ export function validatePaymentRequest(input: APPaymentRequest) {
   if ((input.amountCents !== undefined && !cents(input.amountCents)) || input.credits?.some(c => !c.creditId.trim() || !cents(c.amountCents)) || new Set(input.credits?.map(c => c.creditId)).size !== (input.credits?.length ?? 0)) throw new APSystemApiError("Payment and credit amounts must be positive whole cents with unique credit references.", 400, "invalid_request");
   return input;
 }
-export type APAccountingSelection={paymentVersionId?:string;creditApplicationId?:string};
+export type APAccountingSelection={paymentVersionId?:string;creditApplicationId?:string;correctionId?:string};
 export function accountingSelection(value?:APAccountingSelection|string):APAccountingSelection{
  const input=typeof value==="string"?{paymentVersionId:value}:value??{};
- if(input.paymentVersionId&&input.creditApplicationId||Object.values(input).some(value=>typeof value!=="string"||!value.trim()))throw new APSystemApiError("Choose one recorded settlement or credit application.",400,"invalid_request");
+ if([input.paymentVersionId,input.creditApplicationId,input.correctionId].filter(Boolean).length>1||Object.keys(input).some(key=>!["paymentVersionId","creditApplicationId","correctionId"].includes(key))||Object.values(input).some(value=>typeof value!=="string"||!value.trim()))throw new APSystemApiError("Choose one recorded settlement, credit application or approved correction.",400,"invalid_request");
  return input;
 }
 export const apSystemApi = {
+  corrections:(caseId:string,signal?:AbortSignal)=>request<CorrectionView>(`/cases/${encodeURIComponent(caseId)}/corrections`,undefined,signal),
+  proposeCorrection:(input:AccountingCorrectionRequest)=>request<unknown>(`/cases/${encodeURIComponent(input.caseId)}/corrections/propose`,accountingCorrectionRequestSchema.parse(input)),
+  voteCorrection:(caseId:string,input:CorrectionVote)=>request<unknown>(`/cases/${encodeURIComponent(caseId)}/corrections/vote`,domainVoteSchema.strict().parse(input)),
   closeView:(period:string,signal?:AbortSignal)=>request<CloseView>(`/close/${periodSchema.parse(period)}`,undefined,signal),
   close:<K extends CloseOperation>(operation:K,input:CloseInputs[K])=>request<unknown>(`/close/${operation}`,closeOperationSchemas[operation].parse(input)),
   governance: (signal?:AbortSignal) => request<GovernanceView>("/business",undefined,signal),

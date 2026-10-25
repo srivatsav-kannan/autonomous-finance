@@ -9,6 +9,7 @@ import {billApprovalRequestSchema,reviewRequestSchema,type APCaseDetail,type API
 import type { PaymentRunOperations, AccountingOperations } from "./workspace-operations";
 import { domainOperationSchemas, type DomainOperations, type DomainOperation } from "./domain-operations";
 import { closeOperationSchemas, periodSchema, type CloseOperations, type CloseOperation } from "./close-operations";
+import {accountingCorrectionRequestSchema,domainVoteSchema,type CorrectionOperations} from "./correction-operations";
 import { QboError } from "./quickbooks/private-store";
 const PREFIX="/api/ap-system";
 const MAX_ORIGINAL_BYTES=8*1024*1024;
@@ -32,6 +33,7 @@ export interface APWorkspaceService {
  accounting?:AccountingOperations;
  domain?:DomainOperations;
  close?:CloseOperations;
+ corrections?:CorrectionOperations;
  runtime():unknown;
 }
 export type APExternalAuthentication = {
@@ -143,14 +145,25 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
     }
     if(req.method==="POST"&&runs[1]&&runs[2]){const input={...z.object({snapshotHash:binding.shape.snapshotHash}).parse(await json(req)),runId:decodeURIComponent(runs[1])};return send(res,await service.paymentRuns[runs[2] as "authorize"|"cancel"](input));}
    }
+   const correction=/^\/api\/ap-system\/cases\/([^/]+)\/corrections(?:\/(propose|vote))?$/.exec(url.pathname);
+   if(correction){
+    if(!service.corrections)throw new APHttpError("capability_unavailable",503,"Accounting correction approvals are not available on this AP service.");
+    const caseId=decodeURIComponent(correction[1]!);
+    if(req.method==="GET"&&!correction[2])return send(res,await service.corrections.list(caseId));
+    if(req.method==="POST"&&correction[2]){
+     const data=await json(req);
+     if(correction[2]==="propose"){const input=accountingCorrectionRequestSchema.parse(data);if(input.caseId!==caseId)throw new APHttpError("case_mismatch",400,"The correction must belong to the selected case.");return send(res,await service.corrections.propose(input));}
+     return send(res,await service.corrections.vote(caseId,domainVoteSchema.strict().parse(data)));
+    }
+   }
    const accounting=/^\/api\/ap-system\/cases\/([^/]+)\/accounting(?:\/(preview|submit|verify))?$/.exec(url.pathname);
    if(accounting){
     if(!service.accounting)throw new APHttpError("capability_unavailable",503,"QuickBooks accounting is not configured on this AP service.");
     const caseId=decodeURIComponent(accounting[1]!);
     if(req.method==="GET"&&!accounting[2])return send(res,await service.accounting.status(caseId));
     if(req.method==="POST"&&accounting[2]){
-     const input=z.object({paymentVersionId:z.string().trim().min(1).optional(),creditApplicationId:z.string().trim().min(1).optional(),expectedPlanHash:binding.shape.snapshotHash.optional()}).strict().refine(value=>!(value.paymentVersionId&&value.creditApplicationId),"Choose exactly one accounting event selector").parse(await json(req));
-     const request={caseId,...(input.paymentVersionId?{paymentVersionId:input.paymentVersionId}:{}),...(input.creditApplicationId?{creditApplicationId:input.creditApplicationId}:{})};
+     const input=z.object({paymentVersionId:z.string().trim().min(1).optional(),creditApplicationId:z.string().trim().min(1).optional(),correctionId:z.string().trim().min(1).optional(),expectedPlanHash:binding.shape.snapshotHash.optional()}).strict().refine(value=>[value.paymentVersionId,value.creditApplicationId,value.correctionId].filter(Boolean).length<=1,"Choose exactly one accounting event selector").parse(await json(req));
+     const request={caseId,...(input.paymentVersionId?{paymentVersionId:input.paymentVersionId}:{}),...(input.creditApplicationId?{creditApplicationId:input.creditApplicationId}:{}),...(input.correctionId?{correctionId:input.correctionId}:{})};
      if(accounting[2]==="submit"){if(!input.expectedPlanHash)throw new APHttpError("approved_preview_required",400,"Preview and confirm the current accounting plan before submitting.");return send(res,await service.accounting.submit(request,input.expectedPlanHash));}
      return send(res,await service.accounting[accounting[2] as "preview"|"verify"](request));
     }
