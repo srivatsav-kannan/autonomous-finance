@@ -454,6 +454,65 @@ export async function periodFacts(
             quantity: l.quantity.decimal,
           });
         }
+  // A standalone original has the same unit coverage invariant as a parsed case.
+  // Its first approved accrual establishes reviewed capacity, not full discharge.
+  const standaloneSources = await ctx.db
+    .query("apCaseSources")
+    .withIndex("by_source", (q) => q.eq("scope.runId", scope.runId))
+    .collect();
+  for (const source of standaloneSources.filter(
+    (s) =>
+      s.document.kind === "receipt" &&
+      new Date(s._creationTime).toISOString().slice(0, 10) <= through,
+  )) {
+    const knownCase = sourceCases.some((c) =>
+      (c.intake.documents ?? []).some(
+        (d: { sha256: string }) => d.sha256 === source.sha256,
+      ),
+    );
+    if (knownCase) continue;
+    const originals = accruals.filter(
+      (a) =>
+        byId.has(a.entryId) &&
+        (a.sourceId === source.sourceId ||
+          a.payload.source.sha256 === source.sha256),
+    );
+    if (!originals.length) {
+      hold(
+        "received_not_invoiced",
+        `source:${source.sha256}`,
+        "Standalone receipt evidence requires a source-supported accrual or explicit disposition",
+        "purchasing_owner",
+      );
+      continue;
+    }
+    for (const a of originals) {
+      const key = JSON.stringify([
+        a.payload.source.sha256,
+        a.payload.sku,
+        a.payload.unit,
+      ]);
+      const old = receiving.get(key);
+      if (
+        old &&
+        quantityMicros(old.quantity) !==
+          quantityMicros(a.payload.capacityQuantity)
+      )
+        hold(
+          "received_source_conflict",
+          `receipt:${key}`,
+          "Same original has conflicting received capacity",
+          "purchasing_owner",
+        );
+      receiving.set(key, {
+        sourceId: a.sourceId,
+        hash: a.payload.source.sha256,
+        sku: a.payload.sku,
+        unit: a.payload.unit,
+        quantity: a.payload.capacityQuantity,
+      });
+    }
+  }
   for (const [key, r] of receiving) {
     const invoiced = uses
       .filter(
@@ -495,34 +554,6 @@ export async function periodFacts(
         `receipt:${key}`,
         "Received units exceed retained source capacity",
         "controller",
-      );
-  }
-  const standaloneSources = await ctx.db
-    .query("apCaseSources")
-    .withIndex("by_source", (q) => q.eq("scope.runId", scope.runId))
-    .collect();
-  for (const source of standaloneSources.filter(
-    (s) =>
-      s.document.kind === "receipt" &&
-      new Date(s._creationTime).toISOString().slice(0, 10) <= through,
-  )) {
-    const knownCase = sourceCases.some((c) =>
-      (c.intake.documents ?? []).some(
-        (d: { sha256: string }) => d.sha256 === source.sha256,
-      ),
-    );
-    const accrued = accruals.some(
-      (a) =>
-        byId.has(a.entryId) &&
-        (a.sourceId === source.sourceId ||
-          a.payload.source.sha256 === source.sha256),
-    );
-    if (!knownCase && !accrued)
-      hold(
-        "received_not_invoiced",
-        `source:${source.sha256}`,
-        "Standalone receipt evidence requires a source-supported accrual or explicit disposition",
-        "purchasing_owner",
       );
   }
   const bankBlockers = (await closeBlockers(ctx, scope)).filter((b) => {
