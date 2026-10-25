@@ -55,19 +55,12 @@ afterEach(() => {
 });
 
 describe("held bill credit deductions", () => {
-  it.each(["missing_delivery_reference", "unknown_sku"])("keeps %s held for a human decision", async code => {
+  it.each(["price_over_contract", "short_shipment", "missing_delivery_reference", "unknown_sku"])("keeps %s held instead of applying an automatic recommendation", async code => {
     const rt=runtime();const ask=vi.spyOn(rt,"ask").mockResolvedValue({ok:true} as never);
-    const held=task("bill-a");held.payload.exceptions=[{code,detail:"unresolved business evidence",deltaCents:0}];
+    const held=task("bill-a");held.payload.exceptions=[{code,detail:"unresolved business evidence",deltaCents:-1000}];
     const result=await reviewHeld(rt,held);
     expect(result).toMatchObject({outcome:"asked",waiting:true});expect(approved).toHaveLength(0);
-    expect(ask).toHaveBeenCalledWith(expect.objectContaining({to:"human_cfo",body:expect.stringContaining("No vendor communication has been sent")}));
-  });
-  it.each(["price_over_contract", "short_shipment"])("short-pays %s to the received amount at contract price", async code => {
-    const rt=runtime();const ask=vi.spyOn(rt,"ask").mockResolvedValue({ok:true} as never);
-    const held=task("bill-a");held.payload.exceptions=[{code,detail:"variance against contract or receipt",deltaCents:-1000}];
-    const result=await reviewHeld(rt,held);
-    expect(result).toMatchObject({outcome:"approved"});expect(approved).toEqual([{billId:"bill-a",approvedCents:4000}]);
-    expect(ask).not.toHaveBeenCalled();
+    expect(ask).toHaveBeenCalledWith(expect.objectContaining({to:"human_cfo",body:expect.stringContaining("no vendor communication has been sent")}));
   });
   it("deducts one open credit once across sequential reviews", async () => {
     const rt = runtime();

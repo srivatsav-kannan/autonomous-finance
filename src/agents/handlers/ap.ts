@@ -34,8 +34,6 @@ const PostingPlan = z.object({
   expenseAccount: z.string(), taskId: z.string(),
 });
 
-const GOODS_CATEGORIES = new Set<Vendor["category"]>(["produce", "protein", "dairy", "packaging", "beverage", "supplies"]);
-
 /** Contract price in effect for a SKU on a date, from vendor memory. */
 function contractPrice(v: Vendor, sku: string, on: string): number | undefined {
   return v.contractPrices.find((p) => p.sku === sku && p.effectiveFrom <= on && (!p.effectiveTo || p.effectiveTo >= on))?.unitCents;
@@ -145,15 +143,12 @@ export const processDocument: Handler = async (rt, task) => {
 
   const materiality = (await rt.mem.read<{ priceVarianceBps: number }>("policies/materiality.yaml"))?.priceVarianceBps ?? 100;
   const received = inv.deliveryId ? (await rt.eventsOfType("receiving.logged", inv.invoiceDate, inv.invoiceDate)).find((e) => (e.payload as { deliveryId: string }).deliveryId === inv.deliveryId) : undefined;
-  // Delivery and SKU evidence only applies to vendors that deliver goods. Utilities, software,
-  // rent and other services never carry a delivery reference.
-  const goodsVendor = GOODS_CATEGORIES.has(vendor.category);
-  if (!inv.deliveryId && goodsVendor) ex.push({ code: "missing_delivery_reference", detail: "invoice has no delivery reference; receipt validation is unresolved", deltaCents: 0 });
+  if (!inv.deliveryId) ex.push({ code: "missing_delivery_reference", detail: "invoice has no delivery reference; receipt validation is unresolved", deltaCents: 0 });
   if (inv.deliveryId && !received) ex.push({ code: "no_receiving_record", detail: `no receiving log for ${inv.deliveryId}`, deltaCents: 0 });
 
   for (const line of inv.lines) {
     const contract = contractPrice(vendor, line.sku, inv.invoiceDate);
-    if (contract === undefined && goodsVendor) ex.push({ code: "unknown_sku", detail: `${line.sku} has no applicable approved catalog/contract price`, deltaCents: 0 });
+    if (contract === undefined) ex.push({ code: "unknown_sku", detail: `${line.sku} has no applicable approved catalog/contract price`, deltaCents: 0 });
     if (contract !== undefined && line.unitCents > contract) {
       const bps = Math.round(((line.unitCents - contract) / contract) * 10_000);
       if (bps > materiality) {

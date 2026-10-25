@@ -68,7 +68,6 @@ const mapping: Mappings = {
   },
   apAccount: "2000",
   bankAccount: "1000",
-  classes: { "sf-hayes-valley": { id: "9", name: "SF Hayes Valley" } },
 };
 const json = (x: unknown, status = 200) =>
   new Response(JSON.stringify(x), {
@@ -168,8 +167,6 @@ async function protocol(
       await options.onMapping?.();
       return json({ CompanyInfo: { Country: "US" } });
     }
-    if (u.pathname.endsWith("/class/9"))
-      return json({ Class: { Id: "9", Name: "SF Hayes Valley", Active: true } });
     if (u.pathname.endsWith("/vendor/5"))
       return json({
         Vendor: {
@@ -257,7 +254,6 @@ describe("V3 independent credential-free QBO boundaries", () => {
         AccountBasedExpenseLineDetail: {
           AccountRef: { value: "7" },
           BillableStatus: "NotBillable",
-          ClassRef: { value: "9" },
         },
       },
     ]);
