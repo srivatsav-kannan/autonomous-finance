@@ -1,0 +1,161 @@
+{
+  "runId": "baseline-s7-mvm2v6gk",
+  "errors": [
+    {
+      "id": "e-cam-2026-01",
+      "type": "cam_over_cap",
+      "caught": false,
+      "amountAtRiskCents": 64000,
+      "how": "held, approved 1724000 of 1724000"
+    },
+    {
+      "id": "e-short-INV-1001",
+      "type": "short_shipment",
+      "caught": true,
+      "amountAtRiskCents": 7700,
+      "how": "held, 1 exception(s), approved 79745 of 79745"
+    },
+    {
+      "id": "e-remit-fraud",
+      "type": "remit_change_fraud",
+      "caught": true,
+      "amountAtRiskCents": 0,
+      "how": "remit-to unchanged, request blocked"
+    },
+    {
+      "id": "e-zenith",
+      "type": "unexplained_debit",
+      "caught": true,
+      "amountAtRiskCents": 124000,
+      "how": "parked in suspense and escalated"
+    }
+  ],
+  "decoys": [
+    {
+      "id": "d-remit-legit",
+      "type": "legit_remit_change",
+      "correct": false,
+      "how": "blocked"
+    }
+  ],
+  "falseAlarms": [],
+  "books": [
+    {
+      "metric": "Revenue - in-store",
+      "expected": 682979,
+      "actual": 682979,
+      "diff": 0
+    },
+    {
+      "metric": "Revenue - digital",
+      "expected": 479538,
+      "actual": 479538,
+      "diff": 0
+    },
+    {
+      "metric": "Revenue - marketplace",
+      "expected": 290629,
+      "actual": 290629,
+      "diff": 0
+    },
+    {
+      "metric": "Sales tax payable",
+      "expected": 100325,
+      "actual": 100325,
+      "diff": 0
+    },
+    {
+      "metric": "Gift card liability (net change)",
+      "expected": 2906,
+      "actual": 2906,
+      "diff": 0
+    },
+    {
+      "metric": "Payroll expense (legit only)",
+      "expected": 0,
+      "actual": 0,
+      "diff": 0
+    },
+    {
+      "metric": "Rent & CAM expense (lease terms)",
+      "expected": 1660000,
+      "actual": 0,
+      "diff": -1660000
+    }
+  ],
+  "controls": [
+    {
+      "metric": "ledger hash chain verifies",
+      "value": 1,
+      "target": "1",
+      "ok": true
+    },
+    {
+      "metric": "trial balance nets to zero (cents)",
+      "value": 0,
+      "target": "0",
+      "ok": true
+    },
+    {
+      "metric": "bills paid more than once",
+      "value": 0,
+      "target": "0",
+      "ok": true
+    },
+    {
+      "metric": "payments approved by their requester",
+      "value": 0,
+      "target": "0",
+      "ok": true
+    },
+    {
+      "metric": "blocked attempts (kernel said no)",
+      "value": 0,
+      "target": "logged",
+      "ok": true
+    }
+  ],
+  "humans": {
+    "asksToHumans": 0,
+    "decisionsAsked": 0,
+    "perHundredEvents": 0
+  },
+  "coverage": {
+    "invoiceDocuments": 5,
+    "billsRecorded": 5,
+    "unreadable": 0,
+    "parsersLearned": 0
+  },
+  "cost": {
+    "tasks": 0,
+    "llmTurns": 0,
+    "deterministicShare": 1,
+    "costUsd": 0,
+    "costPerTaskUsd": 0
+  },
+  "summary": {
+    "caught": 3,
+    "planted": 4,
+    "recall": 0.75,
+    "dollarsAtRisk": 195700,
+    "dollarsCaught": 131700,
+    "decoysCorrect": 0,
+    "decoys": 1,
+    "falseAlarmCount": 0
+  },
+  "baseline": {
+    "processed": 11,
+    "usage": {
+      "inputTokens": 49950,
+      "outputTokens": 12449,
+      "cacheReadTokens": 130000,
+      "cacheWriteTokens": 3250,
+      "costMicros": 491030,
+      "latencyMs": 204113,
+      "toolCalls": 42,
+      "turns": 41
+    },
+    "skippedForBudget": 0,
+    "wallSeconds": 207
+  }
+}

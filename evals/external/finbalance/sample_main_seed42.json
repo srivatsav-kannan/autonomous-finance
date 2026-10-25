@@ -1,0 +1,1211 @@
+{
+  "dataset": "/Users/srivatsavkannan/Documents/calhacks/benchdata/finbalance/data/main/records.jsonl",
+  "seed": 42,
+  "per_cell": 8,
+  "standard": [
+    {
+      "record_id": "COV_PRO_M1_0000",
+      "difficulty_level": 1,
+      "period_type": "month",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "COV_FIE_M1_0015",
+      "difficulty_level": 1,
+      "period_type": "month",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_M1_00092",
+      "difficulty_level": 1,
+      "period_type": "month",
+      "industry": "retail"
+    },
+    {
+      "record_id": "DB_WHO_M1_00136",
+      "difficulty_level": 1,
+      "period_type": "month",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "DB_HEA_M1_00181",
+      "difficulty_level": 1,
+      "period_type": "month",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_M1_00226",
+      "difficulty_level": 1,
+      "period_type": "month",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "COV_MAN_M1_0090",
+      "difficulty_level": 1,
+      "period_type": "month",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "COV_SUB_M1_0105",
+      "difficulty_level": 1,
+      "period_type": "month",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_Q1_00018",
+      "difficulty_level": 1,
+      "period_type": "quarter",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "COV_FIE_Q1_0020",
+      "difficulty_level": 1,
+      "period_type": "quarter",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "COV_RET_Q1_0035",
+      "difficulty_level": 1,
+      "period_type": "quarter",
+      "industry": "retail"
+    },
+    {
+      "record_id": "COV_WHO_Q1_0050",
+      "difficulty_level": 1,
+      "period_type": "quarter",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "DB_HEA_Q1_00196",
+      "difficulty_level": 1,
+      "period_type": "quarter",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_Q1_00241",
+      "difficulty_level": 1,
+      "period_type": "quarter",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "COV_MAN_Q1_0095",
+      "difficulty_level": 1,
+      "period_type": "quarter",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "DB_SUB_Q1_00331",
+      "difficulty_level": 1,
+      "period_type": "quarter",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_Y1_00033",
+      "difficulty_level": 1,
+      "period_type": "year",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_Y1_00076",
+      "difficulty_level": 1,
+      "period_type": "year",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_Y1_00123",
+      "difficulty_level": 1,
+      "period_type": "year",
+      "industry": "retail"
+    },
+    {
+      "record_id": "DB_WHO_Y1_00167",
+      "difficulty_level": 1,
+      "period_type": "year",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "COV_HEA_Y1_0070",
+      "difficulty_level": 1,
+      "period_type": "year",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_Y1_00256",
+      "difficulty_level": 1,
+      "period_type": "year",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "DB_MAN_Y1_00303",
+      "difficulty_level": 1,
+      "period_type": "year",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "DB_SUB_Y1_00347",
+      "difficulty_level": 1,
+      "period_type": "year",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_M2_00005",
+      "difficulty_level": 2,
+      "period_type": "month",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_M2_00049",
+      "difficulty_level": 2,
+      "period_type": "month",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_M2_00094",
+      "difficulty_level": 2,
+      "period_type": "month",
+      "industry": "retail"
+    },
+    {
+      "record_id": "DB_WHO_M2_00140",
+      "difficulty_level": 2,
+      "period_type": "month",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "COV_HEA_M2_0061",
+      "difficulty_level": 2,
+      "period_type": "month",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "COV_PRO_M2_0076",
+      "difficulty_level": 2,
+      "period_type": "month",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "DB_MAN_M2_00276",
+      "difficulty_level": 2,
+      "period_type": "month",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "COV_SUB_M2_0106",
+      "difficulty_level": 2,
+      "period_type": "month",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_Q2_00020",
+      "difficulty_level": 2,
+      "period_type": "quarter",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_Q2_00065",
+      "difficulty_level": 2,
+      "period_type": "quarter",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_Q2_00110",
+      "difficulty_level": 2,
+      "period_type": "quarter",
+      "industry": "retail"
+    },
+    {
+      "record_id": "COV_WHO_Q2_0051",
+      "difficulty_level": 2,
+      "period_type": "quarter",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "DB_HEA_Q2_00201",
+      "difficulty_level": 2,
+      "period_type": "quarter",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "COV_PRO_Q2_0081",
+      "difficulty_level": 2,
+      "period_type": "quarter",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "DB_MAN_Q2_00291",
+      "difficulty_level": 2,
+      "period_type": "quarter",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "COV_SUB_Q2_0111",
+      "difficulty_level": 2,
+      "period_type": "quarter",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_Y2_00035",
+      "difficulty_level": 2,
+      "period_type": "year",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_Y2_00080",
+      "difficulty_level": 2,
+      "period_type": "year",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_Y2_00124",
+      "difficulty_level": 2,
+      "period_type": "year",
+      "industry": "retail"
+    },
+    {
+      "record_id": "COV_WHO_Y2_0056",
+      "difficulty_level": 2,
+      "period_type": "year",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "COV_HEA_Y2_0071",
+      "difficulty_level": 2,
+      "period_type": "year",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_Y2_00259",
+      "difficulty_level": 2,
+      "period_type": "year",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "DB_MAN_Y2_00305",
+      "difficulty_level": 2,
+      "period_type": "year",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "COV_SUB_Y2_0116",
+      "difficulty_level": 2,
+      "period_type": "year",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_M3_00007",
+      "difficulty_level": 3,
+      "period_type": "month",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "COV_FIE_M3_0017",
+      "difficulty_level": 3,
+      "period_type": "month",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_M3_00099",
+      "difficulty_level": 3,
+      "period_type": "month",
+      "industry": "retail"
+    },
+    {
+      "record_id": "DB_WHO_M3_00143",
+      "difficulty_level": 3,
+      "period_type": "month",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "DB_HEA_M3_00189",
+      "difficulty_level": 3,
+      "period_type": "month",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_M3_00233",
+      "difficulty_level": 3,
+      "period_type": "month",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "DB_MAN_M3_00277",
+      "difficulty_level": 3,
+      "period_type": "month",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "DB_SUB_M3_00323",
+      "difficulty_level": 3,
+      "period_type": "month",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_Q3_00023",
+      "difficulty_level": 3,
+      "period_type": "quarter",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_Q3_00067",
+      "difficulty_level": 3,
+      "period_type": "quarter",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_Q3_00113",
+      "difficulty_level": 3,
+      "period_type": "quarter",
+      "industry": "retail"
+    },
+    {
+      "record_id": "COV_WHO_Q3_0052",
+      "difficulty_level": 3,
+      "period_type": "quarter",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "DB_HEA_Q3_00202",
+      "difficulty_level": 3,
+      "period_type": "quarter",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_Q3_00247",
+      "difficulty_level": 3,
+      "period_type": "quarter",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "DB_MAN_Q3_00292",
+      "difficulty_level": 3,
+      "period_type": "quarter",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "DB_SUB_Q3_00339",
+      "difficulty_level": 3,
+      "period_type": "quarter",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_Y3_00039",
+      "difficulty_level": 3,
+      "period_type": "year",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_Y3_00083",
+      "difficulty_level": 3,
+      "period_type": "year",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_Y3_00127",
+      "difficulty_level": 3,
+      "period_type": "year",
+      "industry": "retail"
+    },
+    {
+      "record_id": "DB_WHO_Y3_00173",
+      "difficulty_level": 3,
+      "period_type": "year",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "COV_HEA_Y3_0072",
+      "difficulty_level": 3,
+      "period_type": "year",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_Y3_00262",
+      "difficulty_level": 3,
+      "period_type": "year",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "COV_MAN_Y3_0102",
+      "difficulty_level": 3,
+      "period_type": "year",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "DB_SUB_Y3_00353",
+      "difficulty_level": 3,
+      "period_type": "year",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_M4_00012",
+      "difficulty_level": 4,
+      "period_type": "month",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_M4_00056",
+      "difficulty_level": 4,
+      "period_type": "month",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "COV_RET_M4_0033",
+      "difficulty_level": 4,
+      "period_type": "month",
+      "industry": "retail"
+    },
+    {
+      "record_id": "DB_WHO_M4_00145",
+      "difficulty_level": 4,
+      "period_type": "month",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "DB_HEA_M4_00191",
+      "difficulty_level": 4,
+      "period_type": "month",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_M4_00235",
+      "difficulty_level": 4,
+      "period_type": "month",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "DB_MAN_M4_00282",
+      "difficulty_level": 4,
+      "period_type": "month",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "DB_SUB_M4_00327",
+      "difficulty_level": 4,
+      "period_type": "month",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_Q4_00027",
+      "difficulty_level": 4,
+      "period_type": "quarter",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_Q4_00070",
+      "difficulty_level": 4,
+      "period_type": "quarter",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_Q4_00116",
+      "difficulty_level": 4,
+      "period_type": "quarter",
+      "industry": "retail"
+    },
+    {
+      "record_id": "DB_WHO_Q4_00160",
+      "difficulty_level": 4,
+      "period_type": "quarter",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "DB_HEA_Q4_00205",
+      "difficulty_level": 4,
+      "period_type": "quarter",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_Q4_00251",
+      "difficulty_level": 4,
+      "period_type": "quarter",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "DB_MAN_Q4_00297",
+      "difficulty_level": 4,
+      "period_type": "quarter",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "DB_SUB_Q4_00342",
+      "difficulty_level": 4,
+      "period_type": "quarter",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_Y4_00041",
+      "difficulty_level": 4,
+      "period_type": "year",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_Y4_00085",
+      "difficulty_level": 4,
+      "period_type": "year",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_Y4_00130",
+      "difficulty_level": 4,
+      "period_type": "year",
+      "industry": "retail"
+    },
+    {
+      "record_id": "DB_WHO_Y4_00177",
+      "difficulty_level": 4,
+      "period_type": "year",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "COV_HEA_Y4_0073",
+      "difficulty_level": 4,
+      "period_type": "year",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "COV_PRO_Y4_0088",
+      "difficulty_level": 4,
+      "period_type": "year",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "COV_MAN_Y4_0103",
+      "difficulty_level": 4,
+      "period_type": "year",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "DB_SUB_Y4_00355",
+      "difficulty_level": 4,
+      "period_type": "year",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "DB_PRO_M5_00013",
+      "difficulty_level": 5,
+      "period_type": "month",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_M5_00060",
+      "difficulty_level": 5,
+      "period_type": "month",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "COV_RET_M5_0034",
+      "difficulty_level": 5,
+      "period_type": "month",
+      "industry": "retail"
+    },
+    {
+      "record_id": "DB_WHO_M5_00150",
+      "difficulty_level": 5,
+      "period_type": "month",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "DB_HEA_M5_00195",
+      "difficulty_level": 5,
+      "period_type": "month",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_M5_00240",
+      "difficulty_level": 5,
+      "period_type": "month",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "DB_MAN_M5_00284",
+      "difficulty_level": 5,
+      "period_type": "month",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "COV_SUB_M5_0109",
+      "difficulty_level": 5,
+      "period_type": "month",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "COV_PRO_Q5_0009",
+      "difficulty_level": 5,
+      "period_type": "quarter",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_Q5_00074",
+      "difficulty_level": 5,
+      "period_type": "quarter",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_Q5_00119",
+      "difficulty_level": 5,
+      "period_type": "quarter",
+      "industry": "retail"
+    },
+    {
+      "record_id": "COV_WHO_Q5_0054",
+      "difficulty_level": 5,
+      "period_type": "quarter",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "DB_HEA_Q5_00209",
+      "difficulty_level": 5,
+      "period_type": "quarter",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_Q5_00255",
+      "difficulty_level": 5,
+      "period_type": "quarter",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "DB_MAN_Q5_00298",
+      "difficulty_level": 5,
+      "period_type": "quarter",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "DB_SUB_Q5_00345",
+      "difficulty_level": 5,
+      "period_type": "quarter",
+      "industry": "subscription_saas"
+    },
+    {
+      "record_id": "COV_PRO_Y5_0014",
+      "difficulty_level": 5,
+      "period_type": "year",
+      "industry": "professional_services"
+    },
+    {
+      "record_id": "DB_FIE_Y5_00089",
+      "difficulty_level": 5,
+      "period_type": "year",
+      "industry": "field_services"
+    },
+    {
+      "record_id": "DB_RET_Y5_00133",
+      "difficulty_level": 5,
+      "period_type": "year",
+      "industry": "retail"
+    },
+    {
+      "record_id": "COV_WHO_Y5_0059",
+      "difficulty_level": 5,
+      "period_type": "year",
+      "industry": "wholesale_distribution"
+    },
+    {
+      "record_id": "DB_HEA_Y5_00224",
+      "difficulty_level": 5,
+      "period_type": "year",
+      "industry": "healthcare_clinic"
+    },
+    {
+      "record_id": "DB_PRO_Y5_00268",
+      "difficulty_level": 5,
+      "period_type": "year",
+      "industry": "property_management"
+    },
+    {
+      "record_id": "DB_MAN_Y5_00313",
+      "difficulty_level": 5,
+      "period_type": "year",
+      "industry": "manufacturing"
+    },
+    {
+      "record_id": "DB_SUB_Y5_00359",
+      "difficulty_level": 5,
+      "period_type": "year",
+      "industry": "subscription_saas"
+    }
+  ],
+  "negatives": [
+    {
+      "record_id": "MAIN_NEG_03_INVOICE_TOTAL_MISMATCH",
+      "expected_inconsistency_code": "invoice_total_mismatch"
+    },
+    {
+      "record_id": "COV_NEG_00_BANK_CLOSING_MISMATCH",
+      "expected_inconsistency_code": "bank_closing_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_03_STATEMENT_BALANCE_MISMATCH",
+      "expected_inconsistency_code": "statement_balance_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_09_PAYMENT_ALLOCATION_MISMATCH",
+      "expected_inconsistency_code": "payment_allocation_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_01_DUPLICATE_REFERENCE_CONFLICT",
+      "expected_inconsistency_code": "duplicate_reference_conflict"
+    },
+    {
+      "record_id": "MAIN_NEG_01_SCHEDULE_ROLLFORWARD_MISMATCH",
+      "expected_inconsistency_code": "schedule_rollforward_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_07_INVENTORY_ROLLFORWARD_MISMATCH",
+      "expected_inconsistency_code": "inventory_rollforward_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_01_TRANSFER_MISMATCH",
+      "expected_inconsistency_code": "transfer_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_08_RECLASSIFICATION_SUPPORT_MISMATC",
+      "expected_inconsistency_code": "reclassification_support_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_02_TAX_TOTAL_MISMATCH",
+      "expected_inconsistency_code": "tax_total_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_02_TAX_RATE_MISMATCH",
+      "expected_inconsistency_code": "tax_rate_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_07_INPUT_TAX_MISMATCH",
+      "expected_inconsistency_code": "input_tax_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_08_JURISDICTION_TAX_MISMATCH",
+      "expected_inconsistency_code": "jurisdiction_tax_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_02_TAX_EXEMPTION_CONFLICT",
+      "expected_inconsistency_code": "tax_exemption_conflict"
+    },
+    {
+      "record_id": "MAIN_NEG_04_SSP_ALLOCATION_MISMATCH",
+      "expected_inconsistency_code": "ssp_allocation_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_08_PERFORMANCE_OBLIGATION_RELEASE_M",
+      "expected_inconsistency_code": "performance_obligation_release_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_09_ASSET_DISPOSAL_MISMATCH",
+      "expected_inconsistency_code": "asset_disposal_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_06_DEFERRED_TAX_ROLLFORWARD_MISMATC",
+      "expected_inconsistency_code": "deferred_tax_rollforward_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_03_LEASE_SCHEDULE_MISMATCH",
+      "expected_inconsistency_code": "lease_schedule_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_08_LEASE_REMEASUREMENT_MISMATCH",
+      "expected_inconsistency_code": "lease_remeasurement_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_03_EXCHANGE_RATE_MISMATCH",
+      "expected_inconsistency_code": "exchange_rate_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_04_FX_SETTLEMENT_MISMATCH",
+      "expected_inconsistency_code": "fx_settlement_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_06_REMEASUREMENT_MISMATCH",
+      "expected_inconsistency_code": "remeasurement_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_06_INVOICE_TOTAL_MISMATCH",
+      "expected_inconsistency_code": "invoice_total_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_08_BANK_CLOSING_MISMATCH",
+      "expected_inconsistency_code": "bank_closing_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_09_STATEMENT_BALANCE_MISMATCH",
+      "expected_inconsistency_code": "statement_balance_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_07_PAYMENT_ALLOCATION_MISMATCH",
+      "expected_inconsistency_code": "payment_allocation_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_02_DUPLICATE_REFERENCE_CONFLICT",
+      "expected_inconsistency_code": "duplicate_reference_conflict"
+    },
+    {
+      "record_id": "MAIN_NEG_04_SCHEDULE_ROLLFORWARD_MISMATCH",
+      "expected_inconsistency_code": "schedule_rollforward_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_03_INVENTORY_ROLLFORWARD_MISMATCH",
+      "expected_inconsistency_code": "inventory_rollforward_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_02_TRANSFER_MISMATCH",
+      "expected_inconsistency_code": "transfer_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_05_RECLASSIFICATION_SUPPORT_MISMATC",
+      "expected_inconsistency_code": "reclassification_support_mismatch"
+    },
+    {
+      "record_id": "COV_NEG_00_TAX_TOTAL_MISMATCH",
+      "expected_inconsistency_code": "tax_total_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_09_TAX_RATE_MISMATCH",
+      "expected_inconsistency_code": "tax_rate_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_03_INPUT_TAX_MISMATCH",
+      "expected_inconsistency_code": "input_tax_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_03_JURISDICTION_TAX_MISMATCH",
+      "expected_inconsistency_code": "jurisdiction_tax_mismatch"
+    },
+    {
+      "record_id": "COV_NEG_00_TAX_EXEMPTION_CONFLICT",
+      "expected_inconsistency_code": "tax_exemption_conflict"
+    },
+    {
+      "record_id": "MAIN_NEG_01_SSP_ALLOCATION_MISMATCH",
+      "expected_inconsistency_code": "ssp_allocation_mismatch"
+    },
+    {
+      "record_id": "COV_NEG_00_PERFORMANCE_OBLIGATION_RELEASE_M",
+      "expected_inconsistency_code": "performance_obligation_release_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_03_ASSET_DISPOSAL_MISMATCH",
+      "expected_inconsistency_code": "asset_disposal_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_01_DEFERRED_TAX_ROLLFORWARD_MISMATC",
+      "expected_inconsistency_code": "deferred_tax_rollforward_mismatch"
+    },
+    {
+      "record_id": "COV_NEG_00_LEASE_SCHEDULE_MISMATCH",
+      "expected_inconsistency_code": "lease_schedule_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_05_LEASE_REMEASUREMENT_MISMATCH",
+      "expected_inconsistency_code": "lease_remeasurement_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_01_EXCHANGE_RATE_MISMATCH",
+      "expected_inconsistency_code": "exchange_rate_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_09_FX_SETTLEMENT_MISMATCH",
+      "expected_inconsistency_code": "fx_settlement_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_03_REMEASUREMENT_MISMATCH",
+      "expected_inconsistency_code": "remeasurement_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_06_SCHEDULE_ROLLFORWARD_MISMATCH",
+      "expected_inconsistency_code": "schedule_rollforward_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_09_DEFERRED_TAX_ROLLFORWARD_MISMATC",
+      "expected_inconsistency_code": "deferred_tax_rollforward_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_04_ASSET_DISPOSAL_MISMATCH",
+      "expected_inconsistency_code": "asset_disposal_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_02_INVOICE_TOTAL_MISMATCH",
+      "expected_inconsistency_code": "invoice_total_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_08_TAX_RATE_MISMATCH",
+      "expected_inconsistency_code": "tax_rate_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_04_PERFORMANCE_OBLIGATION_RELEASE_M",
+      "expected_inconsistency_code": "performance_obligation_release_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_09_LEASE_REMEASUREMENT_MISMATCH",
+      "expected_inconsistency_code": "lease_remeasurement_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_06_PAYMENT_ALLOCATION_MISMATCH",
+      "expected_inconsistency_code": "payment_allocation_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_05_SSP_ALLOCATION_MISMATCH",
+      "expected_inconsistency_code": "ssp_allocation_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_01_REMEASUREMENT_MISMATCH",
+      "expected_inconsistency_code": "remeasurement_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_01_JURISDICTION_TAX_MISMATCH",
+      "expected_inconsistency_code": "jurisdiction_tax_mismatch"
+    },
+    {
+      "record_id": "MAIN_NEG_08_DUPLICATE_REFERENCE_CONFLICT",
+      "expected_inconsistency_code": "duplicate_reference_conflict"
+    }
+  ],
+  "record_ids": [
+    "COV_PRO_M1_0000",
+    "COV_PRO_Q5_0009",
+    "COV_PRO_Y5_0014",
+    "COV_FIE_M1_0015",
+    "COV_FIE_M3_0017",
+    "COV_FIE_Q1_0020",
+    "COV_RET_M4_0033",
+    "COV_RET_M5_0034",
+    "COV_RET_Q1_0035",
+    "COV_WHO_Q1_0050",
+    "COV_WHO_Q2_0051",
+    "COV_WHO_Q3_0052",
+    "COV_WHO_Q5_0054",
+    "COV_WHO_Y2_0056",
+    "COV_WHO_Y5_0059",
+    "COV_HEA_M2_0061",
+    "COV_HEA_Y1_0070",
+    "COV_HEA_Y2_0071",
+    "COV_HEA_Y3_0072",
+    "COV_HEA_Y4_0073",
+    "COV_PRO_M2_0076",
+    "COV_PRO_Q2_0081",
+    "COV_PRO_Y4_0088",
+    "COV_MAN_M1_0090",
+    "COV_MAN_Q1_0095",
+    "COV_MAN_Y3_0102",
+    "COV_MAN_Y4_0103",
+    "COV_SUB_M1_0105",
+    "COV_SUB_M2_0106",
+    "COV_SUB_M5_0109",
+    "COV_SUB_Q2_0111",
+    "COV_SUB_Y2_0116",
+    "COV_NEG_00_BANK_CLOSING_MISMATCH",
+    "COV_NEG_00_TAX_TOTAL_MISMATCH",
+    "COV_NEG_00_TAX_EXEMPTION_CONFLICT",
+    "COV_NEG_00_PERFORMANCE_OBLIGATION_RELEASE_M",
+    "COV_NEG_00_LEASE_SCHEDULE_MISMATCH",
+    "DB_PRO_M2_00005",
+    "DB_PRO_M3_00007",
+    "DB_PRO_M4_00012",
+    "DB_PRO_M5_00013",
+    "DB_PRO_Q1_00018",
+    "DB_PRO_Q2_00020",
+    "DB_PRO_Q3_00023",
+    "DB_PRO_Q4_00027",
+    "DB_PRO_Y1_00033",
+    "DB_PRO_Y2_00035",
+    "DB_PRO_Y3_00039",
+    "DB_PRO_Y4_00041",
+    "DB_FIE_M2_00049",
+    "DB_FIE_M4_00056",
+    "DB_FIE_M5_00060",
+    "DB_FIE_Q2_00065",
+    "DB_FIE_Q3_00067",
+    "DB_FIE_Q4_00070",
+    "DB_FIE_Q5_00074",
+    "DB_FIE_Y1_00076",
+    "DB_FIE_Y2_00080",
+    "DB_FIE_Y3_00083",
+    "DB_FIE_Y4_00085",
+    "DB_FIE_Y5_00089",
+    "DB_RET_M1_00092",
+    "DB_RET_M2_00094",
+    "DB_RET_M3_00099",
+    "DB_RET_Q2_00110",
+    "DB_RET_Q3_00113",
+    "DB_RET_Q4_00116",
+    "DB_RET_Q5_00119",
+    "DB_RET_Y1_00123",
+    "DB_RET_Y2_00124",
+    "DB_RET_Y3_00127",
+    "DB_RET_Y4_00130",
+    "DB_RET_Y5_00133",
+    "DB_WHO_M1_00136",
+    "DB_WHO_M2_00140",
+    "DB_WHO_M3_00143",
+    "DB_WHO_M4_00145",
+    "DB_WHO_M5_00150",
+    "DB_WHO_Q4_00160",
+    "DB_WHO_Y1_00167",
+    "DB_WHO_Y3_00173",
+    "DB_WHO_Y4_00177",
+    "DB_HEA_M1_00181",
+    "DB_HEA_M3_00189",
+    "DB_HEA_M4_00191",
+    "DB_HEA_M5_00195",
+    "DB_HEA_Q1_00196",
+    "DB_HEA_Q2_00201",
+    "DB_HEA_Q3_00202",
+    "DB_HEA_Q4_00205",
+    "DB_HEA_Q5_00209",
+    "DB_HEA_Y5_00224",
+    "DB_PRO_M1_00226",
+    "DB_PRO_M3_00233",
+    "DB_PRO_M4_00235",
+    "DB_PRO_M5_00240",
+    "DB_PRO_Q1_00241",
+    "DB_PRO_Q3_00247",
+    "DB_PRO_Q4_00251",
+    "DB_PRO_Q5_00255",
+    "DB_PRO_Y1_00256",
+    "DB_PRO_Y2_00259",
+    "DB_PRO_Y3_00262",
+    "DB_PRO_Y5_00268",
+    "DB_MAN_M2_00276",
+    "DB_MAN_M3_00277",
+    "DB_MAN_M4_00282",
+    "DB_MAN_M5_00284",
+    "DB_MAN_Q2_00291",
+    "DB_MAN_Q3_00292",
+    "DB_MAN_Q4_00297",
+    "DB_MAN_Q5_00298",
+    "DB_MAN_Y1_00303",
+    "DB_MAN_Y2_00305",
+    "DB_MAN_Y5_00313",
+    "DB_SUB_M3_00323",
+    "DB_SUB_M4_00327",
+    "DB_SUB_Q1_00331",
+    "DB_SUB_Q3_00339",
+    "DB_SUB_Q4_00342",
+    "DB_SUB_Q5_00345",
+    "DB_SUB_Y1_00347",
+    "DB_SUB_Y3_00353",
+    "DB_SUB_Y4_00355",
+    "DB_SUB_Y5_00359",
+    "MAIN_NEG_02_INVOICE_TOTAL_MISMATCH",
+    "MAIN_NEG_03_INVOICE_TOTAL_MISMATCH",
+    "MAIN_NEG_06_INVOICE_TOTAL_MISMATCH",
+    "MAIN_NEG_08_BANK_CLOSING_MISMATCH",
+    "MAIN_NEG_03_STATEMENT_BALANCE_MISMATCH",
+    "MAIN_NEG_09_STATEMENT_BALANCE_MISMATCH",
+    "MAIN_NEG_06_PAYMENT_ALLOCATION_MISMATCH",
+    "MAIN_NEG_07_PAYMENT_ALLOCATION_MISMATCH",
+    "MAIN_NEG_09_PAYMENT_ALLOCATION_MISMATCH",
+    "MAIN_NEG_01_DUPLICATE_REFERENCE_CONFLICT",
+    "MAIN_NEG_02_DUPLICATE_REFERENCE_CONFLICT",
+    "MAIN_NEG_08_DUPLICATE_REFERENCE_CONFLICT",
+    "MAIN_NEG_01_SCHEDULE_ROLLFORWARD_MISMATCH",
+    "MAIN_NEG_04_SCHEDULE_ROLLFORWARD_MISMATCH",
+    "MAIN_NEG_06_SCHEDULE_ROLLFORWARD_MISMATCH",
+    "MAIN_NEG_03_INVENTORY_ROLLFORWARD_MISMATCH",
+    "MAIN_NEG_07_INVENTORY_ROLLFORWARD_MISMATCH",
+    "MAIN_NEG_01_TRANSFER_MISMATCH",
+    "MAIN_NEG_02_TRANSFER_MISMATCH",
+    "MAIN_NEG_05_RECLASSIFICATION_SUPPORT_MISMATC",
+    "MAIN_NEG_08_RECLASSIFICATION_SUPPORT_MISMATC",
+    "MAIN_NEG_02_TAX_TOTAL_MISMATCH",
+    "MAIN_NEG_02_TAX_RATE_MISMATCH",
+    "MAIN_NEG_08_TAX_RATE_MISMATCH",
+    "MAIN_NEG_09_TAX_RATE_MISMATCH",
+    "MAIN_NEG_03_INPUT_TAX_MISMATCH",
+    "MAIN_NEG_07_INPUT_TAX_MISMATCH",
+    "MAIN_NEG_01_JURISDICTION_TAX_MISMATCH",
+    "MAIN_NEG_03_JURISDICTION_TAX_MISMATCH",
+    "MAIN_NEG_08_JURISDICTION_TAX_MISMATCH",
+    "MAIN_NEG_02_TAX_EXEMPTION_CONFLICT",
+    "MAIN_NEG_01_SSP_ALLOCATION_MISMATCH",
+    "MAIN_NEG_04_SSP_ALLOCATION_MISMATCH",
+    "MAIN_NEG_05_SSP_ALLOCATION_MISMATCH",
+    "MAIN_NEG_04_PERFORMANCE_OBLIGATION_RELEASE_M",
+    "MAIN_NEG_08_PERFORMANCE_OBLIGATION_RELEASE_M",
+    "MAIN_NEG_03_ASSET_DISPOSAL_MISMATCH",
+    "MAIN_NEG_04_ASSET_DISPOSAL_MISMATCH",
+    "MAIN_NEG_09_ASSET_DISPOSAL_MISMATCH",
+    "MAIN_NEG_01_DEFERRED_TAX_ROLLFORWARD_MISMATC",
+    "MAIN_NEG_06_DEFERRED_TAX_ROLLFORWARD_MISMATC",
+    "MAIN_NEG_09_DEFERRED_TAX_ROLLFORWARD_MISMATC",
+    "MAIN_NEG_03_LEASE_SCHEDULE_MISMATCH",
+    "MAIN_NEG_05_LEASE_REMEASUREMENT_MISMATCH",
+    "MAIN_NEG_08_LEASE_REMEASUREMENT_MISMATCH",
+    "MAIN_NEG_09_LEASE_REMEASUREMENT_MISMATCH",
+    "MAIN_NEG_01_EXCHANGE_RATE_MISMATCH",
+    "MAIN_NEG_03_EXCHANGE_RATE_MISMATCH",
+    "MAIN_NEG_04_FX_SETTLEMENT_MISMATCH",
+    "MAIN_NEG_09_FX_SETTLEMENT_MISMATCH",
+    "MAIN_NEG_01_REMEASUREMENT_MISMATCH",
+    "MAIN_NEG_03_REMEASUREMENT_MISMATCH",
+    "MAIN_NEG_06_REMEASUREMENT_MISMATCH"
+  ],
+  "ablation_record_ids": [
+    "COV_FIE_M1_0015",
+    "COV_RET_M4_0033",
+    "COV_RET_M5_0034",
+    "COV_WHO_Q1_0050",
+    "COV_MAN_Q1_0095",
+    "COV_MAN_Y4_0103",
+    "COV_SUB_M2_0106",
+    "COV_SUB_M5_0109",
+    "DB_PRO_M5_00013",
+    "DB_PRO_Q4_00027",
+    "DB_FIE_M2_00049",
+    "DB_FIE_M5_00060",
+    "DB_FIE_Y3_00083",
+    "DB_FIE_Y4_00085",
+    "DB_FIE_Y5_00089",
+    "DB_RET_Q2_00110",
+    "DB_WHO_M1_00136",
+    "DB_WHO_M2_00140",
+    "DB_WHO_M4_00145",
+    "DB_HEA_M3_00189",
+    "DB_HEA_Q2_00201",
+    "DB_HEA_Y5_00224",
+    "DB_PRO_M3_00233",
+    "DB_PRO_M5_00240",
+    "DB_PRO_Q1_00241",
+    "DB_PRO_Q3_00247",
+    "DB_MAN_M2_00276",
+    "DB_MAN_M3_00277",
+    "DB_MAN_Q3_00292",
+    "DB_MAN_Q4_00297",
+    "DB_MAN_Y1_00303",
+    "DB_SUB_M4_00327",
+    "MAIN_NEG_08_BANK_CLOSING_MISMATCH",
+    "MAIN_NEG_09_STATEMENT_BALANCE_MISMATCH",
+    "MAIN_NEG_07_PAYMENT_ALLOCATION_MISMATCH",
+    "MAIN_NEG_09_PAYMENT_ALLOCATION_MISMATCH",
+    "MAIN_NEG_02_TRANSFER_MISMATCH",
+    "MAIN_NEG_05_RECLASSIFICATION_SUPPORT_MISMATC",
+    "MAIN_NEG_02_TAX_RATE_MISMATCH",
+    "MAIN_NEG_02_TAX_EXEMPTION_CONFLICT"
+  ],
+  "counts": {
+    "standard": 120,
+    "negatives": 58,
+    "total": 178,
+    "standard_by_level": {
+      "1": 24,
+      "2": 24,
+      "3": 24,
+      "4": 24,
+      "5": 24
+    },
+    "standard_by_period": {
+      "month": 40,
+      "quarter": 40,
+      "year": 40
+    },
+    "standard_by_industry": {
+      "professional_services": 15,
+      "field_services": 15,
+      "retail": 15,
+      "wholesale_distribution": 15,
+      "healthcare_clinic": 15,
+      "property_management": 15,
+      "manufacturing": 15,
+      "subscription_saas": 15
+    },
+    "ablation_total": 40
+  }
+}

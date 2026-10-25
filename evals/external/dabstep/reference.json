@@ -1,0 +1,35 @@
+{
+  "retrieved_at": "2026-10-24T07:30:54Z",
+  "important": "These reference numbers are on the 450-task hidden-answer set (72 easy, 378 hard). Our numbers are on the 10-task public dev split (3 easy, 7 hard) whose answers are public. They are not comparable; they are listed only for orientation.",
+  "leaderboard": {
+    "source": "https://huggingface.co/spaces/adyen/DABstep (table values read from https://adyen-dabstep.hf.space/config, Space revision d4431c2e4a695cbe43c33aab2adaa304a37ae64a)",
+    "metric": "Easy / Hard Level Accuracy (%) = mean official question_scorer score per level on all 450 tasks",
+    "validated_top": [
+      {"rank": 1, "agent": "NVIDIA KGMON (NeMo Agent Toolkit) Data Explorer", "model_family": "claude haiku 4.5", "easy": 87.5, "hard": 89.95, "date": "2026-02-22"},
+      {"rank": 2, "agent": "DataPilot (OceanBase AntGroup)", "model_family": "Qwen3", "easy": 86.11, "hard": 87.57, "date": "2025-12-09"},
+      {"rank": 3, "agent": "gg-agent-gpt5-1104-1", "model_family": "Doubao", "easy": 88.89, "hard": 62.96, "date": "2025-11-04"},
+      {"rank": 4, "agent": "CambioML energent.ai DS Agent", "model_family": "GPT-5", "easy": 94.44, "hard": 57.67, "date": "2025-09-19"},
+      {"rank": 5, "agent": "DS-STAR (Google Cloud AI Research)", "model_family": "Gemini-2.5-Pro", "easy": 87.5, "hard": 45.24, "date": "2025-07-08"}
+    ],
+    "validated_baselines": [
+      {"agent": "Claude 4 Sonnet ReACT Baseline (Hugging Face)", "easy": 81.94, "hard": 19.84, "date": "2025-05-28"},
+      {"agent": "o4-mini Reasoning Prompt Baseline (Hugging Face)", "easy": 76.39, "hard": 14.55, "date": "2025-04-22"},
+      {"agent": "Claude 3.7 Sonnet ReACT Baseline (Hugging Face)", "easy": 75.0, "hard": 13.76, "date": "2025-04-07"}
+    ],
+    "validated_entries": 28,
+    "unvalidated_entries": 2245,
+    "unvalidated_hard_100pct_entries": 17,
+    "unvalidated_note": "The unvalidated board has 17 entries at 100% hard accuracy, including entries named like 'test gold', so it says little about agent ability. The Space notes that validation requests are closed ahead of DABstep-v2; the validated board is the meaningful reference."
+  },
+  "paper": {
+    "source": "https://arxiv.org/abs/2506.23719 (v1, 30 Jun 2025): Egg, Iglesias Goyanes, Kingma, Mora, von Werra, Wolf, 'DABstep: Data Agent Benchmark for Multi-step Reasoning'",
+    "best_baseline": {"model": "o4-mini (reasoning prompt)", "easy": 76.39, "hard": 14.55},
+    "other_baselines": [
+      {"model": "Claude 3.7 Sonnet", "easy": 75.0, "hard": 13.76},
+      {"model": "o3-mini", "easy": 72.22, "hard": 13.76},
+      {"model": "Gemini 2.5 Pro", "easy": 66.67, "hard": 12.7},
+      {"model": "GPT 4.1", "easy": 80.56, "hard": 12.43}
+    ],
+    "setup": "smolagents code agents, max 10 steps per task (ReAct prompt; reasoning-prompt for o-series), 450 tasks: 72 easy, 378 hard"
+  }
+}
