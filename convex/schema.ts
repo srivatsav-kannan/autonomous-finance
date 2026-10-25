@@ -188,6 +188,7 @@ export default defineSchema({
     paymentIntentId: v.optional(v.id("paymentIntents")),
   })
     .index("by_run_vendor_invoice", ["runId", "vendor", "invoiceNumber"])
+    .index("by_run_document", ["runId", "documentEventId"])
     .index("by_run_status", ["runId", "status"]),
 
   paymentIntents: defineTable({

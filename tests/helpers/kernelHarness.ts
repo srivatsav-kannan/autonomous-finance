@@ -18,7 +18,9 @@ export function mutationHandler<A extends Record<string, unknown>, R>(mutation: 
  */
 export function kernelHarness() {
   const tables = new Map<string, Map<string, Row>>();
+  const tableOf = new Map<string, string>();
   let nextId = 0;
+  const tableFor = (id: string) => tableOf.get(id) ?? id.split(":")[0]!;
   function rows(table: string) {
     let result = tables.get(table);
     if (!result) tables.set(table, result = new Map());
@@ -26,21 +28,26 @@ export function kernelHarness() {
   }
   const db = {
     async insert(table: string, value: Record<string, unknown>) {
-      const id = `${table}:${++nextId}`;
-      rows(table).set(id, structuredClone({ ...value, _id: id, _creationTime: nextId }));
+      const id = (value._seedId as string | undefined) ?? `${table}:${++nextId}`;
+      const { _seedId: _s, ...rest } = value;
+      tableOf.set(id, table);
+      rows(table).set(id, structuredClone({ ...rest, _id: id, _creationTime: ++nextId }));
       return id;
     },
+    normalizeId(table: string, id: string) {
+      return rows(table).has(id) ? id : null;
+    },
     async get(id: string) {
-      return structuredClone(rows(id.split(":")[0]!).get(id) ?? null);
+      return structuredClone(rows(tableFor(id)).get(id) ?? null);
     },
     async patch(id: string, value: Record<string, unknown>) {
-      const table = rows(id.split(":")[0]!);
+      const table = rows(tableFor(id));
       const row = table.get(id);
       if (!row) throw new Error(`missing row ${id}`);
       table.set(id, structuredClone({ ...row, ...value }));
     },
     async delete(id: string) {
-      rows(id.split(":")[0]!).delete(id);
+      rows(tableFor(id)).delete(id);
     },
     query(table: string) {
       const filters: [string, unknown][] = [];
@@ -101,6 +108,13 @@ export function kernelHarness() {
       await db.insert("seats", { runId, seatId, role, name: role, kind: "agent", capabilities: {}, status: "active", tokenHash: await sha256Hex(token), createdAt: 0 });
       await db.insert("periods", { runId, period: "2026-01", status: "open" });
       return { runId, seatId, token };
+    },
+    /** Bills must cite a received document: seed one under the id a fixture refers to. */
+    async document(runId: string, id = "document-1") {
+      await db.insert("events", {
+        _seedId: id, runId, type: "document.received", externalId: id, occurredOn: "2026-01-02",
+        payload: { kind: "invoice", text: "regression invoice" }, recordedAt: 0,
+      });
     },
   };
 }

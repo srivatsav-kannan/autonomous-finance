@@ -38,50 +38,60 @@ const goodLines = [
   { account: "2000", debit: 0, credit: 12345 },
 ];
 const post1 = await ap.client.mutation(api.ledger.postEntry, {
-  ...ap.auth, idempotencyKey: "k1", date: "2026-01-02", memo: "produce", source: { kind: "bill" }, lines: goodLines,
+  ...ap.auth, idempotencyKey: "k1", date: "2026-01-02", memo: "produce", source: { kind: "adjustment" }, lines: goodLines,
 });
 check("balanced entry posts", post1.ok === true, post1);
 
 const replay = await ap.client.mutation(api.ledger.postEntry, {
-  ...ap.auth, idempotencyKey: "k1", date: "2026-01-02", memo: "produce", source: { kind: "bill" }, lines: goodLines,
+  ...ap.auth, idempotencyKey: "k1", date: "2026-01-02", memo: "produce", source: { kind: "adjustment" }, lines: goodLines,
 });
 check("same key + same payload replays (no double post)", replay.ok === true && "replayed" in replay, replay);
 
 const conflict = await ap.client.mutation(api.ledger.postEntry, {
-  ...ap.auth, idempotencyKey: "k1", date: "2026-01-02", memo: "produce", source: { kind: "bill" },
+  ...ap.auth, idempotencyKey: "k1", date: "2026-01-02", memo: "produce", source: { kind: "adjustment" },
   lines: [{ account: "5000", debit: 99999, credit: 0 }, { account: "2000", debit: 0, credit: 99999 }],
 });
 check("same key + different payload is a conflict", conflict.ok === false && conflict.code === "idempotency_conflict", conflict);
 
 const unbalanced = await ap.client.mutation(api.ledger.postEntry, {
-  ...ap.auth, idempotencyKey: "k2", date: "2026-01-02", memo: "bad", source: { kind: "bill" },
+  ...ap.auth, idempotencyKey: "k2", date: "2026-01-02", memo: "bad", source: { kind: "adjustment" },
   lines: [{ account: "5000", debit: 100, credit: 0 }, { account: "2000", debit: 0, credit: 99 }],
 });
 check("unbalanced entry rejected", unbalanced.ok === false && unbalanced.code === "invalid_entry", unbalanced);
 
 const cash = await ap.client.mutation(api.ledger.postEntry, {
-  ...ap.auth, idempotencyKey: "k3", date: "2026-01-02", memo: "sneaky", source: { kind: "bill" },
+  ...ap.auth, idempotencyKey: "k3", date: "2026-01-02", memo: "sneaky", source: { kind: "adjustment" },
   lines: [{ account: "2000", debit: 100, credit: 0 }, { account: "1000", debit: 0, credit: 100 }],
 });
 check("AP clerk cannot touch cash", cash.ok === false, cash);
 
 const badToken = await new SeatClient(runId, "ap-clerk-1", "wrong").client.mutation(api.ledger.postEntry, {
-  runId, seatId: "ap-clerk-1", token: "wrong", idempotencyKey: "k4", date: "2026-01-02", memo: "x", source: { kind: "bill" }, lines: goodLines,
+  runId, seatId: "ap-clerk-1", token: "wrong", idempotencyKey: "k4", date: "2026-01-02", memo: "x", source: { kind: "adjustment" }, lines: goodLines,
 });
 check("bad token rejected", badToken.ok === false && badToken.code === "bad_token", badToken);
 
-// Bill -> payment -> approval rules
+// Bill -> payment -> approval rules. Bills must cite documents the company received.
+async function receive(externalId: string) {
+  const r = await admin.client.mutation(api.admin.ingestEvent, {
+    secret: admin.secret, runId, type: "document.received", externalId, occurredOn: "2026-01-02",
+    payload: { kind: "invoice", channel: "email", from: "ar@produce.example", subject: externalId, text: externalId },
+  });
+  if (!r.ok) throw new Error(`ingest ${externalId}: ${r.error}`);
+  return String(r.eventId);
+}
+const doc1 = await receive("doc-1");
+const doc2 = await receive("doc-2");
 const bill = await ap.client.mutation(api.ap.recordBill, {
   ...ap.auth, idempotencyKey: "bill-1", vendor: "v-produce", invoiceNumber: "INV-0042", invoiceDate: "2026-01-02",
   dueDate: "2026-01-16", lines: [{ description: "Kale, case", quantity: 10, unitCents: 3150, amountCents: 31500 }],
-  totalCents: 31500, documentEventId: "doc-1", decision: "approve", exceptions: [], expenseAccount: "5000",
+  totalCents: 31500, documentEventId: doc1, decision: "approve", exceptions: [], expenseAccount: "5000",
 });
 check("clean small bill auto-approved with accrual", bill.ok === true && Boolean((bill as { entryId?: unknown }).entryId), bill);
 
 const dup = await ap.client.mutation(api.ap.recordBill, {
   ...ap.auth, idempotencyKey: "bill-1b", vendor: "v-produce", invoiceNumber: "inv 42", invoiceDate: "2026-01-03",
   dueDate: "2026-01-17", lines: [{ description: "Kale, case", quantity: 10, unitCents: 3150, amountCents: 31500 }],
-  totalCents: 31500, documentEventId: "doc-2", decision: "approve", exceptions: [], expenseAccount: "5000",
+  totalCents: 31500, documentEventId: doc2, decision: "approve", exceptions: [], expenseAccount: "5000",
 });
 check("kernel blocks duplicate invoice (INV-0042 vs inv 42)", dup.ok === false && dup.code === "duplicate_invoice", dup);
 
@@ -148,7 +158,7 @@ check("controller signature alone does not close", s1.ok === true && (s1 as { st
 const s2 = await cfo.client.mutation(api.ledger.signClose, { ...cfo.auth, period: "2026-01" });
 check("controller + human closes period", s2.ok === true && (s2 as { status: string }).status === "closed", s2);
 const late = await ap.client.mutation(api.ledger.postEntry, {
-  ...ap.auth, idempotencyKey: "k9", date: "2026-01-20", memo: "late", source: { kind: "bill" }, lines: goodLines,
+  ...ap.auth, idempotencyKey: "k9", date: "2026-01-20", memo: "late", source: { kind: "adjustment" }, lines: goodLines,
 });
 check("closed period rejects posts", late.ok === false && late.code === "period_closed", late);
 

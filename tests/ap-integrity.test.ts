@@ -27,6 +27,7 @@ describe("bill creation is atomic with its accrual", () => {
   ])("leaves no bill after %s and allows a corrected retry", async (_label, changes, code) => {
     const h = kernelHarness();
     const auth = await h.setup();
+    await h.document(auth.runId);
     const denied = await mutationHandler(recordBill)(h.ctx, { ...auth, ...invoice, ...changes });
     expect(denied).toMatchObject({ ok: false, code });
     expect(h.all("bills")).toHaveLength(0);
@@ -50,6 +51,7 @@ describe("bill creation is atomic with its accrual", () => {
   it("leaves no bill when a period has closed", async () => {
     const h = kernelHarness();
     const auth = await h.setup();
+    await h.document(auth.runId);
     await h.ctx.db.patch(h.all("periods")[0]!._id, { status: "closed" });
     expect(await mutationHandler(recordBill)(h.ctx, { ...auth, ...invoice })).toMatchObject({ ok: false, code: "period_closed" });
     expect(h.all("bills")).toHaveLength(0);
@@ -63,6 +65,7 @@ describe("bill writing authority", () => {
   it.each(denied)("denies all decisions for %s before AP state changes", async (role) => {
     const h = kernelHarness();
     const auth = await h.setup(role);
+    await h.document(auth.runId);
     for (const decision of ["approve", "hold", "reject"] as const) {
       expect(await mutationHandler(recordBill)(h.ctx, { ...auth, ...invoice, decision })).toMatchObject({ ok: false, code: "forbidden" });
     }
@@ -75,6 +78,7 @@ describe("bill writing authority", () => {
   it.each(permitted)("preserves held/rejected bill creation for %s", async (role) => {
     const h = kernelHarness();
     const auth = await h.setup(role);
+    await h.document(auth.runId);
     for (const decision of ["hold", "reject"] as const) {
       expect(await mutationHandler(recordBill)(h.ctx, { ...auth, ...invoice, idempotencyKey: decision, invoiceNumber: decision, decision, expenseAccount: "5200" })).toMatchObject({ ok: true, entryId: null });
     }
