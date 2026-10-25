@@ -1,3 +1,4 @@
+import {tmpdir} from 'node:os';
 import {mkdtemp, rm} from 'node:fs/promises';
 import {vi} from 'vitest';
 import {makeFunctionReference} from 'convex/server';
@@ -59,7 +60,7 @@ export async function fixture(mode: 'bound'|'null'|'legacy' = 'bound') {
 }
 /** No network transport: exact official-shaped reads/writes in an isolated ledger. */
 export async function protocol(load: (r:ExportRequest)=>Promise<AccountingExport>, m:Mappings=mappings) {
-  const root=await mkdtemp('/private/tmp/ap97-v12-');dirs.push(root);
+  const root=await mkdtemp(`${tmpdir()}/ap97-v12-`);dirs.push(root);
   const rows=new Map<string,Record<string,any>>();
   const posts:Array<{entity:string,body:string,requestId:string|null}>=[];
   const state={loseNext:false,hide:false,tokenReads:0,extraReturned:null as null|((row:Record<string,any>)=>void)};

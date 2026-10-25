@@ -1,3 +1,4 @@
+import {tmpdir} from 'node:os';
 import {mkdtemp, readdir, readFile, rm, stat} from 'node:fs/promises';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
@@ -12,7 +13,7 @@ const config: ProjectCatalogConfig = {version: 'ap-qbo-project-catalog-v1', envi
 const grant = (): ProjectGrant => ({version: 'ap-qbo-project-grant-v1', environment: 'sandbox', realmId: '123', grantId: 'synthetic-exact-grant', clientHash: 'c'.repeat(64), scopes: [PROJECT_SCOPE], authorizedAt: epoch - 1000, expiresAt: epoch + 120000, accessToken: 'synthetic-private-catalog-token'});
 const body = (id: string, account = '123') => ({data: {projectManagementProject: {id, name: `Project ${id}`, status: 'ACTIVE', account: {id: account}, customer: {id: '12'}}}});
 async function setup(transport: Transport, getGrant = async () => grant(), clock = () => epoch) {
-  const root = await mkdtemp('/private/tmp/ap97-v10-catalog-'); dirs.push(root);
+  const root = await mkdtemp(`${tmpdir()}/ap97-v10-catalog-`); dirs.push(root);
   const store = new PrivateStore(root), calls: {url: string; init: RequestInit}[] = [];
   const client = new ProjectCatalogClient(config, getGrant, store, async (url, init = {}) => {calls.push({url: String(url), init}); return transport(url, init);}, clock, async () => {});
   return {client, store, calls};

@@ -1,3 +1,4 @@
+import {tmpdir} from 'node:os';
 import {mkdtemp, rm} from 'node:fs/promises';
 import {afterEach, expect, it, vi} from 'vitest';
 import {dimensionsFixture, dimensionMappings} from './v10-dimension-fixture';
@@ -11,7 +12,7 @@ import type {Mappings, Plan} from '../../src/ap-system/quickbooks/types';
 const dirs: string[] = [];
 afterEach(async () => {vi.unstubAllEnvs(); await Promise.all(dirs.splice(0).map(p => rm(p, {recursive: true, force: true})));});
 async function protocol(m: Mappings, entity: Plan['entity'] = 'Bill') {
-  const dir = await mkdtemp('/private/tmp/ap97-v10-qbo-'); dirs.push(dir);
+  const dir = await mkdtemp(`${tmpdir()}/ap97-v10-qbo-`); dirs.push(dir);
   const state = {row: null as any, lose: false, responseProcessing: false, tokenReads: 0};
   const posts: {body: string; requestId: string | null}[] = [];
   const refs: Record<string, unknown> = {

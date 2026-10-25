@@ -1,3 +1,4 @@
+import {tmpdir} from 'node:os';
 /** Independent network-forbidden cached replay; reads original inputs and trusted context only. */
 import {readFile,writeFile,mkdir,cp,mkdtemp} from 'node:fs/promises';
 import path from 'node:path';
@@ -5,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {combineUploads} from '../../src/ap-system/ingestion/index';
 async function main(){
- const repo=fileURLToPath(new URL('../..',import.meta.url)),root=await mkdtemp('/private/tmp/ap97-v7-cached-'),old=process.argv[2],expected=process.argv[3];
+ const repo=fileURLToPath(new URL('../..',import.meta.url)),root=await mkdtemp(`${tmpdir()}/ap97-v7-cached-`),old=process.argv[2],expected=process.argv[3];
  if(!old||!expected)throw Error('usage: v7-cached-parser-replay.ts baseline-private-root repair-private-root');
  const fixture=path.join(repo,'fixtures/ap-system/heldout-suppliers-v1');
  const manifest=JSON.parse(await readFile(path.join(fixture,'manifest.json'),'utf8')),contexts=JSON.parse(await readFile(path.join(fixture,'runtime-contexts.json'),'utf8'));
@@ -20,6 +21,6 @@ async function main(){
   result.push({source:s.id,hash:createHash('sha256').update(serial).digest('hex'),ownerReplayByteIdentical:serial===prior,candidate:Boolean(intake.candidate)});
  }
  if(networkCalls)throw Error('attempted_network');
- const report={root,networkCalls,result};await writeFile('/private/tmp/ap97-v7-independent-replay.json',JSON.stringify(report,null,2)+'\n',{mode:0o600});console.log(JSON.stringify(report));
+ const report={root,networkCalls,result};await writeFile(`${tmpdir()}/ap97-v7-independent-replay.json`,JSON.stringify(report,null,2)+'\n',{mode:0o600});console.log(JSON.stringify(report));
 }
 main().catch(e=>{console.error(e.message);process.exitCode=1;});

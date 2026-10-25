@@ -1,3 +1,4 @@
+import {tmpdir} from 'node:os';
 import {expect,it} from 'vitest';
 import {createServer} from 'vite';
 import {chromium} from '@playwright/test';
@@ -6,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 import type {CostState} from '../../src/ap-system/cost-contracts';
 const state=(id:string,corrected=true):CostState=>({originalEntryId:id,billId:'bill',accrualId:null,supplierId:'supplier',snapshotHash:'a'.repeat(64),latestDate:'2026-10-31',originalShares:[{originalLineId:'line-1',allocationIndex:0,account:'5000',store:'store',treatment:'expense',period:'2026-10',side:'credit',amountCents:7700,remainingCents:7700}],positions:[{account:'5000',store:'store',balanceCents:3700},{account:'1200',store:'store',balanceCents:4000}],corrections:corrected?[{actionId:'action',entryId:'adjustment',date:'2026-10-31',fromAccount:'5000',toAccount:'1200',store:'store',amountCents:4000}]:[]});
 it('invalidates mounted UI review after editing and parent context changes, ignores late responses and rejects wrong journal IDs',async()=>{
- const cache=await mkdtemp('/private/tmp/ap97-v6-browser-');const root=fileURLToPath(new URL('../..',import.meta.url));
+ const cache=await mkdtemp(`${tmpdir()}/ap97-v6-browser-`);const root=fileURLToPath(new URL('../..',import.meta.url));
  const server=await createServer({configFile:false,envFile:false,root,cacheDir:cache,logLevel:'error',server:{host:'127.0.0.1',port:0},plugins:[{name:'independent-v6-page',configureServer(s){s.middlewares.use('/v6-fixture',(_q,r)=>{r.setHeader('Content-Type','text/html');r.end('<div id="root"></div><script type="module" src="/tests/ap-system/v6-cost-browser.fixture.tsx"></script>');});}}]});
  let browser:Awaited<ReturnType<typeof chromium.launch>>|undefined;
  try{await server.listen();const url=server.resolvedUrls!.local[0]!;browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});const page=await browser.newPage();const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
