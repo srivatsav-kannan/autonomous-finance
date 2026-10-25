@@ -29,3 +29,37 @@ describe('AP HTTP source/session boundary',()=>{
   const result=await fetch(f.base+`/sources/source-1/revisions/1?sha256=${f.sha}`,{headers:{cookie:f.cookie}});expect(result.status).toBe(409);expect(await result.json()).toMatchObject({error:{code:'source_integrity'}});
  });
 });
+
+async function authenticatedProgressFixture(supported=true){
+ const progress={idempotencyKey:'upload/id with spaces',status:'parsing' as const,startedAt:100,updatedAt:100,completedAt:null,caseId:null,error:null,parser:'LlamaParse' as const};
+ const lookup=vi.fn(async(key:string)=>key===progress.idempotencyKey?progress:null);
+ const service={list:vi.fn(async()=>[]),runtime:()=>({identityMode:'authenticated_human',intakeProgress:supported}),...(supported?{intakeStatus:lookup}:{})} as unknown as APWorkspaceService;
+ const authenticate=vi.fn(async()=>({subject:'https://test.invalid|reviewer',issuer:'https://test.invalid',approved:true,service}));
+ const server=createAPSystemServer(service,{port:0,runId:'progress-auth-test',storageRoot:'/private/tmp',allowedOrigins:['http://127.0.0.1:5190'],auth:{publicConfig:{mode:'auth0',domain:'test.invalid',clientId:'test-client'},authenticate}});
+ servers.push(server);await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));
+ const base=`http://127.0.0.1:${(server.address() as AddressInfo).port}/api/ap-system`;
+ return {base,progress,lookup,authenticate,authorization:'Bearer test-human-token'};
+}
+
+describe('authenticated intake progress boundary',()=>{
+ it('rejects missing authentication and authenticated requests without an established session',async()=>{
+  const f=await authenticatedProgressFixture(),url=f.base+'/intake-status/'+encodeURIComponent(f.progress.idempotencyKey);
+  const anonymous=await fetch(url);expect(anonymous.status).toBe(401);expect(await anonymous.json()).toMatchObject({error:{code:'authentication_required'}});expect(f.authenticate).not.toHaveBeenCalled();
+  const noSession=await fetch(url,{headers:{authorization:f.authorization}});expect(noSession.status).toBe(403);expect(await noSession.json()).toMatchObject({error:{code:'session_required'}});expect(f.lookup).not.toHaveBeenCalled();
+ });
+ it('returns only the requested status after opening the authenticated workspace',async()=>{
+  const f=await authenticatedProgressFixture();
+  const opened=await fetch(f.base+'/cases',{headers:{authorization:f.authorization}});expect(opened.status).toBe(200);
+  const cookie=opened.headers.get('set-cookie')!.split(';')[0]!;
+  const result=await fetch(f.base+'/intake-status/'+encodeURIComponent(f.progress.idempotencyKey),{headers:{authorization:f.authorization,cookie}});
+  expect(result.status).toBe(200);expect(await result.json()).toEqual(f.progress);expect(f.lookup).toHaveBeenCalledWith(f.progress.idempotencyKey);
+  const unknown=await fetch(f.base+'/intake-status/unknown',{headers:{authorization:f.authorization,cookie}});expect(unknown.status).toBe(200);expect(await unknown.json()).toBeNull();
+  expect((await fetch(f.base+'/intake-status/unknown',{headers:{cookie}})).status).toBe(401);
+ });
+ it('returns 404 when the authenticated service has no intake progress capability',async()=>{
+  const f=await authenticatedProgressFixture(false),opened=await fetch(f.base+'/cases',{headers:{authorization:f.authorization}});
+  const cookie=opened.headers.get('set-cookie')!.split(';')[0]!;
+  const result=await fetch(f.base+'/intake-status/request',{headers:{authorization:f.authorization,cookie}});
+  expect(result.status).toBe(404);expect(await result.json()).toMatchObject({error:{code:'capability_unavailable'}});expect(f.lookup).not.toHaveBeenCalled();
+ });
+});

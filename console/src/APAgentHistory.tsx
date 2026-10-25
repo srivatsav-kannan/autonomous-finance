@@ -16,6 +16,7 @@ import "./apAgentHistory.css";
 type Event = APCaseDetail["timeline"][number];
 function EventTime({ at }: { at: number }) {
   const date = new Date(at);
+  if (!Number.isFinite(date.getTime())) return <span>{at === Number.MAX_SAFE_INTEGER ? "Not scheduled" : "Time unavailable"}</span>;
   return (
     <time dateTime={date.toISOString()}>
       {date.toLocaleString(undefined, {

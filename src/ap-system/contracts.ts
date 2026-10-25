@@ -85,6 +85,12 @@ export const purchasingEvidenceSchema = z.object({
   lines:z.array(z.object({lineId:id, sku:id, quantity:quantitySchema, unitPriceCents:centsSchema.nullable(), invoiceLineId:id})),
   acceptedBy:z.string().nullable(), acceptedAt:z.string().nullable(),
 });
+/** Read-only projection of the authenticated AP worker inspect result. */
+export const agentProgressSchema = z.object({
+  caseId:id, owner:id, reason:id, requirements:z.array(z.string()), stage:id,
+  status:id, updatedAt:z.number(), waitSince:z.number().nullable().optional(),
+  deadlineAt:z.number().nullable().optional(),
+});
 export const intakeSchema = z.object({
   contractVersion:z.literal(AP_CONTRACT_VERSION), idempotencyKey:id, documents:z.array(sourceDocumentSchema).min(1),
   candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), purchasingEvidence:z.array(purchasingEvidenceSchema),
@@ -159,6 +165,7 @@ export const historicalPaymentSchema = z.object({
 export const caseDetailSchema = z.object({
   domain:domainCaseProjectionSchema.optional(),
   historicalPayment:historicalPaymentSchema.optional(),
+  agentProgress:agentProgressSchema.optional(),
   contractVersion:z.literal(AP_CONTRACT_VERSION), caseId:id, runId:id, organizationId:id,
   revision:z.number().int().positive(), candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), sources:z.array(sourceDocumentSchema),
   currentSourceBindings:z.array(sourceBindingSchema).min(1),

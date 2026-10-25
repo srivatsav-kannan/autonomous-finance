@@ -19,6 +19,7 @@ import { domainOperationSchemas, type DomainOperations, type DomainOperation } f
 import { closeOperationSchemas, periodSchema, type CloseOperations, type CloseOperation } from "./close-operations";
 import {accountingCorrectionRequestSchema,domainVoteSchema,type CorrectionOperations} from "./correction-operations";
 import { QboError } from "./quickbooks/private-store";
+import type { IntakeProgress } from "./intake-progress";
 const PREFIX="/api/ap-system";
 const MAX_ORIGINAL_BYTES=8*1024*1024;
 const MAX_BYTES=MAX_ORIGINAL_BYTES+64*1024;
@@ -29,6 +30,7 @@ export interface APWorkspaceService {
  detail(caseId:string):Promise<APCaseDetail>;
  ingest(input:APIntake):Promise<{caseId:string}>;
  parseUploads(input:{uploads:UploadDocument[];idempotencyKey:string;explicitRevisionOf?:string|null}):Promise<APIntake>;
+ intakeStatus?(idempotencyKey:string):Promise<IntakeProgress|null>;
  review(input:z.infer<typeof reviewRequestSchema>):Promise<unknown>;
  approve(input:z.infer<typeof billApprovalRequestSchema>):Promise<unknown>;
  requestPayment(input:{caseId:string;expectedRevision:number;snapshotHash:string;idempotencyKey:string;executionDate?:string;amountCents?:number;credits?:{creditId:string;amountCents:number}[]}):Promise<unknown>;
@@ -124,6 +126,12 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
    }
    // A browser cookie alone never authenticates an external human.
    if(req.method==="GET"&&!sessionValid(req,subject))throw new APHttpError("session_required",403,"Open the AP workspace before reading source or case details.");
+   const intakeStatus=/^\/api\/ap-system\/intake-status\/([^/]+)$/.exec(url.pathname);
+   if(req.method==="GET"&&intakeStatus){
+    if(!service.intakeStatus)throw new APHttpError("capability_unavailable",404,"Intake progress is unavailable in this workspace.");
+    const key=z.string().trim().min(1).max(200).parse(decodeURIComponent(intakeStatus[1]!));
+    return send(res,await service.intakeStatus(key));
+   }
    if(req.method==="GET"&&url.pathname===PREFIX+"/metrics"){
     if(!service.operationalTimings)throw new APHttpError("capability_unavailable",503,"Operational event timings are unavailable on this service.");
     return send(res,await service.operationalTimings());

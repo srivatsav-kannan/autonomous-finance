@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { APAgentTimeline } from "../../console/src/APAgentHistory";
 import {
   recordedCents,
   referenceTarget,
@@ -9,6 +12,13 @@ import { historyFixture } from "./agent-history.fixture";
 import saved from "../../docs/ap-orchestration/evidence/agent-transition-v1/case-transitions.json";
 
 describe("saved AP history presentation", () => {
+  it("renders paused work with an unscheduled next check without crashing", () => {
+    const detail = historyFixture("missing-receipt");
+    detail.timeline[0]!.agentTransition!.after.work.nextCheckAt = Number.MAX_SAFE_INTEGER;
+    const html = renderToStaticMarkup(createElement(APAgentTimeline, { detail }));
+    expect(html).toContain("Not scheduled");
+    expect(html).not.toContain("Invalid Date");
+  });
   it("distinguishes unknown, missing and zero and keeps every safe integer cent", () => {
     expect(recordedCents(null)).toBe("Unknown (recorded null)");
     expect(recordedCents(undefined)).toBe("Not recorded");

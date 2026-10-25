@@ -241,3 +241,12 @@
 .aps-timings { margin-block: var(--space-md); overflow-wrap: anywhere; }
 .aps-timings > summary { min-height: 44px; padding-block: var(--space-sm); }
 .aps-timings select { max-width: 100%; }
+
+.aps-import-files { list-style: none; margin: var(--space-md) 0; padding: 0; }
+.aps-import-files > li { border-top: 1px solid var(--line); padding: var(--space-md) 0; overflow-wrap: anywhere; }
+.aps-import-files button { margin-left: var(--space-sm); }
+.aps-cases button, .aps-case-line { min-width: 0; }
+.aps-case-line > span { min-width: 0; overflow-wrap: anywhere; }
+.aps-case-line > strong { flex-shrink: 0; }
+.aps-processing-details { margin-block: var(--space-md); border-block: 1px solid var(--line); }
+.aps-processing-details > summary { padding-block: var(--space-sm); }
