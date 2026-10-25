@@ -11,6 +11,8 @@ import { Bank } from "./Bank";
 import { EvidenceRecord } from "./EvidenceRecord";
 import { FinanceFlow } from "./FinanceFlow";
 import { useUrlState } from "./useUrlState";
+import { InvoiceWorkspace, type InvoiceContext } from "./InvoiceWorkspace";
+import { modeLabel } from "./invoiceFormat";
 
 const $ = (cents: number) => (cents < 0 ? "-" : "") + "$" + (Math.abs(cents) / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const ago = (t: number) => {
@@ -18,8 +20,9 @@ const ago = (t: number) => {
   return s < 60 ? `${s}s ago` : s < 3600 ? `${Math.round(s / 60)}m ago` : `${Math.round(s / 3600)}h ago`;
 };
 
-type Tab = "inbox" | "org" | "activity" | "ledger" | "memory" | "evals" | "control" | "bank" | "flow";
+type Tab = "invoices" | "inbox" | "org" | "activity" | "ledger" | "memory" | "evals" | "control" | "bank" | "flow";
 const TABS: { id: Tab; label: string }[] = [
+  { id: "invoices", label: "Invoices" },
   { id: "inbox", label: "Inbox" },
   { id: "bank", label: "Bank & cash" },
   { id: "flow", label: "Finance flow" },
@@ -37,28 +40,45 @@ function initialRun() {
 
 function initialTab(): Tab {
   const value = new URLSearchParams(location.search).get("view");
-  return TABS.find((t) => t.id === value)?.id ?? "inbox";
+  return TABS.find((t) => t.id === value)?.id ?? (location.pathname.startsWith("/legacy") ? "inbox" : "invoices");
 }
 
 function Loading({ label }: { label: string }) {
   return <div className="loading" role="status">{label}<span className="loading-bar" /><span className="loading-bar" /></div>;
 }
 
-export function App() {
+export function App({ hasSimulation = true }: { hasSimulation?: boolean }) {
+  return hasSimulation ? <ConnectedWorkbench /> : <Workbench simulationAvailable={false} />;
+}
+
+function ConnectedWorkbench() {
   const runs = useQuery(api.admin.runs, {});
   const connection = useConvexConnectionState();
+  return <Workbench runs={runs} simulationAvailable connected={connection.isWebSocketConnected} />;
+}
+
+function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { runId: string; label: string }[]; simulationAvailable: boolean; connected?: boolean }) {
   const [runId, setRunId] = useState(initialRun);
   const [tab, setTab] = useState<Tab>(initialTab);
+  const [invoiceContext, setInvoiceContext] = useState<InvoiceContext>();
+  const [invoiceBusy, setInvoiceBusy] = useState(false);
+  const isInvoice = tab === "invoices";
+  const company = isInvoice ? invoiceContext?.company ?? "Invoice workspace" : "Sweetgreen, Inc.";
+  const companyCaption = isInvoice ? "Local simulated identity · USD" : "Simulated company";
   useEffect(() => {
-    if (!runId && runs?.length) setRunId(runs[0]!.runId);
+    if (!runId && runs?.length) {
+      const first = runs[0]!.runId;
+      const url = new URL(location.href);
+      url.hash = encodeURIComponent(first);
+      history.replaceState(null, "", url);
+      setRunId(first);
+    }
   }, [runs, runId]);
-  useEffect(() => {
-    if (runId) location.hash = encodeURIComponent(runId);
-  }, [runId]);
   useEffect(() => {
     const url = new URL(location.href);
     url.searchParams.set("view", tab);
     history.replaceState(null, "", url);
+    document.title = `${TABS.find(t => t.id === tab)?.label} · Autonomous Finance`;
   }, [tab]);
   useEffect(() => {
     const sync = () => { setRunId(initialRun()); setTab(initialTab()); };
@@ -70,8 +90,24 @@ export function App() {
     };
   }, []);
   useEffect(() => {
-    if (runId) return registerWebMcpTools(runId);
-  }, [runId]);
+    if (simulationAvailable && runId && !isInvoice) return registerWebMcpTools(runId);
+  }, [runId, isInvoice, simulationAvailable]);
+
+  const navigate = (next: Tab) => {
+    if (invoiceBusy || next === tab) return;
+    const url = new URL(location.href);
+    url.searchParams.set("view", next);
+    url.searchParams.delete("case");
+    history.pushState(null, "", url);
+    setTab(next);
+  };
+  const selectRun = (next: string) => {
+    const url = new URL(location.href);
+    url.hash = encodeURIComponent(next);
+    url.searchParams.delete("ask");
+    history.pushState(null, "", url);
+    setRunId(next);
+  };
 
   return (
     <div className="shell finance-workbench">
@@ -81,13 +117,13 @@ export function App() {
           <span className="mark" aria-hidden="true">af</span>
           <h1 className="title">Autonomous<br />Finance</h1>
         </div>
-        <div className="company"><span className="company-avatar" aria-hidden="true">S</span><div>Sweetgreen, Inc.<span>Simulated company</span></div></div>
+        <div className="company"><span className="company-avatar" aria-hidden="true">{company.charAt(0)}</span><div>{company}<span>{companyCaption}</span></div></div>
         <nav className="side" aria-label="Console views">
           <p className="nav-label">Workspace</p>
           {TABS.map((t) => (
-            <button type="button" key={t.id} className={t.id === tab ? "on" : ""} aria-current={t.id === tab ? "page" : undefined} onClick={() => setTab(t.id)}>
-              <Icon name={t.id} /><span>{t.label}</span>
-              {t.id === "inbox" && runId && <InboxCount runId={runId} />}
+            <button type="button" key={t.id} className={t.id === tab ? "on" : ""} aria-current={t.id === tab ? "page" : undefined} onClick={() => navigate(t.id)} disabled={invoiceBusy}>
+              <Icon name={t.id === "invoices" ? "file" : t.id} /><span>{t.label}</span>
+              {t.id === "inbox" && !isInvoice && simulationAvailable && runId && <InboxCount runId={runId} />}
             </button>
           ))}
         </nav>
@@ -96,26 +132,26 @@ export function App() {
       <div className="workspace">
         <header className="workspace-top">
           <div className="breadcrumb"><span>Workspace</span><Icon name="chevron" /><span>{TABS.find((t) => t.id === tab)?.label}</span></div>
-          <label className="scenario-picker"><span>Scenario</span>
-            <select value={runId} onChange={(e) => setRunId(e.target.value)} aria-label="Scenario" disabled={!runs?.length}>
-              {!runs?.length && <option value={runId}>{runs ? "No scenarios" : "Loading scenarios…"}</option>}
+          {isInvoice ? <div className="iv-workspace-context"><span>{invoiceContext ? modeLabel[invoiceContext.runtimeMode] : "Connecting to invoices…"}</span><small>{invoiceContext?.runId}</small></div> : <label className="scenario-picker"><span>Scenario</span>
+            <select value={runId} onChange={(e) => selectRun(e.target.value)} aria-label="Scenario" disabled={!runs?.length}>
+              {!runs?.length && <option value={runId}>{!simulationAvailable ? "Backend not configured" : runs ? "No scenarios" : "Loading scenarios…"}</option>}
               {(runs ?? []).map((r) => <option key={r.runId} value={r.runId}>{r.label} ({r.runId})</option>)}
             </select>
-          </label>
+          </label>}
         </header>
         <div className="workspace-content">
-          <label className="mobile-nav"><span>Autonomous Finance<small>Sweetgreen, Inc. · simulated</small></span>
-            <select value={tab} onChange={(e) => setTab(e.target.value as Tab)} aria-label="Console view">
+          <label className="mobile-nav"><span>Autonomous Finance<small>{company} · {companyCaption}</small></span>
+            <select value={tab} onChange={(e) => navigate(e.target.value as Tab)} aria-label="Console view" disabled={invoiceBusy}>
               {TABS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
             </select>
           </label>
-          {!connection.isWebSocketConnected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
-          {runId && tab !== "bank" && tab !== "flow" && <Kpis runId={runId} />}
-          <main className="main" id="main" tabIndex={-1} key={runId}>
-            {!runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div> : <>
+          {!isInvoice && simulationAvailable && !connected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
+          {!isInvoice && simulationAvailable && runId && tab !== "bank" && tab !== "flow" && <Kpis runId={runId} />}
+          <main className="main" id="main" tabIndex={-1} key={isInvoice ? "invoices" : runId}>
+            {isInvoice ? <InvoiceWorkspace onContextChange={setInvoiceContext} onBusyChange={setInvoiceBusy} /> : !simulationAvailable ? <div className="empty"><h2>Connect the simulation backend</h2><p>Start the local backend and restart the console with <code>VITE_CONVEX_URL</code> configured. Invoices use their own gateway and remain available.</p><button onClick={() => navigate("invoices")}>Open invoices</button></div> : !runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div> : <>
               {tab === "inbox" && <Inbox runId={runId} />}
-              {tab === "bank" && <Bank runId={runId} onReview={(askId) => { const url = new URL(location.href); url.searchParams.set("ask", askId); history.replaceState(null, "", url); setTab("inbox"); }} />}
-              {tab === "flow" && <FinanceFlow runId={runId} onNavigate={setTab} />}
+              {tab === "bank" && <Bank runId={runId} onReview={(askId) => { navigate("inbox"); const url = new URL(location.href); url.searchParams.set("ask", askId); history.replaceState(null, "", url); }} />}
+              {tab === "flow" && <FinanceFlow runId={runId} onNavigate={navigate} />}
               {tab === "org" && <Org runId={runId} />}
               {tab === "activity" && <Activity runId={runId} />}
               {tab === "ledger" && <Ledger runId={runId} />}

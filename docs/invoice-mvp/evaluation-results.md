@@ -1,0 +1,38 @@
+# Invoice MVP evaluation results
+
+This is the historical deterministic evaluation at `926e4e8`. The later approved OpenAI batch and its independent results are tracked separately in [evaluation-openai-results.md](evaluation-openai-results.md); the measurements below are unchanged.
+
+The actual deterministic application imported and preserved all **148 original benchmark sources**, but scored **0/18 exact customer net totals**: all 148 cases remained unresolved and no accounting effects were accepted. The held-out suite scored **4/9**, unchanged from its frozen first pass. Both final evaluation states and their source bytes survived an actual backend and gateway restart. These results demonstrate working ingestion and persistence, not successful autonomous interpretation of the benchmark.
+
+The evaluated application was clean commit `926e4e8899a054c6cc1f2548f84a4ba18469797c`; the evaluator was clean `02bd47d1909cb23b7bd11d950e0729d7ef75c79f`. Every source entered through the real loopback HTTP gateway, and totals, proposals, versions and audit records came from persisted Convex state. No mock finance implementation or historical Team adapter was used. Model calls, model tokens, model spend and human interventions were **zero** in both final runs. Live-model evaluation remains **NOT RUN**.
+
+| Final run | Result | State | Source retention | Wall time |
+|---|---|---|---|---|
+| Original Invoice Sandbox, post-fix second transport attempt | Official 0/18; all-four-fields exact 0/18 | 146 Evidence missing, 2 Needs review; no accepted effects | 148/148 versions, original bytes and extracted text intact before and after restart | 67.940 s |
+| Held-out v1, post-fix | 4/9 frozen disposition/proposal checks | 8 Evidence missing, 1 Needs review, 1 Duplicate; 9 unresolved current cases | 11/11 immutable versions intact before and after restart | 2.796 s |
+
+The original run contained all 18 CRM customers, with no missing, unexpected or duplicate customer rows. Its official absolute net error was **$3,566,177.15**. It omitted 107 expected accounting contributions (105 invoices and two credits). Five other grading-key PDFs had no erroneous accounting effect but remained unresolved; that is not verified exclusion. No supporting file was incorrectly counted. There were zero duplicate accounting effects and zero structurally unsupported accepted effects, but those zeroes provide little evidence when nothing was accepted. The original run recorded 740 tool audit entries; the held-out run recorded 165.
+
+The held-out passes cover byte-duplicate handling, two safe conflict abstentions, and missing-invoice/email non-counting. The five failures cover unfamiliar invoice interpretation, revised invoice interpretation, credit interpretation, late invoice interpretation, and statement exclusion. Conflict sources received generic questions and empty contradiction arrays: safe abstention is not conflict recognition. Explicit source revision mechanics did preserve superseded v1 and current v2; the failed revision check concerns financial interpretation. The document instruction attack was not followed, but the statement was not conclusively excluded. No hidden expectation was injected as a decision or model input.
+
+## Restart evidence and boundaries
+
+Root stopped and restarted the actual Convex backend and owned gateways on the same clean application commit. D then compared both final workspaces: case states and proposal references, customer totals/contributions and recorded decisions matched their sealed pre-restart snapshots. Independent source audits confirmed all 148 original versions and all 11 held-out versions still matched imported bytes/text. Both comparisons **PASS**. The secret-free restart attestation and artifact hashes are recorded in [evaluation-results.json](evaluation-results.json).
+
+These evaluation workspaces contained no accepted amounts or human decisions. Root separately verified its browser demonstration's four active accounting effects, two decisions and one missing-evidence case across restart. That browser/human-resolution evidence belongs to root's acceptance record; it is not a hidden-suite result or a model score. This evaluation does not claim new independent human replay/stale-approval coverage beyond root's separate acceptance checks.
+
+## Frozen protocol and run history
+
+Protocol commit `357866ec73dd8a643408e4a3b1ca4db6654e99b7` froze the task, original scorer semantics, private source/expectation hashes and reporting policy before scores. Upstream is exactly `b8cb58ff9747486e86c623e867b76fad5d8d075f`. Only reset-workspace content was imported; grading keys and scripts stayed outside product/model inputs.
+
+The unmodified original scorer grades only customer net amounts, with an inclusive one-cent tolerance. It does not validate counts, gross totals, credits or document treatment. Duplicate customer rows use the last value, unexpected IDs do not reduce its accuracy, and missing negative totals contribute signed error. Separate strict metrics and document audits preserve these distinctions. The original fixture was previously seen; historical 18/18 baseline/pipeline results do not measure this MVP.
+
+The initial held-out run at `c7774f684e5a4248b73c88b702718b935c1d666b` was sealed at **4/9** before any failure disclosure. Later held-out runs remained 4/9. The first original attempt at `f1f03512528772a21da2445f0f698eb3511c88ce` failed during import after 72 chunks/105 sources and remains **FAILED_UNSCORED**, not 0/18. Root/A reproduced a database write-rate limit and corrected database-only retry handling. The completed 0/18 run is explicitly the post-fix second transport attempt. Immutable history is preserved in [evaluation-firstpass.json](evaluation-firstpass.json) and [evaluation-followups.json](evaluation-followups.json).
+
+## Live comparison preparation
+
+The capped baseline and separate actual-product live runner are implemented, with **27 Python tests, five dedicated no-network Node transport tests, and TypeScript checks passing**. The Node suite has a distinct filename so Vitest does not miscollect it; it still runs independently. Baseline prompt, tools, source access and agent loop match historical A after import-path normalization. Its new transport disables ambient auth overrides, retries, fallback and caching, checks served-model identity, and reserves conservative request costs in a locked persistent budget before dispatch. Application evaluation consumes real persisted reservation/usage records, keeps unknown usage null, and uses bounded per-case HTTP timeouts.
+
+No key or spending approval is present. The prepared single batch is capped at **$7.50 total**: $3 baseline original, $3 actual application original and $1.50 actual application held-out. It may produce partial results if the conservative budget exhausts. Required credential name: `ANTHROPIC_API_KEY`. The disabled example authorization does not permit execution. Provider pricing/model provenance and exact commands are in [LIVE.md](../../evals/invoice-mvp/LIVE.md).
+
+There is no independent reviewer and no measured justification for adding one. Baseline high effort versus application provider-default effort is a chosen configuration difference, not a technical necessity; output limits and reservation accounting also differ. No controlled agent-count comparison or live-model quality claim is supported. The MVP is **not fully live-model validated**.

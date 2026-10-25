@@ -1,0 +1,27 @@
+{
+  "verifiedDate": "2026-10-24",
+  "model": "gpt-6.1-sol",
+  "modelSource": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+  "pricingSource": "https://developers.openai.com/api/docs/pricing",
+  "provider": "OpenAI first-party Responses API",
+  "providerId": "openai",
+  "standardInputUsdPerMillionTokens": 2,
+  "standardOutputUsdPerMillionTokens": 10,
+  "inputMicrosPerToken": 2,
+  "outputMicrosPerToken": 10,
+  "cachePolicy": "explicit mode without breakpoints; any reported read/write usage fails accounting validation",
+  "cacheSource": "https://developers.openai.com/api/docs/guides/prompt-caching",
+  "reasoningSource": "https://developers.openai.com/api/docs/guides/reasoning",
+  "serviceTier": "default",
+  "maxInputTokens": 250000,
+  "fastMode": false,
+  "batchApi": false,
+  "fallbacks": false,
+  "retries": 0,
+  "notes": [
+    "Reverify before approval; account model access is not verified. Rates are estimates, not billing invoices.",
+    "Prompts above 272K input tokens have uplifted rates; this preparation rejects bounds above 250000.",
+    "Cache-write prices are higher than uncached input; explicit cache mode with no breakpoints prevents writes.",
+    "Output tokens include reasoning tokens. Preserve native response output items for stateless replay."
+  ]
+}

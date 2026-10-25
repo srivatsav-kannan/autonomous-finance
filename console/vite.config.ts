@@ -5,5 +5,11 @@ export default defineConfig({
   root: "console",
   envDir: "..",
   plugins: [react()],
-  server: { host: "127.0.0.1", port: 5173 },
+  server: {
+    host: "127.0.0.1",
+    port: 5173,
+    proxy: {
+      "/api/invoice-mvp": { target: process.env.INVOICE_MVP_GATEWAY_URL ?? "http://127.0.0.1:8790", changeOrigin: false },
+    },
+  },
 });

@@ -1,6 +1,5 @@
 /* Hallmark: app screen; warm finance workbench; real cash records; semantic tokens. */
 /* Critique: cash balances lead into ledger history and an auditable bank feed. */
-/* Hallmark · waive 39b · Account selectors include account identity and real book balances in one accessible hit target; ordinary actions retain 44px targets. */
 .bank-source { color: var(--muted); font-size: var(--text-sm); text-align: right; }
 .bank-source small { display: block; margin-top: var(--space-2xs); }
 .bank-accounts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid var(--line); margin-bottom: var(--space-lg); }

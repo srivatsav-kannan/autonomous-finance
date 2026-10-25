@@ -1,0 +1,399 @@
+{
+  "status": "APP_EVALUATION_AND_RESTART_COMPLETE_BASELINE_UNSCORED",
+  "asOfDate": "2026-10-24",
+  "scope": "Additive OpenAI live evaluation; earlier deterministic results remain historical evidence",
+  "approval": {
+    "provider": "OpenAI",
+    "model": "gpt-6.1-sol",
+    "replacesClaudeBatch": true,
+    "aggregateCapUsd": 7.5,
+    "runCapsUsd": {
+      "baselineOriginal": 3,
+      "applicationOriginal": 3,
+      "applicationHeldout": 1.5
+    },
+    "oneSharedLedger": true
+  },
+  "protocolCommit": "357866ec73dd8a643408e4a3b1ca4db6654e99b7",
+  "upstreamCommit": "b8cb58ff9747486e86c623e867b76fad5d8d075f",
+  "baselineOriginal": {
+    "executionCommit": "e3a2238efd21adc9ec3b98144cdb5157c5df84f9",
+    "evaluationEquivalentCommit": "30ab79b2678b999de112543d4c4880f25c2e5e5a",
+    "status": "UNSCORED_NO_SUBMISSION",
+    "official": null,
+    "strictCustomerMetrics": null,
+    "submissionPresent": false,
+    "outcome": {
+      "costUsd": 0.601118,
+      "error": "Persistent pre-request budget/authorization check failed; no retry permitted",
+      "status": "budget",
+      "toolCalls": 85,
+      "turns": 9,
+      "wallMs": 42956
+    },
+    "usage": {
+      "completedRequests": 9,
+      "costUsd": 0.601118,
+      "coverage": "complete_provider_usage",
+      "inputTokens": 280549,
+      "modelCalls": 9,
+      "outputTokens": 4002,
+      "reservedRequests": 9,
+      "reasoningTokens": 995
+    },
+    "guard": {
+      "policyAtExecution": "wire_utf8_bytes_plus_4096",
+      "cause": "per_request_input_bound_exceeds_approval",
+      "blockedTurn": 10,
+      "blockedInputBound": 266157,
+      "approvedInputBound": 250000,
+      "actualNextInputTokens": null,
+      "nextRequestDispatched": false,
+      "remainingBaselineCostUsd": 2.398882,
+      "hypotheticalNextReservationUsd": 1.172314,
+      "allNineRecordedWireHashesMatchOfflineReplay": true
+    },
+    "runSealSha256": "fec886169239faf48de4022a075fdc7237761dc45058bcb0a0be90b2b7f8c3c3",
+    "diagnosticSealSha256": "35c8d88e884d78228f11ad749a36ccad3fba5efa871cc144144fb4189b7300b0",
+    "privateRun": "live/openai-20261024/baseline-original",
+    "privateDiagnostic": "diagnostics/openai-20261024-baseline-original"
+  },
+  "applicationOriginal": {
+    "status": "RECORDED",
+    "runtimeMode": "live_model",
+    "liveModel": "RUN",
+    "executionSource": {
+      "commit": "d08165c1ad38bb20817ace294c55ed1c50b8c243",
+      "dirty": false,
+      "protocolCommit": "357866ec73dd8a643408e4a3b1ca4db6654e99b7",
+      "protocolSha256": "85564dcd8b3b534fdb216aef2c16b877019a500387de8e926ce05350cb85f40f"
+    },
+    "runId": "invoice-openai-original-20261024",
+    "cohort": "first-pass",
+    "startedAt": "2026-10-24T22:11:03.643859+00:00",
+    "endedAt": "2026-10-24T22:13:48.422611+00:00",
+    "wallSeconds": 164.779,
+    "stopReason": "settled",
+    "humanPolicy": "no automatic decisions",
+    "official": {
+      "customer_accuracy": "0.0000",
+      "customers_exact": "0",
+      "customers_scored": "18",
+      "missing_customers": "0",
+      "total_absolute_error_usd": "3566177.15",
+      "unexpected_customers": "0"
+    },
+    "strictCustomerMetrics": {
+      "allFourFieldsExactCents": 0,
+      "blankCustomerRows": 0,
+      "customers": 18,
+      "duplicateCustomerRows": 0,
+      "missingCustomers": [],
+      "perFieldExactCents": {
+        "credit_memo_total_usd": 16,
+        "gross_invoice_spend_usd": 0,
+        "net_spend_usd": 0,
+        "valid_invoice_count": 0
+      },
+      "strictPass": false,
+      "unexpectedCustomers": []
+    },
+    "heldoutChecks": null,
+    "documentIssueCounts": {
+      "missing_inclusion": 107
+    },
+    "statusCounts": {
+      "evidence_missing": 142,
+      "needs_review": 6
+    },
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "completedRequests": 29,
+      "costUsd": 0.495784,
+      "coverage": "complete_persisted_usage",
+      "errorsOrUnaccountedReservations": false,
+      "inputTokens": 234952,
+      "modelCalls": 29,
+      "outputTokens": 2588,
+      "reasoningTokens": 440,
+      "reservedCostMicros": 2980790,
+      "reservedRequests": 29,
+      "toolCalls": 239
+    },
+    "independentAuditMatchesStored": true,
+    "sourceRetention": {
+      "detail": [],
+      "expectedSourceVersions": 148,
+      "missingExternalIds": [],
+      "missingVersions": 0,
+      "observedSourceVersions": 148,
+      "pass": true,
+      "retentionErrors": 0,
+      "unexpectedExternalIds": [],
+      "unexpectedVersions": 0
+    },
+    "unresolvedCases": 148,
+    "acceptedAccountingEffects": 0,
+    "humanInterventions": 0,
+    "structurallyUnsupportedAcceptedEffects": 0,
+    "currentProposalCounts": {
+      "deterministic:exclude": 2,
+      "live_model:exclude": 4,
+      "live_model:needs_evidence": 142
+    },
+    "persistentReservationRemainingMicros": 19210,
+    "toolCallsByName": {
+      "inspect_source": 14,
+      "model_reservation": 29,
+      "model_usage": 29,
+      "policy": 7,
+      "propose_disposition": 6,
+      "related_customers": 6,
+      "related_documents": 6,
+      "resource_limit": 142
+    },
+    "restart": {
+      "status": "PASS",
+      "sourceCommit": "d08165c1ad38bb20817ace294c55ed1c50b8c243",
+      "runtimeExactCleanSourceVerified": true,
+      "providerUsageUnchanged": true,
+      "entireAuditUnchanged": true,
+      "postRestartSourceRetention": {
+        "detail": [],
+        "expectedSourceVersions": 148,
+        "missingExternalIds": [],
+        "missingVersions": 0,
+        "observedSourceVersions": 148,
+        "pass": true,
+        "retentionErrors": 0,
+        "unexpectedExternalIds": [],
+        "unexpectedVersions": 0
+      },
+      "restartSealSha256": "4c2b96d4a6314d384db3a773ec54625ed8d49be584b8d7f5e6890166e02170c3"
+    },
+    "scoringSource": {
+      "commit": "53af871155f0b1b9446f3f208898a47af2ac8353",
+      "dirty": false,
+      "protocolCommit": "357866ec73dd8a643408e4a3b1ca4db6654e99b7",
+      "protocolSha256": "85564dcd8b3b534fdb216aef2c16b877019a500387de8e926ce05350cb85f40f"
+    },
+    "runSealSha256": "31fcafe2e2baf5d2ca7b79ece25a470caf43c86505c70a35ff63008219c311f2",
+    "scoreJsonSha256": "8eedde4cf2028812b649d1de93a52997b28cbbfafd1119f0ee9c67872736dcc9",
+    "scoreSealSha256": "5b8ed898e1b9c51c69ba3aa8e3aaa87758e7d1e08e45a4b36633a234aa4c277c",
+    "diagnosticSealSha256": "5aa5ee86443b37b435343f6be096868a342ca9a9adbece8162e56aa78c00eb84",
+    "privateRun": "live/openai-20261024/app-original",
+    "privateScore": "live-scores/openai-20261024/app-original-independent",
+    "privateDiagnostic": "diagnostics/openai-20261024-app-original",
+    "excludeProposalExpectedScopes": {
+      "support_file_no_invoice_key_row": 6
+    },
+    "excludeProposalEvidenceStructuralChecks": {
+      "quotePresent": 12,
+      "validSourceVersion": 12
+    },
+    "casesWithActualProviderUsageBySuffix": {
+      ".csv": 1,
+      ".eml": 4
+    },
+    "resourceLimitedCases": {
+      "withPriorModelCall": 1,
+      "withoutModelCall": 141
+    },
+    "resourceLimitReasons": {
+      "Model request would exceed the persistent request or worst-case spend budget": 142
+    },
+    "proposedFinancialInclusions": 0,
+    "unsupportedProposedFinancialInclusions": 0,
+    "unsupportedProposalSemantics": "No general semantic unsupported-proposal rate asserted. Six exclusions concern support files, have valid version/quote references, and are outside the invoice grading key; 142 needs-evidence outcomes are resource-limit fallbacks."
+  },
+  "applicationHeldout": {
+    "status": "RECORDED",
+    "runtimeMode": "live_model",
+    "liveModel": "RUN",
+    "executionSource": {
+      "commit": "d08165c1ad38bb20817ace294c55ed1c50b8c243",
+      "dirty": false,
+      "protocolCommit": "357866ec73dd8a643408e4a3b1ca4db6654e99b7",
+      "protocolSha256": "85564dcd8b3b534fdb216aef2c16b877019a500387de8e926ce05350cb85f40f"
+    },
+    "runId": "invoice-openai-heldout-20261024",
+    "cohort": "post-fix",
+    "startedAt": "2026-10-24T22:14:03.986700+00:00",
+    "endedAt": "2026-10-24T22:14:36.798820+00:00",
+    "wallSeconds": 32.812,
+    "stopReason": "settled",
+    "humanPolicy": "no automatic decisions",
+    "official": null,
+    "strictCustomerMetrics": null,
+    "heldoutChecks": {
+      "checks": 9,
+      "checksPassed": 4,
+      "basis": "Autonomous dispositions/proposals; accepted totals separately. Hidden assisted totals are not applied."
+    },
+    "documentIssueCounts": null,
+    "statusCounts": {
+      "duplicate": 1,
+      "evidence_missing": 8,
+      "needs_review": 1
+    },
+    "usage": {
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "completedRequests": 21,
+      "costUsd": 0.10494,
+      "coverage": "complete_persisted_usage",
+      "errorsOrUnaccountedReservations": false,
+      "inputTokens": 49370,
+      "modelCalls": 21,
+      "outputTokens": 620,
+      "reasoningTokens": 0,
+      "reservedCostMicros": 1463234,
+      "reservedRequests": 21,
+      "toolCalls": 110
+    },
+    "independentAuditMatchesStored": true,
+    "sourceRetention": {
+      "detail": [],
+      "expectedSourceVersions": 11,
+      "missingExternalIds": [],
+      "missingVersions": 0,
+      "observedSourceVersions": 11,
+      "pass": true,
+      "retentionErrors": 0,
+      "unexpectedExternalIds": [],
+      "unexpectedVersions": 0
+    },
+    "unresolvedCases": 9,
+    "acceptedAccountingEffects": 0,
+    "humanInterventions": 0,
+    "structurallyUnsupportedAcceptedEffects": 0,
+    "currentProposalCounts": {
+      "deterministic:exclude": 1,
+      "live_model:needs_evidence": 8
+    },
+    "persistentReservationRemainingMicros": 36766,
+    "toolCallsByName": {
+      "inspect_source": 19,
+      "model_reservation": 21,
+      "model_usage": 21,
+      "policy": 6,
+      "propose_disposition": 4,
+      "related_customers": 6,
+      "related_documents": 6,
+      "resource_limit": 27
+    },
+    "restart": {
+      "status": "PASS",
+      "sourceCommit": "d08165c1ad38bb20817ace294c55ed1c50b8c243",
+      "runtimeExactCleanSourceVerified": true,
+      "providerUsageUnchanged": true,
+      "entireAuditUnchanged": true,
+      "postRestartSourceRetention": {
+        "detail": [],
+        "expectedSourceVersions": 11,
+        "missingExternalIds": [],
+        "missingVersions": 0,
+        "observedSourceVersions": 11,
+        "pass": true,
+        "retentionErrors": 0,
+        "unexpectedExternalIds": [],
+        "unexpectedVersions": 0
+      },
+      "restartSealSha256": "ebca73d40fcccf3bd2aab9be1f82504f6eba2656bd2b8034579d60c5044f5a17"
+    },
+    "scoringSource": {
+      "commit": "53af871155f0b1b9446f3f208898a47af2ac8353",
+      "dirty": false,
+      "protocolCommit": "357866ec73dd8a643408e4a3b1ca4db6654e99b7",
+      "protocolSha256": "85564dcd8b3b534fdb216aef2c16b877019a500387de8e926ce05350cb85f40f"
+    },
+    "runSealSha256": "6079e182dcfe3ca6ea0b9c39dabfe27069ee9be132a9214133560e50ecd2cb02",
+    "scoreJsonSha256": "cdc047095e10bb07b538015b79a3c0e5a503cd92a3dca928d65a30a38f13e6cf",
+    "scoreSealSha256": "c1688ee50eae857694cb000293c513b28fffd2674fa4f0d205747a6f8a18c00c",
+    "diagnosticSealSha256": "5c0ea8856c93fbf2ecba82da53b1747c8b4164624893c5d24a77d4a8ac2ed0a0",
+    "privateRun": "live/openai-20261024/app-heldout",
+    "privateScore": "live-scores/openai-20261024/app-heldout-independent",
+    "privateDiagnostic": "diagnostics/openai-20261024-app-heldout",
+    "historicalProposalCounts": {
+      "deterministic:exclude": 4,
+      "live_model:needs_evidence": 29
+    },
+    "heldoutCheckPassVectorMatchesDeterministic": true,
+    "currentCasesWithContradictions": 0,
+    "casesWithActualProviderUsage": 3,
+    "historicalNeedsEvidenceReasons": {
+      "boundedWithoutSupportedConclusion": 2,
+      "persistentReservationLimit": 27
+    }
+  },
+  "batchActualCostUsd": 1.201842,
+  "knownCompletedBaselineCostUsd": 0.601118,
+  "historicalDeterministicReport": "evaluation-results.json",
+  "reviewerComparison": "NOT APPLICABLE: no reviewer implemented",
+  "interpretation": [
+    "The incomplete baseline has no accuracy score; null is not zero.",
+    "Original app totals were zero with no accepted effects or human interventions; 0/18 is an actual persisted-totals score. No financial include/credit proposal was generated.",
+    "Only five original cases and three held-out case records contain provider usage. Resource limits dominate coverage; 141 original cases had no model request.",
+    "Held-out4/9 is the same pass vector as the earlier deterministic run. Conflict passes represent safe abstention, not recognition; current contradiction arrays are empty.",
+    "Zero unsupported accepted effects is vacuous with zero accepted effects. Six original exclude proposals concern support files and have valid source/quote references; this is not a general semantic accuracy claim.",
+    "The original baseline guard stopped on its conservative per-request input estimate, not dollar exhaustion; actual next-request tokens are unknown.",
+    "Future-only baseline guard correction adds all prior output tokens; it was not used for the sealed baseline.",
+    "Both live app runs and all audit/usage/source bytes survived actual backend/gateway restart. No new provider usage appeared.",
+    "Tool access, whole-workspace versus per-case orchestration, output budgets, parallel-tool behavior, human acceptance and reservation reconciliation differ. Original fixture was previously seen; held-out live cohort is post-fix after deterministic exposure. No reviewer or controlled agent-count benefit is established.",
+    "Local multi-gateway limitation: gateways on the same127.0.0.1 hostname overwrite the session cookie. Root isolated the deterministic demo using localhost; evaluation clients use separate cookie jars. No code was tuned after these runs."
+  ],
+  "batchUsage": {
+    "modelCalls": 59,
+    "inputTokens": 564871,
+    "outputTokens": 7210,
+    "reasoningTokensIncludedInOutput": 1435,
+    "calculatedCostUsd": 1.201842,
+    "costBasis": "standard operator pricing applied to provider-reported usage; not a billing invoice",
+    "unknownReservations": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0,
+    "paidRetries": 0
+  },
+  "budgetAccounting": {
+    "baselineSettledActualMicros": 601118,
+    "applicationPersistentReservationMicros": {
+      "original": 2980790,
+      "heldout": 1463234
+    },
+    "applicationPrepaidEnvelopeMicros": {
+      "original": 3000000,
+      "heldout": 1500000
+    },
+    "sharedLedgerHalted": false,
+    "envelopesResetOrReallocated": false,
+    "explanation": "App worst-case request reservations are not reconciled down after success. They reached the persistent limit while actual token cost remained well below the approved envelope. Baseline settles actual usage but stopped on input estimate."
+  },
+  "restartAttestationSha256": "cddcbf76839ec12de8662671f2a0cd6918a370b50bd99c08e10455461723883d",
+  "restartRetentionUsageSealSha256": "963894dc75f27a259134a2d246ac14a28abc619f8d29c2bffcdcd7bdb8fdafdf",
+  "rootReportedAcceptance": {
+    "evidenceOwner": "root; separate deterministic demonstration, not D hidden-suite score",
+    "sourceCommit": "d08165c1ad38bb20817ace294c55ed1c50b8c243",
+    "browserWorkflow": "PASS",
+    "deterministicSmoke": "PASS",
+    "staleApprovalSmoke": "PASS",
+    "decisionReplay": "UNCHANGED",
+    "activeContributions": 4,
+    "humanDecisions": 2,
+    "unfamiliarCaseUnresolved": 1,
+    "actualRestartPersistedState": "PASS",
+    "restartArtifactSha256": "9bf7dcba109065d4106f79e1014ffab8a886616593e996a7503fcf1ccb089605"
+  },
+  "verification": {
+    "DIndependentScorerCommit": "53af871155f0b1b9446f3f208898a47af2ac8353",
+    "DScoringCheckoutClean": true,
+    "DPythonTests": 30,
+    "DNoNetworkNodeTests": 14,
+    "DEvaluationTypecheck": "PASS",
+    "rootReportedRepoTests": 331,
+    "rootReportedAppConvexEvalTypechecks": "PASS",
+    "rootReportedViteBuild": "PASS",
+    "DProviderCalls": 0,
+    "DRestartActions": "GET-only persisted-state/runtime reads"
+  }
+}

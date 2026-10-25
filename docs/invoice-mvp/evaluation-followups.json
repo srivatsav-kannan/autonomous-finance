@@ -1,0 +1,62 @@
+{
+  "runs": [
+    {
+      "id": "mvp-original-firstpass-f1f0351",
+      "appCommit": "f1f03512528772a21da2445f0f698eb3511c88ce",
+      "evaluator": {
+        "commit": "fba6094d41c8989cbf8861759f0c9e483b343f0f",
+        "dirty": false,
+        "protocolCommit": "357866ec73dd8a643408e4a3b1ca4db6654e99b7",
+        "protocolSha256": "85564dcd8b3b534fdb216aef2c16b877019a500387de8e926ce05350cb85f40f"
+      },
+      "status": "FAILED",
+      "cohort": "first-pass",
+      "startedAt": "2026-10-24T21:19:07.884422+00:00",
+      "wallSeconds": 22.681,
+      "liveModel": "NOT RUN",
+      "runSealSha256": "cc769db502728f6df93174b0ef382b4785e785abd871e143da55549196973d91",
+      "successfulImportChunks": 72,
+      "persistedSourcesAtFailure": 105,
+      "failure": "HTTP503 during batch import; unscored",
+      "rootDiagnosis": "Root/A separately reproduced Convex TooManyWrites4MiB/s; bounded database-only retry fix pending",
+      "officialAccuracy": null
+    },
+    {
+      "id": "mvp-heldout-postfix-f1f0351",
+      "appCommit": "f1f03512528772a21da2445f0f698eb3511c88ce",
+      "evaluator": {
+        "commit": "fba6094d41c8989cbf8861759f0c9e483b343f0f",
+        "dirty": true,
+        "protocolCommit": "357866ec73dd8a643408e4a3b1ca4db6654e99b7",
+        "protocolSha256": "85564dcd8b3b534fdb216aef2c16b877019a500387de8e926ce05350cb85f40f"
+      },
+      "status": "RECORDED",
+      "cohort": "post-fix",
+      "startedAt": "2026-10-24T21:21:36.964312+00:00",
+      "wallSeconds": 2.501,
+      "liveModel": "NOT RUN",
+      "runSealSha256": "1dc1c5c5f94ffa8ae993ed4b990708d6a223d040e36abaf8397d92774c9c424e",
+      "frozenChecksPassed": 4,
+      "frozenChecks": 9,
+      "sourcePreservation": {
+        "detail": [],
+        "expectedSourceVersions": 11,
+        "missingExternalIds": [],
+        "missingVersions": 0,
+        "observedSourceVersions": 11,
+        "pass": true,
+        "retentionErrors": 0,
+        "unexpectedExternalIds": [],
+        "unexpectedVersions": 0
+      },
+      "unresolvedCases": 9,
+      "acceptedEffects": 0,
+      "humanInterventions": 0,
+      "modelCalls": 0,
+      "costUsd": 0,
+      "scoreJsonSha256": "ab5fcf34e8174c9e61acd89c1f5851b0aa42ac734beb8d592bba6bcb276e053a",
+      "evaluatorDirtyExplanation": "New untracked capped-baseline preparation files existed; tracked deterministic evaluator code was unchanged from fba6094 during execution."
+    }
+  ],
+  "firstPassUnchanged": "evaluation-firstpass.json"
+}

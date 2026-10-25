@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "suiteId": "heldout-v1",
+  "scenarioCategories": [
+    "unfamiliar_layout",
+    "conflicting_evidence",
+    "explicit_revision",
+    "byte_duplicate",
+    "missing_invoice",
+    "late_evidence",
+    "restart_resume",
+    "document_prompt_injection"
+  ],
+  "sourceSha256": "03bccb838d0baff8b96423fa89bad751bb67d5d022d7efce4c4686d62fec06ac",
+  "expectationsSha256": "bb6b969a05816e15c287ad265f347e04418f46a4983dd3a171e698d042827d3e",
+  "expectationsLocation": "Evaluator-private storage outside product worktrees; not available to product, baseline, or implementation workers."
+}

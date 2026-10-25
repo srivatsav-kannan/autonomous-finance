@@ -1,6 +1,6 @@
 /* Hallmark: app screen; theme: locked finance workbench; signature: inspectable finance process with live workload; scope: app. */
 /* Critique: a single connected process map carries the page; source counts and explanatory architecture are explicitly distinguished. */
-/* Hallmark · waive 39b · Four stage selectors contain process labels and real counts; ordinary actions retain 44px targets · The entire stage is one accessible hit target so users can inspect the diagram without a second row of duplicate controls. */
+/* Hallmark · waive 39b · Account and stage selectors contain labels and real balances or counts; ordinary actions retain 44px targets · Each account or stage is one accessible hit target so users can inspect its details without a second row of duplicate controls. */
 .finance-flow { min-width: 0; }
 .finance-flow-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-lg); }
 .finance-flow-heading .lede { max-width: 65ch; }

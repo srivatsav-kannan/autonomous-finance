@@ -25,9 +25,64 @@ export const lineValidator = v.object({
   ),
 });
 
+export const evidenceValidator = v.object({ documentId: v.string(), version: v.number(), contentHash: v.string(), quote: v.optional(v.string()) });
+export const modeValidator = v.union(v.literal("deterministic"), v.literal("mock_model"), v.literal("live_model"));
+export const invoiceSourceValidator = v.object({ externalId: v.string(), name: v.string(), mimeType: v.string(), text: v.string(), contentBase64: v.optional(v.string()), replacesExternalId: v.optional(v.string()) });
+export const conclusionValidator = v.object({
+  treatment: v.union(v.literal("include_invoice"), v.literal("include_credit"), v.literal("exclude"), v.literal("needs_evidence")),
+  customerId: v.optional(v.string()), customerName: v.optional(v.string()), documentNumber: v.optional(v.string()), amountCents: v.optional(v.number()),
+  reason: v.string(), evidence: v.array(evidenceValidator), contradictions: v.array(v.string()), missingEvidence: v.array(v.string()),
+  question: v.optional(v.string()), category: v.optional(v.string()), supersedesDocumentId: v.optional(v.string()),
+});
+export const toolCallValidator = v.object({ tool: v.string(), summary: v.string(), mode: modeValidator, model: v.optional(v.string()), evidence: v.array(evidenceValidator), inputTokens: v.optional(v.number()), outputTokens: v.optional(v.number()), costMicros: v.optional(v.number()), durationMs: v.optional(v.number()) });
+
+
+export const invoiceCaseStatusValidator = v.union(v.literal("received"), v.literal("investigating"), v.literal("needs_review"), v.literal("evidence_missing"), v.literal("recorded"), v.literal("excluded"), v.literal("superseded"), v.literal("duplicate"));
+
 export default defineSchema({
   ...demoTables,
   ...demoEvidenceTables,
+
+  // Invoice evidence MVP: accepted net-invoiced contributions, NOT cash or GL postings.
+  // Customer master for invoice cases. Same shape the invoice gateway already persists; the
+  // receivables kernel (customer documents, dispositions, AR clerk) is intentionally not part of main.
+  customers: defineTable({
+    runId: v.string(),
+    customerId: v.string(),
+    legalName: v.string(),
+    aliases: v.array(v.string()),
+    emailDomain: v.optional(v.string()),
+    status: v.union(v.literal("active"), v.literal("blocked")),
+    registeredBy: v.string(),
+    sourceDocumentId: v.string(),
+    at: v.number(),
+  }).index("by_run_customer", ["runId", "customerId"]),
+  invoiceBatches: defineTable({ runId: v.string(), label: v.string(), documentIds: v.array(v.string()), createdAt: v.number() }).index("by_run", ["runId"]),
+  invoiceModelBudgets: defineTable({ runId: v.string(), maxRequests: v.number(), maxCostMicros: v.number(), requestsReserved: v.number(), costReservedMicros: v.number(), createdAt: v.number() }).index("by_run", ["runId"]),
+  invoiceModelReservations: defineTable({ runId: v.string(), caseId: v.string(), evidenceVersion: v.number(), idempotencyKey: v.string(), model: v.string(), maxCostMicros: v.number(), actor: v.string(), createdAt: v.number() }).index("by_run", ["runId"]),
+  invoiceSourceChunks: defineTable({ runId: v.string(), documentId: v.string(), index: v.number(), content: v.string() }).index("by_run_document", ["runId", "documentId"]),
+  invoiceSources: defineTable({
+    runId: v.string(), caseId: v.string(), batchId: v.string(), externalId: v.string(), name: v.string(), mimeType: v.string(), text: v.string(),
+    contentBase64: v.optional(v.string()), replacesExternalId: v.optional(v.string()), version: v.number(), contentHash: v.string(),
+    canonicalDocumentId: v.optional(v.string()), createdAt: v.number(),
+  }).index("by_run_external", ["runId", "externalId"]).index("by_run_hash", ["runId", "contentHash"]).index("by_run", ["runId"]),
+  invoiceCaseRecords: defineTable({
+    runId: v.string(), batchId: v.string(), documentId: v.string(), externalId: v.string(), name: v.string(), version: v.number(), contentHash: v.string(),
+    status: invoiceCaseStatusValidator, evidenceVersion: v.number(), currentProposalId: v.optional(v.string()), acceptedProposalId: v.optional(v.string()),
+    canonicalDocumentId: v.optional(v.string()), reason: v.optional(v.string()), customerId: v.optional(v.string()), question: v.optional(v.string()),
+    contradictions: v.array(v.string()), missingEvidence: v.array(v.string()), createdAt: v.number(), updatedAt: v.number(),
+  }).index("by_run", ["runId"]).index("by_run_document", ["runId", "documentId"]),
+  invoiceProposals: defineTable({ runId: v.string(), caseId: v.string(), evidenceVersion: v.number(), conclusion: conclusionValidator, author: v.string(), mode: modeValidator, model: v.optional(v.string()), createdAt: v.number() }).index("by_run_case", ["runId", "caseId"]),
+  invoiceDecisions: defineTable({
+    runId: v.string(), caseId: v.string(), proposalId: v.string(), evidenceVersion: v.number(), idempotencyKey: v.string(),
+    action: v.union(v.literal("accept"), v.literal("exclude"), v.literal("request_evidence")), note: v.optional(v.string()), actor: v.string(), createdAt: v.number(),
+  }).index("by_run_case", ["runId", "caseId"]).index("by_run_proposal", ["runId", "proposalId"]),
+  invoiceAudit: defineTable({ runId: v.string(), caseId: v.string(), kind: v.string(), summary: v.string(), actor: v.string(), at: v.number(), proposalId: v.optional(v.string()), evidenceVersion: v.optional(v.number()), toolCall: v.optional(toolCallValidator) }).index("by_run_case", ["runId", "caseId"]),
+  invoiceContributions: defineTable({
+    runId: v.string(), caseId: v.string(), documentId: v.string(), proposalId: v.string(), customerId: v.string(), documentNumber: v.string(), normalizedNumber: v.string(),
+    kind: v.union(v.literal("invoice"), v.literal("credit")), amountCents: v.number(), evidence: v.array(evidenceValidator), active: v.boolean(), createdAt: v.number(),
+  }).index("by_run", ["runId"]).index("by_run_document", ["runId", "documentId"]),
+
   runs: defineTable({
     runId: v.string(),
     label: v.string(),
