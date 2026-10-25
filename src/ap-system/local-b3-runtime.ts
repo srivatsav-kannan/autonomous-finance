@@ -34,14 +34,16 @@ export async function prepareLocalB3Runtime(root=process.cwd()){
  if(!created.ok&&created.code!=="exists")throw Error("Isolated local run creation failed");
  const scope:BankScope=saved.scope;
  const configuration={scope,secret:admin,paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,beneficiary:{vendor:"golden-state-produce",externalAccountId:"ap97-b3-golden-state-beneficiary",version:"trusted-b3-synthetic-v1"},policyVersion:AP_POLICY_VERSION,controllerLimitCents:5_000_000,humanSubjects:localB3Actors.map(a=>({subject:a.subject,seatId:`ap97-b3-${a.id}`}))};
- // configure is idempotent only for exactly the same immutable configuration; no broad catch.
- await agent.mutation(makeFunctionReference<"mutation">("demoPayments:configure"),configuration);
+ if(created.ok)await agent.mutation(makeFunctionReference<"mutation">("demoPayments:configure"),configuration);
  const humanForActor=(actorId:string)=>{
   const actor=localB3Actors.find(a=>a.id===actorId);if(!actor)throw Error("Unknown simulated actor");
   const human=new ConvexHttpClient(URL);
   (human as unknown as {setAdminAuth:(key:string,identity:Record<string,string>)=>void}).setAdminAuth(deployment.adminKey,{issuer:ISSUER,subject:`ap97-b3-${actorId}`,tokenIdentifier:actor.subject});
   return human;
  };
- await humanForActor("finance").query(makeFunctionReference<"query">("apIdentity:workspaceAccess"),{scope});
+ for(const actor of localB3Actors){
+  const review=await humanForActor(actor.id).query(makeFunctionReference<"query">("demoPayments:humanReview"),{scope});
+  if(review.operator.seatId!==`ap97-b3-${actor.id}`||review.policyVersion!==configuration.policyVersion||review.beneficiary.vendor!==configuration.beneficiary.vendor||review.beneficiary.externalAccountId!==configuration.beneficiary.externalAccountId||review.beneficiary.version!==configuration.beneficiary.version||review.executionConfig.paymentExecutorVersion!==PAYMENT_EXECUTOR_VERSION)throw Error("Existing immutable local configuration differs; use a fresh isolated run");
+ }
  return {scope,agent,convexUrl:URL,directory,storageRoot:path.join(directory,"sources"),actors:localB3Actors,humanForActor,apCredential:{seatId:"ap97-b3-ap",token:saved.apToken},controllerCredential:{seatId:"ap97-b3-controller",token:saved.controllerToken},paymentsCredential:{seatId:"ap97-b3-payments",token:saved.paymentToken},dispatchToken:saved.dispatchToken,evidenceToken:saved.evidenceToken,identityMode:"simulated_human" as const};
 }
