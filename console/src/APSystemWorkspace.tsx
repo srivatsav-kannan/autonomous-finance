@@ -116,9 +116,11 @@ export function APSystemWorkspace({ onContextChange, onBusyChange, section, onSe
           <header className="aps-case-header"><div><h3 id="ap-case-heading" ref={heading} tabIndex={-1}>{detail.candidate?.invoiceNumber ?? "Document review"}</h3><p>{detail.candidate?.extractedSupplierName ?? "Supplier not established"}</p></div><div className="aps-case-identity"><span>{detail.scope.provider === "fake" ? "Local FakeBank" : "Increase sandbox"}</span><span>{detail.identityMode === "simulated_human" ? "Simulated human identity" : "Authenticated human identity"}</span></div></header>
           <p className="aps-caption">Case <code>{detail.caseId}</code> / Revision {detail.revision} / {detail.sources.every(s=>s.provenance.kind === "synthetic") ? "Synthetic documents" : "Document provenance varies; inspect originals"}</p>
           <APRelatedCases detail={detail} cases={cases??[]} onOpenCase={setSelectedId} busy={busy}/>
-          {view==="traceability"&&<details className="aps-processing-details"><summary>Current processing status</summary><APConnectedProcess detail={detail} onView={setView}/></details>}
-          <APCaseStatus detail={detail}/>
-          <APAmounts detail={detail}/>
+          <details className="aps-processing-details" open={view!=="traceability"} key={`processing:${detail.caseId}:${view==="traceability"}`}>
+            <summary>Processing & amounts</summary>
+            {detail.identityMode==="authenticated_human"?<APConnectedProcess detail={detail} onView={setView}/>:<APCaseStatus detail={detail}/>}
+            <APAmounts detail={detail}/>
+          </details>
           {detail.links.duplicateOfCaseId && <p className="aps-notice">This delivery is linked to an existing obligation. <button className="aps-text-button" onClick={()=>setSelectedId(detail.links.duplicateOfCaseId!)} disabled={busy}>Open original case</button></p>}
           <div className="aps-tabs" role="group" aria-label="Case sections">{VIEWS.map(v=><button type="button" key={v} disabled={busy} onClick={()=>setView(v)} aria-pressed={view===v} className={view===v ? "is-selected" : ""}>{v === "evidence" ? "Source & fields" : apLabel(v)}</button>)}</div>
           {view === "evidence" && <><APSystemEvidence detail={detail}/><APOriginals detail={detail}/></>}
