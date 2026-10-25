@@ -271,6 +271,16 @@ async function recordReview(
       "Confirm through the existing held channel when it is available or being restored",
     );
   if (
+    kind === "verification" &&
+    p.oldChannel.status === "unavailable" &&
+    p.resolution === "replace" &&
+    attestation.method !== "independent_reestablishment"
+  )
+    deny(
+      "independent_reestablishment_required",
+      "A replacement cannot claim confirmation through a channel declared unavailable; independently reestablish it or propose explicit restoration",
+    );
+  if (
     kind === "escalation" &&
     (p.oldChannel.status !== "unavailable" ||
       attestation.method !== "independent_reestablishment" ||

@@ -292,6 +292,21 @@ describe("E03 governed trusted contact replacement", () => {
       method: "independent_reestablishment",
     });
   });
+  it("requires independent reestablishment when replacement declares the old channel unavailable", async () => {
+    const f = await setup();
+    const c = await f.proposeChange({
+      ...f.proposal,
+      oldChannel: { ...f.proposal.oldChannel, status: "unavailable" },
+    });
+    await expect(
+      f.reviewChange(c, "verify", "verifier", {
+        method: "old_channel_confirmation",
+      }),
+    ).rejects.toThrow(/independent_reestablishment_required/);
+    await f.reviewChange(c);
+    await f.reviewChange(c, "escalate");
+    await f.decideChange(c);
+  });
   it("requires old-channel confirmation for available contacts and explicit restoration", async () => {
     const f = await setup(),
       c = await f.proposeChange();
