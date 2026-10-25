@@ -1,0 +1,1513 @@
+{
+  "benchmark": "FinBalance (arXiv 2606.15949, EMNLP 2026 Findings)",
+  "harness": "github.com/Devansh1105/finbalance (unmodified scorer, prompt, parser, ablation loop)",
+  "model": "claude-opus-5-5",
+  "config": {
+    "thinking": {
+      "type": "adaptive"
+    },
+    "output_config": {
+      "effort": "medium"
+    },
+    "max_tokens": 32000,
+    "temperature": "not sent (rejected by the model); paper used 0.0",
+    "prompt": "upstream build_prompt, prompt_variant=baseline, visibility=normal, single user turn"
+  },
+  "sample": {
+    "file": "sample_main_seed42.json",
+    "seed": 42,
+    "standard": 120,
+    "negatives": 58,
+    "total": 178,
+    "standard_by_level": {
+      "1": 24,
+      "2": 24,
+      "3": 24,
+      "4": 24,
+      "5": 24
+    },
+    "standard_by_period": {
+      "month": 40,
+      "quarter": 40,
+      "year": 40
+    },
+    "standard_by_industry": {
+      "professional_services": 15,
+      "field_services": 15,
+      "retail": 15,
+      "wholesale_distribution": 15,
+      "healthcare_clinic": 15,
+      "property_management": 15,
+      "manufacturing": 15,
+      "subscription_saas": 15
+    },
+    "ablation_total": 40
+  },
+  "n": {
+    "records": 178,
+    "standard": 120,
+    "negatives": 58
+  },
+  "headline": {
+    "bs_exact": {
+      "value": 0.6917,
+      "ci_low": 0.6066,
+      "ci_high": 0.7731
+    },
+    "bs_recon": {
+      "value": 0.6917,
+      "ci_low": 0.6066,
+      "ci_high": 0.7731
+    },
+    "gap_recon_minus_exact": {
+      "value": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0
+    },
+    "entries_correct_no_doc_refs": {
+      "value": 0.6083,
+      "ci_low": 0.5175,
+      "ci_high": 0.6949
+    },
+    "strict_end_to_end": {
+      "value": 0.0667,
+      "ci_low": 0.0254,
+      "ci_high": 0.1138
+    },
+    "strict_end_to_end_superset_tolerant": {
+      "value": 0.175,
+      "ci_low": 0.1094,
+      "ci_high": 0.2458
+    },
+    "doc_ref_mismatch_per_expected_posting": {
+      "value": 0.4662,
+      "ci_low": 0.4343,
+      "ci_high": 0.4981
+    },
+    "citations_correct": {
+      "value": 0.5338,
+      "ci_low": 0.5019,
+      "ci_high": 0.5657
+    },
+    "doc_ref_mismatch_among_account_amount_correct": {
+      "value": 0.5519,
+      "ci_low": 0.5181,
+      "ci_high": 0.5856
+    },
+    "entry_exact_posting_rate": {
+      "value": 0.3785,
+      "ci_low": 0.3383,
+      "ci_high": 0.4196
+    },
+    "entry_accounting_posting_rate": {
+      "value": 0.8448,
+      "ci_low": 0.7945,
+      "ci_high": 0.8904
+    },
+    "entry_ratio_predicted_over_expected": {
+      "value": 0.9304,
+      "ci_low": 0.8949,
+      "ci_high": 0.9586
+    },
+    "false_inconsistency_alarm_rate": {
+      "value": 0.0167,
+      "ci_low": 0.0,
+      "ci_high": 0.0427
+    },
+    "inconsistency_code_match_rate": {
+      "value": 0.9655,
+      "ci_low": 0.9107,
+      "ci_high": 1.0
+    },
+    "inconsistency_flag_detection_rate": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0
+    },
+    "inconsistency_empty_answer_rate": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0
+    },
+    "parse_success_rate": {
+      "value": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0
+    }
+  },
+  "bootstrap": {
+    "iterations": 5000,
+    "seed": 1,
+    "confidence": 0.95,
+    "method": "percentile bootstrap over record IDs; upstream metric definitions"
+  },
+  "upstream_summary_scalars": {
+    "records_evaluated": 178,
+    "standard_records": 120,
+    "inconsistency_records": 58,
+    "parse_success_count": 178,
+    "parse_success_rate": 1.0,
+    "journal_entries_exact_record_match_rate": 0.0667,
+    "journal_entries_accounting_record_match_rate": 0.6083,
+    "journal_entries_matched_rate": 0.0667,
+    "final_balance_sheet_matches_rate": 0.6917,
+    "final_balance_sheet_and_journal_entries_match_rate": 0.0667,
+    "final_journal_entries_match_rate": 0.0667,
+    "final_journal_entries_match_no_doc_refs_rate": 0.6083,
+    "entry_exact_posting_rate": 0.3785,
+    "entry_accounting_posting_rate": 0.8448,
+    "entries_correct_but_final_balance_sheet_wrong_rate": 0.0,
+    "entries_accounting_correct_but_doc_refs_wrong_rate": 0.5417,
+    "predicted_entries_reconstruct_correct_final_balance_sheet_rate": 0.6917,
+    "predicted_balance_sheet_matches_reconstructed_balance_sheet_rate": 0.9833,
+    "false_inconsistency_alarm_rate": 0.0167,
+    "inconsistency_flag_match_rate": 1.0,
+    "inconsistency_code_match_rate": 0.9655,
+    "inconsistency_empty_answer_rate": 1.0,
+    "missed_inconsistency_rate": 0.0,
+    "exact_entry_match_count": 712,
+    "doc_refs_mismatch_count": 877,
+    "wrong_amount_count": 101,
+    "wrong_account_count": 11,
+    "missing_entry_count": 180,
+    "extra_entry_count": 49,
+    "expected_entry_count": 1881,
+    "predicted_entry_count": 1750,
+    "invalid_account_entry_count": 0,
+    "average_missing_entries_per_standard_record": 1.5,
+    "average_extra_entries_per_standard_record": 0.41,
+    "cost_total": 12.544952,
+    "cost_average_per_record": 0.070477,
+    "prompt_tokens_total": 1677498,
+    "completion_tokens_total": 291748,
+    "total_tokens": 1969246,
+    "tool_call_count_total": 0,
+    "tool_call_failures_total": 0,
+    "verifier_passes_total": 0,
+    "latency_seconds_total": 2373.9457,
+    "latency_seconds_average": 13.3368
+  },
+  "error_taxonomy": [
+    {
+      "error_type": "arithmetic_failure",
+      "affected_record_count": 34,
+      "total_records": 120,
+      "affected_record_rate": 0.2833,
+      "entry_count": 101
+    },
+    {
+      "error_type": "account_selection_failure",
+      "affected_record_count": 10,
+      "total_records": 120,
+      "affected_record_rate": 0.0833,
+      "entry_count": 11
+    },
+    {
+      "error_type": "document_linking_failure",
+      "affected_record_count": 110,
+      "total_records": 120,
+      "affected_record_rate": 0.9167,
+      "entry_count": 877
+    },
+    {
+      "error_type": "omission_failure",
+      "affected_record_count": 44,
+      "total_records": 120,
+      "affected_record_rate": 0.3667,
+      "entry_count": 180
+    },
+    {
+      "error_type": "hallucinated_extra_entry",
+      "affected_record_count": 26,
+      "total_records": 120,
+      "affected_record_rate": 0.2167,
+      "entry_count": 49
+    },
+    {
+      "error_type": "balance_reconstruction_failure",
+      "affected_record_count": 37,
+      "total_records": 120,
+      "affected_record_rate": 0.3083,
+      "entry_count": 0
+    },
+    {
+      "error_type": "inconsistency_detection_failure",
+      "affected_record_count": 4,
+      "total_records": 178,
+      "affected_record_rate": 0.0225,
+      "entry_count": 0
+    },
+    {
+      "error_type": "inconsistency_code_failure",
+      "affected_record_count": 2,
+      "total_records": 58,
+      "affected_record_rate": 0.0345,
+      "entry_count": 0
+    }
+  ],
+  "by_difficulty": {
+    "1": {
+      "n_standard": 24,
+      "bs_exact": 1.0,
+      "bs_recon": 1.0,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.3333,
+      "entries_correct_no_doc_refs": 0.9583,
+      "citations_correct": 0.6975,
+      "entry_ratio_predicted_over_expected": 1.0084,
+      "bs_exact_ci": [
+        1.0,
+        1.0
+      ],
+      "bs_recon_ci": [
+        1.0,
+        1.0
+      ]
+    },
+    "2": {
+      "n_standard": 24,
+      "bs_exact": 0.6667,
+      "bs_recon": 0.6667,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.0,
+      "entries_correct_no_doc_refs": 0.625,
+      "citations_correct": 0.6008,
+      "entry_ratio_predicted_over_expected": 0.9202,
+      "bs_exact_ci": [
+        0.4583,
+        0.8333
+      ],
+      "bs_recon_ci": [
+        0.4583,
+        0.8333
+      ]
+    },
+    "3": {
+      "n_standard": 24,
+      "bs_exact": 0.625,
+      "bs_recon": 0.625,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.0,
+      "entries_correct_no_doc_refs": 0.5417,
+      "citations_correct": 0.5196,
+      "entry_ratio_predicted_over_expected": 0.9441,
+      "bs_exact_ci": [
+        0.4167,
+        0.7917
+      ],
+      "bs_recon_ci": [
+        0.4167,
+        0.7917
+      ]
+    },
+    "4": {
+      "n_standard": 24,
+      "bs_exact": 0.625,
+      "bs_recon": 0.625,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.0,
+      "entries_correct_no_doc_refs": 0.4583,
+      "citations_correct": 0.5231,
+      "entry_ratio_predicted_over_expected": 0.9155,
+      "bs_exact_ci": [
+        0.4167,
+        0.7917
+      ],
+      "bs_recon_ci": [
+        0.4167,
+        0.7917
+      ]
+    },
+    "5": {
+      "n_standard": 24,
+      "bs_exact": 0.5417,
+      "bs_recon": 0.5417,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.0,
+      "entries_correct_no_doc_refs": 0.4583,
+      "citations_correct": 0.4922,
+      "entry_ratio_predicted_over_expected": 0.9239,
+      "bs_exact_ci": [
+        0.3333,
+        0.75
+      ],
+      "bs_recon_ci": [
+        0.3333,
+        0.75
+      ]
+    }
+  },
+  "by_period_type": {
+    "month": {
+      "n_standard": 40,
+      "bs_exact": 0.8,
+      "bs_recon": 0.8,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.075,
+      "entries_correct_no_doc_refs": 0.7,
+      "citations_correct": 0.4648,
+      "entry_ratio_predicted_over_expected": 0.9738,
+      "bs_exact_ci": [
+        0.675,
+        0.925
+      ],
+      "bs_recon_ci": [
+        0.675,
+        0.925
+      ]
+    },
+    "quarter": {
+      "n_standard": 40,
+      "bs_exact": 0.6,
+      "bs_recon": 0.6,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.075,
+      "entries_correct_no_doc_refs": 0.55,
+      "citations_correct": 0.5654,
+      "entry_ratio_predicted_over_expected": 0.8775,
+      "bs_exact_ci": [
+        0.45,
+        0.75
+      ],
+      "bs_recon_ci": [
+        0.45,
+        0.75
+      ]
+    },
+    "year": {
+      "n_standard": 40,
+      "bs_exact": 0.675,
+      "bs_recon": 0.675,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.05,
+      "entries_correct_no_doc_refs": 0.575,
+      "citations_correct": 0.5531,
+      "entry_ratio_predicted_over_expected": 0.9443,
+      "bs_exact_ci": [
+        0.525,
+        0.8
+      ],
+      "bs_recon_ci": [
+        0.525,
+        0.8
+      ]
+    }
+  },
+  "by_industry": {
+    "field_services": {
+      "n_standard": 15,
+      "bs_exact": 0.6667,
+      "bs_recon": 0.6667,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.0,
+      "entries_correct_no_doc_refs": 0.6667,
+      "citations_correct": 0.5254,
+      "entry_ratio_predicted_over_expected": 0.9322,
+      "bs_exact_ci": [
+        0.4,
+        0.8667
+      ],
+      "bs_recon_ci": [
+        0.4,
+        0.8667
+      ]
+    },
+    "healthcare_clinic": {
+      "n_standard": 15,
+      "bs_exact": 1.0,
+      "bs_recon": 1.0,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.2,
+      "entries_correct_no_doc_refs": 1.0,
+      "citations_correct": 0.7015,
+      "entry_ratio_predicted_over_expected": 1.0,
+      "bs_exact_ci": [
+        1.0,
+        1.0
+      ],
+      "bs_recon_ci": [
+        1.0,
+        1.0
+      ]
+    },
+    "manufacturing": {
+      "n_standard": 15,
+      "bs_exact": 0.4,
+      "bs_recon": 0.4,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.0,
+      "entries_correct_no_doc_refs": 0.4,
+      "citations_correct": 0.383,
+      "entry_ratio_predicted_over_expected": 0.8936,
+      "bs_exact_ci": [
+        0.1333,
+        0.6667
+      ],
+      "bs_recon_ci": [
+        0.1333,
+        0.6667
+      ]
+    },
+    "professional_services": {
+      "n_standard": 15,
+      "bs_exact": 0.8,
+      "bs_recon": 0.8,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.0,
+      "entries_correct_no_doc_refs": 0.5333,
+      "citations_correct": 0.49,
+      "entry_ratio_predicted_over_expected": 0.98,
+      "bs_exact_ci": [
+        0.6,
+        1.0
+      ],
+      "bs_recon_ci": [
+        0.6,
+        1.0
+      ]
+    },
+    "property_management": {
+      "n_standard": 15,
+      "bs_exact": 1.0,
+      "bs_recon": 1.0,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.2,
+      "entries_correct_no_doc_refs": 1.0,
+      "citations_correct": 0.5025,
+      "entry_ratio_predicted_over_expected": 1.0,
+      "bs_exact_ci": [
+        1.0,
+        1.0
+      ],
+      "bs_recon_ci": [
+        1.0,
+        1.0
+      ]
+    },
+    "retail": {
+      "n_standard": 15,
+      "bs_exact": 0.4,
+      "bs_recon": 0.4,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.0,
+      "entries_correct_no_doc_refs": 0.2,
+      "citations_correct": 0.6419,
+      "entry_ratio_predicted_over_expected": 0.8615,
+      "bs_exact_ci": [
+        0.2,
+        0.6667
+      ],
+      "bs_recon_ci": [
+        0.2,
+        0.6667
+      ]
+    },
+    "subscription_saas": {
+      "n_standard": 15,
+      "bs_exact": 0.5333,
+      "bs_recon": 0.5333,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.0,
+      "entries_correct_no_doc_refs": 0.3333,
+      "citations_correct": 0.5368,
+      "entry_ratio_predicted_over_expected": 0.7947,
+      "bs_exact_ci": [
+        0.2667,
+        0.8
+      ],
+      "bs_recon_ci": [
+        0.2667,
+        0.8
+      ]
+    },
+    "wholesale_distribution": {
+      "n_standard": 15,
+      "bs_exact": 0.7333,
+      "bs_recon": 0.7333,
+      "gap_recon_minus_exact": 0.0,
+      "strict_end_to_end": 0.1333,
+      "entries_correct_no_doc_refs": 0.7333,
+      "citations_correct": 0.491,
+      "entry_ratio_predicted_over_expected": 0.982,
+      "bs_exact_ci": [
+        0.4667,
+        0.9333
+      ],
+      "bs_recon_ci": [
+        0.4667,
+        0.9333
+      ]
+    }
+  },
+  "negatives_by_code": {
+    "asset_disposal_mismatch": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "bank_closing_mismatch": {
+      "n": 2,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "deferred_tax_rollforward_mismatch": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "duplicate_reference_conflict": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "exchange_rate_mismatch": {
+      "n": 2,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "fx_settlement_mismatch": {
+      "n": 2,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "input_tax_mismatch": {
+      "n": 2,
+      "code_match_rate": 0.0,
+      "flag_rate": 1.0
+    },
+    "inventory_rollforward_mismatch": {
+      "n": 2,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "invoice_total_mismatch": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "jurisdiction_tax_mismatch": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "lease_remeasurement_mismatch": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "lease_schedule_mismatch": {
+      "n": 2,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "payment_allocation_mismatch": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "performance_obligation_release_mismatch": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "reclassification_support_mismatch": {
+      "n": 2,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "remeasurement_mismatch": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "schedule_rollforward_mismatch": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "ssp_allocation_mismatch": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "statement_balance_mismatch": {
+      "n": 2,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "tax_exemption_conflict": {
+      "n": 2,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "tax_rate_mismatch": {
+      "n": 3,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "tax_total_mismatch": {
+      "n": 2,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    },
+    "transfer_mismatch": {
+      "n": 2,
+      "code_match_rate": 1.0,
+      "flag_rate": 1.0
+    }
+  },
+  "doc_ref_mismatch_structure": {
+    "mismatched_postings": 877,
+    "kinds": {
+      "superset_expected_plus_extras": 453,
+      "partial_overlap": 189,
+      "subset_missing_some": 235
+    },
+    "extra_citations_total": 660,
+    "extra_citations_top": [
+      [
+        "support_doc:bank_statement",
+        622
+      ],
+      [
+        "distractor_doc:cancellation_note",
+        27
+      ],
+      [
+        "support_doc:exchange_rate_notice",
+        3
+      ],
+      [
+        "distractor_doc:vendor_statement",
+        3
+      ],
+      [
+        "adjustment_doc:depreciation_schedule",
+        2
+      ],
+      [
+        "support_doc:subscription_order_form",
+        1
+      ]
+    ],
+    "missing_citations_total": 436,
+    "missing_citations_top": [
+      [
+        "posting_doc:customer_invoice",
+        71
+      ],
+      [
+        "posting_doc:supplier_invoice",
+        53
+      ],
+      [
+        "support_doc:pos_batch_report",
+        37
+      ],
+      [
+        "support_doc:production_batch_sheet",
+        35
+      ],
+      [
+        "support_doc:delivery_note",
+        31
+      ],
+      [
+        "posting_doc:finished_goods_transfer_note",
+        26
+      ]
+    ]
+  },
+  "internal_consistency": {
+    "reported_equals_replayed_balance_sheet": 118,
+    "bs_exact_differs_from_bs_recon": 0,
+    "standard_records": 120
+  },
+  "false_alarms": [
+    {
+      "record_id": "DB_SUB_Q4_00342",
+      "codes": [
+        "tax_rate_mismatch"
+      ],
+      "note": "Credit memo D017 (CM-0001, reference INV-0001) shows a sales tax rate of 0.00% but a tax amount of $1,367.25 on a $10,938.03 basis. That tax amount cannot be derived from the stated rate and basis. It also does not match the 6.25% rate on the original invoice D003, which would give about $683.63."
+    },
+    {
+      "record_id": "DB_SUB_Q5_00345",
+      "codes": [
+        "tax_rate_mismatch"
+      ],
+      "note": "Credit memo CM-0001 (D018) against INV-0001 shows a 0.00% US sales tax rate but a tax amount of $2,517.44. That amount cannot be derived from the stated rate on any basis. It is about 12.5% of the $20,139.55 memo amount, not the 6.25% rate used on the original invoice."
+    }
+  ],
+  "negatives_wrong_code": [
+    {
+      "record_id": "MAIN_NEG_03_INPUT_TAX_MISMATCH",
+      "expected": "input_tax_mismatch",
+      "predicted": [
+        "input_tax_mismatch",
+        "tax_total_mismatch",
+        "tax_rate_mismatch"
+      ]
+    },
+    {
+      "record_id": "MAIN_NEG_07_INPUT_TAX_MISMATCH",
+      "expected": "input_tax_mismatch",
+      "predicted": [
+        "input_tax_mismatch",
+        "tax_total_mismatch"
+      ]
+    }
+  ],
+  "output_tokens": {
+    "median": 1134.5,
+    "max": 6956,
+    "max_tokens_setting": 32000
+  },
+  "failures": {
+    "parse_failures": 0,
+    "api_error_rows": 0,
+    "max_tokens_stops": 0,
+    "refusal_stops": 0,
+    "failed_records": []
+  },
+  "paper_models": [
+    {
+      "model": "GPT-5 (reasoning low)",
+      "bs_exact": 0.465,
+      "bs_recon": 0.463,
+      "gap": -0.002,
+      "entry_ratio": 0.91,
+      "entries_correct": 0.4,
+      "strict_end_to_end": 0.05,
+      "citations_correct": 0.52,
+      "inconsistency_code": 0.43
+    },
+    {
+      "model": "Grok-4.3 (reasoning)",
+      "bs_exact": 0.31,
+      "bs_recon": 0.35,
+      "gap": 0.04,
+      "entry_ratio": 0.4,
+      "entries_correct": 0.26,
+      "strict_end_to_end": 0.05,
+      "citations_correct": 0.84,
+      "inconsistency_code": 0.96
+    },
+    {
+      "model": "Gemini 3 Flash",
+      "bs_exact": 0.235,
+      "bs_recon": 0.548,
+      "gap": 0.313,
+      "entry_ratio": 0.94,
+      "entries_correct": 0.49,
+      "strict_end_to_end": 0.06,
+      "citations_correct": 0.48,
+      "inconsistency_code": 0.82
+    },
+    {
+      "model": "DeepSeek Chat",
+      "bs_exact": 0.067,
+      "bs_recon": 0.473,
+      "gap": 0.406,
+      "entry_ratio": 0.98,
+      "entries_correct": 0.45,
+      "strict_end_to_end": 0.02,
+      "citations_correct": 0.7,
+      "inconsistency_code": 0.6
+    },
+    {
+      "model": "Claude Haiku 4.5",
+      "bs_exact": 0.029,
+      "bs_recon": 0.292,
+      "gap": 0.263,
+      "entry_ratio": 0.53,
+      "entries_correct": 0.27,
+      "strict_end_to_end": 0.01,
+      "citations_correct": 0.83,
+      "inconsistency_code": 0.67
+    },
+    {
+      "model": "Qwen3 235B",
+      "bs_exact": 0.013,
+      "bs_recon": 0.302,
+      "gap": 0.29,
+      "entry_ratio": 0.94,
+      "entries_correct": 0.25,
+      "strict_end_to_end": 0.0,
+      "citations_correct": 0.71,
+      "inconsistency_code": 0.84
+    }
+  ],
+  "paper_ledger_feedback": [
+    {
+      "model": "Gemini 3 Flash",
+      "bs_exact_delta_pp": 32,
+      "inconsistency_code_delta_pp": -13
+    },
+    {
+      "model": "Qwen3 235B",
+      "bs_exact_delta_pp": 30,
+      "inconsistency_code_delta_pp": -17
+    },
+    {
+      "model": "Claude Haiku 4.5",
+      "bs_exact_delta_pp": 31,
+      "inconsistency_code_delta_pp": -52
+    }
+  ],
+  "wall_seconds": {
+    "prompt_baseline": 596.9,
+    "forced_ledger_verifier": 227.7
+  },
+  "spend": {
+    "opus55_pilot/prompt_baseline": {
+      "cost_usd": 0.299696,
+      "input_tokens": 32124,
+      "output_tokens": 8560,
+      "cache_read_input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "calls": 3,
+      "median_call_latency_seconds": 12.9,
+      "max_call_latency_seconds": 50.1
+    },
+    "opus55_main_sample/prompt_baseline": {
+      "cost_usd": 12.544952,
+      "input_tokens": 1677498,
+      "output_tokens": 291748,
+      "cache_read_input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "calls": 178,
+      "median_call_latency_seconds": 9.8,
+      "max_call_latency_seconds": 54.0
+    },
+    "opus55_main_sample/forced_ledger_verifier": {
+      "cost_usd": 4.344278,
+      "input_tokens": 61638,
+      "output_tokens": 113297,
+      "cache_read_input_tokens": 352267,
+      "cache_creation_input_tokens": 352267,
+      "calls": 80,
+      "median_call_latency_seconds": 8.9,
+      "max_call_latency_seconds": 35.7
+    },
+    "opus55_fresh_seed_sample/prompt_baseline": {
+      "cost_usd": 6.394012,
+      "input_tokens": 860553,
+      "output_tokens": 147590,
+      "cache_read_input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "calls": 89,
+      "median_call_latency_seconds": 9.9,
+      "max_call_latency_seconds": 50.4
+    },
+    "opus55_new_seed20261024_sample/prompt_baseline": {
+      "cost_usd": 3.195268,
+      "input_tokens": 418832,
+      "output_tokens": 75997,
+      "cache_read_input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "calls": 44,
+      "median_call_latency_seconds": 10.4,
+      "max_call_latency_seconds": 47.6
+    },
+    "_total_cost_usd": 26.7782
+  },
+  "ledger_feedback": {
+    "matched_records": 40,
+    "standard": 32,
+    "negatives": 8,
+    "paired_bootstrap_upstream": [
+      {
+        "baseline_ablation": "prompt_baseline",
+        "ablation_name": "forced_ledger_verifier",
+        "metric": "predicted_entries_reconstruct_correct_final_balance_sheet_rate",
+        "matched_records": 40,
+        "baseline_rate": 0.6875,
+        "ablation_rate": 0.6875,
+        "diff": 0.0,
+        "ci_low": -0.090909,
+        "ci_high": 0.09375,
+        "iterations": 5000,
+        "confidence": 0.95
+      },
+      {
+        "baseline_ablation": "prompt_baseline",
+        "ablation_name": "forced_ledger_verifier",
+        "metric": "final_balance_sheet_matches_rate",
+        "matched_records": 40,
+        "baseline_rate": 0.6875,
+        "ablation_rate": 0.6875,
+        "diff": 0.0,
+        "ci_low": -0.090909,
+        "ci_high": 0.090909,
+        "iterations": 5000,
+        "confidence": 0.95
+      },
+      {
+        "baseline_ablation": "prompt_baseline",
+        "ablation_name": "forced_ledger_verifier",
+        "metric": "final_journal_entries_match_no_doc_refs_rate",
+        "matched_records": 40,
+        "baseline_rate": 0.59375,
+        "ablation_rate": 0.625,
+        "diff": 0.03125,
+        "ci_low": 0.0,
+        "ci_high": 0.1,
+        "iterations": 5000,
+        "confidence": 0.95
+      },
+      {
+        "baseline_ablation": "prompt_baseline",
+        "ablation_name": "forced_ledger_verifier",
+        "metric": "final_balance_sheet_and_journal_entries_match_rate",
+        "matched_records": 40,
+        "baseline_rate": 0.09375,
+        "ablation_rate": 0.09375,
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "iterations": 5000,
+        "confidence": 0.95
+      },
+      {
+        "baseline_ablation": "prompt_baseline",
+        "ablation_name": "forced_ledger_verifier",
+        "metric": "inconsistency_code_match_rate",
+        "matched_records": 40,
+        "baseline_rate": 1.0,
+        "ablation_rate": 1.0,
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "iterations": 5000,
+        "confidence": 0.95
+      },
+      {
+        "baseline_ablation": "prompt_baseline",
+        "ablation_name": "forced_ledger_verifier",
+        "metric": "strict_doc_ref_mismatch_rate",
+        "matched_records": 40,
+        "baseline_rate": 0.490872,
+        "ablation_rate": 0.492901,
+        "diff": 0.002028,
+        "ci_low": -0.010811,
+        "ci_high": 0.014963,
+        "iterations": 5000,
+        "confidence": 0.95
+      }
+    ],
+    "baseline_on_subset": {
+      "bs_exact": 0.6875,
+      "bs_recon": 0.6875,
+      "gap_recon_minus_exact": 0.0,
+      "entries_correct_no_doc_refs": 0.5938,
+      "strict_end_to_end": 0.0938,
+      "strict_end_to_end_superset_tolerant": 0.1875,
+      "doc_ref_mismatch_per_expected_posting": 0.4909,
+      "citations_correct": 0.5091,
+      "doc_ref_mismatch_among_account_amount_correct": 0.5628,
+      "entry_exact_posting_rate": 0.3813,
+      "entry_accounting_posting_rate": 0.8722,
+      "entry_ratio_predicted_over_expected": 0.9513,
+      "false_inconsistency_alarm_rate": 0.0,
+      "inconsistency_code_match_rate": 1.0,
+      "inconsistency_flag_detection_rate": 1.0,
+      "inconsistency_empty_answer_rate": 1.0,
+      "parse_success_rate": 1.0
+    },
+    "feedback_on_subset": {
+      "bs_exact": 0.6875,
+      "bs_recon": 0.6875,
+      "gap_recon_minus_exact": 0.0,
+      "entries_correct_no_doc_refs": 0.625,
+      "strict_end_to_end": 0.0938,
+      "strict_end_to_end_superset_tolerant": 0.1562,
+      "doc_ref_mismatch_per_expected_posting": 0.4929,
+      "citations_correct": 0.5071,
+      "doc_ref_mismatch_among_account_amount_correct": 0.5664,
+      "entry_exact_posting_rate": 0.3773,
+      "entry_accounting_posting_rate": 0.8702,
+      "entry_ratio_predicted_over_expected": 0.9533,
+      "false_inconsistency_alarm_rate": 0.0,
+      "inconsistency_code_match_rate": 1.0,
+      "inconsistency_flag_detection_rate": 1.0,
+      "inconsistency_empty_answer_rate": 1.0,
+      "parse_success_rate": 1.0
+    },
+    "failures": {
+      "parse_failures": 0,
+      "api_error_rows": 0,
+      "max_tokens_stops": 0,
+      "refusal_stops": 0,
+      "failed_records": []
+    },
+    "verifier_first_draft_self_consistent_rate": 1.0,
+    "standard_final_balance_sheet_changed_vs_draft": 0,
+    "standard_flips_vs_independent_baseline": {
+      "feedback_right_baseline_wrong": 1,
+      "baseline_right_feedback_wrong": 1
+    },
+    "negatives_draft_flagged_inconsistency": 8
+  },
+  "contamination_checks": {
+    "Authors' fresh seed 20260712": {
+      "description": "data/fresh_seed_20260712 shipped in the repo; first committed 2026-08-28, after the model's June 2026 training cutoff",
+      "dataset": "/Users/srivatsavkannan/Documents/calhacks/benchdata/finbalance/data/fresh_seed_20260712/main/records.jsonl",
+      "sample_file": "sample_fresh_seed20260712_seed42.json",
+      "sample": {
+        "standard": 60,
+        "negatives": 29,
+        "total": 89,
+        "standard_by_level": {
+          "1": 12,
+          "2": 12,
+          "3": 12,
+          "4": 12,
+          "5": 12
+        },
+        "standard_by_period": {
+          "month": 20,
+          "quarter": 20,
+          "year": 20
+        },
+        "standard_by_industry": {
+          "professional_services": 8,
+          "field_services": 8,
+          "retail": 8,
+          "wholesale_distribution": 8,
+          "healthcare_clinic": 7,
+          "property_management": 7,
+          "manufacturing": 7,
+          "subscription_saas": 7
+        },
+        "ablation_total": 0
+      },
+      "n": {
+        "records": 89,
+        "standard": 60,
+        "negatives": 29
+      },
+      "headline": {
+        "bs_exact": {
+          "value": 0.7,
+          "ci_low": 0.5818,
+          "ci_high": 0.807
+        },
+        "bs_recon": {
+          "value": 0.7,
+          "ci_low": 0.5818,
+          "ci_high": 0.807
+        },
+        "gap_recon_minus_exact": {
+          "value": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0
+        },
+        "entries_correct_no_doc_refs": {
+          "value": 0.65,
+          "ci_low": 0.5263,
+          "ci_high": 0.7619
+        },
+        "strict_end_to_end": {
+          "value": 0.0667,
+          "ci_low": 0.0154,
+          "ci_high": 0.1379
+        },
+        "citations_correct": {
+          "value": 0.5027,
+          "ci_low": 0.4632,
+          "ci_high": 0.5429
+        },
+        "inconsistency_flag_detection_rate": {
+          "value": 1.0,
+          "ci_low": 1.0,
+          "ci_high": 1.0
+        },
+        "inconsistency_code_match_rate": {
+          "value": 1.0,
+          "ci_low": 1.0,
+          "ci_high": 1.0
+        },
+        "false_inconsistency_alarm_rate": {
+          "value": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0
+        },
+        "parse_success_rate": {
+          "value": 1.0,
+          "ci_low": 1.0,
+          "ci_high": 1.0
+        }
+      },
+      "minus_main_unpaired": {
+        "bs_exact": {
+          "diff": 0.0083,
+          "ci_low": -0.1409,
+          "ci_high": 0.1464
+        },
+        "bs_recon": {
+          "diff": 0.0083,
+          "ci_low": -0.1409,
+          "ci_high": 0.1464
+        },
+        "strict_end_to_end": {
+          "diff": 0.0,
+          "ci_low": -0.0738,
+          "ci_high": 0.0795
+        },
+        "citations_correct": {
+          "diff": -0.0311,
+          "ci_low": -0.0812,
+          "ci_high": 0.0206
+        },
+        "inconsistency_code_match_rate": {
+          "diff": 0.0345,
+          "ci_low": 0.0,
+          "ci_high": 0.0877
+        }
+      },
+      "by_difficulty": {
+        "1": {
+          "n_standard": 12,
+          "bs_exact": 0.9167,
+          "bs_recon": 0.9167,
+          "gap_recon_minus_exact": 0.0,
+          "strict_end_to_end": 0.3333,
+          "entries_correct_no_doc_refs": 0.9167,
+          "citations_correct": 0.6667,
+          "entry_ratio_predicted_over_expected": 0.9833,
+          "bs_exact_ci": [
+            0.75,
+            1.0
+          ],
+          "bs_recon_ci": [
+            0.75,
+            1.0
+          ]
+        },
+        "2": {
+          "n_standard": 12,
+          "bs_exact": 0.5,
+          "bs_recon": 0.5,
+          "gap_recon_minus_exact": 0.0,
+          "strict_end_to_end": 0.0,
+          "entries_correct_no_doc_refs": 0.5,
+          "citations_correct": 0.5469,
+          "entry_ratio_predicted_over_expected": 0.9141,
+          "bs_exact_ci": [
+            0.25,
+            0.75
+          ],
+          "bs_recon_ci": [
+            0.25,
+            0.75
+          ]
+        },
+        "3": {
+          "n_standard": 12,
+          "bs_exact": 0.75,
+          "bs_recon": 0.75,
+          "gap_recon_minus_exact": 0.0,
+          "strict_end_to_end": 0.0,
+          "entries_correct_no_doc_refs": 0.6667,
+          "citations_correct": 0.5055,
+          "entry_ratio_predicted_over_expected": 0.9505,
+          "bs_exact_ci": [
+            0.5,
+            1.0
+          ],
+          "bs_recon_ci": [
+            0.5,
+            1.0
+          ]
+        },
+        "4": {
+          "n_standard": 12,
+          "bs_exact": 0.6667,
+          "bs_recon": 0.6667,
+          "gap_recon_minus_exact": 0.0,
+          "strict_end_to_end": 0.0,
+          "entries_correct_no_doc_refs": 0.5833,
+          "citations_correct": 0.4752,
+          "entry_ratio_predicted_over_expected": 0.9587,
+          "bs_exact_ci": [
+            0.4167,
+            0.9167
+          ],
+          "bs_recon_ci": [
+            0.4167,
+            0.9167
+          ]
+        },
+        "5": {
+          "n_standard": 12,
+          "bs_exact": 0.6667,
+          "bs_recon": 0.6667,
+          "gap_recon_minus_exact": 0.0,
+          "strict_end_to_end": 0.0,
+          "entries_correct_no_doc_refs": 0.5833,
+          "citations_correct": 0.4738,
+          "entry_ratio_predicted_over_expected": 0.9631,
+          "bs_exact_ci": [
+            0.4167,
+            0.9167
+          ],
+          "bs_recon_ci": [
+            0.4167,
+            0.9167
+          ]
+        }
+      },
+      "failures": {
+        "parse_failures": 0,
+        "api_error_rows": 0,
+        "max_tokens_stops": 0,
+        "refusal_stops": 0,
+        "failed_records": []
+      },
+      "wall_seconds": 301.3
+    },
+    "New seed 20261024 (generated here)": {
+      "description": "generated for this run with scripts/generate_standard_datasets.py --seed 20261024; never published",
+      "dataset": "/Users/srivatsavkannan/Documents/calhacks/benchdata/finbalance_fresh_seed20261024/main/records.jsonl",
+      "sample_file": "sample_new_seed20261024_seed42.json",
+      "sample": {
+        "standard": 30,
+        "negatives": 14,
+        "total": 44,
+        "standard_by_level": {
+          "1": 6,
+          "2": 6,
+          "3": 6,
+          "4": 6,
+          "5": 6
+        },
+        "standard_by_period": {
+          "month": 10,
+          "quarter": 10,
+          "year": 10
+        },
+        "standard_by_industry": {
+          "professional_services": 4,
+          "field_services": 4,
+          "retail": 4,
+          "wholesale_distribution": 4,
+          "healthcare_clinic": 4,
+          "property_management": 4,
+          "manufacturing": 3,
+          "subscription_saas": 3
+        },
+        "ablation_total": 0
+      },
+      "n": {
+        "records": 44,
+        "standard": 30,
+        "negatives": 14
+      },
+      "headline": {
+        "bs_exact": {
+          "value": 0.6667,
+          "ci_low": 0.4839,
+          "ci_high": 0.8286
+        },
+        "bs_recon": {
+          "value": 0.6667,
+          "ci_low": 0.4839,
+          "ci_high": 0.8286
+        },
+        "gap_recon_minus_exact": {
+          "value": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0
+        },
+        "entries_correct_no_doc_refs": {
+          "value": 0.6333,
+          "ci_low": 0.4483,
+          "ci_high": 0.8
+        },
+        "strict_end_to_end": {
+          "value": 0.1,
+          "ci_low": 0.0,
+          "ci_high": 0.2188
+        },
+        "citations_correct": {
+          "value": 0.5466,
+          "ci_low": 0.4797,
+          "ci_high": 0.6163
+        },
+        "inconsistency_flag_detection_rate": {
+          "value": 1.0,
+          "ci_low": 1.0,
+          "ci_high": 1.0
+        },
+        "inconsistency_code_match_rate": {
+          "value": 0.9286,
+          "ci_low": 0.7692,
+          "ci_high": 1.0
+        },
+        "false_inconsistency_alarm_rate": {
+          "value": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0
+        },
+        "parse_success_rate": {
+          "value": 1.0,
+          "ci_low": 1.0,
+          "ci_high": 1.0
+        }
+      },
+      "minus_main_unpaired": {
+        "bs_exact": {
+          "diff": -0.025,
+          "ci_low": -0.2213,
+          "ci_high": 0.1595
+        },
+        "bs_recon": {
+          "diff": -0.025,
+          "ci_low": -0.2213,
+          "ci_high": 0.1595
+        },
+        "strict_end_to_end": {
+          "diff": 0.0333,
+          "ci_low": -0.0703,
+          "ci_high": 0.1538
+        },
+        "citations_correct": {
+          "diff": 0.0128,
+          "ci_low": -0.0622,
+          "ci_high": 0.0872
+        },
+        "inconsistency_code_match_rate": {
+          "diff": -0.0369,
+          "ci_low": -0.2037,
+          "ci_high": 0.0741
+        }
+      },
+      "by_difficulty": {
+        "1": {
+          "n_standard": 6,
+          "bs_exact": 1.0,
+          "bs_recon": 1.0,
+          "gap_recon_minus_exact": 0.0,
+          "strict_end_to_end": 0.5,
+          "entries_correct_no_doc_refs": 1.0,
+          "citations_correct": 0.8125,
+          "entry_ratio_predicted_over_expected": 1.0,
+          "bs_exact_ci": [
+            1.0,
+            1.0
+          ],
+          "bs_recon_ci": [
+            1.0,
+            1.0
+          ]
+        },
+        "2": {
+          "n_standard": 6,
+          "bs_exact": 0.3333,
+          "bs_recon": 0.3333,
+          "gap_recon_minus_exact": 0.0,
+          "strict_end_to_end": 0.0,
+          "entries_correct_no_doc_refs": 0.3333,
+          "citations_correct": 0.6,
+          "entry_ratio_predicted_over_expected": 0.8875,
+          "bs_exact_ci": [
+            0.0,
+            0.6667
+          ],
+          "bs_recon_ci": [
+            0.0,
+            0.6667
+          ]
+        },
+        "3": {
+          "n_standard": 6,
+          "bs_exact": 0.6667,
+          "bs_recon": 0.6667,
+          "gap_recon_minus_exact": 0.0,
+          "strict_end_to_end": 0.0,
+          "entries_correct_no_doc_refs": 0.6667,
+          "citations_correct": 0.4767,
+          "entry_ratio_predicted_over_expected": 0.9535,
+          "bs_exact_ci": [
+            0.3333,
+            1.0
+          ],
+          "bs_recon_ci": [
+            0.3333,
+            1.0
+          ]
+        },
+        "4": {
+          "n_standard": 6,
+          "bs_exact": 0.6667,
+          "bs_recon": 0.6667,
+          "gap_recon_minus_exact": 0.0,
+          "strict_end_to_end": 0.0,
+          "entries_correct_no_doc_refs": 0.5,
+          "citations_correct": 0.5169,
+          "entry_ratio_predicted_over_expected": 0.9492,
+          "bs_exact_ci": [
+            0.3333,
+            1.0
+          ],
+          "bs_recon_ci": [
+            0.3333,
+            1.0
+          ]
+        },
+        "5": {
+          "n_standard": 6,
+          "bs_exact": 0.6667,
+          "bs_recon": 0.6667,
+          "gap_recon_minus_exact": 0.0,
+          "strict_end_to_end": 0.0,
+          "entries_correct_no_doc_refs": 0.6667,
+          "citations_correct": 0.5269,
+          "entry_ratio_predicted_over_expected": 0.9581,
+          "bs_exact_ci": [
+            0.3333,
+            1.0
+          ],
+          "bs_recon_ci": [
+            0.3333,
+            1.0
+          ]
+        }
+      },
+      "failures": {
+        "parse_failures": 0,
+        "api_error_rows": 0,
+        "max_tokens_stops": 0,
+        "refusal_stops": 0,
+        "failed_records": []
+      },
+      "wall_seconds": 159.3
+    }
+  },
+  "standard_records_with_zero_rate_but_nonzero_tax_document": {
+    "in_main_split": [
+      "COV_SUB_Q4_0113",
+      "DB_SUB_Q4_00342",
+      "DB_SUB_Q5_00343",
+      "DB_SUB_Q5_00345"
+    ],
+    "in_sample": [
+      "DB_SUB_Q4_00342",
+      "DB_SUB_Q5_00345"
+    ],
+    "note": "documents print 'Tax Rate: 0.00%' next to a nonzero tax amount in records labelled consistent"
+  },
+  "protocol_deviations": [
+    "subset: 178 of 710 main-split records (120 of 480 standard, one per industry x period x level cell; 58 of 230 negatives, 2-3 per code); paper ran all 710",
+    "temperature not sent (claude-opus-5-5 rejects sampling parameters); paper decoded at temperature 0",
+    "adaptive thinking at effort medium (thinking cannot be disabled on claude-opus-5-5); 4 of the paper's 6 models ran without reasoning",
+    "max_tokens 32000 for thinking plus answer (paper: 8k-32k per model); largest observed output 6,956 tokens",
+    "new Anthropic Messages API client (upstream ships only an OpenAI-compatible client); streaming; SDK retries plus bounded stream retries",
+    "cost computed from list prices ($4/$20/$0.20 per M input/output/cache-read tokens), not provider-billed",
+    "concurrency 4 via one upstream run_ablation_evaluation call per record; prompt, parser and scorer unchanged",
+    "single-run 95% CIs come from a percentile bootstrap over record IDs written here (upstream ships only the paired bootstrap)",
+    "ledger feedback on 40 main-split records (32 standard + 8 negative), paper used the 143-record compact split; prompt caching on the first user message in that run only (billing only)",
+    "paper per-model values: Table 5 (BS_exact, BS_recon, gap, entry ratio) and Figure 2 heatmap integers (other columns)"
+  ]
+}

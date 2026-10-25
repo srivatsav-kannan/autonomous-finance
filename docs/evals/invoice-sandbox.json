@@ -1,0 +1,1642 @@
+{
+  "generated_at": "2026-10-24T08:21:52.685Z",
+  "benchmark": {
+    "repository": "https://github.com/ciru-ai/invoice-sandbox-benchmark",
+    "commit": "b8cb58ff9747486e86c623e867b76fad5d8d075f",
+    "bench_dirs": [
+      "/Users/srivatsavkannan/Documents/calhacks/benchdata/invoice-sandbox",
+      "/Users/srivatsavkannan/Documents/calhacks/benchdata/invoice-sandbox-seed20261024"
+    ]
+  },
+  "coverage": {
+    "completed": [
+      "a-r1",
+      "a-r2",
+      "a-r3",
+      "b-r1",
+      "b-r2",
+      "b-r3",
+      "a-f1"
+    ],
+    "partial": [
+      {
+        "run_id": "b-f1",
+        "note": "extraction + rules completed; adjudication not run (API credit exhausted); 6 judgment cases held for review"
+      }
+    ],
+    "missing": [
+      "a-f2",
+      "b-f1",
+      "b-f2"
+    ],
+    "blocker": "Anthropic API returned 400 'Your credit balance is too low' from 2026-10-24T08:14:49Z (harness spend at that point: see spend.total_usd). No API calls were made after the failure was confirmed."
+  },
+  "published_results": [
+    {
+      "source": "Ciru Inference Lab (benchmark author), Invoice Sandbox, 2026-07-17",
+      "url": "https://benchmarks-mu.vercel.app/invoicesandbox/",
+      "setup": "Pi 0.78.0 coding harness with bash; 4 local quantized open-weight models; prescriptive prompt (pdf-parse, page 1 only, regex hints) + HTML dashboard; same commit b8cb58f",
+      "results": [
+        {
+          "model": "HY3 IQ1_M",
+          "customer_net_exact": "18/18",
+          "invoice_totals_exact": "105/105",
+          "trap_families": "6/6"
+        },
+        {
+          "model": "Ternary Bonsai 27B Q2_0",
+          "customer_net_exact": "0/18 strict (16/18 after removing an ID prefix)",
+          "invoice_totals_exact": "105/105",
+          "trap_families": "5/6"
+        },
+        {
+          "model": "HY3 iFP2",
+          "customer_net_exact": "1/18",
+          "invoice_totals_exact": "9/105",
+          "trap_families": "5/6"
+        },
+        {
+          "model": "Step 3.7 Flash FP3",
+          "customer_net_exact": "failed (no dashboard)"
+        }
+      ],
+      "comparable": "partially: same fixture and strict per-customer net metric; different models, harness (code execution) and prompt"
+    },
+    {
+      "source": "cadel.ai, Can Coding Agents Do Accounting? Benchmarking Invoice Reconciliation, 2026-07-08",
+      "url": "https://cadel.ai/us/blog/ai-agents-invoice-reconciliation-benchmark",
+      "comparable": "no: a different 35-case freight-invoice dataset, not this benchmark"
+    }
+  ],
+  "context": {
+    "fixture_determinism": {
+      "regenerated_with": "Python 3.12.10, reportlab 5.1.0, pillow 13.0.0 (uv venv), scripts/generate_fixture.py --clean",
+      "answer_key": "invoices.csv and customer_totals.csv byte-identical to the committed files; traps.json identical apart from CRLF line endings; manifest.json differs only in generated_at_utc and line endings",
+      "pdfs": "all 112 PDFs: pypdf-extracted text identical to the committed PDFs (bytes differ only by embedded timestamps)",
+      "other_files": "35 non-PDF files identical apart from CRLF line endings; support_inbox.mbox identical apart from its From_ timestamp lines"
+    },
+    "fresh_fixture": {
+      "seed": 20261024,
+      "change": "patches/seed-override.patch: SEED = int(os.environ.get('INVOICE_SANDBOX_SEED', '487291')) plus `import os`; with the variable unset the patched generator reproduces the committed answer key exactly",
+      "same_structure": "112 PDFs, 105 valid invoices, 2 credit memos, 5 excluded PDFs, 18 customers, same trap file names",
+      "differs": "0/18 customer net totals equal to the original; 2/112 invoice totals equal; duplicate scan belongs to C004 instead of C013"
+    },
+    "settings": {
+      "model": "claude-opus-5-5",
+      "endpoint": "client.beta.messages (TypeScript SDK 1.3.0), betas server-side-fallback-2026-07-01, fallbacks: 'default'",
+      "thinking": "adaptive (default; not sent)",
+      "sampling_params": "none sent",
+      "system_a": "effort high, max 40 turns, read_file default 4000 chars (max 20000), $5 run cap, no code execution",
+      "system_b": "extraction effort low (structured outputs, 8 concurrent), adjudication effort high, $4 run cap"
+    }
+  },
+  "model": "claude-opus-5-5",
+  "spend": {
+    "hard_cap_usd": 24.5,
+    "total_usd": 13.5343,
+    "by_run_usd": {
+      "smoke": 0.006,
+      "pilot-001": 0.1954,
+      "a-pilot": 1.2855,
+      "b-r1": 1.6837,
+      "a-r1": 1.3001,
+      "b-r2": 1.6841,
+      "a-r2": 1.2968,
+      "b-r3": 1.6669,
+      "a-r3": 1.4015,
+      "a-f1": 1.4662,
+      "b-f1": 1.5481
+    },
+    "ledger": "/Users/srivatsavkannan/Documents/calhacks/benchdata/invoice-sandbox/ledger.jsonl",
+    "api_calls": 668,
+    "fallback_calls": 0
+  },
+  "summary": [
+    {
+      "group": "original (committed seed 487291) | A",
+      "runs": [
+        "a-r1",
+        "a-r2",
+        "a-r3"
+      ],
+      "customers_exact": {
+        "n": 3,
+        "mean": 18,
+        "min": 18,
+        "max": 18
+      },
+      "all_four_exact": {
+        "n": 3,
+        "mean": 18,
+        "min": 18,
+        "max": 18
+      },
+      "trap_docs_ok": {
+        "n": 3,
+        "mean": 9,
+        "min": 9,
+        "max": 9
+      },
+      "trap_entries_ok": {
+        "n": 3,
+        "mean": 6,
+        "min": 6,
+        "max": 6
+      },
+      "false_exclusions": {
+        "n": 3,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "net_abs_error_usd": {
+        "n": 3,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "cost_usd": {
+        "n": 3,
+        "mean": 1.3328270666666666,
+        "min": 1.2968378,
+        "max": 1.4015393999999999
+      },
+      "wall_s": {
+        "n": 3,
+        "mean": 182.56933333333333,
+        "min": 171.456,
+        "max": 195.78
+      }
+    },
+    {
+      "group": "original (committed seed 487291) | B",
+      "runs": [
+        "b-r1",
+        "b-r2",
+        "b-r3"
+      ],
+      "customers_exact": {
+        "n": 3,
+        "mean": 18,
+        "min": 18,
+        "max": 18
+      },
+      "all_four_exact": {
+        "n": 3,
+        "mean": 18,
+        "min": 18,
+        "max": 18
+      },
+      "trap_docs_ok": {
+        "n": 3,
+        "mean": 9,
+        "min": 9,
+        "max": 9
+      },
+      "trap_entries_ok": {
+        "n": 3,
+        "mean": 6,
+        "min": 6,
+        "max": 6
+      },
+      "false_exclusions": {
+        "n": 3,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "net_abs_error_usd": {
+        "n": 3,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "cost_usd": {
+        "n": 3,
+        "mean": 1.678247066666667,
+        "min": 1.6668964000000002,
+        "max": 1.6841124
+      },
+      "wall_s": {
+        "n": 3,
+        "mean": 261.9746666666667,
+        "min": 82.518,
+        "max": 615.42
+      }
+    },
+    {
+      "group": "fresh (seed 20261024) | A",
+      "runs": [
+        "a-f1"
+      ],
+      "customers_exact": {
+        "n": 1,
+        "mean": 18,
+        "min": 18,
+        "max": 18
+      },
+      "all_four_exact": {
+        "n": 1,
+        "mean": 18,
+        "min": 18,
+        "max": 18
+      },
+      "trap_docs_ok": {
+        "n": 1,
+        "mean": 9,
+        "min": 9,
+        "max": 9
+      },
+      "trap_entries_ok": {
+        "n": 1,
+        "mean": 6,
+        "min": 6,
+        "max": 6
+      },
+      "false_exclusions": {
+        "n": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "net_abs_error_usd": {
+        "n": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "cost_usd": {
+        "n": 1,
+        "mean": 1.466182,
+        "min": 1.466182,
+        "max": 1.466182
+      },
+      "wall_s": {
+        "n": 1,
+        "mean": 200.516,
+        "min": 200.516,
+        "max": 200.516
+      }
+    }
+  ],
+  "runs": [
+    {
+      "fixture": "original (committed seed 487291)",
+      "seed": 487291,
+      "run_id": "a-pilot",
+      "system": "A",
+      "kind": "pilot",
+      "status": "submitted",
+      "customers_exact": 18,
+      "customers": 18,
+      "all_four_exact": 18,
+      "count_exact": 18,
+      "gross_exact": 18,
+      "credit_exact": 18,
+      "net_abs_error_usd": 0,
+      "trap_entries_ok": 6,
+      "trap_entries": 6,
+      "trap_docs_ok": 9,
+      "trap_docs": 9,
+      "false_exclusions": 0,
+      "flagged_valid_invoices": 7,
+      "suspicious_entries": 22,
+      "cost_usd": 1.2855248,
+      "wall_s": 187.246,
+      "api_calls": 16,
+      "input_tokens": 34,
+      "output_tokens": 23865,
+      "cache_read_tokens": 760469,
+      "cache_write_tokens": 131199,
+      "fallback_calls": 0,
+      "detail": {
+        "result": {
+          "status": "submitted",
+          "turns": 16,
+          "toolCalls": 131,
+          "costUsd": 1.2855248,
+          "wallMs": 187244
+        },
+        "effort": "high",
+        "sample": null,
+        "mismatches": [],
+        "trap_detail": [
+          {
+            "trap_id": "duplicate_scan",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-1013_duplicate_scan_from_email.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "superseded_original",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2101_original_superseded.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/INV-2025-2101_R1_revised.pdf",
+                "expected": "counted",
+                "applied": "counted_with_flag",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "void_invoice",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2199_VOID_do_not_pay.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "credit_memos",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/CM-2025-077_C001.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              },
+              {
+                "document": "invoices/CM-2025-091_C010.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "statements_are_not_invoices",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/statement_C003_2025_Q3.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/statement_C007_2025_Q4.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "bank_exports_are_payments",
+            "ok": true,
+            "documents": [
+              {
+                "document": "bank_exports/deposits_2025_q4.csv",
+                "expected": "excluded_from_spend (listed)",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          }
+        ],
+        "false_exclusion_docs": []
+      }
+    },
+    {
+      "fixture": "original (committed seed 487291)",
+      "seed": 487291,
+      "run_id": "a-r1",
+      "system": "A",
+      "kind": "scored",
+      "status": "submitted",
+      "customers_exact": 18,
+      "customers": 18,
+      "all_four_exact": 18,
+      "count_exact": 18,
+      "gross_exact": 18,
+      "credit_exact": 18,
+      "net_abs_error_usd": 0,
+      "trap_entries_ok": 6,
+      "trap_entries": 6,
+      "trap_docs_ok": 9,
+      "trap_docs": 9,
+      "false_exclusions": 0,
+      "flagged_valid_invoices": 7,
+      "suspicious_entries": 22,
+      "cost_usd": 1.300104,
+      "wall_s": 171.456,
+      "api_calls": 13,
+      "input_tokens": 28,
+      "output_tokens": 23469,
+      "cache_read_tokens": 579185,
+      "cache_write_tokens": 142955,
+      "fallback_calls": 0,
+      "detail": {
+        "result": {
+          "status": "submitted",
+          "turns": 13,
+          "toolCalls": 131,
+          "costUsd": 1.300104,
+          "wallMs": 171455
+        },
+        "effort": "high",
+        "sample": null,
+        "mismatches": [],
+        "trap_detail": [
+          {
+            "trap_id": "duplicate_scan",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-1013_duplicate_scan_from_email.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "superseded_original",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2101_original_superseded.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/INV-2025-2101_R1_revised.pdf",
+                "expected": "counted",
+                "applied": "counted_with_flag",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "void_invoice",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2199_VOID_do_not_pay.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "credit_memos",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/CM-2025-077_C001.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              },
+              {
+                "document": "invoices/CM-2025-091_C010.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "statements_are_not_invoices",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/statement_C003_2025_Q3.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/statement_C007_2025_Q4.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "bank_exports_are_payments",
+            "ok": true,
+            "documents": [
+              {
+                "document": "bank_exports/deposits_2025_q4.csv",
+                "expected": "excluded_from_spend (listed)",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          }
+        ],
+        "false_exclusion_docs": []
+      }
+    },
+    {
+      "fixture": "original (committed seed 487291)",
+      "seed": 487291,
+      "run_id": "a-r2",
+      "system": "A",
+      "kind": "scored",
+      "status": "submitted",
+      "customers_exact": 18,
+      "customers": 18,
+      "all_four_exact": 18,
+      "count_exact": 18,
+      "gross_exact": 18,
+      "credit_exact": 18,
+      "net_abs_error_usd": 0,
+      "trap_entries_ok": 6,
+      "trap_entries": 6,
+      "trap_docs_ok": 9,
+      "trap_docs": 9,
+      "false_exclusions": 0,
+      "flagged_valid_invoices": 6,
+      "suspicious_entries": 21,
+      "cost_usd": 1.2968378,
+      "wall_s": 180.472,
+      "api_calls": 13,
+      "input_tokens": 28,
+      "output_tokens": 23910,
+      "cache_read_tokens": 541454,
+      "cache_write_tokens": 142047,
+      "fallback_calls": 0,
+      "detail": {
+        "result": {
+          "status": "submitted",
+          "turns": 13,
+          "toolCalls": 133,
+          "costUsd": 1.2968378,
+          "wallMs": 180471
+        },
+        "effort": "high",
+        "sample": null,
+        "mismatches": [],
+        "trap_detail": [
+          {
+            "trap_id": "duplicate_scan",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-1013_duplicate_scan_from_email.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "superseded_original",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2101_original_superseded.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/INV-2025-2101_R1_revised.pdf",
+                "expected": "counted",
+                "applied": "(not listed)",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "void_invoice",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2199_VOID_do_not_pay.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "credit_memos",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/CM-2025-077_C001.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              },
+              {
+                "document": "invoices/CM-2025-091_C010.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "statements_are_not_invoices",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/statement_C003_2025_Q3.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/statement_C007_2025_Q4.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "bank_exports_are_payments",
+            "ok": true,
+            "documents": [
+              {
+                "document": "bank_exports/deposits_2025_q4.csv",
+                "expected": "excluded_from_spend (listed)",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          }
+        ],
+        "false_exclusion_docs": []
+      }
+    },
+    {
+      "fixture": "original (committed seed 487291)",
+      "seed": 487291,
+      "run_id": "a-r3",
+      "system": "A",
+      "kind": "scored",
+      "status": "submitted",
+      "customers_exact": 18,
+      "customers": 18,
+      "all_four_exact": 18,
+      "count_exact": 18,
+      "gross_exact": 18,
+      "credit_exact": 18,
+      "net_abs_error_usd": 0,
+      "trap_entries_ok": 6,
+      "trap_entries": 6,
+      "trap_docs_ok": 9,
+      "trap_docs": 9,
+      "false_exclusions": 0,
+      "flagged_valid_invoices": 7,
+      "suspicious_entries": 23,
+      "cost_usd": 1.4015393999999999,
+      "wall_s": 195.78,
+      "api_calls": 13,
+      "input_tokens": 28,
+      "output_tokens": 25296,
+      "cache_read_tokens": 716612,
+      "cache_write_tokens": 150437,
+      "fallback_calls": 0,
+      "detail": {
+        "result": {
+          "status": "submitted",
+          "turns": 13,
+          "toolCalls": 136,
+          "costUsd": 1.4015393999999999,
+          "wallMs": 195779
+        },
+        "effort": "high",
+        "sample": null,
+        "mismatches": [],
+        "trap_detail": [
+          {
+            "trap_id": "duplicate_scan",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-1013_duplicate_scan_from_email.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "superseded_original",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2101_original_superseded.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/INV-2025-2101_R1_revised.pdf",
+                "expected": "counted",
+                "applied": "counted_with_flag",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "void_invoice",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2199_VOID_do_not_pay.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "credit_memos",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/CM-2025-077_C001.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              },
+              {
+                "document": "invoices/CM-2025-091_C010.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "statements_are_not_invoices",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/statement_C003_2025_Q3.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/statement_C007_2025_Q4.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "bank_exports_are_payments",
+            "ok": true,
+            "documents": [
+              {
+                "document": "bank_exports/deposits_2025_q4.csv",
+                "expected": "excluded_from_spend (listed)",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          }
+        ],
+        "false_exclusion_docs": []
+      }
+    },
+    {
+      "fixture": "original (committed seed 487291)",
+      "seed": 487291,
+      "run_id": "b-r1",
+      "system": "B",
+      "kind": "scored",
+      "status": "ok",
+      "customers_exact": 18,
+      "customers": 18,
+      "all_four_exact": 18,
+      "count_exact": 18,
+      "gross_exact": 18,
+      "credit_exact": 18,
+      "net_abs_error_usd": 0,
+      "trap_entries_ok": 6,
+      "trap_entries": 6,
+      "trap_docs_ok": 9,
+      "trap_docs": 9,
+      "false_exclusions": 0,
+      "flagged_valid_invoices": 6,
+      "suspicious_entries": 15,
+      "cost_usd": 1.6837324,
+      "wall_s": 615.42,
+      "api_calls": 148,
+      "input_tokens": 81534,
+      "output_tokens": 63623,
+      "cache_read_tokens": 335807,
+      "cache_write_tokens": 3595,
+      "fallback_calls": 0,
+      "detail": {
+        "result": {
+          "status": "ok",
+          "documents": 142,
+          "extracted": 142,
+          "extractionCacheHits": 0,
+          "retries": 0,
+          "adjudications": 6,
+          "costUsd": 1.6837324,
+          "wallMs": 615418
+        },
+        "effort": {
+          "extract": "low",
+          "adjudicate": "high"
+        },
+        "sample": "1",
+        "mismatches": [],
+        "trap_detail": [
+          {
+            "trap_id": "duplicate_scan",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-1013_duplicate_scan_from_email.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "superseded_original",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2101_original_superseded.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/INV-2025-2101_R1_revised.pdf",
+                "expected": "counted",
+                "applied": "(not listed)",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "void_invoice",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2199_VOID_do_not_pay.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "credit_memos",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/CM-2025-077_C001.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              },
+              {
+                "document": "invoices/CM-2025-091_C010.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "statements_are_not_invoices",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/statement_C003_2025_Q3.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/statement_C007_2025_Q4.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "bank_exports_are_payments",
+            "ok": true,
+            "documents": [
+              {
+                "document": "bank_exports/deposits_2025_q4.csv",
+                "expected": "excluded_from_spend (listed)",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          }
+        ],
+        "false_exclusion_docs": []
+      }
+    },
+    {
+      "fixture": "original (committed seed 487291)",
+      "seed": 487291,
+      "run_id": "b-r2",
+      "system": "B",
+      "kind": "scored",
+      "status": "ok",
+      "customers_exact": 18,
+      "customers": 18,
+      "all_four_exact": 18,
+      "count_exact": 18,
+      "gross_exact": 18,
+      "credit_exact": 18,
+      "net_abs_error_usd": 0,
+      "trap_entries_ok": 6,
+      "trap_entries": 6,
+      "trap_docs_ok": 9,
+      "trap_docs": 9,
+      "false_exclusions": 0,
+      "flagged_valid_invoices": 6,
+      "suspicious_entries": 15,
+      "cost_usd": 1.6841124,
+      "wall_s": 87.986,
+      "api_calls": 148,
+      "input_tokens": 81534,
+      "output_tokens": 63642,
+      "cache_read_tokens": 335807,
+      "cache_write_tokens": 3595,
+      "fallback_calls": 0,
+      "detail": {
+        "result": {
+          "status": "ok",
+          "documents": 142,
+          "extracted": 142,
+          "extractionCacheHits": 0,
+          "retries": 0,
+          "adjudications": 6,
+          "costUsd": 1.6841124,
+          "wallMs": 87984
+        },
+        "effort": {
+          "extract": "low",
+          "adjudicate": "high"
+        },
+        "sample": "2",
+        "mismatches": [],
+        "trap_detail": [
+          {
+            "trap_id": "duplicate_scan",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-1013_duplicate_scan_from_email.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "superseded_original",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2101_original_superseded.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/INV-2025-2101_R1_revised.pdf",
+                "expected": "counted",
+                "applied": "(not listed)",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "void_invoice",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2199_VOID_do_not_pay.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "credit_memos",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/CM-2025-077_C001.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              },
+              {
+                "document": "invoices/CM-2025-091_C010.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "statements_are_not_invoices",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/statement_C003_2025_Q3.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/statement_C007_2025_Q4.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "bank_exports_are_payments",
+            "ok": true,
+            "documents": [
+              {
+                "document": "bank_exports/deposits_2025_q4.csv",
+                "expected": "excluded_from_spend (listed)",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          }
+        ],
+        "false_exclusion_docs": []
+      }
+    },
+    {
+      "fixture": "original (committed seed 487291)",
+      "seed": 487291,
+      "run_id": "b-r3",
+      "system": "B",
+      "kind": "scored",
+      "status": "ok",
+      "customers_exact": 18,
+      "customers": 18,
+      "all_four_exact": 18,
+      "count_exact": 18,
+      "gross_exact": 18,
+      "credit_exact": 18,
+      "net_abs_error_usd": 0,
+      "trap_entries_ok": 6,
+      "trap_entries": 6,
+      "trap_docs_ok": 9,
+      "trap_docs": 9,
+      "false_exclusions": 0,
+      "flagged_valid_invoices": 6,
+      "suspicious_entries": 15,
+      "cost_usd": 1.6668964000000002,
+      "wall_s": 82.518,
+      "api_calls": 148,
+      "input_tokens": 81534,
+      "output_tokens": 63644,
+      "cache_read_tokens": 339402,
+      "cache_write_tokens": 0,
+      "fallback_calls": 0,
+      "detail": {
+        "result": {
+          "status": "ok",
+          "documents": 142,
+          "extracted": 142,
+          "extractionCacheHits": 0,
+          "retries": 0,
+          "adjudications": 6,
+          "costUsd": 1.6668964000000002,
+          "wallMs": 82517
+        },
+        "effort": {
+          "extract": "low",
+          "adjudicate": "high"
+        },
+        "sample": "3",
+        "mismatches": [],
+        "trap_detail": [
+          {
+            "trap_id": "duplicate_scan",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-1013_duplicate_scan_from_email.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "superseded_original",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2101_original_superseded.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/INV-2025-2101_R1_revised.pdf",
+                "expected": "counted",
+                "applied": "(not listed)",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "void_invoice",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2199_VOID_do_not_pay.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "credit_memos",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/CM-2025-077_C001.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              },
+              {
+                "document": "invoices/CM-2025-091_C010.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "statements_are_not_invoices",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/statement_C003_2025_Q3.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/statement_C007_2025_Q4.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "bank_exports_are_payments",
+            "ok": true,
+            "documents": [
+              {
+                "document": "bank_exports/deposits_2025_q4.csv",
+                "expected": "excluded_from_spend (listed)",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          }
+        ],
+        "false_exclusion_docs": []
+      }
+    },
+    {
+      "fixture": "fresh (seed 20261024)",
+      "seed": 20261024,
+      "run_id": "a-f1",
+      "system": "A",
+      "kind": "scored",
+      "status": "submitted",
+      "customers_exact": 18,
+      "customers": 18,
+      "all_four_exact": 18,
+      "count_exact": 18,
+      "gross_exact": 18,
+      "credit_exact": 18,
+      "net_abs_error_usd": 0,
+      "trap_entries_ok": 6,
+      "trap_entries": 6,
+      "trap_docs_ok": 9,
+      "trap_docs": 9,
+      "false_exclusions": 0,
+      "flagged_valid_invoices": 7,
+      "suspicious_entries": 25,
+      "cost_usd": 1.466182,
+      "wall_s": 200.516,
+      "api_calls": 15,
+      "input_tokens": 32,
+      "output_tokens": 26385,
+      "cache_read_tokens": 838445,
+      "cache_write_tokens": 154133,
+      "fallback_calls": 0,
+      "detail": {
+        "result": {
+          "status": "submitted",
+          "turns": 15,
+          "toolCalls": 134,
+          "costUsd": 1.466182,
+          "wallMs": 200514
+        },
+        "effort": "high",
+        "sample": null,
+        "mismatches": [],
+        "trap_detail": [
+          {
+            "trap_id": "duplicate_scan",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-1013_duplicate_scan_from_email.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "superseded_original",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2101_original_superseded.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/INV-2025-2101_R1_revised.pdf",
+                "expected": "counted",
+                "applied": "counted_with_flag",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "void_invoice",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2199_VOID_do_not_pay.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "credit_memos",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/CM-2025-077_C001.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              },
+              {
+                "document": "invoices/CM-2025-091_C010.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "statements_are_not_invoices",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/statement_C003_2025_Q3.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/statement_C007_2025_Q4.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "bank_exports_are_payments",
+            "ok": true,
+            "documents": [
+              {
+                "document": "bank_exports/deposits_2025_q4.csv",
+                "expected": "excluded_from_spend (listed)",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          }
+        ],
+        "false_exclusion_docs": []
+      }
+    },
+    {
+      "fixture": "fresh (seed 20261024)",
+      "seed": 20261024,
+      "run_id": "b-f1",
+      "system": "B",
+      "kind": "partial",
+      "status": "error",
+      "customers_exact": 14,
+      "customers": 18,
+      "all_four_exact": 14,
+      "count_exact": 14,
+      "gross_exact": 14,
+      "credit_exact": 18,
+      "net_abs_error_usd": 237836.81,
+      "trap_entries_ok": 6,
+      "trap_entries": 6,
+      "trap_docs_ok": 9,
+      "trap_docs": 9,
+      "false_exclusions": 6,
+      "flagged_valid_invoices": 0,
+      "suspicious_entries": 15,
+      "cost_usd": 1.5480724000000001,
+      "wall_s": null,
+      "api_calls": 142,
+      "input_tokens": 65641,
+      "output_tokens": 60396,
+      "cache_read_tokens": 329517,
+      "cache_write_tokens": 2337,
+      "fallback_calls": 0,
+      "detail": {
+        "result": {
+          "status": "error",
+          "documents": 142,
+          "extracted": 142,
+          "extractionCacheHits": 142,
+          "retries": 0,
+          "adjudications": 6,
+          "costUsd": 0,
+          "wallMs": 65,
+          "error": "adjudicator unavailable for 6 document(s), held for human review: invoices/INV-2025-1017_C010.pdf: not run (offline); invoices/INV-2025-1034_C012.pdf: not run (offline); invoices/INV-2025-1051_C001.pdf: not run (offline); invoices/INV-2025-1068_C012.pdf: not run (offline); invoices/INV-2025-1085_C001.pdf: not run (offline); invoices/INV-2025-1102_C007.pdf: not run (offline)"
+        },
+        "effort": {
+          "extract": "low",
+          "adjudicate": "high"
+        },
+        "sample": "1",
+        "mismatches": [
+          {
+            "customer_id": "C001",
+            "valid_invoice_count": {
+              "expected": "9",
+              "actual": "7",
+              "ok": false
+            },
+            "gross_invoice_spend_usd": {
+              "expected": "286228.29",
+              "actual": "226886.67",
+              "ok": false
+            },
+            "credit_memo_total_usd": {
+              "expected": "1480.00",
+              "actual": "1480.00",
+              "ok": true
+            },
+            "net_spend_usd": {
+              "expected": "284748.29",
+              "actual": "225406.67",
+              "ok": false
+            }
+          },
+          {
+            "customer_id": "C007",
+            "valid_invoice_count": {
+              "expected": "9",
+              "actual": "8",
+              "ok": false
+            },
+            "gross_invoice_spend_usd": {
+              "expected": "258117.64",
+              "actual": "216440.22",
+              "ok": false
+            },
+            "credit_memo_total_usd": {
+              "expected": "0.00",
+              "actual": "0.00",
+              "ok": true
+            },
+            "net_spend_usd": {
+              "expected": "258117.64",
+              "actual": "216440.22",
+              "ok": false
+            }
+          },
+          {
+            "customer_id": "C010",
+            "valid_invoice_count": {
+              "expected": "9",
+              "actual": "8",
+              "ok": false
+            },
+            "gross_invoice_spend_usd": {
+              "expected": "398973.46",
+              "actual": "335861.29",
+              "ok": false
+            },
+            "credit_memo_total_usd": {
+              "expected": "925.00",
+              "actual": "925.00",
+              "ok": true
+            },
+            "net_spend_usd": {
+              "expected": "398048.46",
+              "actual": "334936.29",
+              "ok": false
+            }
+          },
+          {
+            "customer_id": "C012",
+            "valid_invoice_count": {
+              "expected": "6",
+              "actual": "4",
+              "ok": false
+            },
+            "gross_invoice_spend_usd": {
+              "expected": "212762.61",
+              "actual": "139057.01",
+              "ok": false
+            },
+            "credit_memo_total_usd": {
+              "expected": "0.00",
+              "actual": "0.00",
+              "ok": true
+            },
+            "net_spend_usd": {
+              "expected": "212762.61",
+              "actual": "139057.01",
+              "ok": false
+            }
+          }
+        ],
+        "trap_detail": [
+          {
+            "trap_id": "duplicate_scan",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-1013_duplicate_scan_from_email.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "superseded_original",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2101_original_superseded.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/INV-2025-2101_R1_revised.pdf",
+                "expected": "counted",
+                "applied": "(not listed)",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "void_invoice",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/INV-2025-2199_VOID_do_not_pay.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "credit_memos",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/CM-2025-077_C001.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              },
+              {
+                "document": "invoices/CM-2025-091_C010.pdf",
+                "expected": "subtracted_as_credit",
+                "applied": "subtracted_as_credit",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "statements_are_not_invoices",
+            "ok": true,
+            "documents": [
+              {
+                "document": "invoices/statement_C003_2025_Q3.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              },
+              {
+                "document": "invoices/statement_C007_2025_Q4.pdf",
+                "expected": "excluded_from_spend",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          },
+          {
+            "trap_id": "bank_exports_are_payments",
+            "ok": true,
+            "documents": [
+              {
+                "document": "bank_exports/deposits_2025_q4.csv",
+                "expected": "excluded_from_spend (listed)",
+                "applied": "excluded_from_spend",
+                "ok": true
+              }
+            ]
+          }
+        ],
+        "false_exclusion_docs": [
+          {
+            "document": "invoices/INV-2025-1017_C010.pdf",
+            "answer_key_policy": "include"
+          },
+          {
+            "document": "invoices/INV-2025-1034_C012.pdf",
+            "answer_key_policy": "include"
+          },
+          {
+            "document": "invoices/INV-2025-1051_C001.pdf",
+            "answer_key_policy": "include"
+          },
+          {
+            "document": "invoices/INV-2025-1068_C012.pdf",
+            "answer_key_policy": "include"
+          },
+          {
+            "document": "invoices/INV-2025-1085_C001.pdf",
+            "answer_key_policy": "include"
+          },
+          {
+            "document": "invoices/INV-2025-1102_C007.pdf",
+            "answer_key_policy": "include"
+          }
+        ]
+      }
+    }
+  ]
+}
