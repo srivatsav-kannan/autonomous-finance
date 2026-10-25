@@ -1,0 +1,751 @@
+{
+  "version": "ap-practitioner-expected-postings-v1",
+  "classification": "EXPECTED_ONLY_NOT_OBSERVED_JOURNAL_RECORDS",
+  "reviewerSignoff": null,
+  "integrationReference": "1cd4cc59e172a8ef1a7f9dd8f69e8a1a4764d12b",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "currency": "USD",
+  "amountUnit": "integer_cents",
+  "dimensions": "Cost lines retain the configured store; AP/accrued lines retain supplier. Read actual original journals for exact dimension values. Generic dates mean the specifically approved open period, not a supplied posting date.",
+  "cases": [
+    {
+      "caseId": "C01",
+      "scenario": "Full original invoice and local cash settlement",
+      "evidence": "evidence/I1-integrated.json",
+      "entries": [
+        {
+          "label": "recognition",
+          "date": "2026-10-19",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 19250,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 17100,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 20670,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 10840,
+              "creditCents": 0
+            },
+            {
+              "account": "2000",
+              "debitCents": 0,
+              "creditCents": 67860
+            }
+          ]
+        },
+        {
+          "label": "settlement",
+          "date": "2026-10-25",
+          "lines": [
+            {
+              "account": "2000",
+              "debitCents": 67860,
+              "creditCents": 0
+            },
+            {
+              "account": "1000",
+              "debitCents": 0,
+              "creditCents": 67860
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "C02",
+      "scenario": "Quantity discrepancy held; no automatic posting",
+      "evidence": "evidence/V2.md",
+      "entries": []
+    },
+    {
+      "caseId": "C03",
+      "scenario": "I2 explicit partial recognition and cash",
+      "evidence": "evidence/I2-business-flow.json",
+      "entries": [
+        {
+          "label": "recognition",
+          "date": "2026-10-19",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 8550,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 6890,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 5420,
+              "creditCents": 0
+            },
+            {
+              "account": "2000",
+              "debitCents": 0,
+              "creditCents": 28560
+            }
+          ]
+        },
+        {
+          "label": "settlement",
+          "date": "2026-10-25",
+          "lines": [
+            {
+              "account": "2000",
+              "debitCents": 10000,
+              "creditCents": 0
+            },
+            {
+              "account": "1000",
+              "debitCents": 0,
+              "creditCents": 10000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "C04-partial",
+      "scenario": "Separate component one-unit acceptance",
+      "evidence": "evidence/B3-domain.md",
+      "entries": [
+        {
+          "label": "recognition",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 3850,
+              "creditCents": 0
+            },
+            {
+              "account": "2000",
+              "debitCents": 0,
+              "creditCents": 3850
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "C04-non-po",
+      "scenario": "Separate full contract/service-acceptance component",
+      "evidence": "evidence/B3-domain.md",
+      "entries": [
+        {
+          "label": "recognition",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "2000",
+              "debitCents": 0,
+              "creditCents": 7700
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "C05",
+      "scenario": "Original declared nonrecoverable tax and two exact return credits",
+      "evidence": "evidence/B3-domain.md",
+      "entries": [
+        {
+          "label": "recognition",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 4235,
+              "creditCents": 0
+            },
+            {
+              "account": "1200",
+              "debitCents": 4235,
+              "creditCents": 0
+            },
+            {
+              "account": "2000",
+              "debitCents": 0,
+              "creditCents": 8470
+            }
+          ]
+        },
+        {
+          "label": "credit_1",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2000",
+              "debitCents": 4235,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 2118
+            },
+            {
+              "account": "1200",
+              "debitCents": 0,
+              "creditCents": 2117
+            }
+          ]
+        },
+        {
+          "label": "credit_2",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2000",
+              "debitCents": 4235,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 2117
+            },
+            {
+              "account": "1200",
+              "debitCents": 0,
+              "creditCents": 2118
+            }
+          ]
+        }
+      ],
+      "nonPostingEvents": [
+        "Applying an already recognized credit creates an allocation receipt, not another journal."
+      ]
+    },
+    {
+      "caseId": "C06",
+      "scenario": "V3 partial cash, credit, returned cash and replacement",
+      "evidence": "evidence/V3.md",
+      "entries": [
+        {
+          "label": "recognition",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "2000",
+              "debitCents": 0,
+              "creditCents": 7700
+            }
+          ]
+        },
+        {
+          "label": "credit",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2000",
+              "debitCents": 1200,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 1200
+            }
+          ]
+        },
+        {
+          "label": "cash_1",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2000",
+              "debitCents": 3800,
+              "creditCents": 0
+            },
+            {
+              "account": "1000",
+              "debitCents": 0,
+              "creditCents": 3800
+            }
+          ]
+        },
+        {
+          "label": "cash_2",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2000",
+              "debitCents": 2700,
+              "creditCents": 0
+            },
+            {
+              "account": "1000",
+              "debitCents": 0,
+              "creditCents": 2700
+            }
+          ]
+        },
+        {
+          "label": "cash_return",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "1000",
+              "debitCents": 3800,
+              "creditCents": 0
+            },
+            {
+              "account": "2000",
+              "debitCents": 0,
+              "creditCents": 3800
+            }
+          ]
+        },
+        {
+          "label": "replacement",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2000",
+              "debitCents": 3800,
+              "creditCents": 0
+            },
+            {
+              "account": "1000",
+              "debitCents": 0,
+              "creditCents": 3800
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "C07",
+      "scenario": "V5 independent corrected cost and two credits",
+      "evidence": "evidence/V5-extension.md",
+      "entries": [
+        {
+          "label": "recognition",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "2000",
+              "debitCents": 0,
+              "creditCents": 7700
+            }
+          ]
+        },
+        {
+          "label": "reclass_1",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "1200",
+              "debitCents": 3000,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 3000
+            }
+          ]
+        },
+        {
+          "label": "reclass_2",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "1300",
+              "debitCents": 500,
+              "creditCents": 0
+            },
+            {
+              "account": "1200",
+              "debitCents": 0,
+              "creditCents": 500
+            }
+          ]
+        },
+        {
+          "label": "credit_1",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2000",
+              "debitCents": 3850,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 850
+            },
+            {
+              "account": "1200",
+              "debitCents": 0,
+              "creditCents": 2500
+            },
+            {
+              "account": "1300",
+              "debitCents": 0,
+              "creditCents": 500
+            }
+          ]
+        },
+        {
+          "label": "credit_2",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2000",
+              "debitCents": 3850,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 3850
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "C08",
+      "scenario": "Original discount and corrected signed credit",
+      "evidence": "evidence/B4-cost-corrections.md",
+      "entries": [
+        {
+          "label": "recognition",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 770
+            },
+            {
+              "account": "2000",
+              "debitCents": 0,
+              "creditCents": 6930
+            }
+          ]
+        },
+        {
+          "label": "reclass",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "1200",
+              "debitCents": 1000,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 1000
+            }
+          ]
+        },
+        {
+          "label": "credit",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2000",
+              "debitCents": 6930,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 770,
+              "creditCents": 0
+            },
+            {
+              "account": "1200",
+              "debitCents": 0,
+              "creditCents": 1000
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 6700
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "C09",
+      "scenario": "Accrual and late invoice with exact reversal",
+      "evidence": "evidence/B4-close.md",
+      "entries": [
+        {
+          "label": "accrual",
+          "date": "2026-10-31",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "2010",
+              "debitCents": 0,
+              "creditCents": 7700
+            }
+          ]
+        },
+        {
+          "label": "invoice",
+          "date": "2026-11-02",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "2000",
+              "debitCents": 0,
+              "creditCents": 7700
+            }
+          ]
+        },
+        {
+          "label": "accrual_reversal",
+          "date": "2026-11-02",
+          "lines": [
+            {
+              "account": "2010",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 7700
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "C10",
+      "scenario": "V5 corrected accrual split reversal and invoice",
+      "evidence": "evidence/V5-extension.md",
+      "entries": [
+        {
+          "label": "accrual",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "2010",
+              "debitCents": 0,
+              "creditCents": 7700
+            }
+          ]
+        },
+        {
+          "label": "reclass_1",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "1200",
+              "debitCents": 3000,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 3000
+            }
+          ]
+        },
+        {
+          "label": "reclass_2",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "1300",
+              "debitCents": 1000,
+              "creditCents": 0
+            },
+            {
+              "account": "1200",
+              "debitCents": 0,
+              "creditCents": 1000
+            }
+          ]
+        },
+        {
+          "label": "partial_reversal",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2010",
+              "debitCents": 3850,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 850
+            },
+            {
+              "account": "1200",
+              "debitCents": 0,
+              "creditCents": 2000
+            },
+            {
+              "account": "1300",
+              "debitCents": 0,
+              "creditCents": 1000
+            }
+          ]
+        },
+        {
+          "label": "invoice",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "2000",
+              "debitCents": 0,
+              "creditCents": 7700
+            }
+          ]
+        },
+        {
+          "label": "residual_reversal",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2010",
+              "debitCents": 3850,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 3850
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "C11-partial",
+      "scenario": "One of two receipt units accrued; close remains held",
+      "evidence": "evidence/V5-repair.md",
+      "entries": [
+        {
+          "label": "partial_accrual",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 3850,
+              "creditCents": 0
+            },
+            {
+              "account": "2010",
+              "debitCents": 0,
+              "creditCents": 3850
+            }
+          ]
+        }
+      ],
+      "nonPostingEvents": [
+        "Close rejects: one original received unit remains outside recognition."
+      ]
+    },
+    {
+      "caseId": "C11-reversed",
+      "scenario": "Full receipt accrual fully reversed; close remains held",
+      "evidence": "evidence/V5-repair.md",
+      "entries": [
+        {
+          "label": "accrual",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "5000",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "2010",
+              "debitCents": 0,
+              "creditCents": 7700
+            }
+          ]
+        },
+        {
+          "label": "reversal",
+          "date": "approved_open_period",
+          "lines": [
+            {
+              "account": "2010",
+              "debitCents": 7700,
+              "creditCents": 0
+            },
+            {
+              "account": "5000",
+              "debitCents": 0,
+              "creditCents": 7700
+            }
+          ]
+        }
+      ],
+      "nonPostingEvents": [
+        "Close rejects: reversal alone does not dispose of received units."
+      ]
+    }
+  ]
+}
