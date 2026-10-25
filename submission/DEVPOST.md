@@ -113,7 +113,8 @@ Everything here was measured, and the raw outputs are in the repo.
 
 - We want to close the review findings that are still open. The disputed part of an invoice can't yet be approved later on the same invoice, a payment can ignore a supplier credit that is available, a second invoice number for the same order isn't flagged as a possible duplicate, changed bank details printed on an invoice aren't flagged, and there is no way to void a bill that was recorded by mistake.
 - We want to run more invoices through the sandboxes, including returns and credits, and verify the webhooks that Increase sends.
-- We want to read more document formats and turn the corrections that reviewers make into rules that the agents reuse.
+- We want the system to improve from the work that people review, under supervision. In the simulator, the agents can already write a reusable parser rule for a new invoice format and test it before it is used. With a customer's permission, the records of reviewed cases could also improve our document extraction, the tools that the agents choose and their knowledge of past cases, and they could be used to post-train open-weight models. Every update would be tested against held-out cases and the financial controls before it is deployed, and no update can loosen who is allowed to approve or release a payment. This is a roadmap, and we haven't shown any model improvement yet.
+- Our core business is the workflow software itself. Curated datasets and finance training environments, built only from data that customers authorize, could become a second source of revenue later.
 
 **Atlassian track:** Best Security Solution for Agents.
 
