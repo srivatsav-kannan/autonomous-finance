@@ -113,10 +113,13 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
           {historical && <APDemoContext detail={detail}/>}
           <details className="aps-case-metadata"><summary>Case details & related records</summary><p className="aps-caption">Case <code>{detail.caseId}</code> / Revision {detail.revision} / {detail.sources.every(s=>s.provenance.kind === "synthetic") ? "Synthetic documents" : "Document provenance varies; inspect originals"}</p>
           <APRelatedCases detail={detail} cases={cases??[]} onOpenCase={setSelectedId} busy={busy}/></details>
-          {detail.identityMode!=="authenticated_human"&&<APCaseStatus detail={detail}/>}
-          <APAmounts detail={detail}/>
-          {detail.identityMode==="authenticated_human"&&<APConnectedProcess detail={detail} onView={setView}/>}
-          {(!detail.agentProgress||detail.work)&&<APSystemWork key={`work:${detail.caseId}:${detail.revision}:${detail.work?.generation}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
+          <details className="aps-processing-disclosure" open={view!=="traceability"} key={`processing:${detail.caseId}:${view==="traceability"}`}>
+            <summary>Processing & amounts</summary>
+            {detail.identityMode!=="authenticated_human"&&<APCaseStatus detail={detail}/>}
+            <APAmounts detail={detail}/>
+            {detail.identityMode==="authenticated_human"&&<APConnectedProcess detail={detail} onView={setView}/>}
+            {(!detail.agentProgress||detail.work)&&<APSystemWork key={`work:${detail.caseId}:${detail.revision}:${detail.work?.generation}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
+          </details>
           {detail.links.duplicateOfCaseId && <p className="aps-notice">This delivery is linked to an existing obligation. <button className="aps-text-button" onClick={()=>setSelectedId(detail.links.duplicateOfCaseId!)} disabled={busy}>Open original case</button></p>}
           <div className="aps-tabs" role="group" aria-label="Case sections">{VIEWS.map(v=><button type="button" key={v} disabled={busy} onClick={()=>setView(v)} aria-pressed={view===v} className={view===v ? "is-selected" : ""}>{v === "evidence" ? "Source & fields" : apLabel(v)}</button>)}</div>
           {view === "evidence" && <><APSystemEvidence key={`${detail.caseId}:${detail.revision}`} detail={detail}/><details className="aps-originals-details"><summary>All originals & prior revisions</summary><APOriginals detail={detail}/></details></>}
@@ -124,7 +127,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
           {view === "accounting" && !historical && <APAccounting key={`accounting:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
           {view === "accounting" && historical && <APDemoContext detail={detail}/>}
           {view === "history" && <APHistory detail={detail}/>}
-          {view === "traceability" && <APTraceability key={`${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail}><APHistory detail={detail}/></APTraceability>}
+          {view === "traceability" && <APTraceability key={detail.caseId} detail={detail}><APHistory detail={detail}/></APTraceability>}
           {!historical && <APActions key={`review:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
         </>}
       </div>
