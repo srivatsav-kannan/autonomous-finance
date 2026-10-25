@@ -1,0 +1,190 @@
+{
+  "status": "PASS_local_integrated",
+  "checkedAt": "2026-10-25T08:58:45.123Z",
+  "codeRevision": "a13b131",
+  "runId": "ap97-20261025-01a1722e",
+  "caseId": "js7dsh0qwptbgg2ngm9vgbt6bs8gy13s",
+  "scope": {
+    "organizationId": "ap97-synthetic-company",
+    "runId": "ap97-20261025-01a1722e",
+    "provider": "fake",
+    "environment": "local",
+    "accountId": "ap97-usd-operating"
+  },
+  "identityMode": "simulated_human",
+  "fixture": "golden-state-v1",
+  "sourceChecks": [
+    {
+      "sourceId": "source-a6c745ac1f33d32ab142f8da420ba82a",
+      "revision": 1,
+      "sha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83",
+      "bytes": 2869
+    },
+    {
+      "sourceId": "source-180bd875e03024fafe18732710e829f4",
+      "revision": 1,
+      "sha256": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7",
+      "bytes": 3022
+    },
+    {
+      "sourceId": "source-a585c8f5e45a2ff962e94b56280d35ce",
+      "revision": 1,
+      "sha256": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2",
+      "bytes": 2908
+    },
+    {
+      "sourceId": "source-63539752792e6afbdd2fcecc4444a371",
+      "revision": 1,
+      "sha256": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883",
+      "bytes": 3022
+    }
+  ],
+  "parser": {
+    "provider": "LlamaParse",
+    "model": "agentic_plus",
+    "requestedVersion": "2026-09-28",
+    "resolvedVersion": null,
+    "cache": "Four completed genuine provider jobs imported with13 hash-verified artifacts; initial HTTP upload used content-addressed cache; no new provider parse request during I1."
+  },
+  "observed": {
+    "fields": 35,
+    "lines": 4,
+    "native": 33,
+    "unresolved": 2,
+    "amounts": {
+      "invoicedCents": 67860,
+      "acceptedCents": 67860,
+      "disputedCents": 0,
+      "creditedCents": 0,
+      "instructedCents": 67860,
+      "settledCents": 67860,
+      "outstandingCents": 0
+    },
+    "states": {
+      "document": "reviewed",
+      "business": "approved",
+      "accounting": "recognized",
+      "authorization": "authorized",
+      "execution": "settled",
+      "reconciliation": "matched"
+    },
+    "links": {
+      "billId": "ks74ffsbn080a1wvxhtjks018h8gz3zv",
+      "billVersion": 2,
+      "recognitionJournalId": "px76qn00zd681czahsp6svz2h98gzjcx",
+      "paymentVersionIds": [
+        "n17bgy4wrfdetrvc74thf5zbex8gzyc0"
+      ],
+      "commandIds": [
+        "kx74b0523e3f9v864md8xxedn98gyxc1"
+      ],
+      "bankTransactionIds": [
+        "txn_b0471d416cde760f0011255c"
+      ],
+      "settlementJournalIds": [
+        "px78rpe73jxyh7dm80g20qd1h98gyae7"
+      ],
+      "externalAccountingIds": [],
+      "duplicateOfCaseId": null
+    },
+    "journals": [
+      {
+        "entryId": "px76qn00zd681czahsp6svz2h98gzjcx",
+        "kind": "recognition",
+        "date": "2026-10-19",
+        "lines": [
+          {
+            "account": "5000",
+            "debit": 19250,
+            "credit": 0
+          },
+          {
+            "account": "5000",
+            "debit": 17100,
+            "credit": 0
+          },
+          {
+            "account": "5000",
+            "debit": 20670,
+            "credit": 0
+          },
+          {
+            "account": "5000",
+            "debit": 10840,
+            "credit": 0
+          },
+          {
+            "account": "2000",
+            "debit": 0,
+            "credit": 67860
+          }
+        ],
+        "bankTransactionId": null
+      },
+      {
+        "entryId": "px78rpe73jxyh7dm80g20qd1h98gyae7",
+        "kind": "settlement",
+        "date": "2026-10-25",
+        "lines": [
+          {
+            "account": "2000",
+            "debit": 67860,
+            "credit": 0
+          },
+          {
+            "account": "1000",
+            "debit": 0,
+            "credit": 67860
+          }
+        ],
+        "bankTransactionId": "txn_b0471d416cde760f0011255c"
+      }
+    ],
+    "transferCount": 1,
+    "postedDebitCount": 1
+  },
+  "replay": {
+    "checkedAt": "2026-10-25T09:00:03.886Z",
+    "caseId": "js7dsh0qwptbgg2ngm9vgbt6bs8gy13s",
+    "replay": {
+      "status": 201,
+      "body": {
+        "caseId": "js7dsh0qwptbgg2ngm9vgbt6bs8gy13s",
+        "duplicate": false,
+        "replayed": false,
+        "revision": 1
+      }
+    },
+    "conflict": {
+      "status": 409,
+      "code": "intake_key_conflict"
+    },
+    "renamed": {
+      "status": 201,
+      "body": {
+        "caseId": "js7dsh0qwptbgg2ngm9vgbt6bs8gy13s",
+        "duplicate": true,
+        "replayed": false,
+        "revision": 1
+      }
+    },
+    "unchanged": [
+      "revision",
+      "snapshotHash",
+      "states",
+      "amounts",
+      "links",
+      "journals",
+      "payments"
+    ],
+    "duplicateEvents": 4
+  },
+  "limitations": [
+    "Synthetic original documents and simulated local human identity; no practitioner sign-off.",
+    "Explicit FakeBank settlement simulation; no Increase transfer.",
+    "QuickBooks not connected; no external accounting IDs.",
+    "Per-case AP settlement matching only; opening cash-balance reconciliation awaits B4.",
+    "Direct-link initial session race and long field list found; D correction in progress.",
+    "V2 interruption/negative/revision acceptance remains separate."
+  ]
+}
