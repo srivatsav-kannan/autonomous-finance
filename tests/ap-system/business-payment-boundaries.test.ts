@@ -1,6 +1,7 @@
 import type { Id } from "../../convex/_generated/dataModel";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { businessFixture, acceptance } from "./business-fixture";
+import { businessFixture, acceptance, br, syncPrimary } from "./business-fixture";
+import { packet } from "./accounting-fixture";
 import { api } from "../../convex/_generated/api";
 import { PAYMENT_EXECUTOR_VERSION } from "../../src/payments/contracts";
 import { resolveAPBusinessPaymentAuthority } from "../../convex/lib/apSystem/businessAuthority";
@@ -34,7 +35,14 @@ describe("B3 governance versus C3 reservation lifecycle",()=>{
  it("projects consumed gross discharge as separate credit and cash and retains credit when cash returns",async()=>{
   const f=await businessFixture();const b=await f.recognize();
   // This exercises the authoritative reservation transition in isolation; no provider or settlement-journal claim.
-  const {creditId}=await f.human.mutation(api.demoPayments.recordCredit,{scope:f.scope,reference:"boundary-credit",amountCents:2000,evidence:"isolated legacy credit projection fixture",date:"2026-10-19",expenseAccount:"5000"});
+  const creditInput=packet("boundary-credit");const candidate=creditInput.candidate!;
+  candidate.kind="credit_note";creditInput.documents[0]!.kind="credit_note";
+  candidate.lines[0]!.quantity.decimal="1";candidate.lines[0]!.unitPriceCents=2000;candidate.lines[0]!.amountCents=2000;candidate.lines[0]!.allocations[0]!.amountCents=2000;candidate.subtotalCents=2000;candidate.totalCents=2000;
+  syncPrimary(creditInput);const creditCase=await f.reviewed(creditInput);
+  const proposal=await f.t.mutation(br.propose!,{...f.ap,input:{caseId:creditCase.caseId,expectedRevision:creditCase.revision,snapshotHash:creditCase.snapshotHash,idempotencyKey:"boundary-credit-proposal",policyVersion:f.policy.version,supplierRevision:1,credit:{originalCaseId:f.detail.caseId,originalApprovalId:b.proposal.proposalId,freightCents:0,discountCents:0,lines:[{creditLineId:"line-1",originalLineId:"line-1",basis:"price_adjustment",quantity:"0",netCents:2000,taxCents:0,returnEvidence:[]}],reason:"Explicit supplier price adjustment against the original approved invoice"}}});
+  let recognized=await f.vote(proposal);if(recognized.status==="pending")recognized=await f.vote(proposal,"finance");
+  expect(recognized.status).toBe("approved");const {creditId}=recognized;
+  expect(await f.t.run(ctx=>ctx.db.query("apCreditLinks").collect())).toEqual([expect.objectContaining({creditId,originalBillId:b.billId})]);
   const r=await f.t.mutation(api.demoPayments.requestPayment,{scope:f.scope,seatId:"payments",token:"token-payments",requestKey:"partial-credit",billIds:[b.billId],billAmounts:[{billId:b.billId,amountCents:6000}],credits:[{creditId,amountCents:2000}]});
   await f.t.run((ctx)=>settleEffects(ctx,r.versionId));let d=await f.get(f.detail.caseId);expect(d.amounts).toMatchObject({acceptedCents:7700,creditedCents:2000,instructedCents:4000,settledCents:4000,outstandingCents:1700});
   await f.t.run((ctx)=>returnEffects(ctx,r.versionId));d=await f.get(f.detail.caseId);expect(d.amounts).toMatchObject({creditedCents:2000,settledCents:0,outstandingCents:5700});
