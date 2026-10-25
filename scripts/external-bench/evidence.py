@@ -9,6 +9,7 @@ import time
 from decimal import Decimal
 from pathlib import Path
 from apex_rules import ar_reconciliation, payroll_reconciliation
+from extra_rules import finbalance_rules, invoice_sandbox_rules
 
 
 def connect(path):
@@ -198,6 +199,10 @@ def handle(db, request):
             return {'status': 'answered', 'answer': dab_rules(db, task_id)}
         if task_id == 'apex-30':
             return {'status': 'answered', 'answer': aging_rules(db)}
+        if task_id == 'invoice-sandbox-net-spend':
+            return {'status': 'answered', 'answer': invoice_sandbox_rules(db)}
+        if task_id.startswith('finbalance-'):
+            return {'status': 'answered', 'answer': finbalance_rules(db)}
         return {'status': 'abstained', 'answer': '', 'reason': 'No deterministic reconciliation procedure implemented for this case.'}
     raise ValueError('Unknown evidence operation')
 

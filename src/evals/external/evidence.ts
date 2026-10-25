@@ -7,6 +7,8 @@ import type { ToolDef } from "../../agents/llm";
 import type { BenchmarkTask, Trace } from "./types";
 
 export const DEFAULT_DATA = path.resolve("var/benchmarks/finance-eight");
+/** Opt-in Invoice Sandbox and FinBalance cases (benchmarks/finance-extra.json). */
+export const DEFAULT_EXTRA_DATA = path.resolve("var/benchmarks/finance-extra");
 export function python(): string {
   const local = path.resolve("var/benchmarks/.venv/bin/python");
   return process.env.EXTERNAL_BENCH_PYTHON ?? (fs.existsSync(local) ? local : "python3");

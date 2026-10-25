@@ -2,6 +2,8 @@ import { z } from "zod";
 import { emptyUsage, type Usage } from "../../agents/llm";
 import type { ModelClient } from "../../agents/model-client";
 import { PAID_DISABLED } from "./models";
+import { scoreInvoiceSandbox } from "./invoice-sandbox";
+import { scoreFinBalance } from "./finbalance";
 import type { Answer, BenchmarkTask, Gold, Grade } from "./types";
 
 function clean(answer: string): string {
@@ -44,6 +46,16 @@ export const createRubricJudge = (model: ModelClient): RubricJudge => async (tas
 export async function gradeAnswer(task: BenchmarkTask, answer: Answer, gold: Gold, useJudge: boolean, rubricJudge: RubricJudge = async () => { throw new Error(PAID_DISABLED); }): Promise<Grade> {
   const judgeUsage = emptyUsage();
   if (answer.status !== "answered") return { status: "graded", score: 0, passed: false, method: "no-answer", reason: answer.reason, judgeUsage };
+  if (gold.kind === "customer-net-spend") {
+    if (!gold.customers || !Object.keys(gold.customers).length) return { status: "error", score: null, passed: null, method: "invoice-sandbox-official-v1", reason: "Invoice Sandbox key has no customers", judgeUsage };
+    const { score, passed, reason, metrics } = scoreInvoiceSandbox(answer.answer, gold.customers);
+    return { status: "graded", score, passed, method: "invoice-sandbox-official-v1", reason, metrics, judgeUsage };
+  }
+  if (gold.kind === "finbalance") {
+    if (!gold.finbalance) return { status: "error", score: null, passed: null, method: "finbalance", reason: "FinBalance key is missing", judgeUsage };
+    const { score, passed, reason, metrics, method } = scoreFinBalance(answer.answer, gold.finbalance);
+    return { status: "graded", score, passed, method, reason, metrics, judgeUsage };
+  }
   if (gold.kind !== "rubric") {
     const passed = scoreDab(answer.answer, gold);
     return { status: "graded", score: Number(passed), passed, method: "dabstep-local-exact-v1", judgeUsage };

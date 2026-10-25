@@ -40,6 +40,18 @@ it("blocks paid rescoring without touching original answers/grades", () => {
   expect(fs.readFileSync(path.join(saved, "results.json"), "utf8")).toBe(original);
   expect(fs.existsSync(path.join(saved, "rescoring.json"))).toBe(false);
 });
+it("keeps the default matrix at the eight pinned tasks and makes the extra cases opt-in", () => {
+  const missing = path.join(dir, "no-extra-data");
+  const preview = cli("run", ["--dry-run", "--extra-data", missing]);
+  expect(preview.status, preview.stderr).toBe(0);
+  const config = JSON.parse(preview.stdout.slice(preview.stdout.indexOf("{")));
+  expect(config).toMatchObject({ batch: "finance-eight-v1", expectedRuns: 72 });
+  expect(config.tasks).toEqual(JSON.parse(fs.readFileSync("benchmarks/finance-eight.json", "utf8")).tasks.map((t: { id: string }) => t.id));
+  const optIn = cli("run", ["--dry-run", "--tasks", "finbalance", "--extra-data", missing]);
+  expect(optIn.status).toBe(1);
+  expect(optIn.stderr).toContain("finance-extra-v1 is not prepared");
+  expect(cli("run", ["--dry-run", "--tasks", "finbalance-nope"]).stderr).toContain("unknown or duplicate IDs");
+});
 it("allows free matrix/rescore previews and judge-off rescoring", () => {
   const preview = cli("run", ["--dry-run"]);
   expect(preview.status, preview.stderr).toBe(0); expect(preview.stdout).toContain('"paidExecution": "disabled"');
