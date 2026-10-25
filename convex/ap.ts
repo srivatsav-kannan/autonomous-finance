@@ -97,8 +97,13 @@ export const recordBill = mutation({
       .collect();
     const live = prior.find((b) => b.status !== "rejected");
     if (live && args.decision !== "reject") {
+      const source = (await ctx.db.query("events")
+        .withIndex("by_run_type", (q) => q.eq("runId", args.runId).eq("type", "document.received"))
+        .collect()).find((e) => e._id === args.documentEventId &&
+          (e.payload?.kind === "invoice" || e.payload?.kind === "lease_invoice"));
       return await recordViolation(ctx, args.runId, args.seatId, op,
-        fail("duplicate_invoice", `${args.vendor} invoice ${args.invoiceNumber} duplicates a bill already recorded (${live.status})`));
+        fail("duplicate_invoice", `${args.vendor} invoice ${args.invoiceNumber} duplicates a bill already recorded (${live.status})`),
+        source ? { sourceDocumentId: source._id, relatedBillId: live._id } : undefined);
     }
 
     const run = await getRun(ctx, args.runId);

@@ -70,6 +70,7 @@ export default defineSchema({
     closedAt: v.optional(v.number()),
     ledgerHead: v.optional(v.string()),
     memoryTag: v.optional(v.string()),
+    closeSnapshotHash: v.optional(v.string()),
   }).index("by_run_period", ["runId", "period"]),
 
   ledgerHeads: defineTable({
@@ -275,6 +276,8 @@ export default defineSchema({
     seatId: v.string(),
     operation: v.string(),
     reason: v.string(),
+    sourceDocumentId: v.optional(v.string()),
+    relatedBillId: v.optional(v.id("bills")),
     at: v.number(),
   }).index("by_run_at", ["runId", "at"]),
 
