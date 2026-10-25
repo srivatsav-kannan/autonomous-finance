@@ -49,7 +49,7 @@ async function parseInvoice(rt: SeatRuntime, task: Task, text: string): Promise<
   // A format we had to read with a model is a format we should learn: hand it to integrations.
   await rt.handoff("integrations.build_parser", "integrations_engineer",
     { signature: outcome.signature, sampleEventId: task.payload.eventId, sample: text, expected: invoice },
-    `parser:${outcome.signature}`, task._id, 4);
+    `parser-spec:${outcome.signature}`, task._id, 4);
   return { invoice, via: "model-extraction" };
 }
 
@@ -117,7 +117,7 @@ export const processDocument: Handler = async (rt, task) => {
     await rt.ask({ to: "controller", severity: "info", title: `Could not read invoice from ${String(payload.from)}`,
       body: `${parsed.error}\n\n${text.slice(0, 800)}`, evidence: [{ label: "document", ref: String(task.payload.externalId) }], taskId: task._id });
     if (!llmAvailable()) {
-      await rt.handoff("integrations.build_parser", "integrations_engineer", { signature: parsed.signature, sampleEventId: task.payload.eventId, sample: text }, `parser:${parsed.signature}`, task._id, 4);
+      await rt.handoff("integrations.build_parser", "integrations_engineer", { signature: parsed.signature, sampleEventId: task.payload.eventId, sample: text }, `parser-spec:${parsed.signature}`, task._id, 4);
     }
     return { outcome: "unreadable", summary: parsed.error };
   }

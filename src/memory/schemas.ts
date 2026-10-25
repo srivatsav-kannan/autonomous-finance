@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ParserRecord } from "../integrations/parsers";
 
 // Every file in company memory has a schema. Writes that don't validate are rejected,
 // so memory can't drift into contradicting free text.
@@ -130,13 +131,9 @@ export const Company = z.object({
   disclaimer: z.string(),
 });
 
-export const IntegrationParser = z.object({
-  id: z.string(),
-  signature: z.string(),
-  description: z.string(),
-  code: z.string().max(20_000),
+/** An agent-written parser: a declarative spec (never code) and at least one verified example. */
+export const IntegrationParser = ParserRecord.extend({
   tests: z.array(z.object({ input: z.string(), expected: z.unknown() })).min(1),
-  author: z.string(),
 });
 
 /** Which schema governs a path. Unknown paths are rejected. */
@@ -160,7 +157,7 @@ export function schemaFor(path: string): z.ZodType | null {
  * Returns a reason if the change from `before` to `after` is controlled.
  */
 export function controlledReason(path: string, before: unknown, after: unknown): string | null {
-  if (path.startsWith("integrations/")) return "agent-written code requires review";
+  if (path.startsWith("integrations/")) return "agent-written parsers require review";
   if (path.startsWith("policies/") || path.startsWith("seats/") || path.startsWith("people/") || path.startsWith("playbooks/")) {
     return before === undefined && path.startsWith("playbooks/") ? null : `${path.split("/")[0]} changes require approval`;
   }

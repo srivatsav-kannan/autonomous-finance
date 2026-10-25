@@ -149,7 +149,7 @@ function estimate(mode: "kernel" | "spreadsheet", toolDefs: ToolDef[], prices: {
 
 // ---------- run ----------
 await import("../../core/env");
-process.env.AGENT_PROVIDER ??= "openai"; // the only provider path in llm.ts with the hard spend cap
+process.env.AGENT_PROVIDER ??= "openai"; // the provider path this harness's cost estimate is priced for
 const spendFile = path.join("var", "agent-spend.json");
 const spentUsd = fs.existsSync(spendFile) ? (JSON.parse(fs.readFileSync(spendFile, "utf8")) as { spentMicros: number }).spentMicros / 1e6 : 0;
 if (confirmUsd !== null && !dryRun && agent === "model") process.env.AGENT_MAX_USD = String(spentUsd + confirmUsd);
@@ -191,7 +191,7 @@ console.log(`Expected total ~$${totalExpected.toFixed(2)} (assumes 1 tool call p
 
 if (dryRun) process.exit(0);
 if (agent === "model") {
-  if (llm.PROVIDER !== "openai") throw new Error("Part B runs only on the OpenAI path, the one llm.ts routes through BudgetedModelClient's spend cap. Unset AGENT_PROVIDER or set it to openai.");
+  if (llm.PROVIDER !== "openai") throw new Error("Part B runs only on the OpenAI path, which its cost estimate and --confirm-usd cap are priced for. Unset AGENT_PROVIDER or set it to openai.");
   if (confirmUsd === null || !(confirmUsd > 0)) throw new Error("A paid run needs --confirm-usd <dollars>: the most this run may add to var/agent-spend.json.");
   if (!llm.llmAvailable()) throw new Error("OPENAI_API_KEY is not set (add it to .env.local).");
 }

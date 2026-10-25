@@ -1,10 +1,9 @@
-import fs from "node:fs";
-import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { api, convex, hashToken, newToken } from "../core/kernel-client";
 import type { Role } from "../core/roles";
 import { MemoryStore } from "../memory/store";
 import { memoryDir, runDir } from "../world/scenario";
+import { readAgentTokens, writeAgentTokens } from "../world/seat-tokens";
 import { LlmRefused, LlmUnavailable, MODEL } from "./llm";
 import { SeatRuntime, type Handler, type Task } from "./runtime";
 import { checkWorkerResult, ControlPlane, ControlPlaneUnavailable, OperatorActionRequired, pause, reportDiagnostic, workerFetch, WorkerHttpError, transientFailure, WorkerStopped, type Diagnostic, type RetryOptions } from "./control-plane";
@@ -62,7 +61,7 @@ interface TeamOptions {
 export class Team {
   readonly runtimes = new Map<string, SeatRuntime>();
   readonly mem: MemoryStore;
-  private tokensFile: string;
+  private runDir: string;
   private tokens: Record<string, string>;
   private stopped = false;
   private readonly scheduling = new AbortController();
@@ -74,8 +73,9 @@ export class Team {
     this.report = opts.diagnostic ?? reportDiagnostic;
     this.control = new ControlPlane(this.report, opts.retry);
     this.mem = new MemoryStore(memoryDir(runId));
-    this.tokensFile = path.join(runDir(runId), "seats.json");
-    this.tokens = JSON.parse(fs.readFileSync(this.tokensFile, "utf8"));
+    // Agent seat tokens only: human tokens live in a file only the gateway reads.
+    this.runDir = runDir(runId);
+    this.tokens = readAgentTokens(this.runDir);
   }
 
   private log(s: string) {
@@ -206,7 +206,7 @@ export class Team {
         const token = this.tokens[seatId] ?? newToken();
         // Save before sending: a lost spawn response must retain the same credential.
         this.tokens[seatId] = token;
-        fs.writeFileSync(this.tokensFile, JSON.stringify(this.tokens, null, 2), { mode: 0o600 });
+        writeAgentTokens(this.runDir, this.tokens);
         const name = role === "ap_clerk" ? `AP Clerk ${n}` : `Cash Application Agent ${n}`;
         const r = await this.control.call("seats.spawnSeat", () => cfo.kernel.client.mutation(api.seats.spawnSeat, {
           ...cfo.kernel.auth, requestId: `spawn:${seatId}:${hashToken(token)}`, newSeatId: seatId, role, name, tokenHash: hashToken(token), reportsTo: "controller", effort: "medium",
@@ -216,7 +216,7 @@ export class Team {
           // Another worker or an earlier run owns this seat; a credential minted here is not its token.
           if (minted) {
             delete this.tokens[seatId];
-            fs.writeFileSync(this.tokensFile, JSON.stringify(this.tokens, null, 2), { mode: 0o600 });
+            writeAgentTokens(this.runDir, this.tokens);
           }
           this.log(`cfo-agent skipped ${seatId}: seat already exists`);
           continue;

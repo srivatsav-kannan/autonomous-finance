@@ -1,8 +1,9 @@
+import { isDeepStrictEqual } from "node:util";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { api } from "../../core/kernel-client";
 import { formatMoney } from "../../core/money";
 import { ROLE_CAPABILITIES, canApprovePayment } from "../../core/roles";
-import { compileParser, type ParserRecord } from "../../integrations/parsers";
+import { compileParser, parseWith, type ParserRecord } from "../../integrations/parsers";
 import type { Vendor } from "../../memory/schemas";
 import type { Handler, SeatRuntime } from "../runtime";
 import type { Exception } from "./ap";
@@ -191,16 +192,22 @@ export const reviewProposal: Handler = async (rt, task) => {
       const proposed = await rt.mem.read<Vendor>(p, head);
       if (!proposed || proposed.remitTo.method !== "callback_known_number") problems.push(`${p}: remit-to not verified by callback to the number on file`);
     } else if (p.startsWith("integrations/parsers/")) {
-      const rec = await rt.mem.read<ParserRecord>(p, head);
+      const rec = await rt.mem.read<unknown>(p, head);
       if (!rec) {
         problems.push(`${p}: unreadable`);
         continue;
       }
+      // compileParser validates the spec (schema and regex safety) and refuses legacy code.
+      // Every stored test must then parse, pass the schema and arithmetic checks, and match.
       try {
         const parser = compileParser(rec);
-        for (const [i, t] of rec.tests.entries()) {
-          const got = parser.parse(t.input);
-          if (JSON.stringify(got) !== JSON.stringify(t.expected)) problems.push(`${p}: test ${i + 1} output differs from expected`);
+        const { id, tests } = rec as ParserRecord;
+        if (p !== `integrations/parsers/${id}.yaml`) problems.push(`${p}: record id ${id} does not match its path`);
+        if (!tests.length) problems.push(`${p}: no tests`);
+        for (const [i, t] of tests.entries()) {
+          const got = parseWith([parser], t.input);
+          if (!got.ok) problems.push(`${p}: test ${i + 1}: ${got.reason}`);
+          else if (!isDeepStrictEqual(got.invoice, t.expected)) problems.push(`${p}: test ${i + 1} output differs from expected`);
         }
       } catch (e) {
         problems.push(`${p}: ${e instanceof Error ? e.message.slice(0, 200) : e}`);
