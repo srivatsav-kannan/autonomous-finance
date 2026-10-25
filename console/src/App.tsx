@@ -1,3 +1,5 @@
+import { WorkspaceSettings, WorkspaceDataStatus } from "./WorkspaceSettings";
+import { chooseFinanceScenario, rememberedFinanceScenario, rememberFinanceScenario } from "./financeScenario";
 import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useConvexConnectionState, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -26,7 +28,7 @@ const ago = (t: number) => {
   return s < 60 ? `${s}s ago` : s < 3600 ? `${Math.round(s / 60)}m ago` : `${Math.round(s / 3600)}h ago`;
 };
 
-type Tab = "inbox" | "invoices" | "payments" | "bank" | "close" | "ledger" | "flow" | "org" | "activity" | "memory" | "policy" | "connectors" | "evals" | "control" | "recovery";
+type Tab = "inbox" | "invoices" | "payments" | "bank" | "close" | "ledger" | "flow" | "org" | "activity" | "memory" | "policy" | "connectors" | "evals" | "control" | "recovery" | "settings";
 type IconName = Parameters<typeof Icon>[0]["name"];
 // One navigation, grouped by the work. Accounts payable sections sit where they belong in the
 // department instead of under a separate tab: invoices are AP cases, payments are released there,
@@ -49,6 +51,7 @@ const NAV: { label: string; tabs: { id: Tab; label: string; icon: IconName }[] }
     { id: "memory", label: "Memory", icon: "memory" },
   ] },
   { label: "Setup", tabs: [
+    { id: "settings", label: "Settings", icon: "control" },
     { id: "policy", label: "Policy & suppliers", icon: "control" },
     { id: "connectors", label: "Connectors", icon: "download" },
   ] },
@@ -108,7 +111,7 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
   useEffect(() => {
     if (!runId && runs?.length) {
       // The AP workspace keeps its own run. Default the picker to the simulated company.
-      const first = (runs.find((r) => !r.runId.startsWith("ap97-")) ?? runs[0]!).runId;
+      const first = chooseFinanceScenario(runs, runId, rememberedFinanceScenario());
       const url = new URL(location.href);
       url.hash = encodeURIComponent(first);
       history.replaceState(null, "", url);
@@ -149,6 +152,7 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
   };
   const openCase = (caseId: string) => navigate("invoices", { caseId });
   const selectRun = (next: string) => {
+    rememberFinanceScenario(next);
     const url = new URL(location.href);
     url.hash = encodeURIComponent(next);
     url.searchParams.delete("ask");
@@ -199,7 +203,8 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
               {NAV.map((g) => <optgroup key={g.label} label={g.label}>{g.tabs.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}</optgroup>)}
             </select>
           </label>
-          {usesRun && simulationAvailable && !connected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
+          {usesRun && simulationAvailable && !connected && <p className="connection-note" role="status">Connecting to the finance backend. <button type="button" onClick={() => navigate("settings")}>Open settings</button></p>}
+          {usesRun && simulationAvailable && connected && runId && <WorkspaceDataStatus runId={runId} onOpenSettings={() => navigate("settings")} />}
           {usesRun && simulationAvailable && runId && tab !== "bank" && tab !== "flow" && <Kpis runId={runId} />}
           {apMounted && <div hidden={!section}>
             <main className="main" id={section ? "main" : undefined} tabIndex={-1}>
@@ -207,7 +212,7 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
             </main>
           </div>}
           {!section && <main className="main" id="main" tabIndex={-1} key={usesRun ? runId : tab}>
-            {tab === "connectors" ? <Connectors /> : tab === "recovery" ? <APDemo embedded /> : tab === "evals" ? <>{needsRun ?? <Evals runId={runId} />}<ProofGroups /></> : needsRun ?? <>
+            {tab === "settings" ? <WorkspaceSettings runs={runs} runId={runId} simulationAvailable={simulationAvailable} connected={connected} onSelectRun={selectRun} onOpenControl={() => navigate("control")} onOpenInbox={() => navigate("inbox")} /> : tab === "connectors" ? <Connectors /> : tab === "recovery" ? <APDemo embedded /> : tab === "evals" ? <>{needsRun ?? <Evals runId={runId} />}<ProofGroups /></> : needsRun ?? <>
               {tab === "inbox" && <><Inbox runId={runId} /><APDecisions apReady={apMounted} onOpenCase={openCase} onOpenInvoices={() => navigate("invoices")} /></>}
               {tab === "bank" && <Bank runId={runId} onReview={(askId) => { navigate("inbox"); const url = new URL(location.href); url.searchParams.set("ask", askId); history.replaceState(null, "", url); }} />}
               {tab === "flow" && <FinanceFlow runId={runId} onNavigate={(next) => navigate(next as Tab)} />}
