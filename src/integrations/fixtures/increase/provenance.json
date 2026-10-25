@@ -1,0 +1,21 @@
+{
+  "source": "https://increase.com/openapi_3_0.json",
+  "retrievedOn": "2026-10-23",
+  "upstreamInfoVersion": "0.0.1",
+  "upstreamSha256": "670dba17c4df44f07cee162f4e2388dca1dcacf80d1773cb42de046b3b138995",
+  "subsetSha256": "468a46602ceec2d45727d6d2e2fc3cd184411d8cd7ff54781493625abe10c72a",
+  "transformation": "Selected endpoint paths and transitive component references; stripped descriptions/titles/summaries/x-* documentation metadata; no schema constraints changed; restored required response descriptions.",
+  "paths": [
+    "/ach_transfers",
+    "/ach_transfers/{ach_transfer_id}",
+    "/transactions",
+    "/transactions/{transaction_id}",
+    "/events",
+    "/accounts/{account_id}/balance",
+    "/simulations/ach_transfers/{ach_transfer_id}/submit",
+    "/simulations/ach_transfers/{ach_transfer_id}/settle",
+    "/simulations/ach_transfers/{ach_transfer_id}/return"
+  ],
+  "fixtureSha256": "442e71fbf9fc8ce01c4b68350cdd3b0c1c9b1ea42d2f5dc4dc2ac447766cbc1a",
+  "fixtures": "Hand-authored sandbox-shaped examples derived from pinned upstream examples; no live provider execution claimed."
+}

@@ -23,6 +23,11 @@
     "design:review": "npm run design:check -- --render",
     "test:bank": "vitest run src/integrations/banking/fake.test.ts",
     "test:payments": "vitest run tests/demo-*.test.ts",
+    "test:contracts": "vitest run src/integrations/banking/increase.test.ts src/integrations/banking/increase-prism.test.ts",
+    "demo:local": "tsx scripts/ap-demo.ts local",
+    "demo:sandbox": "tsx scripts/ap-demo.ts sandbox",
+    "worker:dispatch": "tsx scripts/ap-worker.ts dispatch",
+    "worker:evidence": "tsx scripts/ap-worker.ts evidence",
     "typecheck:backend": "tsc --noEmit -p convex/tsconfig.json",
     "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json"
   },
@@ -35,6 +40,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@stoplight/prism-cli": "5.16.0",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -47,6 +53,12 @@
     "convex-test": "0.0.65"
   },
   "engines": {
-    "node": ">=24.6.0"
+    "node": ">=24.18.0"
+  },
+  "overrides": {
+    "postman-collection": {
+      "lodash": "4.18.1",
+      "uuid": "11.1.1"
+    }
   }
 }

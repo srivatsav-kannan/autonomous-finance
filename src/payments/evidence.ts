@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import type { ConvexHttpClient } from "convex/browser";
 import { api } from "../../convex/_generated/api";
 import type { BankScope, BankingProvider, BankingEvents, TransferObservation, BankTransaction } from "../integrations/contracts";
+import { BankResourceOutsideScope } from "../integrations/contracts";
 
 export type KernelTransport = Pick<ConvexHttpClient, "query" | "mutation">;
 /** Read-only bank capability; the evidence worker cannot submit or alter provider state. */
@@ -44,9 +45,22 @@ export class EvidenceWorker {
     }
     for (const notice of work.notices) {
       try {
-        const id = notice.transferId ?? (await this.bank.getTransaction(this.scope, notice.transactionId!)).transferId;
-        await this.observe(id, notice.eventId);
+        if (notice.transferId) await this.observe(notice.transferId, notice.eventId);
+        else {
+          const transaction = await this.bank.getTransaction(this.scope, notice.transactionId!);
+          if (transaction.commandId) await this.observe(transaction.transferId, notice.eventId);
+          else await this.kernel.mutation(api.demoEvidence.observeTransactionNotice, { ...this.auth, eventId: notice.eventId, transaction });
+        }
       } catch (error) {
+        // Ignore only a verified foreign DIRECT resource. A contradictory nested link
+        // on one of our resources, a 404, or a failed verification must remain blocked.
+        if (error instanceof BankResourceOutsideScope &&
+            (notice.transferId ? error.resourceType === "ach_transfer" && error.resourceId === notice.transferId
+              : error.resourceType === "transaction" && error.resourceId === notice.transactionId)) {
+          await this.kernel.mutation(api.demoEvidence.ignoreForeignNotice, { ...this.auth, eventId: notice.eventId,
+            resourceType: error.resourceType, resourceId: error.resourceId, accountId: error.accountId });
+          continue;
+        }
         const message = error instanceof Error ? error.message : String(error);
         errors.push(message);
         await this.kernel.mutation(api.demoEvidence.recordError, { ...this.auth, eventId: notice.eventId, error: message });

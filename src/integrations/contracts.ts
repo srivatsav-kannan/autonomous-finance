@@ -60,7 +60,9 @@ export type BankTransaction = {
   amountCents: number;
   currency: "USD";
   status: "pending" | "complete" | "posted";
-  purpose: "debit" | "return";
+  purpose: "debit" | "return" | "other";
+  /** Provider source category, retained for explicitly reviewed non-AP activity. */
+  sourceCategory?: string;
   createdAt: string;
   postedAt?: string;
   completedAt?: string;
@@ -105,6 +107,13 @@ export class BankProviderError extends Error {
     readonly outcomeUnknown = false,
     readonly retryAfterMs?: number,
   ) { super(message); }
+}
+
+/** Only emitted after fetching the exact requested resource and verifying its account. */
+export class BankResourceOutsideScope extends BankProviderError {
+  constructor(readonly resourceType: "ach_transfer" | "transaction", readonly resourceId: string, readonly accountId: string) {
+    super("configuration", "Verified bank resource belongs to another account");
+  }
 }
 
 /** Stable JSON shared by approvals, command validation, and both provider adapters. */
