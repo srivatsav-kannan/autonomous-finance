@@ -1,4 +1,5 @@
 import { makeFunctionReference } from "convex/server";
+import { createHash } from "node:crypto";
 import { businessFixture, br, binding, syncPrimary } from "./business-fixture";
 import { packet } from "./accounting-fixture";
 import { canonical, sha256Hex } from "../../convex/lib/kernel";
@@ -41,6 +42,20 @@ export async function creditFixture() {
     c.subtotalCents = 3850;
     c.totalCents = 3850;
     input.documents[0]!.kind = "credit_note";
+    // This is a distinct, explicitly synthetic return original, not the invoice's receiving record.
+    const returned = input.documents[2]!;
+    const body = `Synthetic return ${number}: receiving-owner accepted returned KALE-24 1 case on 2026-10-19`;
+    returned.sourceId = `return-${number}`;
+    returned.name = `${returned.sourceId}.pdf`;
+    returned.deliveryId = `delivery-${returned.sourceId}`;
+    returned.originalRef = `/private/ap/${returned.name}`;
+    returned.provenance.originalFilename = returned.name;
+    returned.extractedText = body;
+    returned.originalBase64 = Buffer.from(body).toString("base64");
+    returned.byteLength = Buffer.byteLength(body);
+    returned.sha256 = createHash("sha256").update(body).digest("hex");
+    input.purchasingEvidence[1]!.source = binding(returned);
+    input.purchasingEvidence[1]!.lines[0]!.quantity.decimal = "1";
     syncPrimary(input);
     const d = await f.reviewed(input);
     const proposed = await f.t.mutation(br.propose!, {

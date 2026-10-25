@@ -85,6 +85,15 @@ describe("QBO explicit credit and partial cash applications", () => {
     const c = await f.credit();
     const invoice = await f.load();
     const credit = await f.load(c.caseId);
+    const returnDoc = credit.detail.sources.find(
+      (d) => d.sourceId === "return-CREDIT-1",
+    )!;
+    expect(returnDoc.sha256).not.toBe(
+      invoice.detail.sources.find((d) => d.kind === "receipt")!.sha256,
+    );
+    expect(returnDoc.extractedText).toContain(
+      "accepted returned KALE-24 1 case",
+    );
     expect(credit.recognizedCredit).toMatchObject({
       creditId: c.creditId,
       billId: f.original.billId,
