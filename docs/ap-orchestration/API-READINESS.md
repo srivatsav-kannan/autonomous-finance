@@ -1,6 +1,10 @@
 # API and environment readiness
 
-Updated 2026-10-25, America/Los_Angeles. **Environment preparation only; implementation has not started.** Provider authentication checks and one tiny OpenAI inference request completed. Reused the existing LlamaCloud key and created a standalone Increase API sandbox with synthetic fixture resources. Five isolated LlamaParse jobs have completed across three rounds: the malformed PDF/derived TIFF pair, clean PDF/archival scan controls, and the same scan with raw word output. Native description grounding remains missing, but a local Tesseract fallback uniquely located both description lines and passed original-image overlay review. This verifies one diagnostic fallback, not application integration. See `LLAMAPARSE-SMOKE.md`, `LLAMAPARSE-CONTROLS.md` and `LLAMAPARSE-GROUNDING.md`. No business workflow, transfer, funding simulation, deployment, or service restart was triggered. Existing checkout changes and `.env.local` files were preserved.
+Current as of 2026-10-25: normal Auth0 login and explicit user payment authorization, one Increase sandbox settlement, QBO Bill145/BillPayment146 and test-funding bank-to-local-ledger reconciliation have passed. See [current status](CURRENT-STATUS.md) and [actual evidence](evidence/C4-funding-reconciliation.md). QuickBooks Online US sandbox is selected and OAuth-connected. Server-only private credentials remain excluded from Git. Signed webhooks, broader external scenarios and formal live period close are not claimed.
+
+## Historical environment-preparation record
+
+The observations, baseline SHAs and pending-work language below describe the earlier preparation checkpoint, before implementation. They are retained for provenance and are superseded by CURRENT-STATUS.md and plan.json for present readiness.
 
 Expanded discovery covered the Desktop checkout, local `calhacks` worktrees, the private evaluation directory, relevant shell configuration declarations, and the inspection process environment. Only names/presence were reported. Absence here does not prove no credential exists in any other account or secret store.
 

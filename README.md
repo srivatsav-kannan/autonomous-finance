@@ -4,6 +4,8 @@ AI agents run the finance department of a restaurant chain modeled on Sweetgreen
 
 Built at Cal Hacks 13.0.
 
+Current AP delivery: the synthetic USD Auth0 → Increase sandbox → QuickBooks flow and local bank reconciliation have passed. See [current status](docs/ap-orchestration/CURRENT-STATUS.md) and the [issue #97 scope gaps](docs/ap-orchestration/ISSUE-97-GAP-MAP.md) for remaining agent integration and review work.
+
 ## Why
 
 Most finance agents today are a model driving a spreadsheet or a browser. Those tools were built for people. For an agent they're slow (in our test, one bookkeeping step took about six spreadsheet tool calls instead of one), and they check nothing. A spreadsheet will let you approve your own payment or pay the same invoice twice.

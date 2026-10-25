@@ -1,6 +1,6 @@
 # AP capability and verification matrix
 
-This is the live implementation matrix for issue #97. A capability is not integrated-verified until the same uploaded source case passes its dependent gates. Canonical task status: plan.json.
+This is the live implementation matrix for issue #97. A capability is not integrated-verified until the same uploaded source case passes its dependent gates. Canonical task status: plan.json. Current delivery summary: [CURRENT-STATUS.md](CURRENT-STATUS.md); full roadmap and agent integration gaps: [ISSUE-97-GAP-MAP.md](ISSUE-97-GAP-MAP.md).
 
 | Capability | Current status | Evidence / remaining gate |
 | --- | --- | --- |
@@ -11,7 +11,7 @@ This is the live implementation matrix for issue #97. A capability is not integr
 | Native/raw-word/local-OCR/unresolved grounding | implemented, component-verified | Preserve per-method provenance, unresolved denominator; no universal OCR reliability claim |
 | PO matching and owned exceptions | clean case integrated-verified; negative cases independently verified | B1/V1/I1/V2; missing/conflicting evidence and quantity variants remain held |
 | Field review → bill → payable recognition | integrated-verified locally | I1; exact source/review binding, separate decisions and one recognition journal |
-| Separate payment authorization and durable engine handoff | integrated-verified locally | V-C1.md and I1; proposal waits for independent local simulated-human approval |
+| Separate payment authorization and durable engine handoff | local recovery plus one external happy path verified | V-C1/I1/I3; C4 actual Auth0 user-click authorization and Increase settlement. Live expiry/logout negatives remain separate. |
 | Source session/hash validation and original serving | integrated-verified locally | I1 original HTTP downloads match four hashes; native original highlight visually inspected |
 | Unified case workspace | integrated-verified locally, D1 corrections verified | I1 same settled case; D1-live-layout responsive evidence; cold gateway restart/deep-link screenshot |
 | Same-case PDF → FakeBank → settlement reconciliation | integrated-verified locally | I1-integrated.md/json; one transfer, bank debit and settlement entry; zero AP outstanding |
@@ -21,10 +21,10 @@ This is the live implementation matrix for issue #97. A capability is not integr
 | Business initiation scheduling, explicit partial payments and atomic payment runs | component-verified; I2 future-date gate and partial cash path integrated-verified | C3-scheduling.md; frozen UTC date, separate retry clock, explicit allocations, run rollback and renewals; V3 independent review accepted; B3 beneficiary integration tested |
 | Period close and unpaid AP carryforward | implemented and independently verified locally; actual close blockers and external Claude model review remain explicit | B4 statements/AP-GL, accruals, lock/reopen, immutable exports and corrected-cost controls; V5 receipt-capacity repair replay passed |
 | QuickBooks Online US sandbox | one synthetic Bill/BillPayment round trip externally verified; broader cases remain component-verified | [Actual INV-1001 evidence](evidence/C4-live-happy-path.md): Bill145 and BillPayment146, one each, Bill balance0. Optional response-field compatibility repaired; original unknown operation recovered through GET with one POST attempt retained. Eight reference writes remain separate. Credits, returns, corrections and successive partial-payment live acceptance are not promoted by this happy path. |
-| Polished audit/recovery presentation | local desktop same-case recovery review complete; actual external journey pending | D2 and [I3 laptop walkthrough](I3-RUNBOOK.md): source/holds/approvals/crash/settlement/history; accounting vocabulary tied to records. |
+| Polished audit/recovery presentation | local desktop recovery and one actual external happy path complete; final handoff pending | D2 and [I3 laptop walkthrough](I3-RUNBOOK.md): source/holds/approvals/crash/settlement/history; accounting vocabulary tied to records. |
 | Claude 独立模型评审 | packet ready; awaiting external recipient | [Two-phase handoff](CLAUDE-REVIEW.md); replaces practitioner delivery gate by user instruction; no review completed yet |
 
-No production deployment, main merge or real-money operation is part of this goal. The original Desktop checkout and existing previews remain outside this goal's ownership.
+No production deployment or real-money operation was performed. PR105 was merged by another actor at b48885f; PR106 remains draft/open. This task has not performed a main merge. The original Desktop checkout and existing previews remain outside this goal's ownership.
 
 Section 4 A3 format coverage is accepted for the declared strict UBL profile and measured representative scanned PDF/JPEG/PNG/multipage TIFF. Eight format controls passed; 164/175 visual grounding fields are exact, 11 explicitly unresolved; all eight offline replays were byte-identical. Unsupported profiles remain held. A parsed positive-tax XML also stayed held at backend approval without trusted supplier/PO/receipt authority. Local OCR source/traineddata are pinned; Docker packaging smoke is now PASS on two controlled scans; complete application integration and production deployment are separate unverified gates. Original storage was measured at 1.2MB and 8MiB with byte-perfect round trips and zero economic effects; 8MiB+1 was rejected. See evidence/storage-capacity.json.
 
@@ -42,8 +42,10 @@ The [2026-10-25 scope decision](https://github.com/srivatsav-kannan/autonomous-f
 
 I3 at runtimee114785/UI996e930 completed the same-case actual-process gap.22 auth/origin checks, three typechecks, build/design and independent origin review passed; the new runtime harness was independently executed phase by phase. The full-suite count above remains its historical checkpoint, not an invented new full run. Upstream Linux temp-directory repair95a8693 was preserved as0a24e71 and its2 targeted checks passed.
 
-Review source35b97ee (identical to integrationd05326b) passed the final full regression: **1,886 passed,4 skipped,0 failed across201 files**, plus all3 typechecks, build and design checks. [Exact checkpoint and limits](evidence/FINAL-review-checkpoint.md). I3 same-case source/receipt/crash/recovery evidence remains distinct from pending real external acceptance.
+Review source35b97ee (identical to integrationd05326b) passed the final full regression: **1,886 passed,4 skipped,0 failed across201 files**, plus all3 typechecks, build and design checks. [Exact checkpoint and limits](evidence/FINAL-review-checkpoint.md). I3 same-case source/receipt/crash/recovery evidence remains distinct from the subsequent C4 external happy path and remaining broader external acceptance.
 
 Current acceptance override (2026-10-25): [Claude 独立模型评审](CLAUDE-REVIEW.md) replaces the practitioner delivery gate. The recipient has Claude and will run the review; no model review result is yet claimed. CI is deferred by direct user instruction after run40187986581 failed the Linux regression job (37 setup-path failures); browser and isolated recovery jobs passed. Preserve that result separately from the earlier local full-suite pass. No CI fix/rerun is included.
 
 External model-review evidence now includes a [separate component supplement](claude-review/04-component-supplement/README.md):31 actual local scenarios,74 retained journal rows,57 distinct source text stand-ins plus4 PDFs and12 policy payloads. This is owner evidence preparation for Claude, not independent acceptance, parser validation or a live provider test. Source scope caveats are explicit; original handoff phases remain unchanged.
+
+PR106 targeted checkpoints:49 QBO tests and26 funding/reconciliation/HTTP tests passed in their respective changes; typechecks/build/design results are retained in C4 evidence. These are separate selections, not a new combined full-suite count. Claude review remains pending.

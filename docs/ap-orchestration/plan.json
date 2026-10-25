@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "mode": "executing",
+  "mode": "paused_handoff",
   "prepared_date": "2026-10-25",
   "issue": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97",
   "spec_file": "issue-97.snapshot.md",
@@ -229,7 +229,7 @@
         "docs/ap-orchestration/evidence/V1-independent-evaluation.json"
       ],
       "blocker": null,
-      "next_action": "I1 same original packet; practitioner sign-off remains external",
+      "next_action": "Historical independent engineering review retained. Current final domain gate is external Claude independent model review; practitioner not required.",
       "source_sha": "be98772"
     },
     {
@@ -278,7 +278,7 @@
         "tests/ap-system/v2-independent.test.ts"
       ],
       "blocker": null,
-      "next_action": "15 independent integrated tests re-run successfully after A3/D merge; proceed B3/C3/C4; external identity/provider/practitioner gates separate",
+      "next_action": "Historical 15-test independent replay retained. Subsequent C4 positive external flow passed; broader provider negatives and Claude review remain separate.",
       "source_sha": "190201f"
     },
     {
@@ -297,7 +297,8 @@
       "branch": null,
       "commit": null,
       "evidence": [
-        "docs/ap-orchestration/evidence/C4-live-happy-path.json"
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+        "docs/ap-orchestration/evidence/C4-funding-reconciliation.json"
       ],
       "blocker": null,
       "next_action": "Requested synthetic USD happy path and bank-to-local-ledger reconciliation PASS. Funding inbound ACH classified once to Dr1000/Cr3000; two matched bank rows, cash GL/provider balance0, no unresolved evidence. Formal period close, QBO funding export, webhook, credits/returns and successive partial-payment acceptance remain unclaimed."
@@ -379,7 +380,8 @@
         "tests/ap-system/quickbooks-query-envelope.test.ts",
         "docs/ap-orchestration/evidence/C4-live-mappings.json",
         "docs/ap-orchestration/evidence/C4-store-dimensions.md",
-        "docs/ap-orchestration/evidence/C4-live-happy-path.json"
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+        "docs/ap-orchestration/evidence/C4-funding-reconciliation.json"
       ],
       "blocker": null,
       "next_action": "Requested synthetic USD happy path and bank-to-local-ledger reconciliation PASS. Funding inbound ACH classified once to Dr1000/Cr3000; two matched bank rows, cash GL/provider balance0, no unresolved evidence. Formal period close, QBO funding export, webhook, credits/returns and successive partial-payment acceptance remain unclaimed.",
@@ -433,10 +435,12 @@
         "docs/ap-orchestration/evidence/D2-root-browser-review.md",
         "docs/ap-orchestration/evidence/D2-tax-desktop-review.md",
         "docs/ap-orchestration/evidence/I3-process-recovery.md",
-        "docs/ap-orchestration/I3-RUNBOOK.md"
+        "docs/ap-orchestration/I3-RUNBOOK.md",
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+        "docs/ap-orchestration/evidence/C4-funding-reconciliation.json"
       ],
       "blocker": null,
-      "next_action": "I3 actual same-case receipt arrival, worker SIGKILL, recovery, duplicate replay and desktop navigation complete. External operator-to-QBO/Increase journey remains pending; no mobile work.",
+      "next_action": "I3 desktop recovery and C4 actual operator/QBO/Increase happy path plus bank reconciliation complete. Final desktop handoff remains; no additional mobile work.",
       "source_sha": "6114a03"
     },
     {
@@ -467,10 +471,12 @@
         "docs/ap-orchestration/evidence/FINAL-review-checkpoint.md",
         "docs/ap-orchestration/evidence/FINAL-publication-receipt.json",
         "docs/ap-orchestration/CLAUDE-REVIEW.md",
-        "docs/ap-orchestration/claude-review/04-component-supplement/CAPTURE-RECEIPT.json"
+        "docs/ap-orchestration/claude-review/04-component-supplement/CAPTURE-RECEIPT.json",
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+        "docs/ap-orchestration/evidence/C4-funding-reconciliation.json"
       ],
       "blocker": null,
-      "next_action": "Hand off frozen two-phase packet to external recipient with Claude; await real review record and remediate findings. Retain current QBO/Increase gates; do not repair/rerun deferred CI."
+      "next_action": "External recipient runs Claude blind derivation then comparison; retain findings/fixes/rechecks. Review/merge PR106 and complete desktop handoff. Full issue97 agent-tool/case-advancement/messaging/matrix gaps are in ISSUE-97-GAP-MAP.md. Broad goal paused; CI deferred."
     },
     {
       "id": "A3",
@@ -515,10 +521,12 @@
         "tests/ap-system-auth-ui.test.tsx",
         "docs/ap-orchestration/evidence/C2-auth0-live.md",
         "docs/ap-orchestration/evidence/C2-auth0-live.json",
-        "docs/ap-orchestration/evidence/V6-extension.md"
+        "docs/ap-orchestration/evidence/V6-extension.md",
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+        "docs/ap-orchestration/evidence/C4-funding-reconciliation.json"
       ],
-      "blocker": "Actual positive login/binding verified. Live logout/expiry/negative-provider controls and operator workflow remain separate acceptance.",
-      "next_action": "Continue normal-browser operator review and QBO round trip. No manual token or first-user enrollment. Keep payment approval user-owned."
+      "blocker": "Live logout/expiry/negative-provider controls remain a separate acceptance gap; positive login/binding and operator bill/payment journey passed.",
+      "next_action": "Retain actual positive flow evidence; verify live identity negatives when resuming broader acceptance. Preserve independent payment authorization."
     },
     {
       "id": "V3",
@@ -908,18 +916,20 @@
       "backend_port": 3252,
       "backend_site_port": 3253,
       "backend_exec_session": 70466,
-      "state": "real_auth0_login_bound_case_awaiting_human_review",
+      "state": "settled_matched_qbo_verified_funding_reconciled",
       "human_run_binding": "explicit_one_verified_subject",
       "bootstrap_code": "c135f6c",
       "run_id": "ap97-auth0-live-20261025",
       "gateway_port": 8825,
       "frontend_port": 5192,
-      "gateway_exec_session": 51435,
+      "gateway_exec_session": 20992,
       "frontend_exec_session": 89903,
-      "code": "b3c3bc6",
+      "code": "71853508db2bb95d6d87929ab46c79db1d7b2a0f",
       "case_id": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
       "private_evidence": "var/auth0-acceptance",
-      "payment_worker_started": false
+      "payment_worker_started": true,
+      "payment_worker_state": "bounded dispatch/settlement/replay completed; no continuous worker claimed",
+      "code_scope": "isolated runtime baseline plus validated QBO and funding fixes; not all review-head features"
     },
     "synthetic_ui": {
       "port": 5194,
@@ -993,7 +1003,7 @@
     "mapping_hash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff",
     "happy_path_evidence": "docs/ap-orchestration/evidence/C4-live-happy-path.json"
   },
-  "last_updated_at": "2026-10-25T11:41:11.375312+00:00",
+  "last_updated_at": "2026-10-25T11:58:08.398208+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",
@@ -1020,7 +1030,7 @@
       "workers": 4
     },
     "report": "docs/ap-orchestration/evidence/FINAL-review-checkpoint.md",
-    "limits": "Revision-bound local results. CI deferred after Linux failure. Actual operator/QBO transaction/Increase execution and external Claude model review pending; practitioner no longer required."
+    "limits": "Historical revision-bound local results; not rerun for PR106. Subsequent C4 synthetic Auth0/Increase/QBO happy path and local funding reconciliation passed. Wider external tests and Claude review remain pending; CI deferred and practitioner not required."
   },
   "ui_acceptance_scope": {
     "target": "laptop desktop web browser",
@@ -1063,11 +1073,24 @@
   },
   "publication": {
     "receipt": "docs/ap-orchestration/evidence/FINAL-publication-receipt.json",
-    "draft_pr": "https://github.com/srivatsav-kannan/autonomous-finance/pull/105",
-    "head": "11244eefe69c7d29bff5c870977abf893bcb982d",
+    "draft_pr": "https://github.com/srivatsav-kannan/autonomous-finance/pull/106",
+    "head": "28837a9fd502a87df615429860137c4f39ee09f9",
     "ci_run": "https://github.com/srivatsav-kannan/autonomous-finance/actions/runs/40187986581",
-    "status": "published_draft_ci_deferred_by_user",
-    "ci_result": "failure retained; no repair/rerun requested"
+    "status": "pr106_draft_open_implementation_verified_ci_deferred",
+    "ci_result": "failure retained; no repair/rerun requested",
+    "historical_pr105": {
+      "receipt": "docs/ap-orchestration/evidence/FINAL-publication-receipt.json",
+      "draft_pr": "https://github.com/srivatsav-kannan/autonomous-finance/pull/105",
+      "head": "11244eefe69c7d29bff5c870977abf893bcb982d",
+      "ci_run": "https://github.com/srivatsav-kannan/autonomous-finance/actions/runs/40187986581",
+      "status": "published_draft_ci_deferred_by_user",
+      "ci_result": "failure retained; no repair/rerun requested"
+    },
+    "head_scope": "implementation checkpoint before this documentation commit",
+    "pr105_merged_at": "2026-10-25T11:36:25Z",
+    "pr105_merge_commit": "b48885fcfa3282c31c1123b204055b1be9e9a3a4",
+    "ci_scope": "Historical PR105 run; no PR106 CI acceptance claimed.",
+    "receipt_scope": "Historical PR105 publication receipt; current PR106 status is recorded in CURRENT-STATUS.md."
   },
   "model_review": {
     "label": "Claude \u72ec\u7acb\u6a21\u578b\u8bc4\u5ba1",
@@ -1085,7 +1108,8 @@
       "policyFiles": 12,
       "sourceChunkScopeMismatches": 14,
       "classification": "owner-prepared actual local records including C02 original-PDF discrepancy; external Claude review pending"
-    }
+    },
+    "live_supplement": "docs/ap-orchestration/claude-live-supplement/MANIFEST.json"
   },
   "external_happy_path": {
     "status": "passed",
@@ -1096,5 +1120,13 @@
     "claude_review": "pending",
     "funding_reconciliation_evidence": "docs/ap-orchestration/evidence/C4-funding-reconciliation.json",
     "qbo_funding_export": "not_executed"
+  },
+  "current_status": "docs/ap-orchestration/CURRENT-STATUS.md",
+  "roadmap_gap_map": "docs/ap-orchestration/ISSUE-97-GAP-MAP.md",
+  "issue_state_observed": {
+    "state": "CLOSED",
+    "updatedAt": "2026-10-25T11:44:51Z",
+    "receipt": "docs/ap-orchestration/evidence/issue-97-status-receipt.json",
+    "all_acceptance_passed": false
   }
 }

@@ -1,0 +1,53 @@
+{
+  "number": 97,
+  "title": "Build a complete evidence-backed AP system: data, workflow, controls and integrations",
+  "state": "CLOSED",
+  "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97",
+  "updatedAt": "2026-10-25T11:44:51Z",
+  "reviewedAt": "2026-10-25T11:58:08.398208+00:00",
+  "implementationCommit": "28837a9fd502a87df615429860137c4f39ee09f9",
+  "bodySha256": "b735332785be8511595ee635426f33819b0caee48f2bce862815fbfe240884f4",
+  "interpretation": "Closed GitHub state is not evidence of complete acceptance; frozen launch specification unchanged.",
+  "comments": [
+    {
+      "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396050464",
+      "createdAt": "2026-10-25T09:39:15Z",
+      "bodySha256": "bdf0437296895021430ccee3cfe03fae5829ecff71b1aef832acc02e48238969"
+    },
+    {
+      "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396167295",
+      "createdAt": "2026-10-25T09:52:05Z",
+      "bodySha256": "556aee9f873da5a7253b8f26dbcdb47ef3a80290fbe3e6194dc95d7238eef465"
+    },
+    {
+      "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396533726",
+      "createdAt": "2026-10-25T10:31:19Z",
+      "bodySha256": "88aa6882f04b929a60b7ef6a826914de7f2d4ea0260d9246c9a46c1ba521428d"
+    },
+    {
+      "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396715265",
+      "createdAt": "2026-10-25T10:51:09Z",
+      "bodySha256": "84eeeb202920008f0d4157ada04e636b2789ffc9390d42e1f75cba3d0e4fce0d"
+    },
+    {
+      "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396729954",
+      "createdAt": "2026-10-25T10:52:51Z",
+      "bodySha256": "b3164be7daa3cace22d6b786614ae850f34c6b128a6a245578467cd59d3ee0b7"
+    },
+    {
+      "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396796577",
+      "createdAt": "2026-10-25T11:00:13Z",
+      "bodySha256": "aa1427598c321330e70facc34ec2fbbc12c6111b0a85ac1a28021ae06640dfc8"
+    },
+    {
+      "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396801545",
+      "createdAt": "2026-10-25T11:00:45Z",
+      "bodySha256": "e5b7d57fd8430cbdd1833a70e164d7eadaa8c9601107743fa1eb0f6b1dd39c8a"
+    },
+    {
+      "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6397213862",
+      "createdAt": "2026-10-25T11:44:51Z",
+      "bodySha256": "81dff94976dc614d70733ccd782cf4b9bb924799d1928e3d4090eaa2bbd5700d"
+    }
+  ]
+}
