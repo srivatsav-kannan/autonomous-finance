@@ -80,3 +80,28 @@ Reviewed application source is `d08165c1ad38bb20817ace294c55ed1c50b8c243`. B's `
 Root goal status had reached blocked during the earlier missing-approval turns; native tools cannot directly reactivate that state. Explicit user approval/key updates resumed the authorized work. Final completion will be recorded after report review/push. No heartbeat was needed. PR63 remains reviewable and unmerged on #51; issue66 records the remaining coverage/protocol limitation rather than missing authorization. No billing changes, purchases, public deployment or real financial actions occurred.
 
 D's completed independent handoff `1852f93` and its parent `53af871` were reviewed and integrated as `0fa04c1` and `f4d9920`. D's native goal is now complete; all four worker objectives are complete. Root verified every run, score and restart artifact seal independently, reviewed the final report, and corrected two cost-description sentences without changing measurements. Required implementation, browser verification and the approved partial evaluation are complete; future coverage improvements are separate scope tracked in issue #66.
+
+## Extraction accuracy follow-up
+
+The user requested extraction improvements after the UI integration. Root owns this
+follow-up on `codex/invoice-extraction-accuracy`, rebased onto current main
+`27680f6`; PR63 was already closed and is not being reopened. The earlier four
+worker chats remain complete. No new worker, goal, paid batch or budget reset was
+created. The user's running main-browser-recovery checkout and services on
+:5173/:8790 were left intact.
+
+Verified application `3645c00` adds explicit printed-layout extraction, exact
+money, customer/alias resolution, conflict handling and backend field validation.
+The current [report](extraction-results.md) distinguishes 107/107 eligible
+document candidates from the unchanged official 0/18 accepted-total score.
+849 repository tests, 31 evaluator tests, three TypeScript checks, build, real
+HTTP/Convex evaluation, browser approvals/replay and actual process restart pass.
+All measurements are free deterministic post-fix runs; old artifacts are preserved.
+
+An isolated review preview is available at `http://localhost:5184/?view=invoices`
+using gateway :8814, local backend :3230 and run
+`invoice-extraction-browser-d75aa1b`. It retains two public synthetic accepted
+documents ($1,000 net) and one unresolved conflict. Benchmark gateway :8813 uses
+`invoice-extraction-original-3645c00`; it has no accepted financial effects.
+The backend uses `convex dev --codegen disable` so local regeneration does not
+silently change the checked-in generated types during attested evaluation.
