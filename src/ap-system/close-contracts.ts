@@ -162,6 +162,7 @@ export type CloseAction = z.infer<typeof closeActionSchema>;
 export type CloseProposal = z.infer<typeof closeProposalSchema>;
 export type CloseVote = z.infer<typeof closeVoteSchema>;
 export type CloseBlocker = {
+  exposureCents?: number;
   code: string;
   owner: "controller" | "ap_clerk" | "treasury" | "purchasing_owner";
   reference: string;

@@ -81,10 +81,11 @@ export async function creditFixture(
   accepted.discountCents = discountCents;
   accepted.discountAllocations = originalCandidate.discountAllocations;
   const original = await f.recognize(f.detail, accepted);
-  async function credit(number = "CREDIT-1") {
+  async function credit(number = "CREDIT-1", issueDate = "2026-10-19") {
     const input = packet(number);
     const c = input.candidate!;
     c.kind = "credit_note";
+    c.invoiceDate = issueDate;
     c.lines[0]!.quantity.decimal = "1";
     c.lines[0]!.amountCents = 3850;
     c.lines[0]!.allocations[0]!.amountCents = 3850;

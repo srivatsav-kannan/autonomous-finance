@@ -180,7 +180,9 @@ async function evaluateAction(
         "disposition_binding",
         "Only an exact current source/disputed/received-unit blocker may receive a supported disposition",
       );
-    context = { snapshot: facts.factsHash };
+    const blocker=facts.blockers.find(b=>b.reference===action.reference)!;
+    amountCents=blocker.exposureCents??Number.MAX_SAFE_INTEGER;
+    context = { snapshot: facts.factsHash, exposureCents:blocker.exposureCents??null, valuation:blocker.exposureCents===undefined?"unknown_requires_highest_route":"source_amount" };
   }
   if (action.kind === "close") {
     const view = await readPeriodView(ctx, scope, action.period);
@@ -426,22 +428,13 @@ export const propose = mutation({
             escalationGroupId: null,
           },
         ]
-      : request.action.kind === "disposition"
-        ? [
-            {
-              groupId: result.policy.value.varianceApprovalGroup,
-              quorum: 1,
-              escalateAfterMs: 86400000,
-              escalationGroupId: null,
-            },
-          ]
-        : structuredClone(
+      : structuredClone(
             result.policy.value.bands.find(
               (b) => b.upToCents >= result.amountCents,
             )!.steps,
           );
     if (
-      ["adjustment", "reverse_accrual", "tax_adjustment"].includes(request.action.kind) &&
+      ["adjustment", "reverse_accrual", "tax_adjustment", "disposition"].includes(request.action.kind) &&
       !route.some(
         (s) => s.groupId === result.policy.value.varianceApprovalGroup,
       )

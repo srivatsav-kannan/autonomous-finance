@@ -322,6 +322,13 @@ export async function evaluateCredit(
       .unique();
   if (!originalRevision) deny("original_revision_missing", "Original approved source revision is unavailable");
   const originalInput = intakeSchema.parse(originalRevision.intake);
+  const originalJournal = await ctx.db.get(bill!.entryId!);
+  const receiptKeys = new Set(acceptance.lines.flatMap(l=>l.receipts.map(r=>businessSourceKey(r.source))));
+  const returnKeys = new Set(plan.lines.flatMap(l=>l.returnEvidence.map(businessSourceKey)));
+  const relevantReceipts = [...originalInput.purchasingEvidence.filter(p=>receiptKeys.has(businessSourceKey(p.source))),...input.purchasingEvidence.filter(p=>returnKeys.has(businessSourceKey(p.source)))];
+  if(!originalInput.candidate || c.invoiceDate<originalInput.candidate.invoiceDate || !originalJournal || accountingDate<originalJournal.date || relevantReceipts.some(p=>p.acceptedAt && c.invoiceDate<p.acceptedAt.slice(0,10)))
+    deny("credit_chronology", "A credit cannot precede its original invoice or supporting receipt/return; posting cannot precede original recognition");
+
   const allocateRemaining = (id: string, originals: BusinessAcceptance["freightAllocations"], amount: number) => {
     const used = links.flatMap((l) => l.allocations as CreditAllocation[]).filter((a) => a.originalLineId === id);
     return allocateCents(amount, originals.map((a, i) => a.amountCents - sumCents(used.filter((u) => u.allocationIndex === i).map((u) => u.amountCents))));
