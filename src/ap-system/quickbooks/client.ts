@@ -203,6 +203,32 @@ export class QboClient {
     }
     return { realmId: m.realmId, country: "US", mappingHash: hash(m) };
   }
+  /** QBO can omit optional BillPayment.APAccountRef. Prove it through every
+   * exact linked payable instead of treating the missing field as a wildcard. */
+  private async responseMatches(plan: Pick<Plan, "entity" | "payload">, actual: Record<string, any>) {
+    if (matches(plan.payload, actual)) return true;
+    const { APAccountRef, ...rest } = plan.payload;
+    const apValue = APAccountRef && typeof APAccountRef === "object" && "value" in APAccountRef ? APAccountRef.value : undefined;
+    if (
+      plan.entity !== "BillPayment" ||
+      !actual || Object.prototype.hasOwnProperty.call(actual, "APAccountRef") ||
+      typeof apValue !== "string" ||
+      !/^\d{1,32}$/.test(apValue) ||
+      !matches(rest, actual) || !Array.isArray(rest.Line)
+    ) return false;
+    const links = rest.Line.flatMap((line: any) => line.LinkedTxn ?? []);
+    if (!links.length || links.length > 100 || links.some((link: any) =>
+      !link || !["Bill", "VendorCredit"].includes(link.TxnType) ||
+      typeof link.TxnId !== "string" || !/^\d{1,32}$/.test(link.TxnId)
+    )) return false;
+    for (const link of links) {
+      const payable = await this.get(link.TxnType, link.TxnId);
+      if (!matches(APAccountRef, payable.APAccountRef) ||
+          !matches(rest.VendorRef, payable.VendorRef) ||
+          (rest.CurrencyRef && !matches(rest.CurrencyRef, payable.CurrencyRef))) return false;
+    }
+    return true;
+  }
   async find(plan: Plan) {
     const doc = String(plan.payload.DocNumber);
     if (!/^AP[a-f0-9]{18}$/.test(doc))
@@ -220,7 +246,7 @@ export class QboClient {
     // Any same marker with changed economics is a conflict, never silently picked.
     if (
       rows.length > 1 ||
-      (rows.length === 1 && !matches(plan.payload, rows[0]))
+      (rows.length === 1 && !await this.responseMatches(plan, rows[0]!))
     )
       throw new QboError("external_mapping_conflict");
     return rows[0] as Record<string, any> | undefined;
@@ -229,7 +255,7 @@ export class QboClient {
   async verify(op: Operation) {
     if (!op.externalId) throw new QboError("external_identity_required");
     const found = await this.get(op.entity, op.externalId);
-    if (String(found.SyncToken) !== op.syncToken || !matches(op.payload, found))
+    if (String(found.SyncToken) !== op.syncToken || !await this.responseMatches(op, found))
       throw new QboError("external_stale_or_changed");
     return found;
   }
@@ -294,7 +320,7 @@ export class QboClient {
       op.requestId,
     );
     const value = data[op.entity];
-    if (!value || !matches(op.payload, value))
+    if (!value || !await this.responseMatches(op, value))
       throw new QboError("external_response_mismatch", true);
     return value as Record<string, any>;
   }

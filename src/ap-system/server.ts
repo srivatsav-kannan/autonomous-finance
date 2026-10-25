@@ -1,3 +1,4 @@
+import {sandboxFundingSchema, type SandboxFundingInput, type BankReconciliationView} from "./bank-reconciliation";
 import {contactChangeOperationSchemas,type ContactChangeOperation} from "./supplier-contact-contracts";
 import type {SupplierContactOperations} from "./supplier-contact-operations";
 import type {OperationalTimings} from "./operational-timing";
@@ -37,6 +38,7 @@ export interface APWorkspaceService {
  paymentRuns?:PaymentRunOperations;
  accounting?:AccountingOperations;
  domain?:DomainOperations;
+ bankEvidence?:{view():Promise<BankReconciliationView>;classifyFunding(input:SandboxFundingInput):Promise<unknown>};
  close?:CloseOperations;
  closeAccounting?:QBOCloseBridge;
  corrections?:CorrectionOperations;
@@ -137,6 +139,11 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
     if(!service.corrections)throw new APHttpError("capability_unavailable",503,"Credit application evidence is unavailable.");
     const id=z.string().trim().min(1).max(180);
     return send(res,await service.corrections.creditApplication(id.parse(decodeURIComponent(creditApplication[1]!)),id.parse(decodeURIComponent(creditApplication[2]!))));
+   }
+   if(url.pathname===PREFIX+"/bank-evidence"||url.pathname===PREFIX+"/bank-evidence/funding"){
+    if(!service.bankEvidence)throw new APHttpError("capability_unavailable",503,"Bank reconciliation is unavailable.");
+    if(req.method==="GET"&&url.pathname===PREFIX+"/bank-evidence")return send(res,await service.bankEvidence.view());
+    if(req.method==="POST"&&url.pathname===PREFIX+"/bank-evidence/funding")return send(res,await service.bankEvidence.classifyFunding(sandboxFundingSchema.parse(await json(req))));
    }
    const costState=/^\/api\/ap-system\/close\/cost-state\/([^/]+)$/.exec(url.pathname);
    if(req.method==="GET"&&costState){

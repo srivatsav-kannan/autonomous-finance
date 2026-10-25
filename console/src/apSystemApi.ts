@@ -1,3 +1,4 @@
+import {sandboxFundingSchema,type SandboxFundingInput,type BankReconciliationView} from "../../src/ap-system/bank-reconciliation";
 import {contactChangeOperationSchemas,type ContactChangeOperation,type ContactChangeInputs} from "../../src/ap-system/supplier-contact-contracts";
 import type {SupplierContactWorkspaceView} from "../../src/ap-system/supplier-contact-operations";
 import type {OperationalTimings} from "../../src/ap-system/operational-timing";
@@ -82,6 +83,9 @@ export function accountingSelection(value?:APAccountingSelection|string):APAccou
  return input;
 }
 export const apSystemApi = {
+  bankEvidence:(signal?:AbortSignal)=>request<BankReconciliationView>("/bank-evidence",undefined,signal),
+  classifySandboxFunding:(input:SandboxFundingInput)=>request<{entryId:string;replayed:boolean}>("/bank-evidence/funding",sandboxFundingSchema.parse(input)),
+
   supplierContacts:(signal?:AbortSignal)=>request<SupplierContactWorkspaceView>("/supplier-contacts",undefined,signal),
   contactChange:<K extends ContactChangeOperation>(operation:K,input:ContactChangeInputs[K])=>request<unknown>(`/supplier-contacts/${operation}`,contactChangeOperationSchemas[operation].parse(input)),
   operationalTimings:(signal?:AbortSignal)=>request<OperationalTimings>("/metrics",undefined,signal),
