@@ -16,7 +16,7 @@ describe("real dispatcher recovery against independent durable FakeBank", () => 
   it("concurrent dispatchers submit once, and operating capability has no simulator or credentials", async () => {
     const f=await demoFixture();await f.queued();const bank=openFakeBank({path:bankPath(),scope:f.scope,seed:39});
     try {
-      expect(Object.keys(bank.provider).sort()).toEqual(["createTransfer","getBalance","getTransfer","getTransaction","listTransactions","lookupTransfer","recovery"].sort());
+      expect(Object.keys(bank.provider).sort()).toEqual(["createTransfer","getBalance","getTransfer","getTransaction","listTransactions","lookupTransfer","recovery","scanForPossibleSend"].sort());
       expect("harness" in bank.provider).toBe(false);expect("settle" in bank.provider).toBe(false);expect("secret" in bank.provider).toBe(false);
       const results=await Promise.all(["one","two"].map(worker=>new PaymentDispatcher(f.t as KernelTransport,f.scope,f.dispatcherToken,bank.provider,worker).tick()));
       expect(results.filter(r=>r.dispatched)).toHaveLength(1);

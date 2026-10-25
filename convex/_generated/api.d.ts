@@ -14,6 +14,7 @@ import type * as asks from "../asks.js";
 import type * as bank from "../bank.js";
 import type * as demoEvidence from "../demoEvidence.js";
 import type * as demoEvidenceSchema from "../demoEvidenceSchema.js";
+import type * as demoOps from "../demoOps.js";
 import type * as demoPayments from "../demoPayments.js";
 import type * as demoSchema from "../demoSchema.js";
 import type * as invoiceCases from "../invoiceCases.js";
@@ -48,6 +49,7 @@ declare const fullApi: ApiFromModules<{
   bank: typeof bank;
   demoEvidence: typeof demoEvidence;
   demoEvidenceSchema: typeof demoEvidenceSchema;
+  demoOps: typeof demoOps;
   demoPayments: typeof demoPayments;
   demoSchema: typeof demoSchema;
   invoiceCases: typeof invoiceCases;

@@ -6,9 +6,9 @@ import { PAYMENT_EXECUTOR_VERSION, type BankScope, type EffectLease } from "../.
 
 type DispatcherArgs = { scope: BankScope; token: string; paymentExecutorVersion?: string };
 type ClaimArgs = DispatcherArgs & { commandId: Id<"demoCommands">; generation: number; leaseToken: string };
-const LEASE_MS = 30_000;
-const ATTEMPT_BUDGET = 8;
-const TIME_BUDGET_MS = 24 * 60 * 60 * 1000;
+export const LEASE_MS = 30_000;
+export const ATTEMPT_BUDGET = 8;
+export const TIME_BUDGET_MS = 24 * 60 * 60 * 1000;
 async function ownedClaim(ctx: MutationCtx, args: ClaimArgs) {
   await requirePaymentDispatcher(ctx, args);
   const c = await ctx.db.get(args.commandId); assertRowScope(c, args.scope);

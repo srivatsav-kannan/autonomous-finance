@@ -94,6 +94,11 @@ const paymentCommandSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("ApproveWithinPolicy"), versionId: nonempty, snapshotHash: hash }).strict(),
   z.object({ type: z.literal("CancelPayment"), versionId: nonempty }).strict(),
   z.object({ type: z.literal("ResumePayment"), commandId: nonempty, reason: nonempty }).strict(),
+  z.object({ type: z.literal("ReleaseUnsentPayment"), commandId: nonempty, reason: nonempty, providerCheck: z.object({
+    lookup: z.literal("not_found"), searchedBy: z.literal("operation_key"), checkedAt: timestamp,
+    scanComplete: z.literal(true), scannedFrom: timestamp, transfersScanned: timestamp, transactionsScanned: timestamp,
+    matchingTransferIds: z.array(nonempty), matchingTransactionIds: z.array(nonempty),
+  }).strict() }).strict(),
 ]);
 export const commandEnvelopeSchema = z.object({ commandId: nonempty, command: paymentCommandSchema }).strict().superRefine(({ command }, ctx) => {
   if (command.type === "RequestPayment" && (new Set(command.billIds).size !== command.billIds.length ||

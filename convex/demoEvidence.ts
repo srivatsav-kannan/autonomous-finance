@@ -7,9 +7,10 @@ import { appendDemoEntry } from "./lib/demoPost";
 import { canonical, sha256Hex } from "./lib/kernel";
 import type { BankScope } from "../src/payments/contracts";
 
-import { commandFor, transactionFor, saveObservation, saveTransaction, postVerifiedTransaction } from "./lib/payments/applyObservation";
+import { commandFor, transactionFor, saveObservation, saveTransaction, postVerifiedTransaction, recordTransactionFailure } from "./lib/payments/applyObservation";
 
 const serviceArgs = { scope: scopeValidator, token: v.string() };
+const failureValidator = v.object({ id: v.string(), errorClass: v.string(), error: v.string(), retryAfterMs: v.optional(v.number()) });
 /** Raw signature verification happens in the credential-isolated ingress. ACK only after this commits. */
 export const ingestNotice = mutation({
   args: { ...serviceArgs, eventId: v.string(), transferId: v.optional(v.string()), transactionId: v.optional(v.string()), bodyHash: v.string() },
@@ -75,15 +76,31 @@ export const approveSandboxFunding = mutation({
 
 /** Durable imported records and the polling checkpoint commit together (or roll back together). */
 export const importPage = mutation({
-  args: { ...serviceArgs, expectedCursor: v.union(v.string(), v.null()), cursor: v.union(v.string(), v.null()), transactions: v.array(transactionValidator) },
+  args: { ...serviceArgs, expectedCursor: v.union(v.string(), v.null()), cursor: v.union(v.string(), v.null()), transactions: v.array(transactionValidator), failures: v.optional(v.array(failureValidator)), scanComplete: v.optional(v.boolean()) },
   handler: async (ctx, args) => {
-    await requireService(ctx, args.scope, args.token, "evidence");
+    const config = await requireService(ctx, args.scope, args.token, "evidence");
     const old = await ctx.db.query("demoCursors").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).unique();
     if ((old?.cursor ?? null) !== args.expectedCursor) return { stale: true };
-    for (const transaction of args.transactions) await saveTransaction(ctx, args.scope, transaction);
-    if (old) await ctx.db.patch(old._id, { cursor: args.cursor, updatedAt: Date.now() });
-    else await ctx.db.insert("demoCursors", { scope: args.scope, cursor: args.cursor, updatedAt: Date.now() });
+    if ((args.failures?.length ?? 0) > 100) throw new Error("Too many bank transaction failures in one page");
+    for (const transaction of args.transactions) await saveTransaction(ctx, args.scope, transaction, config.activitySince);
+    // Failed rows are recorded in the same commit that moves the cursor past them.
+    for (const failure of args.failures ?? []) await recordTransactionFailure(ctx, args.scope, failure);
+    const now = Date.now();
+    const scanCompletedAt = args.scanComplete ? now : old?.scanCompletedAt;
+    if (old) await ctx.db.patch(old._id, { cursor: args.cursor, updatedAt: now, scanCompletedAt });
+    else await ctx.db.insert("demoCursors", { scope: args.scope, cursor: args.cursor, updatedAt: now, scanCompletedAt });
     return { stale: false };
+  },
+});
+
+/** Cursor-free retry of individually failed rows; successes resolve their failure records. */
+export const importTransactions = mutation({
+  args: { ...serviceArgs, transactions: v.array(transactionValidator), failures: v.array(failureValidator) },
+  handler: async (ctx, args) => {
+    const config = await requireService(ctx, args.scope, args.token, "evidence");
+    if (args.transactions.length + args.failures.length > 100) throw new Error("Too many bank transactions in one retry");
+    for (const transaction of args.transactions) await saveTransaction(ctx, args.scope, transaction, config.activitySince);
+    for (const failure of args.failures) await recordTransactionFailure(ctx, args.scope, failure);
   },
 });
 
@@ -91,22 +108,22 @@ export const importPage = mutation({
 export const observeTransactionNotice = mutation({
   args: { ...serviceArgs, eventId: v.string(), transaction: transactionValidator },
   handler: async (ctx, args) => {
-    await requireService(ctx, args.scope, args.token, "evidence");
+    const config = await requireService(ctx, args.scope, args.token, "evidence");
     const notice = await ctx.db.query("demoInbox").withIndex("by_event", q => q.eq("scope.runId", args.scope.runId).eq("eventId", args.eventId)).unique();
     if (!notice || notice.transferId || notice.transactionId !== args.transaction.id || args.transaction.commandId) throw new Error("Non-AP transaction notification mismatch");
-    await saveTransaction(ctx, args.scope, args.transaction);
+    await saveTransaction(ctx, args.scope, args.transaction, config.activitySince);
     await ctx.db.patch(notice._id, { processed: true, error: undefined });
   },
 });
 export const observeTransfer = mutation({
   args: { ...serviceArgs, observation: observationValidator, transactions: v.array(transactionValidator), eventId: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    await requireService(ctx, args.scope, args.token, "evidence");
+    const config = await requireService(ctx, args.scope, args.token, "evidence");
     if (args.observation.status === "rejected" && args.transactions.length) throw new Error("Rejection conflicts with economic evidence");
     await saveObservation(ctx, args.scope, args.observation);
     for (const tx of args.transactions) {
       if (tx.transferId !== args.observation.id) throw new Error("Notification transaction/transfer mismatch");
-      await saveTransaction(ctx, args.scope, tx);
+      await saveTransaction(ctx, args.scope, tx, config.activitySince);
     }
     if (args.eventId) {
       const notice = await ctx.db.query("demoInbox").withIndex("by_event", q => q.eq("scope.runId", args.scope.runId).eq("eventId", args.eventId!)).unique();
@@ -127,7 +144,7 @@ export const recordError = mutation({
     await requireService(ctx, args.scope, args.token, "evidence");
     if (args.transactionId) {
       const tx = await transactionFor(ctx, args.scope, args.transactionId);
-      if (tx && !tx.entryId) await ctx.db.patch(tx._id, { state: "exception", error: args.error.slice(0, 500) });
+      if (tx && !tx.entryId && tx.state !== "prior_activity") await ctx.db.patch(tx._id, { state: "exception", error: args.error.slice(0, 500) });
     }
     if (args.eventId) {
       const n = await ctx.db.query("demoInbox").withIndex("by_event", q => q.eq("scope.runId", args.scope.runId).eq("eventId", args.eventId!)).unique();
@@ -137,14 +154,21 @@ export const recordError = mutation({
 });
 export const work = query({
   args: serviceArgs, handler: async (ctx, args) => {
-    await requireService(ctx, args.scope, args.token, "evidence");
-    const [notices, commands, transactions, cursor] = await Promise.all([
+    const config = await requireService(ctx, args.scope, args.token, "evidence");
+    const [notices, commands, transactions, cursor, retries] = await Promise.all([
       ctx.db.query("demoInbox").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).collect(),
       ctx.db.query("demoCommands").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).collect(),
       ctx.db.query("demoTransactions").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).collect(),
       ctx.db.query("demoCursors").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).unique(),
+      ctx.db.query("demoEvidenceRetries").withIndex("by_run_open", q => q.eq("scope.runId", args.scope.runId).eq("open", true)).take(100),
     ]);
-    return { notices: notices.filter(n => !n.processed), commands: commands.filter(c => c.providerTransferId && !["cancelled", "rejected"].includes(c.execution)), transactions: transactions.filter(t => !t.entryId), cursor: cursor?.cursor ?? null };
+    return {
+      notices: notices.filter(n => !n.processed), commands: commands.filter(c => c.providerTransferId && !["cancelled", "rejected"].includes(c.execution)),
+      // Prior-run history is never re-observed or posted by this run's worker.
+      transactions: transactions.filter(t => !t.entryId && t.state !== "prior_activity"),
+      retries: retries.map(r => ({ transactionId: r.transactionId, nextAttemptAt: r.nextAttemptAt })),
+      cursor: cursor?.cursor ?? null, activitySince: config.activitySince ?? null,
+    };
   },
 });
 export const resolveCommand = query({
@@ -165,15 +189,20 @@ async function readCloseState(ctx: QueryCtx, scope: BankScope) {
     ctx.db.query("demoCredits").withIndex("by_run", q => q.eq("scope.runId", scope.runId)).collect(),
     ctx.db.query("ledgerHeads").withIndex("by_run", q => q.eq("runId", scope.runId)).unique(),
   ]);
-  return { commands, transactions, notices, versions, observations, bills, credits, ledgerHead };
+  // Operational retry state: blocks close while open, but is not part of the signed snapshot.
+  const retries = await ctx.db.query("demoEvidenceRetries").withIndex("by_run_open", q => q.eq("scope.runId", scope.runId).eq("open", true)).collect();
+  return { commands, transactions, notices, versions, observations, bills, credits, ledgerHead, retries };
 }
 type CloseState = Awaited<ReturnType<typeof readCloseState>>;
-function blockersFor({ commands, transactions, notices, versions, observations, bills }: CloseState) {
+function blockersFor({ commands, transactions, notices, versions, observations, bills, retries }: CloseState) {
   return [
     ...versions.filter(p => p.status === "awaiting_approval").map(p => ({ kind: "approval", id: p._id, reason: "Awaiting approval; cancel stale requests before closing" })),
     ...observations.filter(o => !commands.some(c => c.command.commandId === o.observation.commandId && c.providerTransferId === o.transferId)).map(o => ({ kind: "transfer", id: o.transferId, reason: "Unmatched verified bank transfer" })),
     ...commands.filter(c => !["cancelled", "rejected"].includes(c.execution) && (c.reconciliation !== "matched" || !["settled", "returned"].includes(c.execution))).map(c => ({ kind: "payment", id: c.command.commandId, reason: c.lastError ?? `${c.execution}/${c.posting}/${c.reconciliation}` })),
-    ...transactions.filter(t => !t.entryId).map(t => ({ kind: "transaction", id: t.transaction.id, reason: t.error ?? t.state })),
+    ...commands.filter(c => c.lateTransferId).map(c => ({ kind: "payment", id: c.command.commandId, reason: c.lastError ?? "Bank transfer appeared after operator release" })),
+    // Earlier account history (prior_activity) is retained for audit but is not this run's cash.
+    ...transactions.filter(t => !t.entryId && t.state !== "prior_activity").map(t => ({ kind: "transaction", id: t.transaction.id, reason: t.error ?? t.state })),
+    ...retries.filter(r => !transactions.some(t => t.transaction.id === r.transactionId)).map(r => ({ kind: "transaction", id: r.transactionId, reason: `Bank evidence could not be verified (${r.errorClass}); retrying` })),
     ...notices.filter(n => !n.processed).map(n => ({ kind: "notification", id: n.eventId, reason: n.error ?? "awaiting verification" })),
     ...bills.filter(b => b.status !== "paid" || b.flags.length > 0).map(b => ({ kind: "bill", id: b._id, reason: b.flags.length ? b.flags.join("; ") : b.status })),
   ];

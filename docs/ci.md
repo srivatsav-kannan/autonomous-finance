@@ -71,12 +71,37 @@ including the original operation key and exact saved request bytes. It drops not
 posted bank evidence, and asserts a second reconciliation pass posts nothing.
 The CI runner then independently checks the report and fresh backend journal:
 
-- One command and two leased attempts, with one bank create call and at least one
-  persisted operation-key lookup after restart. The saved command, request hash
-  and idempotency key match the single resulting transfer; recovery finds the
-  accepted transfer without submitting again.
+- One command and two leased attempts, and at least one persisted operation-key
+  lookup after restart. The restarted dispatcher makes zero create calls (it
+  reports its own count over IPC); recovery finds the accepted transfer without
+  submitting again. The saved command, request hash and idempotency key match
+  the single resulting transfer, and the bank holds exactly one transfer for
+  that key.
+- Idempotent retry ([#77](https://github.com/srivatsav-kannan/autonomous-finance/issues/77)):
+  after recovery the coordinator replays the lost request exactly (same frozen
+  command, key and saved bytes). The bank therefore sees two create calls, and
+  the replay must return the original transfer without error. The transfer ID
+  created on the lost call must equal the replay's result, the transfer the
+  restarted dispatcher recovered, the `providerTransferId` Convex recorded at
+  that point, and the final command's. A same-key retry that hits FakeBank's
+  unique key (`ERR_SQLITE_ERROR`) or an idempotency conflict fails the gate with
+  a fixed message such as `Same-key retry after a lost response must not error`,
+  recorded as `invariant` with its `invariantLine`. Run output classified as
+  `IDEMPOTENCY_CONFLICT` (a UNIQUE or idempotency-conflict error) also fails it.
 - One posted debit and one linked cash journal entry for the approved amount.
-- Settled/posted/matched state, no close blockers and no ingested webhook rows.
+- Settled/posted/matched state and no close blockers.
+- Missing-webhook proof: the bank generated notifications and all were dropped,
+  `demoInbox` is empty, and `demoCursors` holds this run's cursor with a
+  completed scan (`scanCompletedAt`). The old standalone empty-inbox check could
+  never fail because the demo never ingests a webhook.
+- A failed demo keeps its own exit code and signal (`childExitCode`,
+  `childSignal`) in `recovery.json`.
+
+To check the retry assertion by hand, temporarily change FakeBank's replay
+branch in `createTransfer` (`if (original) {`) so it never matches, run
+`npm run ci:recovery`, and confirm it fails at `verify-invariants` with the
+same-key retry message; then revert. The unit tests in
+`tests/ci-recovery-evidence.test.js` cover the same failure without a backend.
 - A parent-verified SIGKILL checkpoint before local completion, matching frozen
   command fingerprints at acceptance and lookup, and unpaid state until settlement.
 

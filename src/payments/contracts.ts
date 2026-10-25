@@ -1,7 +1,7 @@
 /** Compatibility types: the bank command, its hash and saved request bytes stay authoritative. */
 export type {
   BankScope, BankDestination, BankCommand, TransferObservation, BankTransaction,
-  BankBalance, BankPage, BankPagination, BankEvent, BankErrorClass, BankingProvider, BankingEvents,
+  BankBalance, BankPage, BankPagination, BankItemFailure, BankEvent, BankErrorClass, BankingProvider, BankingEvents,
 } from "../integrations/contracts";
 export {
   canonicalJson, canonicalCommand, commandRequestHash, sameBankScope, buildIncreaseRequestBody,
@@ -53,7 +53,14 @@ export type ApprovePayment = { type: "ApprovePayment"; versionId: PaymentId; sna
 export type ApproveWithinPolicy = { type: "ApproveWithinPolicy"; versionId: PaymentId; snapshotHash: string };
 export type CancelPayment = { type: "CancelPayment"; versionId: PaymentId };
 export type ResumePayment = { type: "ResumePayment"; commandId: EffectId; reason: string };
-export type PaymentCommand = RequestPayment | ApprovePayment | ApproveWithinPolicy | CancelPayment | ResumePayment;
+/** Provider evidence that an attempted command never reached the bank, gathered just before release. */
+export type UnsentProviderCheck = {
+  lookup: "not_found"; searchedBy: "operation_key"; checkedAt: number;
+  scanComplete: true; scannedFrom: number; transfersScanned: number; transactionsScanned: number;
+  matchingTransferIds: string[]; matchingTransactionIds: string[];
+};
+export type ReleaseUnsentPayment = { type: "ReleaseUnsentPayment"; commandId: EffectId; reason: string; providerCheck: UnsentProviderCheck };
+export type PaymentCommand = RequestPayment | ApprovePayment | ApproveWithinPolicy | CancelPayment | ResumePayment | ReleaseUnsentPayment;
 /** RequestPayment.commandId maps to requestKey. For other commands it is correlation only:
  * their current backend replay/staleness semantics remain authoritative (no generic receipt ledger). */
 export type CommandEnvelope<C extends PaymentCommand = PaymentCommand> = {

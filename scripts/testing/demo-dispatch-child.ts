@@ -10,6 +10,7 @@ import { canonicalJson, type BankScope, type BankCommand } from "../../src/integ
 const config = JSON.parse(fs.readFileSync(process.argv[2]!, "utf8")) as { url: string; scope: BankScope; token: string; bankPath: string; seed: number };
 const bank = openFakeBank({ path: config.bankPath, scope: config.scope, seed: config.seed });
 const fingerprint = (command: BankCommand) => createHash("sha256").update(canonicalJson(command)).digest("hex");
+let createTransferCalls = 0;
 const submitting = {
   recovery: bank.provider.recovery,
   lookupTransfer: async (command: BankCommand, providerTransferId?: string) => {
@@ -17,6 +18,7 @@ const submitting = {
     return bank.provider.lookupTransfer(command, providerTransferId);
   },
   createTransfer: async (command: BankCommand) => {
+    createTransferCalls++;
     try { return await bank.provider.createTransfer(command); }
     finally {
       if (process.argv.includes("--crash-after-submit")) {
@@ -34,5 +36,11 @@ const submitting = {
     }
   },
 };
-try { console.log(JSON.stringify(await new PaymentDispatcher(new ConvexHttpClient(config.url), config.scope, config.token, submitting, "demo-dispatch-process").tick())); }
+try {
+  const result = await new PaymentDispatcher(new ConvexHttpClient(config.url), config.scope, config.token, submitting, "demo-dispatch-process").tick();
+  console.log(JSON.stringify(result));
+  // Report what recovery returned and whether it submitted, before exiting (acknowledged IPC).
+  const message = { event: "dispatch-result", providerTransferId: result.providerTransferId ?? null, createTransferCalls };
+  await new Promise<void>((resolve, reject) => process.send ? process.send(message, error => error ? reject(error) : resolve()) : resolve());
+}
 finally { bank.close(); }

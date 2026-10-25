@@ -9,5 +9,6 @@ export function createPaymentCommandService(commands: PaymentCommands): PaymentC
     approveAndQueue: envelope => { parseCommandEnvelope(envelope); return commands.approveAndQueue(envelope); },
     cancel: envelope => { parseCommandEnvelope(envelope); return commands.cancel(envelope); },
     resume: envelope => { parseCommandEnvelope(envelope); return commands.resume(envelope); },
+    releaseUnsent: envelope => { parseCommandEnvelope(envelope); return commands.releaseUnsent(envelope); },
   };
 }

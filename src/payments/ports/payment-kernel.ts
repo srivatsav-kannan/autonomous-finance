@@ -1,6 +1,6 @@
 import type {
   ApprovePayment, ApproveWithinPolicy, CancelPayment, CommandEnvelope, DispatchFailure,
-  EffectLease, LeaseProof, PaymentRequestResult, RequestPayment, ResumePayment,
+  EffectLease, LeaseProof, PaymentRequestResult, ReleaseUnsentPayment, RequestPayment, ResumePayment,
 } from "../contracts";
 
 /** Authenticated and full-scope-bound by the adapter. No credentials in domain payloads.
@@ -11,6 +11,8 @@ export interface PaymentCommands {
   approveAndQueue(envelope: CommandEnvelope<ApprovePayment>): Promise<{ commandId: string }>;
   cancel(envelope: CommandEnvelope<CancelPayment>): Promise<void>;
   resume(envelope: CommandEnvelope<ResumePayment>): Promise<void>;
+  /** Human-only, audited. Cancels a never-accepted attempt and releases its reservations. */
+  releaseUnsent(envelope: CommandEnvelope<ReleaseUnsentPayment>): Promise<void>;
 }
 
 /** Method names deliberately map 1:1 to demoPayments endpoints. Rejections throw. */

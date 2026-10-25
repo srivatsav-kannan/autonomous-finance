@@ -131,7 +131,13 @@ try {
   result.stage = 'crash-and-recovery'; save();
   console.log('Running the worker-crash and missing-webhook scenario; lease recovery takes about 31 seconds.');
   const demo = start('demo', ['--import', 'tsx', 'scripts/ap-demo.ts', 'local']);
-  await until(() => demo.child.exitCode === 0, demo, 90_000);
+  try { await until(() => demo.child.exitCode === 0, demo, 90_000); }
+  catch (error) {
+    // Keep the demo's own exit status; the generic wait error does not carry it.
+    result.childExitCode = demo.child.exitCode;
+    result.childSignal = ['SIGKILL', 'SIGTERM', 'SIGINT'].includes(demo.child.signalCode) ? demo.child.signalCode : null;
+    throw error;
+  }
   result.stage = 'verify-evidence'; save();
   const runs = fs.readdirSync(path.join(project, 'var/ap-demo'));
   if (runs.length !== 1) throw new Error('Expected exactly one fresh run');
@@ -139,11 +145,16 @@ try {
   if (report.commit !== result.revision) throw new Error('Revision mismatch');
   result.stage = 'read-journal'; save();
   const journal = table('journalEntries');
+  // Notifications were dropped: recovery must come from a completed polling scan (checked inside).
+  const tables = { inbox: table('demoInbox'), cursors: table('demoCursors') };
   result.stage = 'verify-invariants'; save();
-  result.proof = recoveryEvidence(report, journal);
-  // No notice was ingested. Transaction recovery therefore came from polling.
-  result.stage = 'verify-no-webhooks'; save();
-  if (table('demoInbox').length !== 0) throw new Error('Unexpected webhook ingestion');
+  result.proof = recoveryEvidence(report, journal, tables);
+  // A same-key retry that hit the bank's unique key or an idempotency conflict is a regression
+  // even if later polling hides it.
+  result.stage = 'verify-no-idempotency-errors'; save();
+  if (children.some(({ diagnostics }) => diagnostics.snapshot().events.some(event => event.code === 'IDEMPOTENCY_CONFLICT'))) {
+    throw Object.assign(new Error('Idempotency conflict in run output'), { code: 'ERR_ASSERTION', generatedMessage: false });
+  }
   if (abort.signal.aborted) throw new Error('Run interrupted');
   if (backend.failed || backend.child.exitCode !== null || backend.child.signalCode !== null) throw new Error('Required backend stopped');
   result.status = 'PASSED';
@@ -157,6 +168,8 @@ try {
   result.failureKind = error?.code === 'ERR_ASSERTION' ? 'invariant' : 'runner';
   const line = String(error?.stack).match(/recovery-evidence\.mjs:(\d+):\d+/)?.[1];
   if (line) result.invariantLine = Number(line);
+  // Explicit invariant messages are fixed source strings (no values), so they are safe to keep.
+  if (error?.code === 'ERR_ASSERTION' && error.generatedMessage === false) result.invariant = String(error.message).split('\n')[0].slice(0, 200);
   if (Number.isInteger(error?.status)) result.childExitCode = error.status;
   console.error(`Local recovery ${result.status} at ${result.stage}; allowlisted diagnostics are in var/ci/recovery.json. See docs/ci.md.`);
   process.exitCode = 1;

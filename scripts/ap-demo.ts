@@ -17,7 +17,7 @@ import { EvidenceWorker } from "../src/payments/evidence";
 import { DemoAPAgent, DemoPaymentsAgent } from "../src/payments/agents";
 import { demoInvoice } from "../src/payments/demo-invoice";
 import increaseProvenance from "../src/integrations/fixtures/increase/provenance.json";
-import { canonicalJson, type BankScope, type BankTransaction } from "../src/integrations/contracts";
+import { BankProviderError, canonicalJson, type BankScope, type BankTransaction } from "../src/integrations/contracts";
 
 const profile = process.argv[2] ?? "local";
 if (!["local", "sandbox"].includes(profile)) throw new Error("Usage: npm run demo:local | npm run demo:sandbox");
@@ -28,6 +28,7 @@ if (profile === "sandbox") {
   if (missing.length) { console.log(JSON.stringify({ profile, status: "not_run", missing, reason: "Live Increase and authenticated human approval prerequisites are required; simulator tests do not count." }, null, 2)); process.exit(2); }
 }
 const stamp = `${Date.now()}`;
+const runStartedAt = new Date(Number(stamp)).toISOString();
 const runId = process.env.AP_RUN_ID ?? `ap-${profile}-${stamp}`;
 const scope: BankScope = profile === "sandbox" && sandbox.status === "ready" ? { ...sandbox.configuration.scope, runId } : { organizationId: "ap-demo", runId, provider: "fake", environment: "local", accountId: "usd-operating" };
 const artifactDir = path.resolve("var/ap-demo", runId);
@@ -82,7 +83,10 @@ const seats = [
 const created = await client.mutation(api.admin.createRun, { secret: secrets.admin, runId, label: `AP ${profile} recovery demo`, company: "AP Demo", simDate: today, seats, periods });
 if (!created.ok) throw new Error(created.error);
 const externalAccountId = profile === "sandbox" && sandbox.status === "ready" ? sandbox.configuration.externalAccountId : "external-vendor";
-await client.mutation(api.demoPayments.configure, { scope, secret: secrets.admin, beneficiary: {vendor: source.vendor, externalAccountId, version: "beneficiary-v1"}, policyVersion: "ap-demo-v1", controllerLimitCents: 5_000_000, humanSubjects: [{subject: humanSubject, seatId: "human"}] });
+await client.mutation(api.demoPayments.configure, { scope, secret: secrets.admin, beneficiary: {vendor: source.vendor, externalAccountId, version: "beneficiary-v1"}, policyVersion: "ap-demo-v1", controllerLimitCents: 5_000_000, humanSubjects: [{subject: humanSubject, seatId: "human"}],
+  // A reused sandbox account carries earlier runs' activity. Bind this run to its start so that
+  // history is retained as prior activity instead of blocking close (selected funding still posts).
+  ...(profile === "sandbox" ? { activitySince: runStartedAt } : {}) });
 if (fundingTransactions.length) {
   await client.mutation(api.demoEvidence.importPage, { ...evidenceAuth, expectedCursor: null, cursor: null, transactions: fundingTransactions });
   for (const transaction of fundingTransactions) await human.mutation(api.demoEvidence.approveSandboxFunding, {
@@ -108,8 +112,10 @@ if (profile === "local") {
   fs.writeFileSync(workerConfig,JSON.stringify({url,scope,token:secrets.dispatcher,bankPath,seed:7}),{mode:0o600});
   const initialReview = await human.query(api.demoPayments.humanReview, { scope });
   const frozenCommandSha256 = createHash("sha256").update(canonicalJson(initialReview.commands[0]!.command)).digest("hex");
-  type ChildResult = { exitCode: number | null; signal: NodeJS.Signals | null; acceptedCommandSha256?: string; lookupCommandSha256?: string; checkpointVerified: boolean };
+  type ChildResult = { exitCode: number | null; signal: NodeJS.Signals | null; acceptedCommandSha256?: string; lookupCommandSha256?: string; checkpointVerified: boolean;
+    recoveredTransferId?: string | null; createTransferCalls?: number };
   const marker = z.object({ event: z.enum(["accepted-before-record", "lookup-start"]), commandSha256: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
+  const dispatchResult = z.object({ event: z.literal("dispatch-result"), providerTransferId: z.string().nullable(), createTransferCalls: z.number().int().nonnegative() }).strict();
   const child = (crash = false) => new Promise<ChildResult>((resolve, reject) => {
     const proc = spawn(process.execPath, ["--import", "tsx", "scripts/testing/demo-dispatch-child.ts", workerConfig, ...(crash ? ["--crash-after-submit"] : [])], {
       stdio: ["ignore", "pipe", "pipe", "ipc"], env: { PATH: process.env.PATH, NODE_NO_WARNINGS: "1" },
@@ -122,6 +128,13 @@ if (profile === "local") {
     proc.stdout?.resume(); proc.stderr?.resume();
     proc.on("error", () => { clearTimeout(deadline); reject(new Error("Dispatcher child failed to start")); });
     proc.on("message", (data: unknown) => {
+      const result = dispatchResult.safeParse(data);
+      if (result.success) {
+        if (crash || observed.createTransferCalls !== undefined) { fail("Unexpected dispatch result"); return; }
+        observed.recoveredTransferId = result.data.providerTransferId;
+        observed.createTransferCalls = result.data.createTransferCalls;
+        return;
+      }
       const parsed = marker.safeParse(data);
       if (!parsed.success || parsed.data.commandSha256 !== frozenCommandSha256) { fail("Invalid frozen-command checkpoint"); return; }
       if (parsed.data.event === "lookup-start") {
@@ -150,7 +163,7 @@ if (profile === "local") {
     proc.on("close", (exitCode, signal) => {
       clearTimeout(deadline);
       if (failure) { reject(failure); return; }
-      if (crash ? signal !== "SIGKILL" || !observed.checkpointVerified : exitCode !== 0 || !observed.lookupCommandSha256) {
+      if (crash ? signal !== "SIGKILL" || !observed.checkpointVerified : exitCode !== 0 || !observed.lookupCommandSha256 || observed.createTransferCalls === undefined) {
         reject(new Error("Dispatcher child did not complete the required recovery checkpoint")); return;
       }
       resolve({ ...observed, exitCode, signal });
@@ -167,17 +180,28 @@ if (profile === "local") {
   const pending = await human.query(api.demoPayments.humanReview, { scope });
   assert.equal(pending.commands[0]!.execution, "pending"); assert.equal(pending.commands[0]!.posting, "unposted");
   assert.ok(pending.bills.every(bill => bill.paidCents === 0));
+  const transfer=bank.harness.inspect().transfers[0]!;
+  // Replay the lost request exactly: same frozen command, key and request bytes. A durable
+  // provider must return the ORIGINAL transfer. Record the outcome; CI asserts it (#77).
+  let replay: { transferId: string | null; errorClass: string | null };
+  try { replay = { transferId: (await bank.provider.createTransfer(initialReview.commands[0]!.command)).id, errorClass: null }; }
+  catch (error) {
+    const code = error instanceof BankProviderError ? error.errorClass : (error as { code?: unknown })?.code;
+    replay = { transferId: null, errorClass: typeof code === "string" && /^[A-Za-z_]{1,40}$/.test(code) ? code : "error" };
+  }
   processRecovery = { signal: killed.signal, exitCode: killed.exitCode, acceptedBeforeKill: killed.checkpointVerified,
     completionAbsentBeforeKill: true, unpaidBeforeSettlement: true, frozenCommandSha256,
-    acceptedCommandSha256: killed.acceptedCommandSha256, lookupCommandSha256: restarted.lookupCommandSha256 };
-  const transfer=bank.harness.inspect().transfers[0]!;
+    acceptedCommandSha256: killed.acceptedCommandSha256, lookupCommandSha256: restarted.lookupCommandSha256,
+    recoveredTransferId: restarted.recoveredTransferId, restartCreateTransferCalls: restarted.createTransferCalls,
+    recordedTransferId: pending.commands[0]!.providerTransferId ?? null, originalTransferId: transfer.id, replay };
   bank.harness.settle(transfer.id);
-  bank.harness.drainNotifications({drop:true});
+  const generatedNotifications=bank.harness.inspect().events.length;
+  const delivered=bank.harness.drainNotifications({drop:true});
   const worker=new EvidenceWorker(client,scope,secrets.evidence,bank.provider);
   const first=await worker.tick();assert.deepEqual(first.errors,[]);assert.equal(first.posted,1);
   assert.equal((await worker.tick()).posted,0);
   const state=bank.harness.inspect();assert.equal(state.transfers.length,1);assert.equal(state.transactions.filter(t=>t.status==="posted"&&t.purpose==="debit").length,1);
-  bankEvidence={transfers:state.transfers,transactions:state.transactions,calls:state.calls};
+  bankEvidence={transfers:state.transfers,transactions:state.transactions,calls:state.calls,notifications:{generated:generatedNotifications,delivered:delivered.length}};
   } finally { bank.close(); fs.unlinkSync(workerConfig); } // Credential artifact is not part of the evidence report.
 } else if (sandbox.status === "ready" && sandboxProvider) {
   const provider=sandboxProvider;

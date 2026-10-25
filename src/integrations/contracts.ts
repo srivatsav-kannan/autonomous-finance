@@ -76,8 +76,11 @@ export type BankBalance = {
   availableCents: number;
   asOf: string;
 };
-export type BankPage<T> = { items: T[]; nextCursor: string | null; cursor: string | null };
-export type BankPagination = { cursor?: string | null; limit?: number };
+/** One listed item that could not be verified. It is retried, never silently dropped or posted. */
+export type BankItemFailure = { id: string; errorClass: BankErrorClass; error: string; retryAfterMs?: number };
+export type BankPage<T> = { items: T[]; nextCursor: string | null; cursor: string | null; failures?: BankItemFailure[] };
+/** createdOnOrAfter is a provider-side filter hint; the backend still classifies every imported row. */
+export type BankPagination = { cursor?: string | null; limit?: number; createdOnOrAfter?: string };
 export type BankEvent = { id: string; scope: BankScope; transferId?: string; transactionId?: string; resourceType?: string; createdAt: string };
 
 /** Only the trusted dispatcher receives createTransfer; agents receive no bank capability. */

@@ -4,8 +4,8 @@ import { assertRowScope, auditDemo, getPaymentConfig, requirePaymentSeat, requir
 import { canonical, sha256Hex } from "../kernel";
 import { releaseReservations, reserveObligations } from "./reservations";
 import { assertReservedObligations } from "./executionConfig";
-import { commandRequestHash, buildIncreaseRequestBody, type BankCommand, type BankScope } from "../../../src/payments/contracts";
-import { assertCanCancel, assertSnapshotCurrent, safeSumCents } from "../../../src/payments/domain/rules";
+import { commandRequestHash, buildIncreaseRequestBody, type BankCommand, type BankScope, type UnsentProviderCheck } from "../../../src/payments/contracts";
+import { assertCanCancel, assertReleasableUnsent, assertSnapshotCurrent, safeSumCents } from "../../../src/payments/domain/rules";
 const safeSum = safeSumCents;
 const dollars = (n: number) => { if (!Number.isSafeInteger(n) || n <= 0) throw new Error("Amount must be positive integer USD cents"); };
 
@@ -81,6 +81,39 @@ export async function approveAndQueueCommand(ctx: MutationCtx, args: { scope: Ba
     const commandId = await ctx.db.insert("demoCommands", { scope: args.scope, command, versionId: p._id, execution: "queued", posting: "unposted", reconciliation: "unmatched", generation: 0, attemptCount: 0, nextAttemptAt: Date.now(), createdAt: Date.now() });
     await auditDemo(ctx, args.scope, seat.seatId, "payment_approved", { commandId, versionId: p._id, snapshotHash: p.snapshotHash });
     return { commandId };
+}
+
+/** Human-only release of a command claimed but never accepted by the bank. Convex holds no bank
+ * credentials, so the trusted operator harness performs the provider check and this mutation
+ * re-validates it, checks local evidence, and records who, why and what was checked. */
+export async function releaseUnsentPayment(ctx: MutationCtx, args: { scope: BankScope; commandId: Id<"demoCommands">; reason: string; providerCheck: UnsentProviderCheck }) {
+  const { seat, subject } = await requirePaymentHuman(ctx, args.scope);
+  if (!args.reason.trim()) throw new Error("A human release reason is required");
+  const row = await ctx.db.get(args.commandId); assertRowScope(row, args.scope);
+  const c = row as Doc<"demoCommands">;
+  const now = Date.now();
+  assertReleasableUnsent(c, now, args.providerCheck);
+  // Local evidence must agree with the provider check: nothing accepted, observed or imported.
+  const [attempts, observations, transactions, notices] = await Promise.all([
+    ctx.db.query("demoAttempts").withIndex("by_command", q => q.eq("commandId", c._id)).collect(),
+    ctx.db.query("demoObservations").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).collect(),
+    ctx.db.query("demoTransactions").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).collect(),
+    ctx.db.query("demoInbox").withIndex("by_run_processed", q => q.eq("scope.runId", args.scope.runId).eq("processed", false)).first(),
+  ]);
+  if (attempts.some(a => a.result === "provider_accepted") || observations.some(o => o.observation.commandId === c.command.commandId) ||
+      transactions.some(t => t.transaction.commandId === c.command.commandId)) throw new Error("Local bank evidence exists for this command; reconcile instead of releasing");
+  if (notices) throw new Error("Resolve pending bank notifications before releasing a payment");
+  const version = await ctx.db.get(c.versionId);
+  if (!version || await sha256Hex(canonical(version.snapshot)) !== version.snapshotHash) throw new Error("Corrupt snapshot requires reservation review");
+  const release = { seatId: seat.seatId, subject, reason: args.reason.trim(), at: now, providerCheck: args.providerCheck };
+  await ctx.db.patch(c._id, { execution: "cancelled", release, leaseToken: undefined, leaseExpiresAt: undefined,
+    lastError: undefined });
+  await releaseReservations(ctx, version._id);
+  await ctx.db.patch(version._id, { status: "cancelled" });
+  await auditDemo(ctx, args.scope, seat.seatId, "unsent_payment_released", {
+    commandId: c._id, versionId: version._id, reason: release.reason, firstAttemptAt: c.firstAttemptAt, attemptCount: c.attemptCount,
+    originalRequestHash: c.command.requestHash, originalKey: c.command.idempotencyKey, providerCheck: args.providerCheck,
+  });
 }
 
 export async function resumePayment(ctx: MutationCtx, args: { scope: BankScope; commandId: Id<"demoCommands">; reason: string }) {

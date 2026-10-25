@@ -69,6 +69,7 @@ The coordinator then performs the headline failure scenario:
 2. Let FakeBank commit acceptance, lose the response, and exit the dispatcher process before it can record completion.
 3. Keep both the SQLite bank file and Convex state intact. Wait about 31 seconds for the recorded lease to expire.
 4. Start another dispatcher process. It reuses the saved command/key and receives the existing transfer.
+   The coordinator then replays the lost request with the same key and bytes and records that the bank returned the original transfer.
 5. Settle the bank transfer, drop its notifications, and recover the posted debit by polling.
 6. Post one cash journal effect, link the bank transaction to it, and rerun reconciliation to assert no duplicate.
 7. Collect the controller and simulated-human signatures and verify that each demo period closes.
@@ -129,13 +130,48 @@ equity through `demoEvidence.approveSandboxFunding`. Each wire has its own journ
 entry and audit record; it is not hidden from the statement. This helper is only
 for reviewed sandbox capital contributions, not arbitrary income or loan receipts.
 
-The full statement is still imported. Unselected wires, unrelated collections
-and other unexplained activity remain close blockers. The completion assertion
+The run's own statement window is imported in full. Unselected wires, unrelated
+collections and other unexplained activity created during the run remain close
+blockers. The completion assertion
 requires one debit for the approved payable, all selected funding accounted for,
 zero blockers and both close signatures, rather than one transaction in the entire
 account. The runner opens the selected funding periods as well as the invoice and
 payment periods. Use a fresh run after deploying these pre-merge schema/identity
 changes; historical records are not silently relabeled.
+
+### Reusing a sandbox account ([#74](https://github.com/srivatsav-kannan/autonomous-finance/issues/74))
+
+Use a fresh run, not a fresh account. `demo:sandbox` configures each run with
+`activitySince`, the run's start time, stored with its demo configuration
+(`demoPayments.configure`). The evidence worker asks Increase only for
+transactions created on or after it (`created_at.on_or_after`), so polling no
+longer rescans the whole account history. As a safety net the backend classifies
+every imported row: unlinked activity created before `activitySince` (for
+example the previous run's debit, which this run cannot match to any of its
+commands) is stored as `prior_activity`. It stays visible in `humanView`, is
+never re-observed or posted by this run, and does not block close. Anything
+linked to one of this run's commands is kept regardless of timestamps, so clock
+skew cannot hide this run's own debit (it is also fetched through its transfer).
+Unexplained activity created after `activitySince` still blocks close.
+Explicitly selected `AP_SANDBOX_FUNDING` wires usually predate the run; they are
+imported and approved as before. Limitation: a late return for an earlier run's
+transfer that arrives after the new run starts is unmatched in the new run and
+blocks close; settle earlier runs before starting the next one.
+
+### Isolating a bad bank transaction ([#75](https://github.com/srivatsav-kannan/autonomous-finance/issues/75))
+
+Each listed transaction is verified on its own, with at most five transfer
+lookups in flight. After a rate limit no new lookups start on that page. Rows
+that fail (rate limit, a mismatch with their transfer, or a debit posted before
+its transfer has `settlement`) are returned as failures. The page import records
+them in `demoEvidenceRetries` in the same mutation that advances the cursor, so
+the cursor never passes an unrecorded row. Open retries are retried with
+exponential backoff (1 s doubling to 15 minutes, or the provider's
+`Retry-After` if longer), stay close blockers until the exact transaction is
+imported, and are reported as quarantined after five attempts. A failed listing
+leaves the cursor untouched while notices, observations and posting for
+everything else in the tick still run. Nothing is posted without the full,
+validated evidence.
 
 Signed notifications whose direct resource is verified to belong to another
 account receive an audited terminal disposition. Failed fetches, wrong resource
@@ -206,6 +242,57 @@ Inspect `demoPayments.humanReview` and `demoEvidence.humanView` using the authen
 | Bank settled, local posting failed | Repair the local invariant and retry evidence posting only; do not dispatch again |
 | Return | Fetch and post the original debit and separate return once each; applied credits remain consumed |
 | Unknown transfer, unmatched transaction, missing evidence or unresolved returned obligation | Retain a close blocker until explicitly resolved |
+| Worker died after claim, before send; `exception` with no provider transfer | After the 24-hour safety window, `npm run ops:release-unsent -- <commandId> "<reason>"` re-checks the provider and asks for the audited human release ([details](payment-refactor/RECOVERY.md#releasing-a-command-that-was-claimed-but-never-sent-76)) |
+
+### Operator health and runbooks ([#56](https://github.com/srivatsav-kannan/autonomous-finance/issues/56))
+
+A running process is not the same as a worker making progress. Each dispatcher
+and evidence pass reports its outcome to `demoOps.recordDispatcherPass` /
+`recordEvidencePass` with its own service secret (outcome and an allowlisted
+error class only). `demoOps.operatorHealth` (human JWT, scoped to the configured
+organization/run/provider/environment/account) returns:
+
+- last pass and last successful pass per worker, and consecutive failed passes;
+- oldest eligible command wait, unknown-outcome count and age, retry-exhausted
+  count, exception classes, bank-settled-but-locally-unposted payments and late
+  transfers after a release;
+- oldest imported-unposted transaction age, open fetch retries (and quarantined
+  ones), unprocessed notifications, and polling cursor progress (last import and
+  last completed scan);
+- `alerts`, each with the operator action, and a `status` of healthy, degraded
+  or unhealthy.
+
+Ages are computed from Convex server wall-clock timestamps (`clock:
+"server_wall_clock"`): attempt, retry, import, receipt and pass times. Bank or
+fixture business dates (FakeBank's virtual clock, `postedAt`) never feed health.
+Reads use the `by_run_execution`, `by_run_state`, `by_run_open` and
+`by_run_processed` indexes and are capped at 200 rows per state (reported as
+`capped`). The view returns counts, ages, row IDs and error classes only: no
+commands, idempotency keys, saved requests, lease tokens or provider messages.
+
+| Alert | Operator action |
+| --- | --- |
+| `dispatcher_stale`, `evidence_stale`, `*_not_reporting` | Restore worker connectivity: the process is running, reaches `CONVEX_URL` and uses this run's `AP_BANK_SCOPE`; restart `npm run worker:dispatch` / `worker:evidence` |
+| `*_failing` with `authentication` or `configuration` | Repair credentials or configuration (service secret, `AP_BANK_SCOPE`, provider API key) |
+| `*_failing` otherwise | Restore connectivity to Convex and the bank; the worker retries |
+| `dispatch_backlog` | Confirm the dispatcher is passing; work is claimed in order with the original request and key |
+| `unknown_outcome` | Keep reservations; the dispatcher reconciles by operation-key lookup; for an `exception`, inspect `humanReview` and use the audited resume |
+| `retry_exhausted`, `quarantined_command` | Inspect the quarantined command and saved request; confirm the outcome with the provider using the original key; repair the cause, then audited resume |
+| `bank_settled_local_posting_failed` | Reconcile evidence: repair the local invariant (for example reopen the period) and let the evidence worker retry posting; do not dispatch again |
+| `evidence_fetch_retrying`, `evidence_unposted`, `notification_backlog` | Restore provider connectivity or wait out rate limits; inspect rows in `humanView`; unexplained activity stays a close blocker |
+| `released_payment_transfer_appeared` | Escalate as a possible duplicate payment; it is never posted automatically |
+
+Every alert also carries the rule it must not break: never generate a new
+provider key, resend a transfer, or free a reservation just to clear a warning.
+
+Proposed SLO thresholds (`SLO_TARGETS` in `convex/demoOps.ts`) are **targets,
+not measurements**: a worker pass within 60 s, fewer than 3 consecutive failed
+passes, eligible commands claimed within 5 minutes, unknown outcomes, unposted
+transactions and unprocessed notices resolved within 15 minutes, and quarantine
+after 5 failed fetches. The configured mechanics they derive from are a 1 s
+service loop, 10 s heartbeat, 30 s lease and an 8-attempt / 24-hour automatic
+recovery budget. No baseline has been measured on a deployed backend yet;
+`convex-test` timings are not representative and are not reported as SLIs.
 
 Historical application payments are not automatically migrated into this flow. Activation requires a fresh run without existing bills, payment intents or journal entries. Resolve old submitted/unknown outcomes through their original provider before considering a separately approved replacement. Preserve both bank and application state during recovery exercises; resetting either can erase the ambiguity the demo is intended to test.
 
