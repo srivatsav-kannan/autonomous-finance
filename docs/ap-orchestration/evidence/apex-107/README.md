@@ -8,7 +8,7 @@ Recorded on 2026-10-25 in the isolated local run `apex107-replay-20261025` (Conv
 
 | Item | Value |
 | --- | --- |
-| Code | Base `0dce4ed` (main) plus this PR's files, run before commit. The PR head contains exactly the code that ran. |
+| Code | Base `0dce4ed` (main) plus this PR's files, run before they were committed as `de8d32f`. The replay code is the same. The screenshot script then wrote PNG, later converted to 1100 px JPEG with `sips`. It now writes JPEG directly. |
 | AP contract / legacy policy | `ap-evidence-v1` / `golden-state-ap-v1` |
 | Business policy | `apex107-simulated-services-policy-v1` (SIMULATED) |
 | Payment executor | `scoped-ap-v2` |
