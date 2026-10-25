@@ -27,8 +27,8 @@ export const buildParser: Handler = async (rt, task) => {
   const expected = task.payload.expected ? ParsedInvoice.parse(task.payload.expected) : undefined;
   if (!llmAvailable() || !expected) {
     await rt.ask({ to: "controller", severity: "info", title: `New document format "${signature}" needs a parser`,
-      body: "No Claude credentials or no verified example yet. Set ANTHROPIC_API_KEY to let the integrations engineer write one.", taskId: task._id });
-    return { outcome: "blocked", summary: "needs Claude credentials and a verified example" };
+      body: "No model credentials or no verified example yet. Set OPENAI_API_KEY (or ANTHROPIC_API_KEY) to let the integrations engineer write one.", taskId: task._id });
+    return { outcome: "blocked", summary: "needs model credentials and a verified example" };
   }
   let lastError = "";
   for (let attempt = 1; attempt <= 3; attempt++) {

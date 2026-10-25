@@ -1,8 +1,14 @@
+import fs from "node:fs";
+import path from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import type { z } from "zod";
+import type { ModelClient, ModelConfig, RequestBudget } from "./model-client";
 
-export const MODEL = process.env.AGENT_MODEL ?? "claude-opus-5-5";
+// Provider: AGENT_PROVIDER=openai|anthropic. Default is OpenAI when an OpenAI key is present.
+export const PROVIDER: "openai" | "anthropic" =
+  process.env.AGENT_PROVIDER === "anthropic" || (process.env.AGENT_PROVIDER !== "openai" && !process.env.OPENAI_API_KEY) ? "anthropic" : "openai";
+export const MODEL = process.env.AGENT_MODEL ?? (PROVIDER === "openai" ? "gpt-6.1-sol" : "claude-opus-5-5");
 const FALLBACKS = (process.env.AGENT_FALLBACKS ?? "1") !== "0";
 const BETAS = FALLBACKS ? (["server-side-fallback-2026-07-01"] as const) : [];
 
@@ -43,12 +49,49 @@ function addUsage(u: Usage, usage: Anthropic.Beta.BetaUsage, ms: number): void {
 let client: Anthropic | null = null;
 let available: boolean | null = null;
 
-/** True when the SDK can find credentials (API key, auth token, or an `ant` profile). */
+/** True when the selected provider has credentials (and AGENT_LLM isn't "off"). */
 export function llmAvailable(): boolean {
   if (available !== null) return available;
   if (process.env.AGENT_LLM === "off") return (available = false);
-  available = Boolean(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN || process.env.ANTHROPIC_PROFILE);
+  available = PROVIDER === "openai"
+    ? Boolean(process.env.OPENAI_API_KEY?.trim())
+    : Boolean(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN || process.env.ANTHROPIC_PROFILE);
   return available;
+}
+
+// OpenAI list prices for the agent model, USD per million tokens (= micro-USD per token).
+const OPENAI_PRICES = { input: 2, output: 10, cacheRead: 0.1, cacheWrite: 2.5 };
+const SPEND_FILE = path.join("var", "agent-spend.json");
+const CAP_MICROS = Math.round(Number(process.env.AGENT_MAX_USD ?? "15") * 1e6);
+
+/**
+ * Hard local spend cap shared by every process on this machine (agents, gateway): a request is
+ * refused before dispatch if its worst-case cost would take the running total past AGENT_MAX_USD.
+ */
+const localBudget: RequestBudget = {
+  reserve(config: ModelConfig, inputBound: number) {
+    const read = () => (fs.existsSync(SPEND_FILE) ? (JSON.parse(fs.readFileSync(SPEND_FILE, "utf8")) as { spentMicros: number }).spentMicros : 0);
+    const add = (micros: number) => {
+      fs.mkdirSync(path.dirname(SPEND_FILE), { recursive: true });
+      fs.writeFileSync(SPEND_FILE, JSON.stringify({ spentMicros: read() + micros, capMicros: CAP_MICROS, updatedAt: new Date().toISOString() }));
+    };
+    const costMicros = Math.ceil(inputBound * config.prices.input + config.maxOutputTokens * config.prices.output);
+    if (read() + costMicros > CAP_MICROS) throw new LlmUnavailable(`agent spend cap of $${(CAP_MICROS / 1e6).toFixed(2)} reached (${SPEND_FILE})`);
+    return { costMicros, settle: (u: Usage) => add(u.costMicros), fail: () => add(costMicros) };
+  },
+};
+
+const openaiClients = new Map<string, ModelClient>();
+async function openai(effort: Effort, model: string, maxOutputTokens: number): Promise<ModelClient> {
+  const level = effort === "low" ? "low" : effort === "medium" ? "medium" : "high";
+  const key = `${model}:${level}:${maxOutputTokens}`;
+  let c = openaiClients.get(key);
+  if (!c) {
+    const { BudgetedModelClient } = await import("./model-client");
+    c = new BudgetedModelClient({ provider: "openai", model, effort: level, maxInputTokens: 100_000, maxOutputTokens, prices: OPENAI_PRICES }, localBudget);
+    openaiClients.set(key, c);
+  }
+  return c;
 }
 
 function sdk(): Anthropic {
@@ -57,8 +100,8 @@ function sdk(): Anthropic {
 }
 
 export class LlmUnavailable extends Error {
-  constructor() {
-    super("Claude is not configured (set ANTHROPIC_API_KEY in .env.local)");
+  constructor(message = PROVIDER === "openai" ? "OpenAI is not configured (set OPENAI_API_KEY in .env.local)" : "Claude is not configured (set ANTHROPIC_API_KEY in .env.local)") {
+    super(message);
   }
 }
 
@@ -77,6 +120,10 @@ export async function extract<T>(opts: {
   model?: string;
 }): Promise<T> {
   if (!llmAvailable()) throw new LlmUnavailable();
+  if (PROVIDER === "openai") {
+    const client = await openai(opts.effort ?? "low", opts.model ?? MODEL, opts.effort === "high" || opts.effort === "xhigh" || opts.effort === "max" ? 32_000 : 8_000);
+    return await client.extract({ system: opts.system, input: opts.input, schema: opts.schema, usage: opts.usage ?? emptyUsage() });
+  }
   const started = Date.now();
   const res = await sdk().beta.messages.parse({
     model: opts.model ?? MODEL,
@@ -114,6 +161,10 @@ export async function runTools(opts: {
   usage?: Usage;
 }): Promise<string> {
   if (!llmAvailable()) throw new LlmUnavailable();
+  if (PROVIDER === "openai") {
+    const client = await openai(opts.effort ?? "medium", MODEL, 8_000);
+    return await client.runTools({ system: opts.system, user: opts.user, tools: opts.tools, maxTurns: opts.maxTurns ?? 12, usage: opts.usage ?? emptyUsage() });
+  }
   const tools: Anthropic.Beta.BetaTool[] = opts.tools.map((t) => ({
     name: t.name,
     description: t.description,
