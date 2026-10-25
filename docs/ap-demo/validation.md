@@ -30,7 +30,7 @@ The coordinator used seeded Worldsim invoice evidence and the actual Convex appr
 - Matching cash journal entry: `mh734ztkvyq34md40qazbcyaw18gwd8g`.
 - Two dispatcher attempts and two `createTransfer` calls yielded one bank transfer; execution is `settled`, posting is `posted`, reconciliation is `matched`.
 
-The full report and persistent bank file remain in `var/ap-demo/ap-local-1792830308018/` in the validation checkout. These local artifacts are ignored by Git; the committed record contains the non-secret proof identifiers and summaries. Follow the [demo guide](../ap-demo.md) to produce a fresh run and its own IDs. Preserve the bank file when exercising application-only restart recovery.
+The full report and persistent bank file remain in `var/ap-demo/ap-local-1792830308018/` in the validation checkout. These local artifacts are ignored by Git; the committed record contains the non-secret proof identifiers and summaries. Follow the [demo guide](README.md) to produce a fresh run and its own IDs. Preserve the bank file when exercising application-only restart recovery.
 
 ## Remaining validation and integration work
 

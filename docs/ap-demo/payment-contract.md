@@ -73,7 +73,7 @@ After each recovery claim, lookup before any resend. `decideRecovery` permits re
 
 Policies are `never`, `retained` with positive safe integer duration and documentation, or `durable` with documentation. `found` binds the existing provider identity via `complete`, then evidence ingestion independently verifies settlement/rejection/return. Even a settled observation does not post cash. Unknown lookup leaves the original command unresolved and bounded recovery/operator review applies.
 
-FakeBank may declare durable retention only while its original scoped SQLite database is retained, using its saved unique-key/request record. Destroying/replacing that database invalidates the guarantee. Its lookup implementation must query stored state without calling create. See `docs/ap-demo/fake-bank.md` and the canonical `transfers` table.
+FakeBank may declare durable retention only while its original scoped SQLite database is retained, using its saved unique-key/request record. Destroying/replacing that database invalidates the guarantee. Its lookup implementation must query stored state without calling create. See [fake-bank.md](fake-bank.md) and the canonical `transfers` table.
 
 Increase should initially use `sameKeyResend: {kind: "never", reason: "Provider retention not established for this recovery window"}` unless its adapter owner explicitly documents an adequate guarantee. Do not invent a TTL. Its scoped ACH query may find an existing transfer; lack of guaranteed resend permission does not block read-only reconciliation. Provider documentation references for adapter verification: [idempotency keys](https://www.increase.com/documentation/idempotency-keys), [ACH transfers](https://www.increase.com/documentation/api/ach-transfers).
 

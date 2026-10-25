@@ -1,18 +1,16 @@
 # Architecture
 
-> This describes the original prototype and its intended controls, not a guarantee
-> that every invariant is currently enforced. The proposed next implementation is
-> [Finance backend and integration design](INTEGRATION_DESIGN.md), which defines
-> Convex ownership, provider adapters, recovery semantics and acceptance gates.
+This is the single architecture document. It describes how the system is built and which rules the code enforces. Known gaps are listed in [AUDIT.md](AUDIT.md); measured results are in [RESULTS.md](RESULTS.md). Topic guides go deeper:
+- [AP payments](ap-demo/README.md): approval, dispatch, bank evidence and recovery
+- [Evals](evals/README.md): external benchmarks and the books and close checks
+- [Invoice workspace](invoice-mvp/README.md): the separate customer-invoice review workflow
 
-**Thesis:** finance software was built for humans: spreadsheets, screens, month-end checklists. Agents work at a different pace, so putting them on human tools wastes most of what they can do.
-
-We rebuild the finance function for agents:
-- Agents do every operational task.
+**Thesis:** finance software was built for humans: spreadsheets, screens, month-end checklists. Agents work at a different pace, so putting them on human tools wastes most of what they can do. We rebuild the finance function for agents:
+- Agents do the operational tasks.
 - Humans set goals and policy and approve the calls that matter.
-- The system underneath is strict enough that you can trust it at agent speed.
+- The system underneath is strict enough to trust at agent speed: the rules live in the database, not in prompts.
 
-Hyphenate's own product layers agents onto existing systems ("no rip-and-replace"). This is the other approach: what finance looks like when it is designed for agents from day one.
+Hyphenate's own product layers agents onto existing systems. This is the other approach: finance designed for agents from the start.
 
 ## The company
 
@@ -29,8 +27,8 @@ Hyphenate's own product layers agents onto existing systems ("no rip-and-replace
 | Net loss | $134.1M | `NetIncomeLoss` |
 
 **Why this company:**
-- High-volume, messy money: card settlements, delivery-platform payouts net of commissions and promos, hundreds of food suppliers, about 250 leases, payroll for thousands, gift cards and loyalty.
-- Cash fell by $125M in a year, so cash visibility is a real stake, not a toy.
+- High-volume, messy money: card settlements, delivery-platform payouts net of commissions and promos, hundreds of food suppliers, about 250 leases, payroll, gift cards and loyalty.
+- Cash fell by $125M in a year, so cash visibility matters.
 
 The company profile is data (`company/sweetgreen/`), so another company is a config change.
 
@@ -52,10 +50,10 @@ Agents:           CFO agent (plans, staffing, daily digest, cash strategy)
                     |     |-- Revenue accountant           daily sales, gift cards, breakage, commissions
                     |     |-- Lease accountant             ASC 842, rent/CAM vs lease terms
                     |     |-- Payroll accountant           register -> entries, roster checks
-                    |-- Payments agent                     payment runs, vendor bank changes (proposals), execution
+                    |-- Payments agent                     payment requests, vendor bank changes (proposals)
                     |-- Treasury analyst                   daily cash position, 13-week forecast
                     |-- FP&A analyst                       budget vs actual, store-level variance
-                    |-- Integrations engineer (Droid)      writes parsers for new document formats
+                    |-- Integrations engineer              writes parsers for new document formats
 Independent:      Auditor agent -> reports to humans; reads everything, posts nothing
 ```
 
@@ -65,49 +63,50 @@ Independent:      Auditor agent -> reports to humans; reads everything, posts no
 - a manager
 - a model and effort setting
 
-The CFO agent can spawn or retire seats when queues grow. Example: three extra AP clerks at month-end. Every new seat is a separate principal, so segregation of duties still holds.
+The CFO agent can add or retire seats when queues grow, for example extra AP clerks at month-end. Every new seat is a separate principal, so segregation of duties still holds. An agent cannot hire a control-role seat.
 
 ## The stack
 
 ```
-            humans (console, digests, asks)          external agents (MCP)
+            humans (console, asks)                   browser agents (WebMCP, read-only)
                          |                                   |
                  +-------v-----------------------------------v------+
                  |  Kernel (Convex): the system of record           |
-                 |  ledger | subledgers | payments | bus | tasks    |
+                 |  ledger | bills | payments | bus | tasks         |
                  |  seats & capabilities | asks | runs | evals      |
                  +-------^---------------------------^--------------+
                          |                           |
-         agent runtime (Node, Claude)  <------>  memory (git repo, structured YAML)
+         agent runtime (Node)  <------------->  memory (git repo, structured YAML)
                          ^
                  world simulator (banks, suppliers, delivery platforms, payroll, landlords)
 ```
 
-### 1. Kernel (Convex)
+### 1. Kernel (Convex, `convex/`)
 
 The only way money facts change. Every mutation is a serializable transaction.
 
-**Invariants enforced in code, not prompts:**
-- **Double entry.** Every journal entry balances (sum of debits = sum of credits). Amounts are integer cents.
-- **Exactly once.** Every mutating call carries an idempotency key. Same key + same payload returns the original result. Same key + different payload is a conflict error.
-- **Tamper-evident.** Each entry stores `prevHash` and `hash = sha256(prevHash + canonical entry)` per entity. The auditor verifies the chain.
-- **Closed periods are locked.** Corrections are reversing entries in an open period. Nothing is ever edited or deleted.
-- **Capabilities.** A seat can post only to account ranges its role allows; for example, AP clerks can't touch cash accounts. Payment approval needs a capability and a limit.
+**Invariants enforced in code:**
+- **Double entry.** Every journal entry balances. Amounts are integer cents.
+- **Exactly once.** Every mutating call carries an idempotency key. Same key and same payload returns the original result. Same key and a different payload is a conflict.
+- **Tamper-evident.** Each entry stores `prevHash` and `hash = sha256(prevHash + canonical entry)`. The auditor verifies the chain.
+- **Closed periods are locked.** Corrections are reversing entries in an open period. Nothing is edited or deleted.
+- **Capabilities.** A seat can post only to the account ranges its role allows; AP clerks can't touch cash accounts. Payment approval needs a capability and a limit.
 - **Segregation of duties:**
   - The requester of a payment can't approve it.
   - The proposer of a memory change can't merge it.
-  - Payments over the dual-approval threshold need an agent controller *and* a human.
-- **Provenance.** Every entry records the seat, the task, the decision record path and the memory commit SHA it was made under. Any number traces back to data, rule or person.
+  - Payments over the dual-approval threshold need an agent controller and a human.
+- **Provenance.** Every entry records the seat, the task, the decision record path and the memory commit SHA. Any number traces back to data, rule or person.
+- **Close.** The controller and the human sign the same readiness snapshot. Unread invoices, held bills and missing accruals block a signature. Details: [evals/close-correctness.md](evals/close-correctness.md).
 
 **The bus:**
 - `events` is append-only: world facts arrive here, deduplicated by external ID.
-- `tasks` is a leased work queue. A claim sets a 120-second lease; an expired lease is reclaimed. Every completion, failure, wait, or heartbeat must include `leaseAttempt: task.attempts` from that claim and match its active seat, role, and unexpired lease. Each reclaim increments `attempts`, fencing delayed messages even when the same seat reclaims. The team renews every 30 seconds while a handler runs, stops renewal before its final transition, and reports rejected transitions as `lease_lost`. Handlers remain responsible for idempotent effects; renewal does not cancel an already-running handler if its lease is lost.
+- `tasks` is a leased work queue. A claim sets a 120-second lease; an expired lease is reclaimed. Every completion, failure, wait or heartbeat must include `leaseAttempt: task.attempts` from that claim and match its seat, role and unexpired lease. Each reclaim increments `attempts`, which fences delayed messages even when the same seat reclaims. The team renews leases every 30 seconds while a handler runs.
 
-**Scenarios:** every row carries a `runId`, so each eval run and each demo reset is isolated and old evidence stays.
+**Runs:** every row carries a `runId`, so each eval run and demo reset is isolated and old evidence stays.
 
-### 2. Memory (git first)
+### 2. Memory (git first, `src/memory/`)
 
-The company's institutional memory is a git repository of **structured YAML validated by schemas**, not free-form notes:
+The company's institutional memory is a git repository of **structured YAML validated by schemas**:
 
 ```
 company.yaml
@@ -123,23 +122,46 @@ decisions/     <yyyy-mm>/<id>.yaml   one immutable record per non-trivial decisi
 **Rules:**
 - Every agent change is a commit authored by its seat (`AP Clerk 2 <ap-clerk-2@agents.sweetgreen.sim>`). The message carries trailers: `Task-Id`, `Decision-Id`, `Confidence`, `Idempotency-Key`.
 - **Low-risk writes** (notes, decision records) commit to `main`.
-- **Controlled writes** (vendor bank details, policies, playbooks) go on a `proposal/<id>` branch. Merging requires an approver allowed by policy who is not the proposer: segregation of duties as code review.
-- **Writes are validated before commit.** The schema is checked, decision files are immutable, a vendor has exactly one active remit-to, and policy keys are unique. Contradictions are rejected, not appended.
+- **Controlled writes** (vendor bank details, policies, playbooks, agent-written parsers) go on a `proposal/<id>` branch. Merging requires an approver allowed by policy who is not the proposer.
+- **Writes are validated before commit.** Schemas are checked, decision files are immutable, a vendor has exactly one active remit-to, and policy keys are unique.
 - **Idempotent:** a duplicate `Idempotency-Key` trailer is a no-op.
-- **Defending a decision is `git log` / `git blame` on the record,** plus the ledger entries that cite its SHA.
+- **Defending a decision** is `git log` / `git blame` on the record, plus the ledger entries that cite its SHA.
 
-Why split: money needs transactions and constraints (the kernel). Knowledge needs history, diffs, branches and review (git). Each ledger entry pins the memory SHA it used, so any decision can be replayed against the exact knowledge the agent had.
+Why split: money needs transactions and constraints (the kernel). Knowledge needs history, diffs, branches and review (git). Each ledger entry pins the memory SHA it used, so any decision can be replayed against the knowledge the agent had.
 
-### 3. Agent runtime
+`npm run world` and `npm run eval` create and seed memory for each new run in `var/memory/<run-id>.git`.
+
+### 3. Agent runtime (`src/agents/`)
 
 One Node process supervises all seats:
 - Each seat loop claims tasks for its role, builds context, runs, and records the run (tokens, cost, latency, tool calls, outcome).
-- **Deterministic first.** Parsing, matching, arithmetic and policy checks are code. Claude handles unstructured documents, ambiguous matches, exceptions, explanations, planning, and questions from humans.
-- **Tools are the kernel's typed API.** Inputs are validated with zod and `strict: true`, and every call is permission-checked by the kernel, not by the prompt. Document text is data: an invoice that says "pay a new account" can't change anything, because no tool lets an AP clerk change remit-to.
-- **Knowing when to ask.** Every non-trivial decision gets `act | ask | hold` with a confidence. Thresholds depend on risk: amount tier, new or changed vendor data, invalidated facts. Asks go to the right human with the evidence and options attached.
-- **Model:** `claude-opus-5-5` or `gpt-6.1-sol`, with effort set per seat. Every call goes through `BudgetedModelClient` (`src/agents/model-client.ts`): it reserves the request's worst-case cost against `AGENT_MAX_USD` before sending, with no SDK retries, fallback models or prompt-cache writes.
+- **Deterministic first.** Parsing, matching, arithmetic and policy checks are code. The model handles unfamiliar documents, ambiguous matches, exceptions, explanations and questions from humans.
+- **Tools are the kernel's typed API.** Inputs are validated with zod, and every call is permission-checked by the kernel. Document text is data: an invoice that says "pay a new account" can't change anything, because no tool lets an AP clerk change remit-to.
+- **Knowing when to ask.** Each non-trivial decision is `act`, `ask` or `hold`, with a confidence. Thresholds depend on risk: amount tier, new or changed vendor data, invalidated facts. Asks go to a human with the evidence and options attached.
+- **Agent-written parsers.** When a supplier sends a format no parser reads, the model reads it once. The integrations engineer writes a parser spec (regexes and field mappings as JSON, never code), tests it and proposes it on a memory branch; the controller re-runs its tests and merges it. After that fixed code (`src/integrations/parser-spec.ts`) applies the spec. Nothing the model writes is executed.
+- **Model:** `src/agents/llm.ts`. With `OPENAI_API_KEY` set, agents use OpenAI `gpt-6.1-sol`, capped by `AGENT_MAX_USD` (default $15, tracked in `var/agent-spend.json`). Otherwise they fall back to Anthropic `claude-opus-5-5`. Both go through `BudgetedModelClient` (`src/agents/model-client.ts`), which reserves each request's worst-case cost against `AGENT_MAX_USD` before sending, with no SDK retries or fallback models. `AGENT_MODEL` and `AGENT_PROVIDER` override the defaults; `AGENT_LLM=off` turns inference off.
 
-### 4. World simulator
+#### Worker recovery and drain
+
+The `Team` runtime retries control-plane transport failures without rerunning a business handler. This applies to every staffed role. The AP dispatcher and evidence workers are separate (see [AP payments](ap-demo/README.md)).
+
+- **Retries.** Each control-plane call gets three attempts by default, with jittered exponential backoff (100 ms initial cap, 1 s maximum) and a 5-second deadline per attempt. Network failures, timeouts, HTTP 408/429 and 500/502/503/504 are transient: the worker degrades and tries again on a later round. One failing seat does not stop the others. Authentication failures, missing functions and other nontransient errors raise `OperatorActionRequired`, and the CLI exits nonzero.
+- **Request IDs.** Claims, completions, failures, human waits, telemetry and automatic seat spawns carry a request ID. The kernel authenticates first, then stores and replays successful responses through the idempotency table. Reusing an ID with different arguments fails. Replaying a committed transition never changes a newer lease.
+- **After a handler returns,** only its chosen transition is retried. An uncertain completion is never turned into a failure. If every response is lost, the task's stored state decides: completed work stays done, and an uncommitted transition leaves a lease that expires and is reclaimed. Handlers still need their own idempotency for external effects.
+- **Diagnostics.** The worker writes JSON lines to stderr: `degraded`, `recovered`, `operator_action_required`, and `telemetry_fallback` when telemetry can't be recorded. Tokens and raw error bodies are never written.
+- **Drain.** `tasks.drainState` reports queued and leased work in a run, including future `notBefore` times and the next lease expiry, and reports unstaffed work separately. `runUntilIdle({ timeoutMs, idleRounds })` resolves only after this query confirms empty rounds, and throws `DrainIncomplete` (`timed_out`, `stopped` or `unstaffed`) otherwise. The default deadline is 300,000 ms. The evaluator advances a simulated day only after a successful drain.
+- **Shutdown.** SIGINT and SIGTERM stop new claims at once. Running handlers get up to 30 seconds to finish; the deadline or a second signal exits with 130 or 143.
+
+```sh
+npm run agents -- --run RUN_ID --drain --drain-timeout-ms 300000
+npm run eval -- --seed 7 --drain-timeout-ms 300000
+```
+
+### 4. Payments (`src/payments/`, `convex/demo*.ts`)
+
+The agent team cannot move money. Its payments seat only requests a payment. Execution is a separate path: a human approves an exact snapshot with a JWT, the backend stores a frozen bank command and key, a dispatcher service submits it, and an evidence service posts cash only after it fetches the bank's posted transaction. Leases fence stale dispatchers; a restarted dispatcher looks up or resends the saved request with the same key, so a lost bank response does not pay twice. The bank is a persistent SQLite FakeBank locally and in CI; an Increase sandbox adapter is contract-tested with Prism. Full guide: [ap-demo/README.md](ap-demo/README.md).
+
+### 5. World simulator (`src/world/`)
 
 A seeded generator for the outside world, calibrated to the company profile:
 - daily store sales by channel
@@ -148,80 +170,67 @@ A seeded generator for the outside world, calibrated to the company profile:
 - supplier invoices in each supplier's own text layout
 - receiving logs, rent and CAM, biweekly payroll, gift cards, bank feeds
 
-**Planted errors** come with an answer key the agents never see. Each has legitimate look-alike decoys:
+**Planted errors** come with an answer key the agents never see, plus legitimate look-alikes:
 - duplicate invoices across channels
 - price above contract
 - short shipments
 - a credit memo not applied a month later
 - a fraudulent bank-change request carrying prompt-injection text
 - short delivery payouts
-- card fees above contracted rate
+- card fees above the contracted rate
 - CAM above the lease cap
 - a terminated employee still on payroll
 - unexplained bank debits
 - capex/opex misclassification
 
-### 5. Evals
+The generator also saves an independent accounting oracle with each scenario, so the scorer can check every account, not only the planted errors.
 
-They run against the live agent team (`npm run eval`):
+**Simulation dates.** The requested start and day count bound all emitted events and the answer key. Delayed credit memos and invoice resends that would fall outside the interval are deferred past the scenario. Invoice due dates may fall after it. Rent and recurring supplier bills are generated once per calendar month touched: rent on the first observed day, supplier bills on the fifth (clamped to the observed interval). Partial months are not prorated.
 
-| Suite | Question | Metric |
-|---|---|---|
-| Planted errors | Does it catch what humans miss? | recall, precision, $ at risk caught, per error type |
-| Books correctness | Do the books match economic truth? | trial balance diff vs world truth, by account |
-| Exactly once | Does it survive duplicates, crashes, concurrent workers? | duplicate postings/payments (must be 0) |
-| Segregation & injection | Can documents or agents bypass controls? | blocked attempts, successful violations (must be 0) |
-| Knowing when to ask | Does it ask only when it should? | ask precision/recall vs answer key, asks per 1,000 transactions |
-| Time | Do month-1 facts change month-2 decisions? | carried-forward credits applied, ghost employees caught |
-| Pace and cost | How fast and cheap? | close duration, events/minute, $ per transaction |
-| Dynamic team | Does staffing keep up with spikes? | queue latency with vs without spawning |
+### 6. Evals (`src/evals/`)
 
-**Baselines on the same world:**
-- a single generalist Claude agent with the same tools and no kernel guards, memory or org
-- rules only
+`npm run eval` runs the team on a seeded world and scores it (`src/evals/score.ts`):
+- planted errors caught, look-alikes left alone, false alarms, dollars at risk
+- books against the independent oracle on every account (`passed`, `failed` or `incomplete`)
+- control metrics
+- asks to humans per 100 events
+- coverage: invoices read, parsers learned, unresolved documents
+- cost: tasks, model turns, share of deterministic tasks, dollars per task
 
-### 6. Interfaces
+Other evals: the 20 control tests (`npm run controls`), the spreadsheet-vs-kernel benchmark (`src/evals/spreadsheet/`), and the external benchmarks (`src/evals/external/`, [guide](evals/external-benchmarks.md)). `npm run evals` runs all of them. Results: [RESULTS.md](RESULTS.md).
 
-- **Console (humans):**
-  - goals and KPIs
-  - the live org chart
-  - the inbox of asks
-  - the ledger with provenance (entry → decision → commit)
-  - memory history and blame
-  - eval scoreboard
-  - chaos panel and sim clock
+### 7. Interfaces
 
-  The console also registers read-only WebMCP tools (list open decisions, ask why), so a human's own browser agent can read it. Answering a decision takes a real click in the review drawer, which shows the kernel-stored effect (payee, amount and remit-to; branch and paths; close period) next to the buttons.
-- **MCP server (agents):** the kernel's tools for external agents, such as an outside auditor running in Claude Code, scoped by seat token.
-- **No spreadsheets anywhere.** Humans get answers and decisions, not grids to fill.
+- **Console (`console/`, humans):** inbox of asks with a review drawer, org chart, live activity, ledger with provenance, memory history, evals, a control room for injecting scenarios, bank and cash, finance flow, the invoice workspace, and `/ap-demo` for payment approval. The console registers read-only WebMCP tools (list open decisions, ask why) so a human's own browser agent can read it. Answering a decision takes a click in the review drawer, which shows the kernel-stored effect next to the buttons.
+- **Human gateway (`src/human/gateway.ts`):** holds the human CFO seat token and serves only the console, behind a shared token and an Origin allowlist.
+- **Ask why (`src/human/why.ts`, `npm run ask`):** answers questions from the record, with citations to decision commits and ledger entries.
+- **No spreadsheets.** Humans get answers and decisions, not grids to fill.
 
-## Sponsor integrations
-
-Each one does real work; none is a logo.
+## Sponsor tracks
 
 | Sponsor | Where it lives | Status |
 |---|---|---|
-| Hyphenate | The whole system (primary track) | core |
-| Convex | Kernel: ledger, bus, tasks, live console | core |
-| Microsoft (Built for the Real World) | Production design: controls, observability, deployment, cost per transaction | core |
-| Factory Droid SDK | Integrations-engineer seat: a new document format triggers Droid to write a parser and tests on a branch; the controller merges | planned |
-| CRS Credit API | Risk checks: OFAC, business and identity checks on vendor onboarding and remit-to changes; customer credit for catering terms | planned |
-| Capital One Nessie | Bank rail: operating and payroll accounts, payments, bank feed | planned |
-| Fetch.ai | CFO agent on Agentverse (chat protocol), so overseers can talk to finance from ASI:One | stretch |
-| Auth0 for AI Agents | Human sign-in, push approvals (CIBA) for asks | stretch |
-| Moss | Fast semantic recall over memory and documents for agents | stretch |
-| Coinbase x402 | Treasury pays international contractors in USDC under spend controls | stretch, eligibility-gated |
+| Hyphenate | The whole system (primary track) | built |
+| Convex | Kernel: ledger, bus, tasks, live console | built |
+| Microsoft (Built for the Real World) | Controls, recovery, observability, cost per transaction | built |
+| Increase (bank sandbox) | AP payment adapter, contract-tested with Prism | built; live sandbox not run |
+| Factory Droid SDK | Integrations-engineer seat writing parsers | not built; the seat uses the agent model |
+| Capital One Nessie | Bank rail | not built; `src/world/bank.ts` is simulated |
+| CRS, Fetch.ai, Auth0, Moss, Coinbase x402 | Risk checks, Agentverse CFO, push approvals, recall, USDC payouts | not built |
 
 ## Repo layout
 
 ```
-convex/            kernel (schema, ledger, bus, tasks, seats, payments, asks, memory index, runs)
-src/core/          shared types: money, chart of accounts, events, policies
-src/memory/        git-first memory store + schemas + seed
-src/agents/        runtime, Claude tool loop, seat handlers, staffing
-src/world/         simulator, planted errors, answer key, emitter
-src/evals/         suites, scorers, reports
-src/integrations/  parsers for external formats (Droid writes new ones here)
-console/           overseer console (Vite + React + Convex)
+convex/            kernel: schema, ledger, bills, payments, tasks, seats, asks, invoice cases, observability
+src/core/          shared types and clients: money, chart of accounts, roles, env loading, kernel client
+src/memory/        git-first memory store, schemas, day-zero seed
+src/agents/        runtime, model tool loop, seat handlers, staffing
+src/world/         simulator, planted errors, answer key, accounting oracle, simulated bank
+src/integrations/  invoice parsers, FakeBank, Increase adapter and fixtures
+src/payments/      scoped AP agent handles, dispatcher, evidence worker
+src/evals/         scorer, eval runner, spreadsheet benchmark, external benchmark harness
+src/human/         human gateway and "ask why"
+src/invoice-mvp/   invoice workspace service, parser and investigator
+console/           overseer console (Vite, React, Convex live queries, WebMCP tools)
 company/sweetgreen calibration profile
 ```

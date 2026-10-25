@@ -1,13 +1,13 @@
 # Invoice investigator and application boundary
 
-The invoice MVP uses one bounded Investigator. The default is **deterministic supported-format processing**, not a language model. Unknown formats remain unresolved with a specific evidence request. Synthetic mock-model tests exercise the observe → tool → result → next action loop. Live model and official benchmark evaluations are **NOT RUN**.
+The invoice MVP uses one bounded Investigator. The default is **deterministic supported-format processing**, not a language model. Unknown formats remain unresolved with a specific evidence request. Synthetic mock-model tests exercise the observe → tool → result → next action loop. One capped live OpenAI batch has run; see [evaluation-openai-results.md](evaluation-openai-results.md).
 
 ## Startup
 
 The root integration worker owns provisioning the existing local Convex backend and `scripts/invoice-workspace-init.ts`. Do not deploy a worker checkout's signature-only backend. Initialize a run with one simulated human CFO and one `invoice_investigator` investigator. Save the resulting token mapping to a mode-0600 file outside source control.
 
 ```sh
-CONVEX_URL=http://127.0.0.1:3230 \
+CONVEX_URL=http://127.0.0.1:3210 \
 INVOICE_MVP_RUN_ID=invoice-demo \
 INVOICE_MVP_SEATS_FILE=/absolute/path/to/seats.json \
 npm run invoice-mvp:server
@@ -75,4 +75,4 @@ npm run invoice-mvp:test
 npm run typecheck
 ```
 
-The focused tests cover both a small test-only backend double and the actual Convex handlers inside the repository's DB harness. They verify bounded deterministic/mock behavior, source preservation, import validation, recovery orchestration, HTTP security, deterministic accounting, late revisions, stale approvals, and replay. The harness does not simulate Convex transaction concurrency. A separate deployed-backend smoke check is recorded in the handoff. Root owns integrated browser acceptance; a passing mock suite is not that acceptance or an official benchmark score.
+The focused tests cover both a small test-only backend double and the actual Convex handlers inside the repository's DB harness. They verify bounded deterministic/mock behavior, source preservation, import validation, recovery orchestration, HTTP security, deterministic accounting, late revisions, stale approvals, and replay. The harness does not simulate Convex transaction concurrency. Deployed-backend smoke checks (`scripts/invoice-mvp-smoke.ts`, `scripts/invoice-mvp-http-smoke.ts`) and browser acceptance are recorded in [ACCEPTANCE.md](ACCEPTANCE.md); a passing mock suite is not that acceptance or a benchmark score.

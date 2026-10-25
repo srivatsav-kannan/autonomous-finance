@@ -37,9 +37,9 @@ Requires `uv` and an Anthropic API key. Raw outputs are large, so they go in the
 checkout's git-ignored `results/` folder, outside this repo.
 
 ```bash
-export FB=/Users/srivatsavkannan/Documents/calhacks/benchdata/finbalance   # any fresh directory
-export ENVFILE=/Users/srivatsavkannan/Documents/calhacks/autonomous-finance/.env.local  # holds ANTHROPIC_API_KEY
-cd /Users/srivatsavkannan/Documents/calhacks/autonomous-finance/evals/external/finbalance
+export FB="$PWD/../benchdata/finbalance"   # run from the repo root; any fresh directory
+export ENVFILE="$PWD/.env.local"  # holds ANTHROPIC_API_KEY
+cd evals/external/finbalance
 
 # 0. Harness at the pinned commit, with Python 3.12 (the system Python is 3.14)
 git clone https://github.com/Devansh1105/finbalance.git "$FB"
@@ -79,7 +79,7 @@ COMMON=(--dataset "$FB/data/main/records.jsonl" --model claude-opus-5-5 --effort
 
 # 6. Contamination check 2: a never-published split from the repo's own generator (same
 #    construction as data/main: 4 records per industry x period x level cell, 10 per code)
-export NEW=/Users/srivatsavkannan/Documents/calhacks/benchdata/finbalance_fresh_seed20261024
+export NEW="$(dirname "$FB")/finbalance_fresh_seed20261024"
 (cd "$FB" && .venv/bin/python scripts/generate_standard_datasets.py --base-dir "$NEW" --seed 20261024 \
   --records-per-combo 4 --negative-controls-per-code 10)
 (cd "$FB" && .venv/bin/python scripts/audit_structural_invariants.py "$NEW/main/records.jsonl")  # 710/710 pass

@@ -374,6 +374,8 @@ These held up; no need to re-investigate.
 
 ## Docs: keep / merge / delete
 
+> **Applied** in the `chore/repo-cleanup` PR. Paths below are as audited; several docs have since moved: `docs/ap-demo.md` and `docs/payment-refactor/*` are in `docs/ap-demo/`, `INTEGRATION_DESIGN.md` is `docs/ap-demo/design.md`, `EXTERNAL_EVALS.md` and `CLOSE_EVAL_CORRECTNESS.md` are in `docs/evals/`, and `WORKER_RECOVERY.md` and `TEAM.md` were merged into `ARCHITECTURE.md` and the README.
+
 | Doc | Verdict | Note |
 |---|---|---|
 | README.md | keep | Fix the uncapped-Claude line (P1-5), layout table, links to RESULTS/DEMO, prerequisites |
@@ -412,6 +414,8 @@ These held up; no need to re-investigate.
 | src/integrations/fixtures/increase/README.md | keep | Fixture provenance |
 
 ## Scripts: keep / merge / delete
+
+> **Applied** in the same PR: `peek-world.ts` is deleted, and all eleven `smoke-*.ts` scripts run under `npm run smoke` (each passed against a fresh local backend). `convex/lib/demoEffects.ts` was left for the PR that owns `convex/`.
 
 | Script | Verdict | Note |
 |---|---|---|

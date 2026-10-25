@@ -74,10 +74,10 @@ The browser run contains 9 source versions: 4 recorded, 2 supporting records exc
 
 ![Workspace after actual restart](screenshots/final-workspace-after-restart.png)
 
-Additional screenshots: [recorded case/replay](screenshots/final-recorded-case.png), [missing evidence](screenshots/final-missing-evidence.png), [real service outage](screenshots/final-backend-stopped.png). Worker C's earlier screenshots are supplementary and identify their earlier source commit in its handoff.
+Additional screenshots: [recorded case/replay](screenshots/final-recorded-case.png), [missing evidence](screenshots/final-missing-evidence.png), [real service outage](screenshots/final-backend-stopped.png). Earlier worker screenshots were removed with the worker handoff logs.
 
 ## Validation boundaries
 
 Local identities are simulated operator/agent seats with backend-enforced permissions. Production SSO, public deployment, mobile viewport/file-picker/download roundtrip, live banking and real financial transactions were not tested. The browser imports text/CSV/JSON; PDFs require original bytes plus externally extracted text. Original benchmark extraction uses pinned pypdf, not native browser OCR.
 
-No second model reviewer exists. No controlled live comparison shows that multiple product agents add value. Four Codex development chats are unrelated to the product's optional single Investigator role. Historical 18/18 Claude-only results do not measure this MVP. The capped $7.50 comparison is prepared and disabled pending explicit approval and an API credential; credentials alone never authorize spending.
+No second model reviewer exists. No controlled live comparison shows that multiple product agents add value. Four Codex development chats are unrelated to the product's optional single Investigator role. Historical 18/18 Claude-only results do not measure this MVP. The capped $7.50 comparison later ran with OpenAI; see the [live evaluation report](evaluation-openai-results.md).

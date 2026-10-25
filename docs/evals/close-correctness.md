@@ -56,8 +56,8 @@ evidence, not validation of Increase or the separate AP-demo bank implementation
 
 ## Reproduce
 
-Use an isolated local Convex deployment and synthetic run/account data. Configure
-`CONVEX_URL` and `KERNEL_ADMIN_SECRET` as described in the repository README.
+Use an isolated local Convex deployment and synthetic run/account data, set up
+with the README quick start (`npm run setup`, `npm run backend`, `npm run backend:configure`).
 
 ```sh
 npm test

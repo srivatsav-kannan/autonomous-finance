@@ -143,7 +143,7 @@ Tests: `tests/payments/release-unsent.test.ts`.
 | Real human JWT / external webhook delivery | Actual identity and delivery prerequisites | **NOT_RUN** |
 
 Use `npm run ci:recovery` on a disposable POSIX environment with an unconfigured
-Convex user. Follow `docs/ci.md`; do not delete or reuse another user's global
+Convex user. Follow [docs/ci.md](../ci.md); do not delete or reuse another user's global
 Convex state to make the runner start. Retain sanitized counts, hashes,
 revision and runtime. A missing or failed run is never a pass. Full bank rows,
 worker tokens and local admin credentials are private diagnostic material.
@@ -175,8 +175,8 @@ verified integrated `794a10e`: **387/387 tests**, all three TypeScript checks,
 console build, and persistent local Convex/FakeBank recovery passed. The proof
 records two leased attempts, one create call, one lookup, one transfer, one
 posted debit, one linked cash journal entry, and zero close blockers. See
-`core-validation.json` for hashes and runtime. Additional CI/browser gates are
-tracked in `COORDINATION.md`; they are not inferred from this core run.
+[core-validation.json](core-validation.json) for hashes and runtime. The CI and browser gates are
+recorded in the next section; they are not inferred from this core run.
 Live Increase, real external human JWT and external webhook delivery remain **NOT_RUN**.
 
 ## Final integrated CI and browser validation
@@ -195,4 +195,4 @@ human approval, pending unpaid state, verified settlement and visible evidence;
 the runner independently read the persisted journal. Staging is **NOT_RUN**,
 exit 2, until its target and authentication fixture are supplied. Full sanitized
 results are in [final-validation.json](final-validation.json); commands and the
-reusable staging gate are described in [BROWSER.md](BROWSER.md).
+reusable staging gate are described in [browser-test.md](browser-test.md).

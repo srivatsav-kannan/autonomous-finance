@@ -1,6 +1,6 @@
 # Persistent FakeBank
 
-This implements task A of [issue #39](https://github.com/srivatsav-kannan/autonomous-finance/issues/39). It requires Node 24.6 or later for `node:sqlite`; the runtime may print Node's experimental SQLite warning.
+This implements task A of [issue #39](https://github.com/srivatsav-kannan/autonomous-finance/issues/39). It uses `node:sqlite` and needs the repository's Node version (24.18 or later); Node may print an experimental SQLite warning.
 
 Run the provider tests:
 
