@@ -1,0 +1,155 @@
+{
+  "version": "ap97-live-happy-path-v1",
+  "checkedAt": "2026-10-25T11:41:11.375312+00:00",
+  "result": "PASS: one synthetic invoice-to-payment sandbox flow; not complete bank close",
+  "caseId": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
+  "invoice": "INV-1001",
+  "amountCents": 67860,
+  "currency": "USD",
+  "identity": "actual Auth0 user; final payment button clicked by user",
+  "sourceData": "existing synthetic Golden State invoice/PO/receipt/contract; retained genuine parser jobs",
+  "bank": {
+    "checkedAt": "2026-10-25T11:35:53.407Z",
+    "transfers": [
+      {
+        "id": "sandbox_ach_transfer_spyd2r518l9gutry0hfn",
+        "amountCents": 67860,
+        "status": "submitted",
+        "settledAt": "2026-10-25T11:34:47Z",
+        "transactionId": "sandbox_transaction_02j4j1ax6a81pw5y034h",
+        "idempotencyKey": "demo:q17cdf2z1zj9nv2rvmgax3dwtd8gzqyc"
+      }
+    ],
+    "transactions": [
+      {
+        "id": "sandbox_transaction_02j4j1ax6a81pw5y034h",
+        "amountCents": -67860,
+        "sourceCategory": "ach_transfer_intention",
+        "linkedTransferId": "sandbox_ach_transfer_spyd2r518l9gutry0hfn"
+      },
+      {
+        "id": "sandbox_transaction_7in7uo3dooxz3307i4cu",
+        "amountCents": 67860,
+        "sourceCategory": "inbound_ach_transfer",
+        "linkedTransferId": null
+      }
+    ],
+    "balance": {
+      "currentCents": 0,
+      "availableCents": 0
+    },
+    "checks": {
+      "oneTransfer": true,
+      "oneMatchingDebit": true,
+      "settlementPresent": true,
+      "zeroRemainingTestBalance": true
+    }
+  },
+  "accounting": {
+    "billId": "145",
+    "billBalance": 0,
+    "billCurrentSyncToken": "1",
+    "billPaymentId": "146",
+    "checks": {
+      "oneBill": true,
+      "oneBillPayment": true,
+      "onePostAttempt": true,
+      "amountMatches": true,
+      "linkedToBill145": true,
+      "billBalanceZero": true
+    },
+    "operations": [
+      {
+        "entity": "BillPayment",
+        "state": "succeeded",
+        "externalId": "146",
+        "syncToken": "0",
+        "requestId": "ap-5e2eaf62b0809e1fd0c0380b0b49e21825bbdc3a8afc",
+        "attempts": 1,
+        "payloadHash": "cb8d5d4c0d524de1107904fd237853de2efa1ae74b2b7e4265eb742e7cecda65",
+        "responseHash": "b2ac823e06fd935a309f5d765ba94d29f569001a9780ed88976723722568d12b",
+        "links": {
+          "bankTransactionId": "sandbox_transaction_02j4j1ax6a81pw5y034h",
+          "billId": "ns741jys5gph4fyfr44j66tdc58gyvxg",
+          "caseId": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
+          "commandId": "nx74zqsc9n5cmvswe5napwp6t18gyma9",
+          "creditId": null,
+          "paymentVersionId": "q17cdf2z1zj9nv2rvmgax3dwtd8gzqyc",
+          "recognitionJournalId": "rx713kw9r8sbgn06y8sc9sqe8d8gzrx9",
+          "settlementJournalId": "rx71arac24mhdfs13bvcmwy1a18gzheq"
+        }
+      },
+      {
+        "entity": "Bill",
+        "state": "succeeded",
+        "externalId": "145",
+        "syncToken": "0",
+        "requestId": "ap-2d1b7545aac02311f6d562e54826d1e3af8c273735bf",
+        "attempts": 1,
+        "payloadHash": "751a5ac420dfd443085b852ece94358137e78b8e53aec07c06144e8c660420f4",
+        "responseHash": "dbf4a27ac51f08d59424b8e86120b7817145055fc3f70049b3d2077cf7a6022a",
+        "links": {
+          "bankTransactionId": null,
+          "billId": "ns741jys5gph4fyfr44j66tdc58gyvxg",
+          "caseId": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
+          "commandId": null,
+          "creditId": null,
+          "paymentVersionId": null,
+          "recognitionJournalId": "rx713kw9r8sbgn06y8sc9sqe8d8gzrx9",
+          "settlementJournalId": null
+        }
+      }
+    ]
+  },
+  "local": {
+    "execution": "settled",
+    "reconciliation": "matched",
+    "outstandingCents": 0,
+    "recognitionJournalId": "rx713kw9r8sbgn06y8sc9sqe8d8gzrx9",
+    "settlementJournalId": "rx71arac24mhdfs13bvcmwy1a18gzheq",
+    "recognition": {
+      "debit5000": 67860,
+      "credit2000": 67860
+    },
+    "settlement": {
+      "debit2000": 67860,
+      "credit1000": 67860
+    },
+    "evidencePosts": [
+      1,
+      0
+    ]
+  },
+  "repair": {
+    "finding": "QBO omitted optional APAccountRef from BillPayment 146; original strict comparison returned external_response_mismatch",
+    "fix": "Verify omitted AP reference through each exact linked Bill/VendorCredit; preserve strict other economic fields and present AP references",
+    "recovery": "original unknown operation recovered through GET lookup, attempts remains 1; no second POST",
+    "testsPassed": 49,
+    "testFiles": 7,
+    "typechecks": [
+      "application",
+      "tests"
+    ],
+    "scopeLimit": "Fallback for omitted APAccountRef does not accept JournalEntry links"
+  },
+  "limitations": [
+    "Sandbox funding and settlement use official provider simulation, not real funds or production ACH.",
+    "The separate +67860-cent synthetic inbound ACH funding deposit is retained as unmatched/non-AP bank activity. Payment reconciliation passes; complete bank close does not.",
+    "No live signed webhook, negative Auth0, returns, credits, successive partial payments or complete external roadmap acceptance is claimed.",
+    "Bill changed from SyncToken 0 to 1 when payment applied; current Bill readback confirms Balance 0. Historical Bill receipt is not rewritten.",
+    "CI remains deferred; Claude independent model review remains pending."
+  ],
+  "runtime": {
+    "baseCommit": "b3c3bc6",
+    "liveQboClientSha256": "290b6329f9683b9f22828280015911735b6470fcb2a5e0000feae3c4e4729b95"
+  },
+  "artifactHashes": {
+    "dispatch-receipt.json": "26c9005ae1e9f3a8f33deb5053253fd9119ae17a2bce1ac7220cdbf7e0db8c8b",
+    "qbo-billpayment-verified.jpg": "eb75c37c5573ee5af47307435c95bed601819697ec08b50c8f766f0424bd2064",
+    "increase-final-readback.json": "8a383e7152e68ecd4a7558d326d98deb93a881c5b87f820463af29d9bdd53a64",
+    "settlement-receipt.json": "3ee71e987e3314675aa7297adeae920478518caa71dec219a8ddec5eb4c04345",
+    "reconciliation-receipt.json": "5406b6780da07586c07d689514e3c133603b74eeb9c2aed35dbf450b06418f63",
+    "qbo-payment-investigation.json": "15fbda2a1a6bad8e087f0b2c4172fbdfe10039708a3dc63b83f4fb21658e3e79",
+    "qbo-final-readback.json": "6b082c6298c9b4b835962a0e61c35be5138b4255753c4133c5b0f45cbfb98958"
+  }
+}
