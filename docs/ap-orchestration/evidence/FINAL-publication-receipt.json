@@ -1,0 +1,58 @@
+{
+  "publishedAt": "2026-10-25T11:13:49Z",
+  "verifiedAt": "2026-10-25T11:17:23.171098+00:00",
+  "repository": "srivatsav-kannan/autonomous-finance",
+  "visibility": "private",
+  "pullRequest": {
+    "number": 105,
+    "url": "https://github.com/srivatsav-kannan/autonomous-finance/pull/105",
+    "draft": true,
+    "merged": false,
+    "base": "b07bf87e7f1a5ad1f8dc398fd328397e42d5c034",
+    "head": "11244eefe69c7d29bff5c870977abf893bcb982d",
+    "branch": "codex/ap-system-review"
+  },
+  "matchingIntegrationCommit": "7eaad4438b816b51a95faa4d622d5e715f5aaf6b",
+  "testedReviewCommit": "35b97ee8de7702e578a798910cf0c2b78e4fb7a2",
+  "ci": {
+    "runId": 40187986581,
+    "url": "https://github.com/srivatsav-kannan/autonomous-finance/actions/runs/40187986581",
+    "status": "completed",
+    "conclusion": "failure",
+    "acceptance": "deferred_by_user",
+    "regression": {
+      "passed": 1849,
+      "failed": 37,
+      "skipped": 4,
+      "failureBasis": "macOS-specific /private/tmp setup paths in Linux runner"
+    },
+    "browser": "success",
+    "isolatedRecovery": "success",
+    "repairOrRerun": "not_requested; skipped for now"
+  },
+  "localChecks": {
+    "passed": 1886,
+    "skipped": 4,
+    "failed": 0,
+    "typechecks": "3 passed",
+    "build": "passed with known bundle-size advisory",
+    "design": "passed"
+  },
+  "pendingExternalAcceptance": [
+    "actual operator field/bill/payment decisions",
+    "QBO accounting transaction round trip",
+    "Increase sandbox payment execution",
+    "Claude 独立模型评审 by external recipient"
+  ],
+  "userScope": {
+    "currency": "USD; multicurrency/FX deferred to issue104",
+    "platform": "laptop desktop browser",
+    "hosting": "deferred",
+    "modelReview": "Claude independent model review replaces practitioner delivery gate",
+    "ci": "deferred_by_user"
+  },
+  "mainMerged": false,
+  "productionDeployed": false,
+  "realMoneyMoved": false,
+  "scopeUpdatedAt": "2026-10-25T11:20:29.118927+00:00"
+}

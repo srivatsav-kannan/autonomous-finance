@@ -1,0 +1,59 @@
+Golden State Produce Co.
+SYNTHETIC COMPANY DOCUMENT / AP ENGINEERING FIXTURE
+
+
+
+
+SUPPLY CONTRACT
+Document Number: CONTRACT-GS-2026
+
+Supplier:                   Golden State Produce Co.
+Bill To:                    Sweetgreen simulation - Hayes Valley
+Store:                      sf-hayes-valley
+Invoice Date:               2026-10-19
+Due Date:                   2026-11-02
+Terms:                      Net 14
+Currency:                   USD
+PO Reference:               PO-GS-20261019-001
+Delivery Reference:         DLV-sf-hayes-valley-20261019-GOL
+
+
+ SKU                 Description                                                          Qty     UOM            Unit USD     Amount USD
+
+
+ KALE-24             Organic Kale, 24ct case                                                  5   case                38.50        192.50
+
+
+
+ ROM-CS              Romaine Hearts, case                                                     4   case                42.75        171.00
+
+
+
+ AVO-48              Hass Avocados, 48ct                                                      3   case                68.90        206.70
+
+
+
+ TOM-25              Heirloom Tomatoes, 25lb                                                  2   case                54.20        108.40
+
+
+
+                                                                                                         Subtotal             USD 678.60
+                                                                                                         Tax                    USD 0.00
+                                                                                                         Freight                USD 0.00
+                                                                                                         Discount               USD 0.00
+                                                                                                         Total                USD 678.60
+
+
+
+
+Effective: 2026-01-01 through 2026-12-31. Unit prices listed above apply.
+Terms: Net 14. This contract is explicitly authored synthetic support.
+
+
+
+
+All counterparties, people and transactions are simulated. Not an actual supplier original.
+Source: seeded company simulator; printed values frozen before parser evaluation.
+
+                                                                                                                                      1/1
+

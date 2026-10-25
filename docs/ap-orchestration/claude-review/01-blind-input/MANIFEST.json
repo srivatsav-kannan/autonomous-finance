@@ -1,0 +1,75 @@
+{
+  "phase": "01-blind-input",
+  "files": [
+    {
+      "path": "BUSINESS-EVENTS.md",
+      "bytes": 10713,
+      "sha256": "29f642c270efc9bb25799c526bb914208532c8b314496229cc226329b83c8ee5"
+    },
+    {
+      "path": "COMPANY-POLICY.md",
+      "bytes": 9123,
+      "sha256": "09fdf8fffa6f4a752de8726a771df3857b3785070b6a32f26f1bb73169961537"
+    },
+    {
+      "path": "PROMPT.txt",
+      "bytes": 2153,
+      "sha256": "e8f31424e818357c52fffeb89457ea45299d776fafed50c5cbf4768a12950a28"
+    },
+    {
+      "path": "START-HERE.md",
+      "bytes": 1680,
+      "sha256": "dcb1452aeb95c0246eb1f698598e5aaf1f3a4d5b585d9dfa04c01c8dc5e57a22"
+    },
+    {
+      "path": "originals/contract.pdf",
+      "bytes": 3022,
+      "sha256": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883"
+    },
+    {
+      "path": "originals/invoice-quantity-discrepancy.pdf",
+      "bytes": 2873,
+      "sha256": "59b5344281b0a7202c924f4ace515667f34bcf45816826252cecc3b0c6df967a"
+    },
+    {
+      "path": "originals/invoice.pdf",
+      "bytes": 2869,
+      "sha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83"
+    },
+    {
+      "path": "originals/purchase-order.pdf",
+      "bytes": 3022,
+      "sha256": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7"
+    },
+    {
+      "path": "originals/receipt.pdf",
+      "bytes": 2908,
+      "sha256": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2"
+    },
+    {
+      "path": "transcripts/contract.txt",
+      "bytes": 2404,
+      "sha256": "799810e3979e9ee5ad9f653f563c602af43ce38c32dc461a1ad74af7d5251b20"
+    },
+    {
+      "path": "transcripts/invoice-quantity-discrepancy.txt",
+      "bytes": 2243,
+      "sha256": "42f51305040737faffd48432f1be7d9fd7eb257e346163fd12e1fbb5ca042a78"
+    },
+    {
+      "path": "transcripts/invoice.txt",
+      "bytes": 2239,
+      "sha256": "a13edde1379b59ee6b41b645d99969048aba262d19105c40283fd21486ddcc4c"
+    },
+    {
+      "path": "transcripts/purchase-order.txt",
+      "bytes": 2407,
+      "sha256": "07e59c77ca98d8c003bb5c02a8f53c4f1ccc26ab4a5b1da197f6c24d13038e99"
+    },
+    {
+      "path": "transcripts/receipt.txt",
+      "bytes": 1675,
+      "sha256": "d83ad783c48f39c0eded89eada190face5b20627c66f97690d9d6feef430751c"
+    }
+  ]
+}

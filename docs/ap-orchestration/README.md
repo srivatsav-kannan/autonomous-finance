@@ -1,5 +1,7 @@
 # AP system orchestration launch pack
 
+> **2026-10-25 scope update:** This is historical practitioner preparation. The user replaced the practitioner delivery gate with [Claude 独立模型评审](CLAUDE-REVIEW.md), to be run by the external recipient using a frozen blind derivation before implementation comparison. A real practitioner is no longer required for this delivery; none is claimed. CI is deferred; actual QuickBooks/Increase acceptance remains unchanged.
+
 Prepared on 2026-10-25. **Configuration only: no implementation sessions have been started.**
 
 本启动包把 issue #97 转成可分派、可验收的工作。它不创建新的 orchestration 服务；使用 Codex 现有的 `/goal`、sessions、subagents 和 worktrees。机器可读清单是任务登记表，不是已经运行的 scheduler。

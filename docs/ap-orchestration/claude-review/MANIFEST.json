@@ -1,0 +1,132 @@
+{
+  "format": "ap97-claude-review-manifest-v1",
+  "createdAt": "2026-10-25T11:20:29.118927+00:00",
+  "sourceCommit": "7eaad4438b816b51a95faa4d622d5e715f5aaf6b",
+  "files": [
+    {
+      "path": "01-blind-input/BUSINESS-EVENTS.md",
+      "bytes": 10713,
+      "sha256": "29f642c270efc9bb25799c526bb914208532c8b314496229cc226329b83c8ee5"
+    },
+    {
+      "path": "01-blind-input/COMPANY-POLICY.md",
+      "bytes": 9123,
+      "sha256": "09fdf8fffa6f4a752de8726a771df3857b3785070b6a32f26f1bb73169961537"
+    },
+    {
+      "path": "01-blind-input/MANIFEST.json",
+      "bytes": 2276,
+      "sha256": "16af3369d34b039dadf4dafd87ee88892027678fdacbc41553425402bcb3734e"
+    },
+    {
+      "path": "01-blind-input/PROMPT.txt",
+      "bytes": 2153,
+      "sha256": "e8f31424e818357c52fffeb89457ea45299d776fafed50c5cbf4768a12950a28"
+    },
+    {
+      "path": "01-blind-input/START-HERE.md",
+      "bytes": 1680,
+      "sha256": "dcb1452aeb95c0246eb1f698598e5aaf1f3a4d5b585d9dfa04c01c8dc5e57a22"
+    },
+    {
+      "path": "01-blind-input/originals/contract.pdf",
+      "bytes": 3022,
+      "sha256": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883"
+    },
+    {
+      "path": "01-blind-input/originals/invoice-quantity-discrepancy.pdf",
+      "bytes": 2873,
+      "sha256": "59b5344281b0a7202c924f4ace515667f34bcf45816826252cecc3b0c6df967a"
+    },
+    {
+      "path": "01-blind-input/originals/invoice.pdf",
+      "bytes": 2869,
+      "sha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83"
+    },
+    {
+      "path": "01-blind-input/originals/purchase-order.pdf",
+      "bytes": 3022,
+      "sha256": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7"
+    },
+    {
+      "path": "01-blind-input/originals/receipt.pdf",
+      "bytes": 2908,
+      "sha256": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2"
+    },
+    {
+      "path": "01-blind-input/transcripts/contract.txt",
+      "bytes": 2404,
+      "sha256": "799810e3979e9ee5ad9f653f563c602af43ce38c32dc461a1ad74af7d5251b20"
+    },
+    {
+      "path": "01-blind-input/transcripts/invoice-quantity-discrepancy.txt",
+      "bytes": 2243,
+      "sha256": "42f51305040737faffd48432f1be7d9fd7eb257e346163fd12e1fbb5ca042a78"
+    },
+    {
+      "path": "01-blind-input/transcripts/invoice.txt",
+      "bytes": 2239,
+      "sha256": "a13edde1379b59ee6b41b645d99969048aba262d19105c40283fd21486ddcc4c"
+    },
+    {
+      "path": "01-blind-input/transcripts/purchase-order.txt",
+      "bytes": 2407,
+      "sha256": "07e59c77ca98d8c003bb5c02a8f53c4f1ccc26ab4a5b1da197f6c24d13038e99"
+    },
+    {
+      "path": "01-blind-input/transcripts/receipt.txt",
+      "bytes": 1675,
+      "sha256": "d83ad783c48f39c0eded89eada190face5b20627c66f97690d9d6feef430751c"
+    },
+    {
+      "path": "02-comparison/EVIDENCE-MAP.md",
+      "bytes": 2863,
+      "sha256": "2e188c497cb93e45ecdb9c948a7dad2bd0cb6025ca07049ae7620fbb05697ea1"
+    },
+    {
+      "path": "02-comparison/MANIFEST.json",
+      "bytes": 1184,
+      "sha256": "4490ef24fce7c816ebbbf262190698a764b507eff82ce818d651ece11da79235"
+    },
+    {
+      "path": "02-comparison/PROMPT.txt",
+      "bytes": 2210,
+      "sha256": "5ef021fd2f13ba9eefe9e4c19c8e381403bcb1cabd5704a76d02784f3f5f5998"
+    },
+    {
+      "path": "02-comparison/TEAM-EXPECTED-ONLY.json",
+      "bytes": 46322,
+      "sha256": "cce1c3d615f7a4a351d64f193af9fdd69727e3896d39326b47feac97d88073b2"
+    },
+    {
+      "path": "02-comparison/observed/I1-retained-readback.json",
+      "bytes": 5217,
+      "sha256": "94dc221ae30a326bd72475ada087b7cdfdca1d8856c40437ebe36b542a0c592d"
+    },
+    {
+      "path": "02-comparison/observed/I2-close-retained-readback.json",
+      "bytes": 2880,
+      "sha256": "45f11a2068b8bc4aa8dff48bdee44e5c9be217f43af5222683105cdd8a0a2c79"
+    },
+    {
+      "path": "02-comparison/observed/I2-retained-readback.json",
+      "bytes": 5374,
+      "sha256": "7187bc2dc00fc4f58a67e157c96f19a46bd358e99b3071b3cb5dae14ba54bbeb"
+    },
+    {
+      "path": "02-comparison/observed/I3-retained-readback.json",
+      "bytes": 8458,
+      "sha256": "2edc82f39f0afecedc79d1a39ebe49e3dd468b23baf14ad5eaac082880d59603"
+    },
+    {
+      "path": "03-review-records/RECORD-TEMPLATE.md",
+      "bytes": 1587,
+      "sha256": "3e75d77bfccb8e78dc5284491c839a9d3bbb6354b7f950f03db1a944070cec4a"
+    },
+    {
+      "path": "03-review-records/status.json",
+      "bytes": 504,
+      "sha256": "137e5022357c166c1d2e39ae43da3f45d63892bb29c9d4c86ff2225fd5cdef07"
+    }
+  ]
+}

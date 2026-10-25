@@ -1,5 +1,7 @@
 # Engineering versus external acceptance audit
 
+> **2026-10-25 scope update:** This is historical practitioner preparation. The user replaced the practitioner delivery gate with [Claude 独立模型评审](CLAUDE-REVIEW.md), to be run by the external recipient using a frozen blind derivation before implementation comparison. A real practitioner is no longer required for this delivery; none is claimed. CI is deferred; actual QuickBooks/Increase acceptance remains unchanged.
+
 ## Current addendum — integration 1a5dc70
 
 Read-only source/report inspection for this packet refresh, 25 October 2026, at `1a5dc708ef0de26fbd1f2f7f82c33f49a914ae28`. Spec SHA-256 remains `b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565`. This addendum supersedes the historical **current-status** assertions below without rewriting their original evidence. No application, provider, accounting transaction or active policy was changed by this documentation task.

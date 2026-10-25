@@ -1,5 +1,7 @@
 # AP practitioner casebook — 25 October 2026
 
+> **2026-10-25 scope update:** This is historical practitioner preparation. The user replaced the practitioner delivery gate with [Claude 独立模型评审](CLAUDE-REVIEW.md), to be run by the external recipient using a frozen blind derivation before implementation comparison. A real practitioner is no longer required for this delivery; none is claimed. CI is deferred; actual QuickBooks/Increase acceptance remains unchanged.
+
 Current reading note: C01–C14 below preserve the original `1cd4cc5` review baseline and its evidence boundaries. For integration `1a5dc70`, read the [updated overview](PRACTITIONER-REVIEW.md), [C15–C22 current policy cases](PRACTITIONER-CURRENT-CASES.md) and current addendum in the [engineering audit](PRACTITIONER-ENGINEERING-AUDIT.md). Recoverable tax, explicit taxable headers, governed eligibility adjustments, extended dimensions and reviewed contact/physical identity are now implemented within their declared opt-in scope. The user chose USD-only delivery; [multicurrency #104](https://github.com/srivatsav-kannan/autonomous-finance/issues/104) is future scope. Historical pending statements below are not the current status registry.
 
 **Practitioner review has not occurred.** This is a prepared review packet, not a sign-off. The examples below state the implemented synthetic company policy and its expected entries. “Observed” refers only to the linked engineering evidence, with its original code revision and execution mode. It does not establish that the policy is appropriate for a real entity.

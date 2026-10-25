@@ -32,7 +32,7 @@
     "llamaparse": "Actual original Golden State and held-out synthetic provider jobs retained. Independent cached repair replay: 4/4 complete held-out candidates, content104/104 and strict geometry102/104;2 Copper currency fields explicitly unresolved. Original0/4 baseline preserved. This is two project-authored suppliers/four representations, not blind production validation. Container OCR packaging build and two-scan bounded runtime smoke PASS; A4 evidence and issue comment 6396729954 retain scope. Complete application OCR integration and production accuracy are not promoted by this gate.",
     "increase": "Actual normal Auth0 login and explicit single-human binding verified; the authenticated browser can inspect its scoped synthetic case and original raster. Source account/destination read-verified. No user payment authorization, funding, worker or outbound Increase transfer yet.",
     "erp_selection_and_access": "Actual OAuth and authorized eight sandbox reference mappings verified with zero-create replay. Real Auth0 workspace access now verified. Synthetic INV-1001 prepared for actual operator field/bill review; no accounting transaction written yet.",
-    "domain_review": "No practitioner currently available. User directs engineering, automated and independent agent verification to continue; prepare practitioner packet, retain external sign-off as pending."
+    "domain_review": "User replaced practitioner gate with Claude 独立模型评审 on2026-10-25. Packet ready; recipient has Claude and will execute blind derivation then comparison. Retain findings/fixes/re-review; no practitioner required or claimed. External QBO/Increase unchanged."
   },
   "tasks": [
     {
@@ -323,7 +323,7 @@
         "docs/ap-orchestration/evidence/B4-cost-corrections.md"
       ],
       "blocker": null,
-      "next_action": "B3 lifecycle and corrected-cost controls accepted in V4\u2013V6; contact/physical identity repairs accepted in V8\u2013V9; E01/E02 extensions tracked by B5. No unresolved reproduced defects remain in these tests.",
+      "next_action": "B3 lifecycle and corrected-cost controls accepted in V4–V6; contact/physical identity repairs accepted in V8–V9; E01/E02 extensions tracked by B5. No unresolved reproduced defects remain in these tests.",
       "source_sha": "4f7d76d",
       "acceptance_scope": "Declared USD capabilities; synthetic/local independent engineering verification, not external provider or practitioner acceptance."
     },
@@ -379,7 +379,7 @@
         "docs/ap-orchestration/evidence/C4-store-dimensions.md"
       ],
       "blocker": "Actual operator field and bill review for INV-1001 is pending before accounting transaction submission. Auth0 login and reference mappings are already verified.",
-      "next_action": "Existing USD case awaits actual user review, then authorized QBO accounting transaction readback. Local dimensions, settlements and tax reclassification/recovery are independently verified in V10\u2013V14. Optional live policy/catalog/mapping activation remains explicit; 1000-row discovery bound retained.",
+      "next_action": "Existing USD case awaits actual user review, then authorized QBO accounting transaction readback. Local dimensions, settlements and tax reclassification/recovery are independently verified in V10–V14. Optional live policy/catalog/mapping activation remains explicit; 1000-row discovery bound retained.",
       "source_sha": "4f7d76d"
     },
     {
@@ -403,7 +403,7 @@
         "tests/ap-system/close-capacity.test.ts"
       ],
       "blocker": null,
-      "next_action": "Retain actual I2 AP GL=subledger18560 and its honest blockers. Business interpretation and real practitioner review remain FINAL gates.",
+      "next_action": "Retain actual I2 AP GL=subledger18560 and its honest blockers. Business interpretation is handed to external Claude independent model review under the revised FINAL gate.",
       "source_sha": "8dce6f4",
       "acceptance_scope": "Bounded local close/reopen/carryforward controls and independent repairs. Actual I2 correctly retains six unresolved close blockers; no fabricated close approval."
     },
@@ -451,7 +451,7 @@
         "I3"
       ],
       "external_gate": "domain_review",
-      "acceptance": "Full issue97 scope accounted for with evidence; missing credentials or domain review remain explicit blockers, not silent scope cuts.",
+      "acceptance": "Agreed USD/desktop scope accounted for; Claude independent model review freezes source/policy derivation before result comparison and retains findings/fixes/rechecks. Human practitioner no longer a delivery gate. CI deferred by direct user instruction; external operator/QBO/Increase acceptance remains required.",
       "status": "pending",
       "session_id": null,
       "worktree": null,
@@ -460,10 +460,13 @@
       "evidence": [
         "docs/ap-orchestration/evidence/FINAL-engineering-checkpoint.md",
         "docs/ap-orchestration/evidence/2026-10-25-scope-and-issue-receipts.json",
-        "docs/ap-orchestration/PRACTITIONER-REVIEW.md"
+        "docs/ap-orchestration/PRACTITIONER-REVIEW.md",
+        "docs/ap-orchestration/evidence/FINAL-review-checkpoint.md",
+        "docs/ap-orchestration/evidence/FINAL-publication-receipt.json",
+        "docs/ap-orchestration/CLAUDE-REVIEW.md"
       ],
       "blocker": null,
-      "next_action": "Publish reviewable source/capability matrix with correct current-main ancestry. Actual operator/QBO/Increase and real practitioner acceptance remain required."
+      "next_action": "Hand off frozen two-phase packet to external recipient with Claude; await real review record and remediate findings. Retain current QBO/Increase gates; do not repair/rerun deferred CI."
     },
     {
       "id": "A3",
@@ -627,7 +630,7 @@
       "title": "Complete broader accounting policies and remaining supported business repair paths",
       "status": "accepted",
       "acceptance": "Explicit policies and tests before enabling additional currency/tax/dimensions; governed trusted-contact replacement and stable repeated physical-line identity; preserve exact capacity and authority through journals/payment/export.",
-      "next_action": "E03/E04 repaired in V8/V9; dimensions and frozen settlement verified V10\u2013V12; tax recognition/header/adjustments verified V13; QBO tax/immutable recovery verified V14. Multicurrency deferred with user agreement to #104. Actual operator/provider/practitioner gates remain separate.",
+      "next_action": "E03/E04 repaired in V8/V9; dimensions and frozen settlement verified V10–V12; tax recognition/header/adjustments verified V13; QBO tax/immutable recovery verified V14. Multicurrency deferred with user agreement to #104. Actual operator/provider and external Claude model-review gates remain separate; practitioner no longer required.",
       "blocker": null,
       "depends_on": [
         "B3"
@@ -824,7 +827,7 @@
         "docs/ap-orchestration/evidence/I3/results.json",
         "docs/ap-orchestration/I3-RUNBOOK.md"
       ],
-      "next_action": "Local I3 complete; retain exact runtime and UI provenance. External operator/QBO/Increase and practitioner gates remain separate.",
+      "next_action": "Local I3 complete; retain exact runtime and UI provenance. External operator/QBO/Increase and external Claude model-review gates remain separate; practitioner no longer required.",
       "blocker": null,
       "commit": "39bcf93",
       "runtime_commit": "e1147850f98882630653b98b988e30e86a399143",
@@ -930,11 +933,16 @@
       "frontend_port": 5195,
       "gateway_port": 8827,
       "backend_exec_session": 12647,
-      "frontend_exec_session": 45723,
-      "state": "fresh_backend_and_ui_started; harness_implementation_pending",
+      "frontend_exec_session": 5508,
+      "state": "same_case_exception_actual_worker_crash_and_recovery_verified",
       "provider": "fake/local",
       "identity": "explicit_simulated_human",
-      "existing_runs_untouched": true
+      "existing_runs_untouched": true,
+      "runtime_commit": "e1147850f98882630653b98b988e30e86a399143",
+      "frontend_commit": "996e930",
+      "frontend_worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
+      "gateway_exec_session": 87065,
+      "case_id": "kd74wbhvrp0y8tr74pt603pj6x8gzv2y"
     }
   },
   "contracts": {
@@ -980,7 +988,7 @@
     "accounting_transaction_writes": 0,
     "mapping_hash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff"
   },
-  "last_updated_at": "2026-10-25T11:13:35.062941+00:00",
+  "last_updated_at": "2026-10-25T11:20:29.118927+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",
@@ -1002,7 +1010,7 @@
       "workers": 4
     },
     "report": "docs/ap-orchestration/evidence/FINAL-review-checkpoint.md",
-    "limits": "Real operator, QBO transaction, Increase execution and practitioner acceptance remain pending."
+    "limits": "Revision-bound local results. CI deferred after Linux failure. Actual operator/QBO transaction/Increase execution and external Claude model review pending; practitioner no longer required."
   },
   "ui_acceptance_scope": {
     "target": "laptop desktop web browser",
@@ -1013,12 +1021,28 @@
   "scope_decisions": [
     {
       "date": "2026-10-25",
-      "user_statement": "\u5148\u5b8c\u6210\u5f53\u524d USD\uff0c\u591a\u5e01\u79cd\u79fb\u5230\u540e\u7eed issue",
+      "user_statement": "先完成当前 USD，多币种移到后续 issue",
       "current_delivery": "USD only",
       "deferred": "multicurrency and FX accounting",
       "followup": "https://github.com/srivatsav-kannan/autonomous-finance/issues/104",
       "record": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396796577",
       "frozen_snapshot_unchanged": true
+    },
+    {
+      "date": "2026-10-25",
+      "user_statement": "本轮改用 Claude 独立评审；不再让真人评审阻塞交付",
+      "current_delivery": "Claude 独立模型评审; practitioner not required",
+      "method": "Freeze independent derivation from originals/policy before revealing implementation results; preserve findings, fixes and rechecks",
+      "executor": "External recipient with existing Claude account, per user: they will do it. they have claude",
+      "external_providers": "QuickBooks/Increase acceptance unchanged",
+      "record": "docs/ap-orchestration/CLAUDE-REVIEW.md"
+    },
+    {
+      "date": "2026-10-25",
+      "user_statement": "the CI lets just skip for now",
+      "current_delivery": "CI gate deferred; no fix or rerun now",
+      "known_result": "run40187986581 at11244ee failed regression; browser and isolated recovery passed",
+      "not_claimed": "CI green or passing latest head"
     }
   ],
   "spec_clarifications": {
@@ -1026,5 +1050,21 @@
     "metadata": "docs/ap-orchestration/issue-97.delta-20261025.json",
     "diff": "docs/ap-orchestration/issue-97.delta-20261025.diff",
     "adoption": "Compatible same-case arrival-order and actual worker recovery acceptance clarification; frozen snapshot and explicit USD/desktop scope retained."
+  },
+  "publication": {
+    "receipt": "docs/ap-orchestration/evidence/FINAL-publication-receipt.json",
+    "draft_pr": "https://github.com/srivatsav-kannan/autonomous-finance/pull/105",
+    "head": "11244eefe69c7d29bff5c870977abf893bcb982d",
+    "ci_run": "https://github.com/srivatsav-kannan/autonomous-finance/actions/runs/40187986581",
+    "status": "published_draft_ci_deferred_by_user",
+    "ci_result": "failure retained; no repair/rerun requested"
+  },
+  "model_review": {
+    "label": "Claude 独立模型评审",
+    "status": "awaiting_external_reviewer",
+    "packet": "docs/ap-orchestration/CLAUDE-REVIEW.md",
+    "phase1": "not_executed",
+    "phase2": "not_executed",
+    "practitioner_required": false
   }
 }

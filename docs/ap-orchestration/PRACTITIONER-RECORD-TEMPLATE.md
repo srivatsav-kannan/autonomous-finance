@@ -1,5 +1,7 @@
 # AP practitioner review record — unfilled template
 
+> **2026-10-25 scope update:** This is historical practitioner preparation. The user replaced the practitioner delivery gate with [Claude 独立模型评审](CLAUDE-REVIEW.md), to be run by the external recipient using a frozen blind derivation before implementation comparison. A real practitioner is no longer required for this delivery; none is claimed. CI is deferred; actual QuickBooks/Increase acceptance remains unchanged.
+
 Copy this template for each actual review. No real practitioner has completed it. Expected policy outcomes, engineering PASS results, workflow human approvals and the practitioner's judgment must remain separately labeled. Do not place credentials, tokens or private bank details in this record.
 
 ## Review identity and scope
