@@ -14,7 +14,7 @@ So we built the ledger for the agents. The agents work through it, and it enforc
 
 ## How it works
 
-![Agent, harness and sandbox environment](docs/images/agent-environment.png)
+![Document processing, agent harness, controlled finance environment and traceability](docs/images/agent-environment.png)
 
 [Edit diagram](docs/images/agent-environment.excalidraw)
 
