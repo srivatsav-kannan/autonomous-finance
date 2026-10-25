@@ -19,7 +19,7 @@ import { demoInvoice } from "../src/payments/demo-invoice";
 import increaseProvenance from "../src/integrations/fixtures/increase/provenance.json";
 import { BankProviderError, canonicalJson, type BankScope, type BankTransaction } from "../src/integrations/contracts";
 import type { Id } from "../convex/_generated/dataModel";
-import { BROWSER_APPROVAL_TIMEOUT_MS, parseDemoArgs } from "./ap-demo-options";
+import { BROWSER_APPROVAL_TIMEOUT_MS, parseDemoArgs, resolveAdminSecret } from "./ap-demo-options";
 import { startLocalOidcIssuer } from "./testing/local-oidc-issuer";
 
 const options = parseDemoArgs(process.argv.slice(2));
@@ -39,7 +39,12 @@ const artifactDir = path.resolve("var/ap-demo", runId);
 fs.mkdirSync(artifactDir, { recursive: true, mode: 0o700 });
 const random = () => randomBytes(32).toString("hex");
 let url = process.env.CONVEX_URL ?? process.env.VITE_CONVEX_URL;
-const secrets = { admin: process.env.KERNEL_ADMIN_SECRET ?? random(), dispatcher: process.env.AP_DISPATCH_SECRET ?? random(), evidence: process.env.AP_EVIDENCE_SECRET ?? random() };
+// The local profile writes this secret to the deployment. Reuse the one .env.local (loaded by
+// ../src/core/env) already holds, so world, eval and agent runners keep working afterwards.
+const adminSecret = profile === "local" ? resolveAdminSecret(process.env) : { secret: process.env.KERNEL_ADMIN_SECRET!, source: "env" as const };
+if (adminSecret.source === "generated_saved") console.log("KERNEL_ADMIN_SECRET was not set; generated one and saved it to .env.local.");
+if (adminSecret.source === "generated_unsaved") console.log("KERNEL_ADMIN_SECRET was not set and there is no .env.local; using a one-off secret for this run (npm run setup creates .env.local).");
+const secrets = { admin: adminSecret.secret, dispatcher: process.env.AP_DISPATCH_SECRET ?? random(), evidence: process.env.AP_EVIDENCE_SECRET ?? random() };
 // --browser-approval: a loopback OIDC test issuer signs the JWT a human pastes into /ap-demo,
 // and the backend verifies it like any configured identity provider (local only).
 const oidc = options.browserApproval ? await startLocalOidcIssuer("ap-demo-browser") : undefined;

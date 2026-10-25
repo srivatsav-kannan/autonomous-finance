@@ -5,7 +5,12 @@
   "type": "module",
   "description": "An agent-native finance department: agents run the finance function, humans oversee.",
   "scripts": {
+    "setup": "tsx scripts/setup.ts",
     "backend": "CONVEX_AGENT_MODE=anonymous convex dev",
+    "backend:configure": "tsx scripts/backend-configure.ts",
+    "scenario": "tsx scripts/scenario.ts",
+    "ask": "tsx scripts/ask.ts",
+    "evals": "tsx scripts/evals.ts",
     "console": "vite --config console/vite.config.ts",
     "agents": "tsx src/agents/main.ts",
     "world": "tsx src/world/main.ts",

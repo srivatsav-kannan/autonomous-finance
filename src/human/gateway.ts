@@ -12,9 +12,8 @@ import { ROLE_CAPABILITIES } from "../core/roles";
 import { MemoryStore } from "../memory/store";
 import { memoryDir, runDir } from "../world/scenario";
 import { addDays } from "../world/rng";
-import { llmAvailable, runTools, type ToolDef } from "../agents/llm";
-import { z } from "zod";
 import { GATEWAY_TOKEN_HEADER, guardRequest, loadGatewayAuth, type GatewayAuth } from "./gateway-auth";
+import { why } from "./why";
 
 const human = (runId: string) => {
   const tokens = JSON.parse(fs.readFileSync(path.join(runDir(runId), "seats.json"), "utf8")) as Record<string, string>;
@@ -110,46 +109,6 @@ async function chaos(runId: string, kind: string) {
     default:
       throw new Error(`unknown chaos kind ${kind}`);
   }
-}
-
-/** "Why?" answered from the record: decisions in git memory and entries in the ledger, with citations. */
-async function why(runId: string, question: string) {
-  const mem = new MemoryStore(memoryDir(runId));
-  const log = await mem.log({ limit: 2000 });
-  if (!llmAvailable()) {
-    const words = question.toLowerCase().split(/\W+/).filter((w) => w.length > 3);
-    const hits = log.filter((c) => words.some((w) => c.subject.toLowerCase().includes(w))).slice(0, 6);
-    return { answer: hits.length ? hits.map((h) => `${h.author}: ${h.subject} (${h.sha.slice(0, 8)})`).join("\n") : "No matching decisions.", cited: hits.map((h) => h.sha) };
-  }
-  const tools: ToolDef[] = [
-    {
-      name: "search_decisions", description: "Search decision commits in company memory by keyword. Returns subject, author, sha.",
-      schema: z.object({ query: z.string() }),
-      inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"], additionalProperties: false },
-      run: async (input) => {
-        const q = (input as { query: string }).query.toLowerCase();
-        return log.filter((c) => c.subject.toLowerCase().includes(q)).slice(0, 15).map((c) => ({ sha: c.sha, author: c.author, subject: c.subject, trailers: c.trailers }));
-      },
-    },
-    {
-      name: "read_memory", description: "Read a YAML record from company memory, e.g. decisions/2026-01/<id>.yaml or vendors/<id>.yaml.",
-      schema: z.object({ path: z.string() }),
-      inputSchema: { type: "object", properties: { path: { type: "string" } }, required: ["path"], additionalProperties: false },
-      run: async (input) => (await mem.readText((input as { path: string }).path)) ?? "not found",
-    },
-    {
-      name: "recent_entries", description: "Most recent ledger entries with their decision paths.",
-      schema: z.object({ limit: z.number().int() }),
-      inputSchema: { type: "object", properties: { limit: { type: "integer" } }, required: ["limit"], additionalProperties: false },
-      run: async (input) => (await convex().query(api.ledger.entries, { runId, limit: Math.min(50, (input as { limit: number }).limit) }))
-        .map((e) => ({ seq: e.sequence, memo: e.memo, total: e.totalCents, by: e.postedBy, decision: e.decisionPath })),
-    },
-  ];
-  const text = await runTools({
-    system: "You answer a CFO's questions about what the company's finance agents did and why. Use only the tools; cite commit SHAs (first 8 chars) and decision paths. Be brief and specific. If the record doesn't say, say so.",
-    user: question, tools, effort: "medium", maxTurns: 8,
-  });
-  return { answer: text };
 }
 
 class NotFound extends Error {}
