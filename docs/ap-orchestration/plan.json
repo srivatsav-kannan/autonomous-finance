@@ -31,7 +31,7 @@
     "openai": "Existing evaluation-worktree key reused in ignored var/ap-environment/providers.env; authentication and one gpt-6.1-sol Responses request verified 2026-10-25. Config import verified in main-browser-recovery; application workflow not run.",
     "llamaparse": "Existing Default-project key reused. Five agentic_plus parse jobs verified 2026-10-25 across three rounds. Clean PDF passes selected content/native grounding. Genuine scan content passes; native description bbox still absent with raw word output, whose OCR has two transcription mismatches. Local Tesseract 5.5.2 eng PSM 6 uniquely matched both description lines and passed original-image overlay review; this is derived geometry on one sample, not a native box or completed adapter. See LLAMAPARSE-GROUNDING.md and prior reports. App adapter/fallback packaging, broader formats and integration acceptance remain pending.",
     "increase": "Sandbox API/resources available. User selected Auth0 development tenant for real browser login; tenant/app/owner binding not configured. Independent human payment authorization remains required. No outbound transfer yet.",
-    "erp_selection_and_access": "Intuit Development app and US sandbox configured by owner setup chat; exact callback saved. Master reproduced and fixed actual Chrome Origin:null blocker; reached configured company consent screen. Awaiting user Connect, then only authorized read-only CompanyInfo/Account/Vendor validation. No external accounting writes yet.",
+    "erp_selection_and_access": "OAuth and read-only CompanyInfo/Account/Vendor verification succeeded 2026-10-25T09:45:48Z for selected US sandbox (89 accounts, 26 vendors, complete, zero external writes). Subsequent QBO OAuth/API reads and writes paused pending owner authorization-scope clarification; preserve existing grant and history. Mappings and external accounting round trip remain unverified.",
     "domain_review": "No practitioner currently available. User directs engineering, automated and independent agent verification to continue; prepare practitioner packet, retain external sign-off as pending."
   },
   "tasks": [
@@ -312,7 +312,7 @@
       "session_id": "/root/accounting",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-accounting/calhacks",
       "branch": "codex/ap-system-domain",
-      "commit": "8dce6f4",
+      "commit": "126596b",
       "evidence": [
         "docs/ap-orchestration/evidence/B3-domain.md",
         "tests/ap-system/business.test.ts",
@@ -321,7 +321,7 @@
         "tests/ap-system/business-payment-boundaries.test.ts"
       ],
       "blocker": null,
-      "next_action": "V4 found original-byte capacity bypass via renamed parser line IDs, retired supplier verifier acceptance, and shared-seat quorum aliases. B owner fixing and verifier preserving baseline reproductions; acceptance remains pending.",
+      "next_action": "V4 findings repaired with immutable semantic capacity and current distinct-seat checks. Root reran 39 original/adversarial/regression cases PASS; independent repair replay pending. Governed legacy credit bypass separately fixed b0c5b07 with 8 new boundary/recovery tests.",
       "source_sha": "4f7d76d"
     },
     {
@@ -358,18 +358,20 @@
       "status": "in_progress",
       "session_id": "/root/p0_inventory",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-evidence/calhacks",
-      "branch": "codex/ap-system-qbo-business",
-      "commit": "47e0265",
+      "branch": "codex/ap-system-qbo-corrections",
+      "commit": "ee29912",
       "evidence": [
         "docs/ap-orchestration/QUICKBOOKS-SETUP.md",
         "docs/ap-orchestration/evidence/C4-local.md",
         "tests/ap-system/quickbooks-runtime.test.ts",
         "docs/ap-orchestration/evidence/C4-callback-browser.md",
         "tests/ap-system/quickbooks-business.test.ts",
-        "tests/ap-system/quickbooks-business-sync.test.ts"
+        "tests/ap-system/quickbooks-business-sync.test.ts",
+        "docs/ap-orchestration/evidence/C4-live-connection.md",
+        "docs/ap-orchestration/evidence/C4-return-corrections.md"
       ],
-      "blocker": "Real browser Intuit consent awaits owner Connect; no live accounting writes authorized or observed.",
-      "next_action": "US sandbox app configured; actual callback fixed04040d7. Recognized partial bills, supplier credits, partial cash/credit and zero-cash application exports integrateda8ea9ef; bridge preserves owned holds47e0265. Return corrections and signed discount representation still require implementation; live grant/read-only inspection pending owner consent.",
+      "blocker": "New QBO OAuth/data API operations paused pending owner scope clarification; no external accounting writes performed.",
+      "next_action": "OAuth and 89-account/26-vendor read-only inspection verified. Signed discounts and immutable returned-payment corrections implemented locally; restored-credit and B4 exports in progress. Mapping review, authenticated sandbox accounting write/readback and independent new correction verification remain pending.",
       "source_sha": "4f7d76d"
     },
     {
@@ -384,10 +386,13 @@
       "session_id": "/root/accounting",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-accounting/calhacks",
       "branch": "codex/ap-system-domain",
-      "commit": null,
-      "evidence": [],
+      "commit": "33993a7",
+      "evidence": [
+        "docs/ap-orchestration/evidence/B4-close.md",
+        "tests/ap-system/close.test.ts"
+      ],
       "blocker": null,
-      "next_action": "Implement statements/AP-GL, accruals and controlled close/reopen/adjustments with typed UI seams; gate legacy close when B3 policy active.",
+      "next_action": "Core 17 local close tests integrated; independent close/late-event/reclassification review, B4 external export, broader correction allocation follow-up and browser acceptance remain.",
       "source_sha": "8dce6f4"
     },
     {
@@ -403,13 +408,13 @@
       "session_id": "/root/experience",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-experience/calhacks",
       "branch": "codex/ap-system-d2",
-      "commit": "8f9cecb",
+      "commit": "7730d9a",
       "evidence": [
         "docs/ap-orchestration/evidence/D2-operations.md",
         "docs/ap-orchestration/evidence/I2/accounting-status.png"
       ],
       "blocker": null,
-      "next_action": "Business/governance routes integrateda786c7e; confirmation/fixture follow-up integrated. Root CUA desktop/mobile light/dark and synthetic atomic-run UI passed; actualI1 remains one books and oneQBO panel. QBO credit/application targets and B4 UI pending.",
+      "next_action": "Business and explicit local multi-human identity UI integrated; B4 UI checkpoint a2db9a6 ready. Actual isolated B3 packet uploaded/parsed; full partial-recognition/quorum/payment/FakeBank journey in progress. C4 corrections UI in progress.",
       "source_sha": "6114a03"
     },
     {
@@ -516,13 +521,17 @@
       "session_id": "/root/verifier",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks",
       "branch": "codex/ap-system-verification-v4",
-      "commit": null,
+      "commit": "7a60ff7",
       "source_sha": "a8ea9ef",
       "evidence": [
-        "tests/ap-system/v4-business.test.ts"
+        "docs/ap-orchestration/evidence/V4.md",
+        "docs/ap-orchestration/evidence/V4-results.json",
+        "tests/ap-system/v4-auth.test.ts",
+        "tests/ap-system/v4-business.test.ts",
+        "tests/ap-system/v4-credits.test.ts"
       ],
       "blocker": null,
-      "next_action": "Six new C2 tests pass; three business authority/capacity findings reproduced and assigned for repair. Preserve failing baseline and rerun exact probes on fix."
+      "next_action": "Preserved original baseline (72 pass/4 fail). Root reran exact tests plus owner regressions at126596b:39PASS; independent repair replay and new credit/close/correction adversarial evaluation pending."
     }
   ],
   "registry": {
@@ -573,7 +582,21 @@
     "increase_backend_reserved_port": 3252,
     "increase_backend_site_reserved_port": 3253,
     "increase_ap_server_reserved_port": 8825,
-    "qbo_callback_exec_session": 90258
+    "qbo_callback_exec_session": 90258,
+    "b3_isolated": {
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-live-business/calhacks",
+      "run_id": "ap97-b3-live-20261025",
+      "backend_port": 3254,
+      "backend_site_port": 3255,
+      "gateway_port": 8826,
+      "frontend_port": 5193,
+      "backend_exec_session": 69141,
+      "gateway_exec_session": 16077,
+      "frontend_exec_session": 98990,
+      "identity": "five_distinct_simulated_humans",
+      "case_id": "k175gds0dypbgeknejs2henw5h8gysw8",
+      "state": "original_packet_parsed_no_recognition_or_payment"
+    }
   },
   "contracts": {
     "version": "ap-evidence-v1",
@@ -605,11 +628,17 @@
     "environment": "sandbox",
     "protocol": "Accounting API + OAuth 2.0",
     "credential_storage": "server-only private configuration",
-    "status": "real_oauth_consent_pending",
+    "status": "connected_read_only_verified_followup_api_paused",
     "payment_execution_provider": "Increase sandbox",
-    "user_confirmed": true
+    "user_confirmed": true,
+    "read_only_verified_at": "2026-10-25T09:45:48.270727+00:00",
+    "account_count": 89,
+    "vendor_count": 26,
+    "external_writes": 0,
+    "mappings": "review_required",
+    "followup_api": "paused_pending_owner_scope_clarification"
   },
-  "last_updated_at": "2026-10-25T09:37:53.358475+00:00",
+  "last_updated_at": "2026-10-25T09:53:08.308937+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",

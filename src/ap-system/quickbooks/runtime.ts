@@ -46,10 +46,11 @@ export function createQBOBridge(human:ConvexHttpClient,scope:BankScope,env:NodeJ
     const token=await store.read<{realmId:string;clientHash:string;blocked:boolean;refreshUntil:number;hardUntil:number|null}>("tokens.json");
     if(token&&!token.blocked&&token.realmId===config.realmId&&token.clientHash===hash(config.clientId)&&token.refreshUntil>Date.now()&&(token.hardUntil===null||token.hardUntil>Date.now()))result.grant="available";
     try{await mapping();result.mappings="configured";}catch(e){result.reason??=safeError(e);}
+    if(result.mappings==="configured"&&result.authority==="verified")result.holds=await (await dispatcher()).checkHolds({caseId}); // Stored verification only; no provider request on page/status reads.
     const keys=(await readdir(store.root)).filter(k=>/^(operation|hold)-[a-f0-9]{64}\.json$/.test(k)).sort();result.complete=result.complete&&keys.length<=1000;
     const holds=new Map(result.holds.map(h=>[holdKey(h),h]));
     for(const key of keys.slice(0,1000)){
-     if(key.startsWith("hold-")){const held=await store.read<SyncHold>(key);if(held?.realmId===config.realmId&&held.caseId===caseId)holds.set(holdKey(held),{code:held.code,owner:held.owner,reason:held.reason,relatedIds:held.relatedIds});}
+     if(key.startsWith("hold-")){const held=await store.read<SyncHold>(key);if(held?.realmId===config.realmId&&held.caseId===caseId&&(held.state!=="resolved"||!held.resolution))holds.set(holdKey(held),{code:held.code,owner:held.owner,reason:held.reason,relatedIds:held.relatedIds});}
      else{const op=await store.read<Operation>(key);if(op?.realmId===config.realmId&&op.links?.caseId===caseId)result.receipts.push(receipt(op));}
     }
     result.holds=[...holds.values()];
@@ -62,9 +63,11 @@ export function createQBOBridge(human:ConvexHttpClient,scope:BankScope,env:NodeJ
    const d=await dispatcher();const result=await d.run(request,"submit",{expectedPlanHash});if("hold" in result&&result.hold)return {hold:result.hold};if(!("operation" in result)||!result.operation)throw new QboError("operation_required");return {operation:receipt(result.operation)};
   },
   async verify(request:ExportRequest):Promise<QBOVerify>{
-   const d=await dispatcher();const result=await d.run(request,"dry-run");if("hold" in result&&result.hold)return {hold:result.hold};if(!("plan" in result)||!result.plan)throw new QboError("plan_required");
+   const d=await dispatcher();await d.checkHolds(request,{verify:true});const result=await d.run(request,"dry-run");if("hold" in result&&result.hold)return {hold:result.hold};if(!("plan" in result)||!result.plan)throw new QboError("plan_required");
    const op=await d.journal.get(result.plan);if(!op||op.state!=="succeeded")throw new QboError("successful_operation_required");
-   await d.journal.client.verify(op);return {operation:receipt(op),verifiedAt:Date.now()};
+   await d.journal.client.verify(op);
+   if(op.entity==="JournalEntry"&&op.links.correctionId)await d.checkHolds({caseId:request.caseId},{verify:true});
+   return {operation:receipt(op),verifiedAt:Date.now()};
   },
  };
 }
