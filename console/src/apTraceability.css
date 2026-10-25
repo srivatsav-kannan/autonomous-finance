@@ -1,6 +1,6 @@
 /* Hallmark · shape: app screen · genre: modern-minimal · theme: locked finance workbench · signature: chronological case activity · states: empty, recorded, expanded, unavailable · v2.0.0 */
 /* Hallmark · pre-emit critique: P4 H4 E4 S5 R5 V4 · recorded activity leads; exact evidence and differences remain available on demand. */
-.aps-trace { min-width: 0; }
+.aps-trace { min-width: 0; padding-top: var(--space-md); }
 .apt-log { list-style: none; padding: 0; margin: var(--space-md) 0 var(--space-lg); border-top: 1px solid var(--line); }
 .apt-log > li { border-bottom: 1px solid var(--line); }
 .apt-event > summary { display: grid; grid-template-columns: 110px minmax(0, 1fr) minmax(80px, 150px) 16px; align-items: start; gap: var(--space-md); list-style: none; padding: var(--space-md) var(--space-sm); color: var(--ink); }
