@@ -1,4 +1,6 @@
 import { DemoWorkspaceNav } from "./DemoWorkspaceNav";
+import { WorkspaceSettings, WorkspaceDataStatus } from "./WorkspaceSettings";
+import { chooseFinanceScenario, rememberedFinanceScenario, rememberFinanceScenario } from "./financeScenario";
 import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useConvexConnectionState, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -25,7 +27,7 @@ const ago = (t: number) => {
   return s < 60 ? `${s}s ago` : s < 3600 ? `${Math.round(s / 60)}m ago` : `${Math.round(s / 3600)}h ago`;
 };
 
-type Tab = "ap-system" | "invoices" | "inbox" | "org" | "activity" | "ledger" | "memory" | "evals" | "control" | "bank" | "flow";
+type Tab = "ap-system" | "invoices" | "inbox" | "org" | "activity" | "ledger" | "memory" | "evals" | "control" | "bank" | "flow" | "settings";
 const TABS: { id: Tab; label: string }[] = [
   { id: "inbox", label: "Inbox" },
   { id: "ap-system", label: "Accounts payable" },
@@ -38,6 +40,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "memory", label: "Memory" },
   { id: "evals", label: "Evals" },
   { id: "control", label: "Control room" },
+  { id: "settings", label: "Settings" },
 ];
 
 function initialRun() {
@@ -74,14 +77,14 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
   const company = isAP ? "Accounts payable" : isInvoice ? invoiceContext?.company ?? "Invoice workspace" : "Sweetgreen, Inc.";
   const companyCaption = isAP ? "Evidence and obligations" : isInvoice ? "Local simulated identity · USD" : "Simulated company";
   useEffect(() => {
-    if (!isAP && !runId && runs?.length) {
-      const first = runs[0]!.runId;
+    if (!isAP && !isInvoice && !runId && runs?.length) {
+      const first = chooseFinanceScenario(runs, runId, rememberedFinanceScenario());
       const url = new URL(location.href);
       url.hash = encodeURIComponent(first);
       history.replaceState(null, "", url);
       setRunId(first);
     }
-  }, [runs, runId, isAP]);
+  }, [runs, runId, isAP, isInvoice]);
   useEffect(() => {
     const url = new URL(location.href);
     url.searchParams.set("view", tab);
@@ -108,10 +111,17 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
     url.searchParams.set("view", next);
     url.pathname = next === "ap-system" ? "/ap-system" : "/";
     url.searchParams.delete("case");
+    url.hash = next === "ap-system" || next === "invoices" ? "" : encodeURIComponent(runId);
+    if (next !== "ap-system") {
+      url.searchParams.delete("apRuntime");
+      url.searchParams.delete("apWorkspace");
+      url.searchParams.delete("apView");
+    }
     history.pushState(null, "", url);
     setTab(next);
   };
   const selectRun = (next: string) => {
+    rememberFinanceScenario(next);
     const url = new URL(location.href);
     url.hash = encodeURIComponent(next);
     url.searchParams.delete("ask");
@@ -132,7 +142,7 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
           <p className="nav-label">Workspace</p>
           {TABS.map((t) => (
             <button type="button" key={t.id} className={t.id === tab ? "on" : ""} aria-current={t.id === tab ? "page" : undefined} onClick={() => navigate(t.id)} disabled={invoiceBusy}>
-              <Icon name={t.id === "invoices" || t.id === "ap-system" ? "file" : t.id} /><span>{t.label}</span>
+              <Icon name={t.id === "invoices" || t.id === "ap-system" ? "file" : t.id === "settings" ? "control" : t.id} /><span>{t.label}</span>
               {t.id === "inbox" && !isInvoice && !isAP && simulationAvailable && runId && <InboxCount runId={runId} />}
             </button>
           ))}
@@ -158,10 +168,11 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
               {TABS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
             </select>
           </label>
-          {!isInvoice && !isAP && simulationAvailable && !connected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
-          {!isInvoice && !isAP && simulationAvailable && runId && tab !== "bank" && tab !== "flow" && tab !== "inbox" && <Kpis runId={runId} />}
+          {!isInvoice && !isAP && simulationAvailable && !connected && <p className="connection-note" role="status">Connecting to the finance backend. <button type="button" onClick={() => navigate("settings")}>Open settings</button></p>}
+          {!isInvoice && !isAP && tab !== "settings" && simulationAvailable && connected && runId && <WorkspaceDataStatus runId={runId} onOpenSettings={() => navigate("settings")} />}
+          {!isInvoice && !isAP && simulationAvailable && runId && tab !== "settings" && tab !== "bank" && tab !== "flow" && tab !== "inbox" && <Kpis runId={runId} />}
           <main className="main" id="main" tabIndex={-1} key={isAP ? "ap-system" : isInvoice ? "invoices" : runId}>
-            {isAP ? <APAuthGate busy={invoiceBusy}><APSystemWorkspace onContextChange={setAPContext} onBusyChange={setInvoiceBusy} /></APAuthGate> : isInvoice ? <InvoiceWorkspace onContextChange={setInvoiceContext} onBusyChange={setInvoiceBusy} /> : !simulationAvailable ? <div className="empty"><h2>Connect the simulation backend</h2><p>Start the local backend and restart the console with <code>VITE_CONVEX_URL</code> configured. Invoices use their own gateway and remain available.</p><button onClick={() => navigate("invoices")}>Open invoices</button></div> : !runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div> : <>
+            {tab === "settings" ? <WorkspaceSettings runs={runs} runId={runId} simulationAvailable={simulationAvailable} connected={connected} onSelectRun={selectRun} onOpenControl={() => navigate("control")} onOpenInbox={() => navigate("inbox")} /> : isAP ? <APAuthGate busy={invoiceBusy}><APSystemWorkspace onContextChange={setAPContext} onBusyChange={setInvoiceBusy} /></APAuthGate> : isInvoice ? <InvoiceWorkspace onContextChange={setInvoiceContext} onBusyChange={setInvoiceBusy} /> : !simulationAvailable ? <div className="empty"><h2>Connect the simulation backend</h2><p>Finance data is not connected. Open Settings to check the workspace and available document sources.</p><button onClick={() => navigate("settings")}>Open settings</button></div> : !runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong><p>Open Settings to check the connection and available workspaces.</p><button onClick={() => navigate("settings")}>Open settings</button></div> : <>
               {tab === "inbox" && <Inbox runId={runId} />}
               {tab === "bank" && <Bank runId={runId} onReview={(askId) => { navigate("inbox"); const url = new URL(location.href); url.searchParams.set("ask", askId); history.replaceState(null, "", url); }} />}
               {tab === "flow" && <FinanceFlow runId={runId} onNavigate={navigate} />}
