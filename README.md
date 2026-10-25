@@ -1,162 +1,204 @@
 # Autonomous Finance
 
-Agents run the finance function of a simulated restaurant chain: accounts payable, payments, cash application, revenue, payroll, leases and the month-end close. Humans set policy and make the decisions that policy reserves for them.
+AI agents run the finance department of a restaurant chain modeled on Sweetgreen: accounts payable, payments, cash, revenue, payroll, leases and the month-end close. A human CFO only makes the management decisions, like approving a large payment or signing off on the close.
 
-We call it **agent-native**: the systems underneath are built for agents to use, not adapted from tools built for people. Three parts carry that:
-- **Ledger and controls (`convex/`):** a Convex database where every money change is a transaction with double entry in integer cents, idempotency keys, a hash chain and per-seat permissions. The rules are enforced in the database, not in prompts.
-- **Memory (`src/memory/`):** company knowledge is schema-checked YAML in a git repository. Each change is a commit by the agent that made it; sensitive changes go through a branch that a different agent or human must merge.
-- **Agents (`src/agents/`):** twelve seats (AP clerk, controller, payments, treasury and others), each with its own identity, limits and manager. Routine work is plain code; the model reads unfamiliar documents and handles judgment calls.
+Built at Cal Hacks 13.0.
 
-Built at Cal Hacks 13.0 for the Hyphenate track, *The Hyphenated Enterprise: Autonomous Systems for Finance*.
+## Why
+
+Most finance agents today are a model driving a spreadsheet or a browser. Those tools were built for people. For an agent they're slow (in our test, one bookkeeping step took about six spreadsheet tool calls instead of one), and they check nothing. A spreadsheet will let you approve your own payment or pay the same invoice twice.
+
+So we built the ledger for the agents. The agents work through it, and it enforces the finance controls itself.
+
+## How it works
+
+- **The ledger (`convex/`).** A Convex database. Every change to the books is one transaction, in integer cents, with double entry, an idempotency key and a hash chain. Each agent has its own login and limits, and the database checks them on every write. For example, a cash entry needs a matching bank transaction, and whoever requests a payment can't approve it. These rules live in the database, not in prompts.
+- **Memory (`src/memory/`).** Company knowledge, like vendors, bank details, policies and every decision, is YAML in a git repo. Each change is a commit by the agent that made it. A change to bank details goes on a branch that a different agent or a human has to merge.
+- **The agents (`src/agents/`).** Twelve of them: AP clerk, controller, payments, treasury and others. Routine work is plain code. The model only reads documents the code can't parse and makes judgment calls. In a 14-day run, 92% of tasks never call the model.
+
+The company is simulated. It's calibrated to Sweetgreen's FY2025 SEC filings: $679.5M revenue, 281 restaurants, $19.9M accounts payable, $354.5M lease liability. We're not affiliated with Sweetgreen, and every transaction, vendor and person in it is made up.
 
 ## Quick start
 
-Needs Node 24.18+, Python 3.11+ and git. No Convex account; no API key for the free path.
+You need Node 24.18 or later, Python 3.11 or later, and git. You don't need a Convex account. The free path doesn't need an API key.
 
 ```bash
 git clone https://github.com/srivatsav-kannan/autonomous-finance && cd autonomous-finance && npm ci
-npm run setup               # checks tools, writes .env.local and local secrets, prepares benchmark data; safe to rerun
-npm run backend             # terminal 1: local Convex backend; leave it running
-npm run backend:configure   # terminal 2, once the backend is up: copies .env.local settings to the deployment
-npm run scenario            # runs scenario-1 (seed 7, 3 stores, 14 days, planted errors, close) and prints a briefing
-npm run console             # http://127.0.0.1:5173/?view=inbox#scenario-1
+npm run setup               # checks your tools, writes .env.local, prepares benchmark data. Safe to rerun.
+npm run backend             # terminal 1: local Convex backend. Leave it running.
+npm run backend:configure   # terminal 2, once the backend is up
+npm run scenario            # plays 14 days for 3 stores, scores the run, prints a briefing
+npm run console             # open http://127.0.0.1:5173/?view=inbox#scenario-1
 ```
 
-Approving or answering items in the console also needs `npm run gateway` (the human seat) in another terminal. Add `OPENAI_API_KEY=...` to `.env.local` to turn on the model; without it the agents run their deterministic paths, and every command says so. Without a model, 21 of 64 invoices are in formats only the model reads, so the books and the close stay incomplete.
+To approve things in the console, also run `npm run gateway` in another terminal. That process acts as the human CFO.
 
-Run every eval:
+To turn on the model, add `OPENAI_API_KEY=...` to `.env.local`. Without it, the agents still run, but 21 of the 64 invoices come in formats only the model can read. Those invoices stay unread, so the books and the close stay incomplete.
+
+## Run the evals
 
 ```bash
-npm run evals                               # free: control tests, world (model off), spreadsheet benchmark, external rules-only
-npm run evals -- --paid --budget-usd 15     # also the model evals; needs OPENAI_API_KEY, prints per-run estimates first
+npm run evals                               # free: control tests, the simulated company with no model, the spreadsheet comparison, the public benchmarks with no model
+npm run evals -- --paid --budget-usd 15     # adds the model runs. Needs OPENAI_API_KEY. Prints an estimate per run first.
 ```
 
-Ask questions about scenario-1 (works without the gateway or console):
+## Ask about a run
 
 ```bash
-npm run scenario
 npm run ask -- "Why was INV-1002 held?"
 ```
 
-Details: [Setup and evals reference](#setup-and-evals-reference). Measured results: [docs/RESULTS.md](docs/RESULTS.md).
-
-> The company is **Sweetgreen, Inc.** (NYSE: SG), simulated and calibrated to its FY2025 SEC filings: $679.5M revenue, 281 restaurants, $19.9M AP, $7.2M gift card liability, $354.5M lease liability. Not affiliated with Sweetgreen. All transactions, counterparties and people are simulated.
+The answer cites the git commits where the decision was recorded. This works without the gateway or the console.
 
 ## What you'll see
 
-- **`npm run scenario`** plays 14 simulated days for 3 stores: 230 events, 64 vendor invoices, 13 planted errors and 3 legitimate look-alikes. It scores the run against an answer key the agents never see and prints a briefing: what happened, which planted errors were caught, what waits for a human, and why the close is blocked.
-- **The console** (`npm run console`) has these views:
-  - **Inbox:** only the decisions a human must make, each with a review drawer showing the evidence and the exact effect of each answer.
-  - **Bank & cash** and **Finance flow:** cash balances, the bank feed, and how sources move through agents and controls into the books.
-  - **Team, Live activity, Ledger, Memory:** the seats, every agent action, journal entries with provenance, and memory commits.
-  - **Evals:** the scenario's score.
-  - **Control room:** inject a duplicate invoice, a bank debit or a fraudulent bank change, then ask why.
-  - **Invoices:** a separate customer-invoice workspace ([guide](docs/invoice-mvp/README.md)).
-  - **`/ap-demo`:** human approval for the payment recovery demo.
-- **`npm run ask`** answers "why" questions from the record, citing decision commits.
-- **`npm run evals`** prints one table and writes reports to `var/evals/`.
+- **`npm run scenario`** plays 14 simulated days for 3 stores: 230 events, 64 vendor invoices, 13 planted errors and 3 legitimate look-alikes. It scores the run against an answer key the agents never see. Then it prints what happened, which errors were caught, what's waiting for the CFO, and why the close is blocked.
+- **The console:**
+  - **Inbox:** only the decisions the CFO has to make, each with the evidence and what each answer will do.
+  - **Bank & cash, Finance flow:** cash balances, the bank feed, and how work moves from documents through the agents into the books.
+  - **Team, Live activity, Ledger, Memory:** the agents, everything they do as it happens, every journal entry with where it came from, and the memory commits.
+  - **Evals:** the score for the run.
+  - **Control room:** send in a fraudulent bank-change email, a duplicate invoice or an unknown wire, then ask the agents why they did what they did.
+  - **Invoices:** a separate workspace for customer invoices ([guide](docs/invoice-mvp/README.md)).
+  - **`/ap-demo`:** the CFO's approval screen for the payment crash demo.
 
-Headline numbers, all from [docs/RESULTS.md](docs/RESULTS.md):
-- On 4 seeds of the simulated company, 13 of 13 planted errors caught, books correct, $0.04–0.05 per run.
-- Same model, same 11 tasks: our typed kernel tools used 12 tool calls and $0.12; spreadsheet tools used 71 tool calls and $0.48.
-- On 15 public benchmark tasks, our team scored 93.3% mean (14 of 15) and the same model alone 84.0% (12 of 15), at about 1.7× the cost.
-- 22 of 22 control tests hold.
+## Results
+
+All from [docs/RESULTS.md](docs/RESULTS.md), which links every raw output:
+- **Simulated company, 4 seeds:** 13 of 13 planted errors caught on every seed, books correct on every account, $0.04–0.05 and about 80 seconds per 14-day run.
+- **Same model, our ledger's tools vs spreadsheet tools, 11 tasks:** 12 vs 71 tool calls, 45 vs 94 seconds, $0.12 vs $0.48.
+- **15 public benchmark tasks:** our agents scored 93.3% (14 of 15) and the same model alone scored 84.0% (12 of 15), at about 1.7× the cost.
+- **Controls:** 22 of 22 control tests pass.
 
 ## Prerequisites
 
 | Tool | Needed for | Notes |
 |---|---|---|
-| Node 24.18 or later | everything | `package.json` engines; CI uses 24.18.0. FakeBank uses `node:sqlite`. |
-| git | company memory | each run's memory is a git repository under `var/memory/` |
-| Python 3.11 or later | `npm run setup` benchmark data, `npm run bench:*`, `npm run evals` | `setup` creates `var/benchmarks/.venv` and installs `scripts/external-bench/requirements.txt` (openpyxl, pypdf, python-docx). `EXTERNAL_BENCH_PYTHON` picks another interpreter. `setup -- --skip-bench` skips this. |
-| `uv` and Python 3.12 | only the model-only harnesses: `evals/external/finbalance`, `evals/external/dabstep` (`uv run --with pandas`), `evals/invoice-mvp` (`pypdf==6.21.2`) | not needed for the quick start; see each harness README |
+| Node 24.18 or later | everything | CI uses 24.18.0. The bank simulator uses `node:sqlite`. |
+| git | company memory | Each run's memory is a git repo under `var/memory/`. |
+| Python 3.11 or later | `npm run setup`, `npm run evals`, `npm run bench:*` | Setup creates `var/benchmarks/.venv` and installs openpyxl, pypdf and python-docx. Set `EXTERNAL_BENCH_PYTHON` to use another interpreter, or run `npm run setup -- --skip-bench` to skip this. |
+| `uv` and Python 3.12 | only the model-only harnesses in `evals/external/` and `evals/invoice-mvp/` | Not needed for the quick start. See each harness's README. |
 | Playwright Chromium | `npm run test:browser:local` | `npx playwright install --with-deps chromium` |
-| Chrome or Chromium | `npm run design:review` | set `CHROME_PATH` if it is not in a standard location |
+| Chrome or Chromium | `npm run design:review` | Set `CHROME_PATH` if it's not in a standard place. |
 
-API keys go in `.env.local`, which git ignores. With `OPENAI_API_KEY`, agents use OpenAI `gpt-6.1-sol`, capped by `AGENT_MAX_USD` (default $15, tracked in `var/agent-spend.json`). Without it they fall back to Claude if `ANTHROPIC_API_KEY` is set, under the same cap. A request is refused before it is sent if its worst case would pass the cap. `AGENT_LLM=off` turns inference off everywhere.
+API keys go in `.env.local`, which git ignores. With `OPENAI_API_KEY`, agents use OpenAI `gpt-6.1-sol`. Without it, they use Claude if `ANTHROPIC_API_KEY` is set. Either way, spending is capped by `AGENT_MAX_USD` (default $15, tracked in `var/agent-spend.json`). A request that could push past the cap is refused before it's sent. `AGENT_LLM=off` turns the model off everywhere.
 
 ## Repo map
 
-| Folder | What |
+| Folder | What's in it |
 |---|---|
-| `convex/` | The kernel: ledger, bills, payments, tasks, seats, asks, invoice cases, observability |
-| `src/` | Application code: `agents/` (runtime and seats), `memory/` (git memory), `world/` (simulator and answer key), `evals/` (scorers and benchmarks), `payments/` (AP dispatcher and evidence worker), `integrations/` (parsers, FakeBank, Increase adapter), `human/` (gateway, ask why), `invoice-mvp/` (invoice workspace), `core/` (shared types and clients) |
-| `console/` | Overseer console: Vite, React, Convex live queries, WebMCP tools |
-| `scripts/` | npm script entry points: setup, scenario, evals, AP demo and workers, smoke checks; `testing/` holds CI and browser runners; `external-bench/` the Python benchmark readers |
-| `tests/` | Vitest suites for the kernel, payments, gateway, setup and console |
-| `evals/` | Harnesses for outside benchmarks run with the model alone (`external/`) and for the invoice workspace (`invoice-mvp/`) |
-| `benchmarks/` | Pinned external benchmark manifests and the model and budget policy |
-| `company/` | The Sweetgreen calibration profile |
-| `docs/` | Results, demo plan, architecture, audit and per-topic guides (below) |
-| `.github/workflows/` | CI: typechecks, tests, console build, payment recovery and browser checks |
-| `.agents/` | Vendored Hallmark design skill, used by `npm run design:check` ([design.md](design.md)) |
+| `convex/` | The ledger and its rules: journal, bills, payments, tasks, agent logins, CFO questions, invoice cases |
+| `src/agents/` | The agents and the runtime that schedules them |
+| `src/memory/` | Git memory |
+| `src/world/` | The simulator and the answer key |
+| `src/evals/` | Scoring and the benchmark adapters |
+| `src/payments/` | The payment worker and the bank evidence worker |
+| `src/integrations/` | Invoice parsers, the bank simulator, the Increase adapter |
+| `src/human/` | The CFO gateway and "ask why" |
+| `src/invoice-mvp/` | The customer invoice workspace |
+| `console/` | The web console (Vite, React, Convex live queries) |
+| `scripts/` | What the npm commands run |
+| `tests/` | Vitest suites |
+| `evals/` | Harnesses that run public benchmarks with the model alone |
+| `benchmarks/` | Pinned benchmark manifests and the model budget policy |
+| `company/` | The Sweetgreen calibration numbers |
+| `docs/` | Results, demo plan, architecture, audit and guides |
+| `submission/` | Our Devpost text and pitch script |
+| `.agents/` | A design-lint skill used by `npm run design:check` ([design.md](design.md)) |
 
 ## Docs
 
-| Doc | What |
+| Doc | What's in it |
 |---|---|
-| [docs/RESULTS.md](docs/RESULTS.md) | Every measured number, with links to raw output |
-| [docs/DEMO.md](docs/DEMO.md) | The 3-minute demo, runbook and Q&A prep |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | How it is built: kernel, memory, agents, payments, simulator, evals, console |
+| [docs/RESULTS.md](docs/RESULTS.md) | Every number we measured, with links to the raw output |
+| [docs/DEMO.md](docs/DEMO.md) | Demo runbook, scenario menu and Q&A prep |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | How each part is built |
 | [docs/AUDIT.md](docs/AUDIT.md) | Known bugs and gaps, by severity |
-| [docs/ap-demo/](docs/ap-demo/README.md) | AP payments: approval, dispatch, bank evidence, crash recovery |
-| [docs/evals/](docs/evals/README.md) | External benchmark setup, the books and close checks, raw run data |
+| [docs/ap-demo/](docs/ap-demo/README.md) | Payments: approval, sending, bank evidence, crash recovery |
+| [docs/evals/](docs/evals/README.md) | Benchmark setup, the books and close checks, raw run data |
 | [docs/invoice-mvp/](docs/invoice-mvp/README.md) | The invoice workspace |
-| [docs/ci.md](docs/ci.md) | CI jobs and the local recovery gate |
-| [design.md](design.md) | Console design system and Hallmark checks |
+| [docs/ci.md](docs/ci.md) | What CI runs |
+| [design.md](design.md) | The console's design rules |
 
-## Setup and evals reference
+## Command reference
 
-**`npm run setup`** (`scripts/setup.ts`) is idempotent. It checks Node 24.18+, Python 3.11+ and git; creates `.env.local` from `.env.example` if missing, or appends only the settings it lacks; generates `KERNEL_ADMIN_SECRET` if it is missing, empty or `change-me`; generates `VITE_GATEWAY_TOKEN` if missing (`npm run gateway:token` rotates it); creates `var/benchmarks/.venv`, installs the readers and prepares both benchmark batches (`bench:prepare -- --batch eight` and `--batch extra`). It never prints secrets. `--skip-bench` skips the benchmark data.
+### Setup
 
-**`npm run backend:configure`** (`scripts/backend-configure.ts`) runs once the backend is up, and again after a backend reset. It sets `KERNEL_ADMIN_SECRET` (from `.env.local`) and `AP_HUMAN_AUTH_ISSUER` / `AP_HUMAN_AUTH_AUDIENCE` (local placeholders `https://ap-demo.invalid` / `ap-demo`, unless `.env.local` sets them) with `npx convex env set`, passing values on stdin. It points `CONVEX_URL` and `VITE_CONVEX_URL` at the running local backend, then waits until the deployment accepts the admin secret. On a fresh deployment the first `npm run backend` deploy reports missing auth configuration until this runs; the backend keeps running. To run a second checkout beside another one, give its backend other ports: `npm run backend -- --local-cloud-port 3410 --local-site-port 3411`.
+**`npm run setup`** is safe to run more than once. It:
+- checks for Node, Python and git
+- creates `.env.local` from `.env.example`, or adds only the settings it's missing
+- generates `KERNEL_ADMIN_SECRET` and `VITE_GATEWAY_TOKEN` if they're missing
+- creates the Python environment and prepares the benchmark data (skip with `--skip-bench`)
 
-**`npm run scenario`** (`scripts/scenario.ts`) creates run `scenario-1`, plays the 14 days with no pacing, sends the period end, waits for the agents to finish, scores the run against the answer key (`var/evals/scenario-1.md`, also shown in the console's Evals view) and prints a briefing. Rerunning prints the briefing again; an interrupted run resumes. `--run scenario-2` starts a separate run, for example after adding a model key.
+It never prints secrets.
 
-**`npm run ask -- "question" [--run id]`** (`scripts/ask.ts`) answers from the record with the same code as the console's "Ask why" (`src/human/why.ts`). With a model it runs the cited-answer tool loop over git memory and the ledger. Without one it ranks decision commits by the question's keywords and lists them with their SHAs; that path reads only git memory, so it needs no backend.
+**`npm run backend:configure`** runs once the backend is up, and again after a backend reset. It copies the admin secret and the CFO login settings from `.env.local` to the backend, points the app at the local backend, and waits until the backend accepts the secret. The first `npm run backend` on a fresh machine complains about missing auth settings until this runs. That's expected, and the backend keeps running.
 
-**`npm run evals`** (`scripts/evals.ts`) runs, in order, with inference off: the 20 control tests, the world on seed 7, the spreadsheet-vs-kernel benchmark, and all 15 external tasks in rules-only mode. It needs the backend. Output goes to `var/evals/suite-<time>/`, the table to `var/evals/summary-<time>.md`; the committed `docs/evals/` files are not touched. The model-off world catches the planted errors but its books fail, because the unread invoices have no bills; the table says so.
+To run a second copy of the repo next to the first, give its backend other ports: `npm run backend -- --local-cloud-port 3410 --local-site-port 3411`.
 
-**`--paid --budget-usd N`** adds the world on seeds 7, 11, 23 and 42, the agent spreadsheet comparison, and full team vs generalist on all 15 external tasks (30 turns, APEX judge). It refuses to start without `--budget-usd` or `OPENAI_API_KEY`. The budget is split 2.5% per world seed, 15% to the spreadsheet comparison and 75% to the external benchmarks; each run stops at its share. It prints the per-run estimate and cap first, then writes a one-time approved copy of `benchmarks/external-models.json` to `var/external-models.evals-<time>.json`, capped at the external share. The checked-in policy stays `approval: null`. Model spend for everything in [docs/RESULTS.md](docs/RESULTS.md) was $10.59.
+### Scenario and questions
 
-### Other commands
+**`npm run scenario`** creates the run `scenario-1`, plays all 14 days, closes the month, waits for the agents, scores the run and prints the briefing. The score is saved to `var/evals/scenario-1.md` and shows up in the console's Evals view. Running it again reprints the briefing, and an interrupted run picks up where it stopped. Use `--run scenario-2` for a separate run, for example after adding a model key.
 
-The human gateway and console:
+**`npm run ask -- "question" [--run id]`** uses the same code as the console's "Ask why". With a model, it reads git memory and the ledger and writes an answer with citations. Without one, it lists the decision commits that best match your question's keywords. That version only reads git memory, so it doesn't need the backend.
+
+### Evals
+
+**`npm run evals`** needs the backend and runs with the model off:
+1. the 22 control tests
+2. the simulated company on seed 7
+3. the spreadsheet comparison
+4. all 15 public benchmark tasks with rules only
+
+Results go to `var/evals/suite-<time>/`, with a summary table in `var/evals/summary-<time>.md`. The committed files in `docs/evals/` aren't touched. With the model off, the planted errors are still caught, but the books fail because the unread invoices never became bills. The table says so.
+
+**`npm run evals -- --paid --budget-usd N`** adds:
+- the simulated company on seeds 7, 11, 23 and 42
+- the spreadsheet comparison with a model
+- our agents vs the model alone on all 15 public tasks
+
+It won't start without `--budget-usd` and `OPENAI_API_KEY`. The budget is split 2.5% per seed, 15% to the spreadsheet comparison and 75% to the public benchmarks, and each part stops at its share. Everything in [docs/RESULTS.md](docs/RESULTS.md) cost $10.59 in model spend.
+
+### Console and gateway
 
 ```bash
-npm run gateway        # human gateway on :8787; holds the human CFO seat token
+npm run gateway        # the CFO's gateway on :8787
 npm run console        # http://127.0.0.1:5173
-npm run gateway:token  # rotate the shared token; restart gateway and console afterwards
+npm run gateway:token  # make a new shared token, then restart the gateway and console
 ```
 
-The gateway reads `var/runs/<run>/seats.json`, so it needs a run created by `npm run scenario`, `npm run world` or `npm run eval` first. Every request must carry `VITE_GATEWAY_TOKEN` in an `x-gateway-token` header; the console reads the same value from `.env.local`. Browser requests are accepted only from `http://127.0.0.1:5173` and `http://localhost:5173` (`GATEWAY_ALLOWED_ORIGINS` changes that), and POSTs must be JSON. The gateway refuses to start without a token of at least 32 characters.
+The gateway needs a run to exist first (from `npm run scenario`, `npm run world` or `npm run eval`). Every request needs the shared token, and the console reads the same token from `.env.local`. The gateway only accepts browser requests from `127.0.0.1:5173` and `localhost:5173` (change this with `GATEWAY_ALLOWED_ORIGINS`).
 
-Answering an ask in the console records the answer in the kernel first, then runs its effect (approve or void a payment, co-sign a close, merge a proposal), then completes the ask. A different answer to the same ask is refused. If an effect fails, the ask stays open with its answer recorded; choosing the same answer again resumes it.
+When the CFO answers a question in the console, the answer is recorded in the database first. Then its effect runs, like approving a payment, signing the close or merging a change. If the effect fails, the answer stays recorded and the question stays open. Picking the same answer again retries it. Picking a different answer is refused.
 
-The world and agents in real time, and single scored runs:
+### Live runs and checks
 
 ```bash
-npm run world -- --run demo --stores 3 --days 14 --pace 3000
-npm run agents -- --run demo
-npm run eval -- --stores 3 --days 14 --seed 7    # one scored run; reports in var/evals/
-npm run controls                                 # the 20 control tests
-npm run smoke                                    # kernel and memory invariant checks against the live backend
+npm run world -- --run demo --stores 3 --days 14 --pace 3000   # play the simulation in real time
+npm run agents -- --run demo                                    # the agents, in another terminal
+npm run eval -- --stores 3 --days 14 --seed 7                   # one scored run, reports in var/evals/
+npm run controls                                                # the 22 control tests
+npm run smoke                                                   # ledger and memory checks against the live backend
 ```
 
-`npm run eval` writes its Markdown and JSON reports before exiting. A failed or incomplete books result exits nonzero; unread invoices never count as correct books or permit close ([books and close checks](docs/evals/close-correctness.md)). The agent team cannot submit bank payments; it only requests them.
+`npm run eval` exits with an error if the books are wrong or incomplete. Unread invoices never count as correct books, and they block the close ([how the checks work](docs/evals/close-correctness.md)). The agents can request payments but can't send them.
 
-The AP payment recovery demo (a lost bank response, a killed dispatcher, one transfer and one journal entry):
+### Payment crash demo
+
+The bank accepts a payment, the response is lost and the worker is killed. A new worker recovers it, and the result is one transfer and one journal entry.
 
 ```bash
 npm run demo:local
-npm run demo:local -- --browser-approval   # approve in /ap-demo first
+npm run demo:local -- --browser-approval   # approve in /ap-demo yourself first
 ```
 
-`demo:local` reuses the `KERNEL_ADMIN_SECRET` in `.env.local`. See the [AP payments guide](docs/ap-demo/README.md); `npm run demo:sandbox` runs against the Increase sandbox and needs credentials.
+See the [payments guide](docs/ap-demo/README.md). `npm run demo:sandbox` runs against the Increase sandbox and needs credentials.
 
-External benchmarks one at a time: `npm run bench:run -- --dry-run` shows the matrix and `npm run bench:run -- --modes rules-only --repeats 1 --judge off` runs the free baseline ([guide](docs/evals/external-benchmarks.md)). Paid runs need an approved policy file; a key alone does not enable spend.
+### Public benchmarks, one at a time
 
-Checks that need no backend:
+`npm run bench:run -- --dry-run` shows what would run. `npm run bench:run -- --modes rules-only --repeats 1 --judge off` runs the free baseline ([guide](docs/evals/external-benchmarks.md)). Paid runs need an approved policy file, so an API key alone won't spend money.
+
+### Checks that don't need the backend
 
 ```bash
 npm run typecheck
@@ -169,9 +211,4 @@ npm run design:check
 
 ## Team
 
-| Person | Owns |
-|---|---|
-| Srivatsav | Agent runtime, model paths, integrations engineer, WebMCP |
-| JJ | Evals and decision quality |
-| Arav | Kernel and sponsor rails |
-| Arav's friend | Console, demo, submission |
+Srivatsav Kannan, Junjie (JJ) Xiong and Arav Chand.

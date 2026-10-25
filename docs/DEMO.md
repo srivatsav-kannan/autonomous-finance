@@ -2,6 +2,8 @@
 
 Cal Hacks 13.0, Hyphenate track. Devpost is due Sunday Oct 25 at 9:00 AM PT; judges visit tables 10:30 AM–12:30 PM. The structure follows JJ's demo outline (the four Hyphenate questions); every number comes from [RESULTS.md](RESULTS.md).
 
+> **For judging day, use [submission/PITCH.md](../submission/PITCH.md).** It has the 3-minute, three-person script that matches the organizers' format (5 minutes per judge, at least 3 judges, live demo plus a local video). This file keeps the runbook details, scenario menu and video shot list.
+
 ## Seat line
 
 > We fill the AP clerk, payments and controller seats at a 281-restaurant chain. The same kernel also runs cash, revenue, payroll, leases and close.
