@@ -1,28 +1,34 @@
-# Invoice MVP independent evaluation
+# Invoice workspace evaluation harness
 
-**Current status (2026-10-24):** the one approved OpenAI batch has completed: baseline unscored, app original 0/18, held-out 4/9; calculated cost $1.201842 across 59 calls; both app restart comparisons pass. See [the independent live report](../../docs/invoice-mvp/evaluation-openai-results.md). The NOT RUN/approval text below is the preserved earlier preparation checkpoint, including the unused Claude plan; it is not the current OpenAI execution status. Do not repeat completed run commands or reset the shared ledger.
+This harness scores the invoice workspace (`src/invoice-mvp/`, `convex/invoiceCases.ts`) on the original Invoice Sandbox fixture and on a private held-out suite. It talks to the product only through its real HTTP gateway and persisted Convex snapshots.
 
-Protocol frozen at `357866ec73dd8a643408e4a3b1ca4db6654e99b7` before first scores. See `docs/invoice-mvp/evaluation-protocol.md`. Historical A/B/C and their reports are untouched. `system-mvp.py` is the new actual-product adapter, using only the real HTTP gateway and persisted Convex snapshots.
+**Status (2026-10-24):** the one approved OpenAI batch has run. Results, costs and limits are in [evaluation-openai-results.md](../../docs/invoice-mvp/evaluation-openai-results.md); the free deterministic results are in [evaluation-results.md](../../docs/invoice-mvp/evaluation-results.md). Do not repeat the completed paid commands or reset their ledger.
 
-The default `run.py` path performs **free deterministic evaluation only** and rejects `live_model` and `mock_model` runtime attestation before mutating the product. Separate capped live entrypoints are prepared in [LIVE.md](LIVE.md); they require explicit recorded approval and remain NOT RUN. Mock-server unit tests do not qualify as an application evaluation. Preparation does not produce a benchmark score. Outputs must live outside the product worktree, and run/output directories cannot be reused.
+The protocol was frozen at `357866ec73dd8a643408e4a3b1ca4db6654e99b7` before the first scores; see [evaluation-protocol.md](../../docs/invoice-mvp/evaluation-protocol.md). `system-mvp.py` is the product adapter. Historical systems A, B and C in `evals/external/invoice-sandbox/` are unchanged.
 
-## Reproduce free preparation
+## Prerequisites
 
-The evaluator-private location on this host is `/Users/junjiexiong/.codex/invoice-mvp-evaluation-private`. Implementation workers must not read the held-out sources/expectations before the recorded first scored run. The source and key hashes are public; their bytes are not committed. On another host, D must transfer the private source bundle through an evaluator-only channel; these scenarios cannot be reconstructed from the public manifest alone.
+- `uv` and Python 3.12, with `pypdf==6.21.2`.
+- A private evaluator directory outside the repository, here `$EVAL_PRIVATE`. It holds the upstream checkout, the held-out sources and expectations, run outputs and any approval file. The held-out bytes are not committed; only their hashes are public. On a new host they must be copied through an evaluator-only channel. Implementation workers must not read them.
+- Outputs must live outside the product checkout, and run and output directories cannot be reused.
 
 ```bash
-# Shell variables below are paths, never credentials.
-EVAL_PRIVATE=/Users/junjiexiong/.codex/invoice-mvp-evaluation-private
+EVAL_PRIVATE=/path/to/invoice-mvp-evaluation-private   # any private directory; never committed
 EVAL_PYTHON="$EVAL_PRIVATE/.venv/bin/python"
 EVAL_UPSTREAM="$EVAL_PRIVATE/upstream"
 
-# Already done on this host. For a fresh evaluator host:
 git clone https://github.com/ciru-ai/invoice-sandbox-benchmark.git "$EVAL_UPSTREAM"
 git -C "$EVAL_UPSTREAM" checkout b8cb58ff9747486e86c623e867b76fad5d8d075f
 uv venv --python 3.12 "$EVAL_PRIVATE/.venv"
 uv pip install --python "$EVAL_PYTHON" pypdf==6.21.2
+```
 
-# Choose a new reset ID each time; --fresh refuses overwrite.
+## Free deterministic run
+
+The default `run.py` path is free. It rejects `live_model` and `mock_model` runtime attestations before touching the product.
+
+```bash
+# Choose a new reset ID each time; --fresh refuses to overwrite.
 "$EVAL_PYTHON" -I "$EVAL_UPSTREAM/scripts/reset_env.py" --run-id mvp-original-001 --fresh
 "$EVAL_PYTHON" -I evals/external/invoice-sandbox/extract_text.py \
   "$EVAL_UPSTREAM/runs/mvp-original-001/workspace" \
@@ -32,19 +38,13 @@ uv pip install --python "$EVAL_PYTHON" pypdf==6.21.2
   --workspace "$EVAL_UPSTREAM/runs/mvp-original-001/workspace" \
   --text-cache "$EVAL_UPSTREAM/runs/mvp-original-001/text_cache" \
   --out "$EVAL_PRIVATE/prepared-original-001"
-
-INVOICE_MVP_UPSTREAM="$EVAL_UPSTREAM" "$EVAL_PYTHON" -m unittest discover \
-  -s evals/invoice-mvp -p 'test_*.py' -v
 ```
 
-`verify_upstream` validates Git revision, README/scorer hashes, pinned fixture bytes and grading keys against Git objects. Preparation includes all 148 reset-workspace files with original base64 plus normalized text. Existing pypdf extraction supplies page markers. Inputs total 100,094,614 bytes; largest single JSON source is 1,218,637 bytes. Default HTTP import chunks are 2,000,000 bytes. A must persist source chunks because encoded PDF bytes exceed Convex's single-document limit. No source is dropped to fit a request.
+`verify_upstream` checks the Git revision, README and scorer hashes, fixture bytes and grading keys. Preparation includes all 148 reset-workspace files with original base64 and normalized text. Encoded PDFs exceed Convex's single-document limit, so sources are imported in chunks (2,000,000 bytes by default); none are dropped.
 
-## Run against the integrated product
-
-Root starts the real Convex backend and B gateway in deterministic mode using a new empty company/run. Do not reuse the UI demo company or an earlier evaluation. Record a clean integrated commit with runtime attestation matching it. The GET workspace route sets the local session cookie; POST uses it with `X-Invoice-MVP-Session: 1` and `Origin: http://127.0.0.1:8790`. No privileged backend token enters the adapter. `--origin` can select another gateway-allowed origin.
+Start the backend and invoice gateway in deterministic mode with a new, empty company and run ([startup guide](../../docs/invoice-mvp/STARTUP.md)). Record the clean commit the runtime attests. The adapter gets a session cookie from `GET /api/invoice-mvp/workspace` and posts with `X-Invoice-MVP-Session: 1` and `Origin: http://127.0.0.1:8790` (`--origin` selects another allowed origin). No backend token enters the adapter.
 
 ```bash
-# Replace the value with the exact clean integrated runtime commit.
 EVAL_APP_COMMIT=REPLACE_WITH_EXACT_COMMIT
 "$EVAL_PYTHON" evals/external/invoice-sandbox/system-mvp.py run \
   --upstream "$EVAL_UPSTREAM" \
@@ -53,17 +53,17 @@ EVAL_APP_COMMIT=REPLACE_WITH_EXACT_COMMIT
   --run-id mvp-original-001 --app-commit "$EVAL_APP_COMMIT" --cohort first-pass \
   --out "$EVAL_PRIVATE/runs/mvp-original-001"
 
-# Separate evaluator process; never send resulting private details to the app.
+# Score in a separate process; never send private details back to the app.
 "$EVAL_PYTHON" evals/invoice-mvp/score.py \
   --run "$EVAL_PRIVATE/runs/mvp-original-001" --upstream "$EVAL_UPSTREAM" \
   --out "$EVAL_PRIVATE/scores/mvp-original-001"
 ```
 
-The adapter does not interpret documents or produce its own totals. CSV fields come directly from persisted `CustomerTotal`. Strict metrics independently check all four fields at exact cents, duplicate/missing/extra customer rows, expected document inclusion/exclusion and structural support. `official_score.txt` is unmodified original scorer stdout. Its tolerance and known quirks remain unchanged. A source reference passing structural checks is not proof that the conclusion follows from its content.
+The adapter does not interpret documents or compute totals: CSV fields come from persisted `CustomerTotal` rows. Strict metrics check all four fields to the cent, duplicate, missing and extra customers, expected inclusions and exclusions, and structural support. `official_score.txt` is the unmodified upstream scorer output.
 
-## Held-out and restart (D only)
+## Held-out suite and restart check
 
-Start a distinct empty runtime/company. No automatic human answer is supplied. The source suite drives ordered ingestion: initial evidence, duplicate, explicit revision, late evidence. Outputs are sealed before the private scorer is invoked. Only aggregate results leave D initially; detailed failures can be disclosed after the first score is recorded. `--cohort post-fix` labels subsequent product revisions; the evaluator is responsible for preserving and referencing the first run.
+Start a separate empty runtime and company. No human answers are supplied. The suite imports in order: initial evidence, a duplicate, an explicit revision, late evidence. Outputs are sealed before scoring. `--cohort post-fix` labels later product revisions.
 
 ```bash
 "$EVAL_PYTHON" evals/invoice-mvp/run.py run \
@@ -76,7 +76,7 @@ Start a distinct empty runtime/company. No automatic human answer is supplied. T
   --out "$EVAL_PRIVATE/scores/mvp-heldout-001"
 ```
 
-Root then actually restarts both gateway and backend while preserving the run state. Write a private JSON attestation with `gatewayRestarted: true`, `backendRestarted: true`, `operator`, `restartedAt`, and the exact `command`. Compare immediately before processing additional work:
+Then restart both gateway and backend with the run state intact, write a private attestation (`gatewayRestarted: true`, `backendRestarted: true`, `operator`, `restartedAt`, `command`), and compare before doing more work:
 
 ```bash
 "$EVAL_PYTHON" evals/invoice-mvp/run.py compare-restart \
@@ -85,12 +85,66 @@ Root then actually restarts both gateway and backend while preserving the run st
   --out "$EVAL_PRIVATE/restart/mvp-heldout-001"
 ```
 
-This checks persisted case/proposal pointers, totals/effects and recorded decisions. It does not prove replay/stale approval without actual operator decisions. Root's browser acceptance and backend tests own those paths until D adds secondary explicitly assisted run artifacts. Restarting an HTTP client alone is not restart acceptance.
+This checks persisted case and proposal pointers, totals, effects and recorded decisions. Restarting only an HTTP client is not a restart check.
 
-## Live work intentionally blocked
+## Paid live runs
 
-Required credential name: `ANTHROPIC_API_KEY`. No key was read, no API calls made, and no budget is authorized. Proposed batch is $7.50 maximum (A original $3, MVP original $3, MVP held-out $1.50); details are frozen in the protocol. Credential alone does not authorize spending.
+This section was `LIVE.md`. Paid runs need a recorded approval; credentials alone never authorize spending.
 
-The new capped baseline transport and separate live application adapter are now implemented and tested without network calls. Historical A/B/C are unchanged. See [LIVE.md](LIVE.md) for exact disabled-by-default commands, persistent shared budget controls, provider pricing provenance, and remaining external approval/credential requirements. The default deterministic runner remains unchanged. No live result is claimed.
+- **Approval file.** Copy `authorization.openai.example.json` (or the older Claude `authorization.example.json`) into `$EVAL_PRIVATE`, record the approval reference and a future expiry, set `authorized: true` only after approval, and set `ledgerPath` to one absolute private path. The examples ship with `authorized: false`, an unusable expiry and a placeholder ledger, so neither runner can spend with them. Pricing provenance is in `pricing-provenance.openai.json` and `pricing-provenance.json`.
+- **Budget.** Each run's envelope is a persistent limit; their sum is checked before use. `budget.py` uses an exclusive lock, atomic replacement and fsync. A different ledger path, changed authorization, reused envelope, expired authorization or replayed request is rejected. Never copy or reset the ledger to get more budget.
+- **Baseline.** Before every request, it reserves an input bound and the full output allowance; a validated response settles to actual usage. Transport failures, bad or missing usage, an unexpected model, cache use or interruption keep the conservative charge. There are no retries.
+- **App.** The app runner prepays its whole envelope before import. The product also reserves each request atomically across processes and restarts, sends `live: true` only on explicit processing calls, and never auto-accepts model proposals. App reservations stay charged at their maximum after success, unlike the baseline. Each live case has an HTTP timeout of `maxTurns × 30 s + 60 s`, and a case starts only if that fits in the run deadline.
 
-No reviewer is implemented; no reviewer improvement is measurable. Missing usage remains null, never guessed from the number of tool calls. The explicitly opted-in live adapter consumes only persisted product reservation/actual-usage events.
+```bash
+EVAL_AUTH="$EVAL_PRIVATE/approved-batch.json"
+EVAL_LEDGER="$EVAL_PRIVATE/approved-batch-ledger.json"
+EVAL_WORKSPACE="$EVAL_UPSTREAM/runs/mvp-preparation-v1/workspace"
+EVAL_TEXT="$EVAL_UPSTREAM/runs/mvp-preparation-v1/text_cache"
+
+node_modules/.bin/tsx evals/invoice-mvp/baseline.ts --allow-live \
+  --authorization "$EVAL_AUTH" --ledger "$EVAL_LEDGER" --run-id baseline-original \
+  --python "$EVAL_PYTHON" --upstream "$EVAL_UPSTREAM" \
+  --workspace "$EVAL_WORKSPACE" --text-cache "$EVAL_TEXT" \
+  --out "$EVAL_PRIVATE/live/baseline-original"
+"$EVAL_PYTHON" evals/invoice-mvp/score_baseline.py \
+  --run "$EVAL_PRIVATE/live/baseline-original" --upstream "$EVAL_UPSTREAM" \
+  --out "$EVAL_PRIVATE/live-scores/baseline-original"
+
+# Each app run needs a fresh empty product workspace with live opt-in and caps matching the approval.
+EVAL_ORIGIN=http://127.0.0.1:8796
+"$EVAL_PYTHON" evals/invoice-mvp/live_app.py --allow-live \
+  --authorization "$EVAL_AUTH" --ledger "$EVAL_LEDGER" --run-id app-original \
+  --app-commit "$EVAL_APP_COMMIT" --cohort first-pass \
+  --base-url "$EVAL_ORIGIN" --origin "$EVAL_ORIGIN" \
+  --upstream "$EVAL_UPSTREAM" --workspace "$EVAL_WORKSPACE" --text-cache "$EVAL_TEXT" \
+  --out "$EVAL_PRIVATE/live/app-original"
+"$EVAL_PYTHON" evals/invoice-mvp/score.py \
+  --run "$EVAL_PRIVATE/live/app-original" --upstream "$EVAL_UPSTREAM" \
+  --out "$EVAL_PRIVATE/live-scores/app-original"
+
+# Held-out live run: a second empty workspace with the held-out envelope.
+EVAL_ORIGIN=http://127.0.0.1:8797
+"$EVAL_PYTHON" evals/invoice-mvp/live_app.py --allow-live \
+  --authorization "$EVAL_AUTH" --ledger "$EVAL_LEDGER" --run-id app-heldout \
+  --app-commit "$EVAL_APP_COMMIT" --cohort post-fix \
+  --base-url "$EVAL_ORIGIN" --origin "$EVAL_ORIGIN" \
+  --suite "$EVAL_PRIVATE/heldout-v1/sources.json" --out "$EVAL_PRIVATE/live/app-heldout"
+"$EVAL_PYTHON" evals/invoice-mvp/score.py \
+  --run "$EVAL_PRIVATE/live/app-heldout" --expectations "$EVAL_PRIVATE/heldout-v1/expectations.json" \
+  --out "$EVAL_PRIVATE/live-scores/app-heldout"
+```
+
+App runtime settings: `INVOICE_MVP_MODE=live_model`, `INVOICE_MVP_LIVE_OPT_IN=1`, `INVOICE_MVP_PROVIDER=openai` (with `OPENAI_API_KEY`), `INVOICE_MVP_MAX_MODEL_CALLS`, `INVOICE_MVP_MAX_COST_MICROS`, `INVOICE_MVP_MAX_INPUT_TOKENS`, `INVOICE_MVP_MAX_OUTPUT_TOKENS`, `INVOICE_MVP_OUTPUT_TOKENS_PER_CALL`, `INVOICE_MVP_INPUT_TOKEN_MICROS`, `INVOICE_MVP_OUTPUT_TOKEN_MICROS`. Backend seat credentials stay server-side.
+
+Baseline and app still differ in tools, retrieval, per-case orchestration, human acceptance, output limits and reservation accounting. Using the same bytes and model does not make this a controlled agent-count experiment. No reviewer is implemented.
+
+## No-network tests
+
+```bash
+INVOICE_MVP_UPSTREAM="$EVAL_UPSTREAM" "$EVAL_PYTHON" -m unittest discover -s evals/invoice-mvp -p 'test_*.py' -v
+node_modules/.bin/tsx --test evals/invoice-mvp/capped-llm.node-test.ts evals/invoice-mvp/openai-responses.node-test.ts
+node_modules/.bin/tsc --noEmit -p evals/invoice-mvp/tsconfig.json
+```
+
+Tests use injected transports and synthetic authorization; no credential is read and no provider is called. They cover concurrent cap enforcement, crash charges, repeated requests and envelopes, changed ledger paths, unauthorized or expired runs, wrong served models, missing usage, disabled defaults and baseline prompt, tool and loop parity. These tests are not part of `npm test` or CI (AUDIT P2-25).

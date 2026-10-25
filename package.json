@@ -25,7 +25,7 @@
     "test": "vitest run",
     "gateway": "tsx src/human/gateway.ts",
     "gateway:token": "tsx scripts/gateway-token.ts",
-    "smoke": "tsx scripts/smoke-kernel.ts && tsx scripts/smoke-memory.ts",
+    "smoke": "tsx scripts/smoke-kernel.ts && tsx scripts/smoke-memory.ts && tsx scripts/smoke-memory-recovery.ts && tsx scripts/smoke-arithmetic.ts && tsx scripts/smoke-ap-integrity.ts && tsx scripts/smoke-duplicate-score.ts && tsx scripts/smoke-held-answer.ts && tsx scripts/smoke-close-source.ts && tsx scripts/smoke-payroll-roster.ts && tsx scripts/smoke-staffing-boundaries.ts && tsx scripts/smoke-task-boundaries.ts",
     "build:console": "vite build --config console/vite.config.ts",
     "design:check": "node .agents/skills/hallmark/scripts/sloplint.mjs console --genre modern-minimal --scope app",
     "design:review": "npm run design:check -- --render",

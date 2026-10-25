@@ -27,18 +27,19 @@ Hyphenate's booth asked whether this is too ambitious. So we **lead with one cor
 
 | Criterion | What the judge sees |
 |---|---|
-| **Real enough?** | <ul><li>Simulated Sweetgreen, calibrated to its FY2025 SEC filing: 3 stores, 14 days, 230 documents and bank events.</li><li>13 planted errors and 3 legitimate look-alikes, checked against an answer key the agents never see.</li><li>Increase sandbox and a persistent fake bank for money movement.</li><li>Scores on public benchmarks (APEX, DABstep).</li></ul> |
-| **Would you hire it?** | <ul><li>Seat-level limits enforced by the kernel, not by prompts.</li><li>The requester can't approve their own payment.</li><li>Payments of $50k or more need a human; bank changes need a human.</li><li>The inbox holds only the decisions a human must make, about 9 per 100 events.</li><li>Every action is in Live activity and git memory.</li></ul> |
+| **Real enough?** | <ul><li>Simulated Sweetgreen, calibrated to its FY2025 SEC filing: 3 stores, 14 days, 230 events.</li><li>13 planted errors and 3 legitimate look-alikes, checked against an answer key the agents never see.</li><li>A persistent fake bank for money movement; the Increase sandbox adapter is contract-tested.</li><li>Scores on public benchmarks (APEX, DABstep, Invoice Sandbox, FinBalance).</li></ul> |
+| **Would you hire it?** | <ul><li>Seat-level limits enforced by the kernel, not by prompts.</li><li>The requester can't approve their own payment.</li><li>Payments of $50k or more need a human; bank changes need a human.</li><li>The inbox holds only the decisions a human must make.</li><li>Every action is in Live activity and git memory.</li></ul> |
 | **Something new?** | <ul><li>A whole agent workforce on an agent-native kernel.</li><li>The team extends itself: the integrations engineer writes a parser for an invoice format it has never seen, and the controller reviews and merges it.</li></ul> |
 | **The moment** | <ul><li>A fraudulent bank-change email that also targets the AI ("ignore previous instructions") is refused.</li><li>A lost bank confirmation is recovered without paying twice.</li><li>"Why did you hold this?" is answered with citations from the record.</li></ul> |
 
 ## Before judges arrive (runbook)
 
-Run from `autonomous-finance/`, each in its own terminal, about 10 minutes before. Only one backend may run per checkout.
+Run from `autonomous-finance/`, each long-running command in its own terminal, about 10 minutes before. Only one backend may run per checkout. `npm run setup` (once per checkout) writes the gateway token and admin secret.
 
 ```bash
+npm run setup                                        # once per checkout
 npm run backend                                      # local Convex; leave running
-npm run gateway:token                                # once per checkout: shared console/gateway token in .env.local (#82)
+npm run backend:configure                            # once the backend is up
 npm run gateway                                      # human seat on :8787
 npm run console                                      # http://localhost:5173
 npm run world -- --run demo --stores 3 --days 14 --pace 20000 --close
@@ -46,9 +47,9 @@ npm run agents -- --run demo
 ```
 
 - **Pace:** at `--pace 20000` (one simulated day every 20 seconds) the run is mid-month when judges walk up. Start the world about 4 minutes early so the inbox has decisions and the agents have already learned a parser.
-- **Keys:** `OPENAI_API_KEY` goes in `.env.local`. Agent spend is capped by `AGENT_MAX_USD` (default $15); see `var/agent-spend.json`. A full 14-day run costs a few cents.
+- **Keys:** `OPENAI_API_KEY` goes in `.env.local`. Agent spend is capped by `AGENT_MAX_USD` (default $15); see `var/agent-spend.json`. A full 14-day, 3-store run cost $0.04–0.05 in the measured runs.
 - **Admin secret:** `npm run demo:local` reuses the `KERNEL_ADMIN_SECRET` from `.env.local` (and saves a generated one there if none is set), so the eval and world runners keep working afterwards. If they ever fail with `bad_admin_secret`, run `npm run backend:configure`.
-- **AP recovery (2:25):** with the backend and console up, run `npm run demo:local -- --browser-approval`, paste the printed `browser-session.json` scope and JWT into `/ap-demo`, tick auto-reload and approve; the terminal then kills the dispatcher after the bank accepts, recovers after the 30 s lease and asserts one transfer and one journal entry ([details](ap-demo.md#browser-approval-then-crash-recovery-one-flow-for-judges)).
+- **AP recovery (2:25):** with the backend and console up, run `npm run demo:local -- --browser-approval`, paste the printed `browser-session.json` scope and JWT into `/ap-demo`, tick auto-reload and approve; the terminal then kills the dispatcher after the bank accepts, recovers after the 30 s lease and asserts one transfer and one journal entry ([details](ap-demo/README.md#browser-approval-then-crash-recovery-one-flow-for-judges)).
 - **Backup:** have the recorded video ready in case the venue network fails. Everything runs locally except the model calls.
 
 ## The 3-minute live script (AP first)
@@ -78,12 +79,13 @@ All numbers come from [docs/RESULTS.md](RESULTS.md).
 
 | Claim | Result | Source |
 |---|---|---|
-| Catches planted errors in our simulated world | 13/13 planted errors, 3/3 decoys, 0 false alarms, books correct on every account, on 4 seeds; $0.04–0.05 and about 80 s per 14-day run | [docs/RESULTS.md](RESULTS.md) §2 |
-| Controls hold | 20/20 control tests: 16 bad actions refused, the hash chain verifies, 3 legitimate paths still work | [docs/RESULTS.md](RESULTS.md) §3 |
-| Cheaper than one generalist agent | On the same world (earlier run, with Claude): ours $0.15 and 87 s; one plain agent $7.80 and 42 min. One seed. | [docs/RESULTS.md](RESULTS.md) §2 |
-| Works on outside benchmarks | 15 public tasks (APEX, DABstep, Invoice Sandbox, FinBalance): our team 86.7% mean (13 fully correct), the same model alone 84.0% (12). The controller's review fixed two wrong answers; the team costs about 1.75× as much. One run each, so call it at least as accurate, not a big win. | [docs/RESULTS.md](RESULTS.md) §4 |
-| Faster and safer than an agent forced into spreadsheets | On the same 156 bookkeeping operations: **1 tool call per operation vs about 6** (156 vs 902). The kernel stays flat at 0.12 ms per operation while the workbook slows from 0.20 to 2.23 ms as the books grow, about 10× faster on compute. Of 18 injected bad operations, **the kernel stopped 18; the workbook accepted all 18 and its own checks missed 10**, including self-approval, approval over the limit and posting to a closed period. | [docs/evals/spreadsheet-vs-kernel.md](evals/spreadsheet-vs-kernel.md) |
-| Adapted outside benchmarks | The same team runs inside our kernel on outside tasks. In FinBalance, entries are posted through our ledger and the balance sheet comes from the kernel. | [docs/EXTERNAL_EVALS.md](EXTERNAL_EVALS.md) |
+| Catches planted errors in our simulated world | 13 of 13 planted errors, 3 of 3 look-alikes left alone, 0 false alarms, books correct, on 4 seeds; $0.04–0.05 and 71–82 s per 14-day run | [RESULTS.md](RESULTS.md) §2 |
+| Controls hold | 20 of 20 control tests: 17 bad actions refused; the hash chain verifies, a real bank transaction books and a cash entry can be reversed | [RESULTS.md](RESULTS.md) §4 |
+| Cheaper than one generalist agent | On the same world (earlier run, with Claude): ours $0.15 and 87 s; one plain agent $7.80 and 42 min, 12 of 13 caught. One seed. | [RESULTS.md](RESULTS.md) §2 |
+| Works on outside benchmarks | 15 public tasks (APEX, DABstep, Invoice Sandbox, FinBalance): our team 93.3% mean, 14 of 15 correct; the same model alone 84.0%, 12 of 15. The controller's review fixed the two answers the model got wrong alone; the team costs about 1.7× as much. One run each, so it is a small sample. | [RESULTS.md](RESULTS.md) §3 |
+| Better than an agent forced into spreadsheets | Same model, same 11 tasks: 12 tool calls vs 71, 45 s vs 94 s, $0.12 vs $0.48, 4 of 4 planted errors caught vs 3 of 4. | [RESULTS.md](RESULTS.md) §1 |
+| Safer than a spreadsheet, with no model | 156 bookkeeping operations: 1 tool call per operation vs 5.8. The kernel stays at 0.12 ms per operation; the workbook slows from 0.20 to 2.23 ms over the month. Of 18 injected bad operations, the kernel stopped 15 before they landed and caught 3 afterwards; the workbook stopped none, flagged 8 afterwards and never caught 10, including self-approval, approval over the limit and posting to a closed period. | [RESULTS.md](RESULTS.md) §1 |
+| Adapted outside benchmarks | The same team runs inside our kernel on outside tasks. In FinBalance, entries are posted through our ledger and the balance sheet comes from the kernel. | [evals/external-benchmarks.md](evals/external-benchmarks.md) |
 
 **How we adapted outside evals.** A benchmark's source files become a read-only evidence database. The task is assigned to the matching seat; for example, AR reconciliation goes to the revenue accountant. From there:
 1. The specialist drafts an answer with evidence tools.
@@ -105,5 +107,5 @@ The same tasks also run as a single generalist agent and as plain rules, so the 
   - Model output never moves money directly.
   - Wrong numbers are refused, and anything unclear goes to a human.
 - **"Prompt injection?"** Documents are treated as data. The fraud demo shows the agent flagging the injected instructions. Even a fooled agent can't change bank details, because that needs a human approver who didn't propose the change.
-- **"What does it cost?"** A few cents for 14 simulated days for 3 stores, because 95% of tasks are plain code; the model is used for new formats and judgment calls.
+- **"What does it cost?"** $0.04–0.05 for 14 simulated days for 3 stores. A run makes 11 model calls for 218 tasks; the rest is plain code. The model reads new formats and writes parsers for them.
 - **"Is this real data?"** It's simulated but calibrated to Sweetgreen's public filing, with an answer key. The benchmarks are public datasets.

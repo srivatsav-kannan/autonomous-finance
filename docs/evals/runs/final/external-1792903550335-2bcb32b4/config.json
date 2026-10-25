@@ -69,5 +69,5 @@
   },
   "expectedRuns": 14,
   "startedAt": "2026-10-25T04:45:50.334Z",
-  "budgetLedger": "/Users/srivatsavkannan/Documents/calhacks/autonomous-finance/var/benchmarks/approved-final-extra.json.usage.json"
+  "budgetLedger": "var/benchmarks/approved-final-extra.json.usage.json"
 }

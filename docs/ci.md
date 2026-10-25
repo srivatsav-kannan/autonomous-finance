@@ -1,12 +1,13 @@
-# AP recovery CI
+# CI
 
-Implements [#55](https://github.com/srivatsav-kannan/autonomous-finance/issues/55)
-for milestone #39, stacked on [PR50](https://github.com/srivatsav-kannan/autonomous-finance/pull/50)
-(`codex/ap-demo-increase`, after #47 and #49). While PR50 is open, CI changes target
-that branch. [Issue #59](https://github.com/srivatsav-kannan/autonomous-finance/issues/59)
-extends the persistent proof to lookup recovery after an externally killed worker.
-Its coordinator owns shared workflow/package wiring. Branch protection and merging
-the stack remain repository-admin decisions. Datadog is deferred.
+Two workflows live in `.github/workflows/`:
+
+| Workflow | Trigger | Jobs |
+|---|---|---|
+| `ap-ci.yml` | every pull request, pushes to `main`, manual | `regression` (typechecks, `npm test`, console build), `recovery` (`npm run ci:recovery`), `browser` (`npm run test:browser:local`) |
+| `payment-staging-smoke.yml` | manual or called with a target revision and a staging fixture secret | `npm run test:browser:staging` against an isolated FakeBank staging deployment |
+
+CI uses no application secrets and no model or bank credentials. Live Increase checks are manual and outside CI.
 
 ## Pull request gates
 
@@ -29,7 +30,7 @@ multiprocess SQLite FakeBank, dispatcher/reconciliation, and real Prism HTTP
 contract tests. Focused `test:bank`, `test:payments` and `test:contracts` commands
 are debugging tools, not additional CI passes. No audit gate is claimed by
 `npm ci --no-audit`; the existing development-dependency advisory remains
-documented in the [AP guide](ap-demo.md).
+documented in the [AP guide](ap-demo/README.md).
 
 `ap-regression-<run>-<attempt>/checks.json` records each step as `PASSED`, `FAILED`,
 `CANCELLED` or `NOT_RUN`, plus code revision, tracked-change flag and Node/OS/CPU
@@ -147,9 +148,13 @@ nonzero. Success received after a deadline is rejected. A fresh `FAILED` record
 is written before metadata/setup so an early error cannot leave an older pass.
 Fix runtime/network access for startup failures. For deeper
 diagnosis use a disposable checkout and follow the interactive
-[local recovery demonstration](ap-demo.md#local-recovery-demonstration);
+[local recovery demonstration](ap-demo/README.md#local-recovery-demonstration);
 inspect raw logs/state privately, never attach them to CI or a PR. Do not
 convert a failed or blocked recovery run into a successful skipped check.
+
+## Browser job
+
+The `browser` job installs Playwright Chromium and runs `npm run test:browser:local` (`scripts/testing/payment-browser-local.mjs`) with a seven-minute step limit. It starts its own Convex backend and FakeBank in a temporary directory, signs test-human JWTs with an ephemeral key, approves a payment in `/ap-demo`, and checks the persisted journal independently. It uploads `summary.json`, `playwright.json` and `proof.json` from `var/ci/payment-browser-local/`. Details: [browser-test.md](ap-demo/browser-test.md).
 
 ## Separate optional validation
 
@@ -161,7 +166,7 @@ Neither is evidence of live provider execution or real identity verification.
 Live sandbox checks are **manual opt-in only**, outside PR CI. An authorized
 operator must use a separate isolated sandbox deployment and the prerequisites
 and `npm run demo:sandbox` procedure in the
-[AP guide](ap-demo.md#increase-sandbox-prerequisites-and-execution). Missing
+[AP guide](ap-demo/README.md#increase-sandbox-prerequisites-and-execution). Missing
 credentials produce structured `not_run` and exit 2, never success; do not use
 `|| true`, fake secrets or `continue-on-error` to turn that into a pass. Record
 the exact revision/runtime, individual executed scenarios and sanitized

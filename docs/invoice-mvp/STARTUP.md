@@ -6,14 +6,16 @@ Use Node 24+ and npm. This starts local Convex and a local simulated operator id
 
 ```bash
 npm ci
-CONVEX_AGENT_MODE=anonymous npx convex dev --local-cloud-port 3230 --local-site-port 3231
+npm run backend
 ```
 
 Wait for `Convex functions ready`. Convex writes its local configuration to ignored `.env.local` and stores state in ignored `.convex/`. Preserve both for restart recovery. Do not delete `.convex/` to restart the application.
 
+Ports: the local backend uses `:3210` (cloud) and `:3211` (site) by default, the invoice gateway `:8790`, the console `:5173`. The invoice workspace and the simulation share one backend, `.env.local` and `.convex/` in a checkout. To run a second backend, use a second checkout and pass other ports: `npm run backend -- --local-cloud-port 3410 --local-site-port 3411`. The invoice gateway loads all of `.env.local`, including the admin secret, through `src/core/env.ts`.
+
 ## 2. Configure the local admin secret once
 
-The initializer needs an admin secret; the browser and running invoice gateway do not. This snippet preserves an existing secret, otherwise creates one, and configures only the anonymous local deployment without printing its value:
+The initializer needs an admin secret. `npm run setup` then `npm run backend:configure` (README quick start) generate it and set it on the deployment. To do it by hand, this snippet preserves an existing secret, otherwise creates one, and configures only the anonymous local deployment without printing its value:
 
 ```bash
 node --input-type=module <<'JS'
@@ -57,7 +59,7 @@ Invoice company, runtime mode, imports and totals come from the invoice gateway.
 The Scenario selector appears only on simulation views; its URL hash never selects
 an invoice workspace. The invoice view remains usable without `VITE_CONVEX_URL`.
 To connect simulation views to a different existing local backend, supply its URL
-when starting the console (for example, `VITE_CONVEX_URL=http://127.0.0.1:3220 npm run console`).
+when starting the console (for example, `VITE_CONVEX_URL=http://127.0.0.1:3410 npm run console`).
 The invoice proxy defaults to :8790; `INVOICE_MVP_GATEWAY_URL` can select a different
 loopback gateway for an isolated test. Set the gateway's allowed browser origin to
 match the test console's hostname and port.
@@ -101,13 +103,11 @@ npx vite build --config console/vite.config.ts
 
 For the original scorer and held-out suite, follow the [evaluation harness instructions](../../evals/invoice-mvp/README.md). The one approved OpenAI batch has finished; [results](evaluation-openai-results.md) record its exact sources, partial coverage and costs. Its ledger and run IDs must not be reset or reused to obtain another run. Any additional paid batch needs authorization.
 
-The OpenAI product configuration is `INVOICE_MVP_MODE=live_model`, `INVOICE_MVP_LIVE_OPT_IN=1`, `INVOICE_MVP_PROVIDER=openai`, with `OPENAI_API_KEY` supplied privately to the server. The model is fixed to `gpt-6.1-sol`, high reasoning effort, 4,096 maximum output tokens, default service tier, and no caching, retries or fallback. Configure explicit request bounds, token prices and persistent run caps exactly as described in the [OpenAI evaluation contract](evaluation-openai.md). Starting the live gateway does not dispatch model calls: processing requires an explicit live request. Keep the default deterministic configuration for the free browser demo.
+The OpenAI product configuration is `INVOICE_MVP_MODE=live_model`, `INVOICE_MVP_LIVE_OPT_IN=1`, `INVOICE_MVP_PROVIDER=openai`, with `OPENAI_API_KEY` supplied privately to the server. The model is fixed to `gpt-6.1-sol`, high reasoning effort, 4,096 maximum output tokens, default service tier, and no caching, retries or fallback. Configure explicit request bounds, token prices and persistent run caps exactly as described in the [OpenAI evaluation configuration](evaluation-openai-results.md#configuration). Starting the live gateway does not dispatch model calls: processing requires an explicit live request. Keep the default deterministic configuration for the free browser demo.
 
-The integrated local demo is `http://127.0.0.1:5173/?view=invoices#finance-workbench`.
-It uses the original invoice gateway on :8790 and the existing simulation backend
-on :3220. The earlier acceptance workspace on :5181 and the teammate's simulation
-UI on :5180 remain separate historical/demo processes. The UI integration was
-checked with a fresh deterministic workspace, `invoice-ui-integration-20261024`;
-no benchmark run IDs or paid evaluation ledgers were reused.
+The integrated local demo is `http://127.0.0.1:5173/?view=invoices#finance-workbench`,
+with the invoice gateway on :8790 and the simulation backend from this checkout's
+`.env.local`. The UI integration was checked with a fresh deterministic workspace,
+`invoice-ui-integration-20261024`; no benchmark run IDs or paid evaluation ledgers were reused.
 
 Multiple invoice gateways share a cookie name on the same hostname, even across ports; simultaneous browser polling can replace each other's session cookie and reject writes. Use a separate browser profile or hostname for a second invoice gateway. This limitation does not affect the evaluator's isolated cookie jars.

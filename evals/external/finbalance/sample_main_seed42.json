@@ -1,5 +1,5 @@
 {
-  "dataset": "/Users/srivatsavkannan/Documents/calhacks/benchdata/finbalance/data/main/records.jsonl",
+  "dataset": "../benchdata/finbalance/data/main/records.jsonl",
   "seed": 42,
   "per_cell": 8,
   "standard": [

@@ -1,12 +1,35 @@
-# Recoverable accounts-payable demo
+# AP payments: approval, dispatch and recovery
 
-Implementation of [issue #39](https://github.com/srivatsav-kannan/autonomous-finance/issues/39): one configured organization/run, one USD account, one activated beneficiary version and outbound ACH credits. Convex owns approvals, reservations, attempts, evidence and the AP journal. The bank owns execution and economic transactions in an independent datastore.
+This is the part of the system that moves money. Scope ([issue #39](https://github.com/srivatsav-kannan/autonomous-finance/issues/39)): one configured organization and run, one USD account, one activated beneficiary version, outbound ACH credits. Convex owns approvals, reservations, attempts, evidence and the AP journal. The bank owns execution and economic transactions in its own datastore.
 
-See the [review-fix validation record](ap-demo/review-fixes-validation.md) for the latest regression, browser and recovery checks, and the [original validation record](ap-demo/validation.md) for earlier evidence. External sandbox checks still require credentials.
+The code is `src/payments/` (agent handles, dispatcher, evidence worker) and `convex/demoPayments.ts`, `convex/demoEvidence.ts`, `convex/demoOps.ts`. The agent team in `src/agents/` has no bank handle: its payment handler can only request a payment. Demo runs reject the older financial mutations and reads, so agents cannot bypass these permissions through older APIs.
 
-The [CI guide](ci.md) describes automated PR gates, isolated local recovery, retained evidence and separate optional live validation.
+Files in this folder:
 
-The selected demo uses `src/payments/agents.ts`, `dispatcher.ts` and `evidence.ts`. The legacy agent team and seat runtime no longer receive a bank handle, and the old payment handler no longer submits or unconditionally settles transfers. The old evaluator can still request payments but cannot execute them; money movement uses the dedicated scoped demo path. Demo runs reject the legacy financial mutation/read paths so agents cannot bypass the new permissions through older APIs.
+| File | What |
+|---|---|
+| [README.md](README.md) | This guide: checks, local and sandbox runs, trust boundaries, operator runbook |
+| [design.md](design.md) | The original design proposal for the payment backend and integrations |
+| [payment-contract.md](payment-contract.md) | The `scoped-ap-v2` payment contract: identities, ports, recovery rules |
+| [fake-bank.md](fake-bank.md) | The persistent SQLite FakeBank used locally and in CI |
+| [recovery-verification.md](recovery-verification.md) | Independent recovery verification and the unsent-command release procedure |
+| [browser-test.md](browser-test.md) | The Playwright browser test (`npm run test:browser:local`) |
+| [review-fixes-validation.md](review-fixes-validation.md), [validation.md](validation.md) and the `*.json` files | Commit-pinned validation evidence |
+
+The [CI guide](../ci.md) describes the pull-request gates and the isolated recovery run. Live Increase sandbox checks need credentials and have not run.
+
+## Backend rules
+
+- **Configuration.** `demoPayments.configure` binds one organization, run, provider, environment and USD account to an immutable beneficiary and policy version and to one human identity (issuer and subject). Historical rows cannot be activated or replayed.
+- **Approval.** AP records invoice evidence and discrepancies. Controllers accept bills within policy. A payment request is a version built from stored bills and credits; the backend computes amounts and destinations. Controller or CFO-agent approval never replaces the independent human JWT. `requestPayment` reserves bills and credits; `approveAndQueue` binds the reviewed snapshot hash and stores the exact bank command and idempotency key. For Increase, the exact request bytes are stored too. Changing terms requires a new version and a new approval.
+- **Dispatch.** Only the dispatcher service may claim, heartbeat, complete or fail an attempt. Its secret is separate from the admin and evidence secrets and is bound to `AP_BANK_SCOPE`. An attempt is saved before any bank I/O. A lease generation and random token fence stale workers, including a restart of the same worker. Cancellation refuses any started attempt. Unknown outcomes, exhausted retries and configuration failures keep their reservations. A human `resume` records a reason and keeps the original request and key.
+- **Evidence.** Only the evidence service may ingest notifications, fetch bank facts, advance cursors and post. Raw notification bytes are verified before they are stored; HTTP callers acknowledge only after the mutation commits. Polling pages and cursor updates commit together. Cash posts only with the matching approved command, the fetched transfer, the exact transaction ID, posted status and signed amount. Journal, balances, bill and credit effects and the reconciliation link commit in one mutation. Returns keep the original debit and consumed credits. Unmatched transfers or transactions, failed posting, pending approval, open bills and AP flags block close.
+- **Close.** Close signatures bind a versioned snapshot of the run's ledger head, bills, credits, payment versions, commands and reconciliation evidence. Both signers must sign the same snapshot. Any later payment, funding entry, evidence or resolution needs fresh signatures.
+- **Invoice identity.** Scoped and older AP APIs share `convex/lib/invoiceIdentity.ts`: `INV-001`, `INVOICE-001`, `NO-001` and `1` identify the same vendor invoice. Stored identities from older runs are not rewritten.
+- **Exception resolution.** A controller or authenticated human can call `demoPayments.resolveBillExceptions` with the bill ID, its `expectedVersion`, the selected flags, a reason and references to the bill's attached evidence. It records an audit event and clears only the reviewed flags, without changing amounts, reservations, bank evidence or journal entries. Unselected flags still block close.
+- **Console.** `/ap-demo` is the human view: snapshot review, expected-hash approval, dispatch, posting and matching state, attempts, next retry, evidence IDs and audited resume. It requires a configured JWT and accepts no agent or service credentials.
+
+Deploy the backend and workers together. Configure `AP_HUMAN_AUTH_ISSUER`, `AP_HUMAN_AUTH_AUDIENCE`, `AP_BANK_SCOPE` (the full JSON scope), and distinct `KERNEL_ADMIN_SECRET`, `AP_DISPATCH_SECRET` and `AP_EVIDENCE_SECRET`.
 
 ## Reproducible checks
 
@@ -36,28 +59,20 @@ The focused commands cover the following suites. Running the whole `npm test` su
 
 Unit/integration tests use actual Convex function handlers through `convex-test`; they do not require a deployed Convex service, an LLM key or Increase credentials. FakeBank contention tests spawn independent Node processes using the same SQLite file. The local demo below additionally uses a real local Convex deployment and separate application worker processes. Prism fixtures are hand-authored provider-shaped examples. None of these results is a live Increase result.
 
-The development-only Prism dependency has a documented unresolved Faker advisory; production dependencies audit clean. See the [contract toolchain audit](../src/integrations/fixtures/increase/README.md#development-dependency-audit) for the exact dependency chain, supported overrides and reproducible audit commands.
+The development-only Prism dependency has a documented unresolved Faker advisory; production dependencies audit clean. See the [contract toolchain audit](../../src/integrations/fixtures/increase/README.md#development-dependency-audit) for the exact dependency chain, supported overrides and reproducible audit commands.
 
 ## Local recovery demonstration
 
-Use an isolated checkout and local Convex deployment. In one terminal, start the backend and leave it running:
+Use an isolated checkout and local Convex deployment. Follow the README quick start up to `npm run backend:configure`:
 
 ```sh
-npm run backend
-```
-
-On a fresh checkout, the first deployment may stop with an auth-configuration error because `AP_HUMAN_AUTH_ISSUER` and `AP_HUMAN_AUTH_AUDIENCE` have not been set. The local backend process remains running. After it creates the local deployment and `.env.local`, set these simulator-only placeholders from a second terminal in the same checkout:
-
-```sh
-npx convex env set AP_HUMAN_AUTH_ISSUER https://ap-demo.invalid
-npx convex env set AP_HUMAN_AUTH_AUDIENCE ap-demo
-```
-
-These commands use the anonymous local deployment selected by this checkout's `.env.local`; do not add `--deployment local` for this bootstrap. The running dev process should retry the deployment after the environment change. Restart `npm run backend` if necessary, and wait for successful function deployment before continuing:
-
-```sh
+npm run setup
+npm run backend             # terminal 1; leave it running
+npm run backend:configure   # terminal 2, once the backend is up
 npm run demo:local
 ```
+
+On a fresh checkout, the first deployment stops with an auth-configuration error until `backend:configure` sets `AP_HUMAN_AUTH_ISSUER` and `AP_HUMAN_AUTH_AUDIENCE` to the local placeholders `https://ap-demo.invalid` and `ap-demo`. The backend keeps running and redeploys. To set them by hand instead, run `npx convex env set AP_HUMAN_AUTH_ISSUER https://ap-demo.invalid` and `npx convex env set AP_HUMAN_AUTH_AUDIENCE ap-demo` in the same checkout, without `--deployment local`.
 
 The placeholder issuer does not issue real JWTs. It enables the local authentication configuration while the trusted coordinator explicitly supplies the simulator identity `https://ap-demo.invalid|local-human-fixture` through local administrator authentication. Never use these placeholders to claim real human authentication.
 
@@ -77,7 +92,7 @@ The coordinator then performs the headline failure scenario:
 
 The command exits unsuccessfully when an invariant fails. A successful run prints the path to `var/ap-demo/<run-id>/report.json` and the command, provider transaction and journal IDs. The report contains the Git commit, seed, fixture hash, provider contract/specification pin, fault schedule, identity mode and linked evidence. Its independent bank state is retained at `var/ap-demo/<run-id>/bank.sqlite`. The bank and report are runtime artifacts ignored by Git. A second ordinary invocation creates a fresh run; an explicit reused `AP_RUN_ID` is rejected rather than replaying historical financial rows.
 
-Detailed provider storage and fault controls are documented in [fake-bank.md](ap-demo/fake-bank.md).
+Detailed provider storage and fault controls are documented in [fake-bank.md](fake-bank.md).
 
 ### Browser approval with a local OIDC test identity
 
@@ -287,7 +302,7 @@ Inspect `demoPayments.humanReview` and `demoEvidence.humanView` using the authen
 | Bank settled, local posting failed | Repair the local invariant and retry evidence posting only; do not dispatch again |
 | Return | Fetch and post the original debit and separate return once each; applied credits remain consumed |
 | Unknown transfer, unmatched transaction, missing evidence or unresolved returned obligation | Retain a close blocker until explicitly resolved |
-| Worker died after claim, before send; `exception` with no provider transfer | After the 24-hour safety window, `npm run ops:release-unsent -- <commandId> "<reason>"` re-checks the provider and asks for the audited human release ([details](payment-refactor/RECOVERY.md#releasing-a-command-that-was-claimed-but-never-sent-76)) |
+| Worker died after claim, before send; `exception` with no provider transfer | After the 24-hour safety window, `npm run ops:release-unsent -- <commandId> "<reason>"` re-checks the provider and asks for the audited human release ([details](recovery-verification.md#releasing-a-command-that-was-claimed-but-never-sent-76)) |
 
 ### Operator health and runbooks ([#56](https://github.com/srivatsav-kannan/autonomous-finance/issues/56))
 

@@ -1052,7 +1052,7 @@
   "contamination_checks": {
     "Authors' fresh seed 20260712": {
       "description": "data/fresh_seed_20260712 shipped in the repo; first committed 2026-08-28, after the model's June 2026 training cutoff",
-      "dataset": "/Users/srivatsavkannan/Documents/calhacks/benchdata/finbalance/data/fresh_seed_20260712/main/records.jsonl",
+      "dataset": "../benchdata/finbalance/data/fresh_seed_20260712/main/records.jsonl",
       "sample_file": "sample_fresh_seed20260712_seed42.json",
       "sample": {
         "standard": 60,
@@ -1269,7 +1269,7 @@
     },
     "New seed 20261024 (generated here)": {
       "description": "generated for this run with scripts/generate_standard_datasets.py --seed 20261024; never published",
-      "dataset": "/Users/srivatsavkannan/Documents/calhacks/benchdata/finbalance_fresh_seed20261024/main/records.jsonl",
+      "dataset": "../benchdata/finbalance_fresh_seed20261024/main/records.jsonl",
       "sample_file": "sample_new_seed20261024_seed42.json",
       "sample": {
         "standard": 30,

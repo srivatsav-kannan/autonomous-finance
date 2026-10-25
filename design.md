@@ -52,10 +52,28 @@ records. Keep all figures attached to the selected simulation.
 
 ## Hallmark
 
-This system was developed with Hallmark 2.0.0's app-screen workflow. The preserved
-brand takes precedence over a catalog theme. Run `npm run design:check` after
-frontend edits and `npm run design:review -- --url http://127.0.0.1:5173` with the
-console running for rendered checks. Details are in `docs/HALLMARK.md`.
+This system was developed with [Hallmark](https://github.com/Nutlope/hallmark) 2.0.0's app-screen workflow. Hallmark is an agent design skill and visual linter, not a runtime library. The preserved brand takes precedence over a catalog theme. No Hallmark JavaScript or third-party fonts ship to users.
+
+The unmodified skill is vendored at `.agents/skills/hallmark/` (pinned revision and MIT license in `UPSTREAM.md` there). It stays at that path because Codex discovers project skills under `.agents/skills/` and `npm run design:check` runs its `scripts/sloplint.mjs`. Nothing at runtime or in CI uses it, and Vite does not import it. Invoke it by name in Codex (`$hallmark audit console`); other agents can read `.agents/skills/hallmark/SKILL.md`.
+
+```bash
+npm run build:console
+npm run design:check                                        # static lint, Node only
+npm run design:review -- --url http://127.0.0.1:5173        # rendered checks; console must be running
+```
+
+Rendered checks use the dev dependency `puppeteer-core` and a local Chrome or Chromium (set `CHROME_PATH` if it is not in a standard location). Output goes to `.hallmark/`, which git ignores except `log.json`, `preflight.json` and `verification.json`. To check one view, keep the scenario hash and add a view: `http://127.0.0.1:5173/?view=ledger#your-run-id`. Views: `inbox`, `org`, `activity`, `ledger`, `memory`, `evals`, `control`, `bank`, `flow`.
+
+For a redesign, capture a baseline first with `npm run design:review -- --before --url ...`, then after editing run `--kept`, which checks the earlier control inventory and writes `.hallmark/compare.html`.
+
+To update the skill, replace `.agents/skills/hallmark` from an explicit upstream commit, keep the MIT license, update `UPSTREAM.md`, and rerun the checks. Do not run an unpinned install during builds.
+
+## Console behavior notes
+
+- Inbox filters, search and sort persist in the URL as `inboxFilter`, `inboxSearch` and `inboxSort`; the ledger uses `ledgerView` and `ledgerSearch`; Bank & cash uses `bankAccount`, `bankFilter` and `bankSearch`; Finance flow uses `flowStage`.
+- The ledger exports the filtered journal entries or trial balance as CSV. Journal data is limited to the most recent 60 entries; the screen reports that limit next to the scenario's full hash-chain count.
+- Bank & cash reads the whole run through `bank.workspace`. A posted entry is **Recorded**; **Reconciled** needs a completed match and agreeing payment and accounting evidence. Invalid bank payloads are excluded with a visible count. No real bank is connected. The read model loads a full simulation run; large production data would need server-side aggregates and pagination.
+- Finance flow counts come from existing run queries; its arrows describe responsibilities, not a traced transaction.
 
 ## Editable design workspace
 
@@ -66,3 +84,6 @@ simulation snapshots.
 The React implementation remains the runtime source of truth. Figma uses Inter
 as an available fallback for the app’s system sans. Design edits require an
 explicit implementation pass; the canvas is not automatically synchronized.
+The Bank & cash and Finance flow frames are drafts: some neutral controls have
+black fills and money lacks grouping and two decimals. These issues are in the
+canvas only, not the React app.

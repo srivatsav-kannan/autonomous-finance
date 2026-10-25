@@ -1,12 +1,11 @@
 # Finance backend and integration design
 
-Status: **proposed; design only**. Date: 2026-10-23.
+Status: **design proposal from 2026-10-23, kept for its reasoning.** The AP slice it proposes is now built: the Increase sandbox adapter, the persistent FakeBank, Prism contract tests, the scoped payment module and the recovery gates. The [AP payments guide](README.md) describes what exists. Beancount/Fava export, Stripe, procurement and billing adapters were not built.
 
 Implementation tracking: [Issue #37](https://github.com/srivatsav-kannan/autonomous-finance/issues/37).
 
 Baseline reviewed: `9183d48c6921a1e1c08ea6c7fe011edad0ca56e9`.
-This proposal defines the next implementation boundaries. It does not claim that
-the adapters, controls, deployment profiles, or acceptance tests below exist yet.
+Where this document and the code disagree, the code and the AP guide are current.
 
 ## Decision
 
@@ -113,7 +112,7 @@ editing endpoints. See the [Beancount documentation](https://beancount.github.io
 for the export format and [GitHub licensing guidance](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)
 for fixture reuse.
 
-The existing [team plan](TEAM.md) also proposes Capital One Nessie. It remains an
+The earlier team plan also proposed Capital One Nessie. It remains an
 alternative `BankingProvider` if sponsor requirements make it the preferred rail;
 Increase is the default choice for this proposal's first adapter. Require the same
 contract suite for either. Select exactly one outbound provider per intent; an
@@ -159,7 +158,7 @@ remain distinct. [Convex identity API](https://docs.convex.dev/auth/functions-au
 
 ## Adapter contracts and proposed code locations
 
-These paths and interfaces are implementation targets, not existing modules.
+These were the proposed targets. `src/integrations/contracts.ts` and `src/integrations/banking/{fake,increase}.ts` now exist; the receipts, procurement and billing modules do not.
 
 | Proposed module | Contract |
 |---|---|

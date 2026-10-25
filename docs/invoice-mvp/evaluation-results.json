@@ -147,7 +147,7 @@
       "applicationOriginal": 3,
       "applicationHeldout": 1.5
     },
-    "instructions": "../../evals/invoice-mvp/LIVE.md"
+    "instructions": "../../evals/invoice-mvp/README.md"
   },
   "reviewerComparison": "NOT APPLICABLE: no reviewer implemented",
   "evaluationModelApiCalls": 0,
