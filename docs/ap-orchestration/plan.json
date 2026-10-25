@@ -30,8 +30,8 @@
   "external_gates": {
     "openai": "Existing evaluation-worktree key reused in ignored var/ap-environment/providers.env; authentication and one gpt-6.1-sol Responses request verified 2026-10-25. Config import verified in main-browser-recovery; application workflow not run.",
     "llamaparse": "Actual original Golden State and held-out synthetic provider jobs retained. Independent cached repair replay: 4/4 complete held-out candidates, content104/104 and strict geometry102/104;2 Copper currency fields explicitly unresolved. Original0/4 baseline preserved. This is two project-authored suppliers/four representations, not blind production validation. Container OCR packaging build and two-scan bounded runtime smoke PASS; A4 evidence and issue comment 6396729954 retain scope. Complete application OCR integration and production accuracy are not promoted by this gate.",
-    "increase": "Actual normal Auth0 login and explicit single-human binding verified; the authenticated browser can inspect its scoped synthetic case and original raster. Source account/destination read-verified. No user payment authorization, funding, worker or outbound Increase transfer yet.",
-    "erp_selection_and_access": "Actual OAuth and authorized eight sandbox reference mappings verified with zero-create replay. Real Auth0 workspace access now verified. Synthetic INV-1001 prepared for actual operator field/bill review; no accounting transaction written yet.",
+    "increase": "One synthetic INV-1001 USD678.60 happy path passed with actual Auth0 user authorization, one Increase sandbox transfer/debit, verified polling settlement, one local settlement journal and zero case outstanding. Official simulator used; separate inbound ACH test-funding deposit remains unmatched. No complete bank-close or live webhook claim. See docs/ap-orchestration/evidence/C4-live-happy-path.json",
+    "erp_selection_and_access": "QBO US sandbox Bill145 and BillPayment146 created once and read-back verified; Bill balance0. Optional BillPayment APAccountRef omission repaired and unknown original operation recovered without another POST. Broader credits/corrections/partial-payment external acceptance remains separate. See docs/ap-orchestration/evidence/C4-live-happy-path.json",
     "domain_review": "User replaced practitioner gate with Claude 独立模型评审 on2026-10-25. Packet ready; recipient has Claude and will execute blind derivation then comparison. Retain findings/fixes/re-review; no practitioner required or claimed. External QBO/Increase unchanged."
   },
   "tasks": [
@@ -296,9 +296,11 @@
       "worktree": null,
       "branch": null,
       "commit": null,
-      "evidence": [],
+      "evidence": [
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json"
+      ],
       "blocker": null,
-      "next_action": "Actual user payment authorization and bounded funding/worker/evidence workflow pending; account/destination read checks and real Auth0 positive login pass."
+      "next_action": "Requested single synthetic USD happy path PASS. Retain unmatched test-funding deposit and broader external coverage as separate limits; do not claim complete bank close, webhook, credits/returns or successive partial-payment acceptance."
     },
     {
       "id": "B3",
@@ -376,10 +378,11 @@
         "tests/ap-system/quickbooks-close-runtime.test.ts",
         "tests/ap-system/quickbooks-query-envelope.test.ts",
         "docs/ap-orchestration/evidence/C4-live-mappings.json",
-        "docs/ap-orchestration/evidence/C4-store-dimensions.md"
+        "docs/ap-orchestration/evidence/C4-store-dimensions.md",
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json"
       ],
-      "blocker": "Actual operator field and bill review for INV-1001 is pending before accounting transaction submission. Auth0 login and reference mappings are already verified.",
-      "next_action": "Existing USD case awaits actual user review, then authorized QBO accounting transaction readback. Local dimensions, settlements and tax reclassification/recovery are independently verified in V10–V14. Optional live policy/catalog/mapping activation remains explicit; 1000-row discovery bound retained.",
+      "blocker": null,
+      "next_action": "Requested single synthetic USD happy path PASS. Retain unmatched test-funding deposit and broader external coverage as separate limits; do not claim complete bank close, webhook, credits/returns or successive partial-payment acceptance.",
       "source_sha": "4f7d76d"
     },
     {
@@ -976,33 +979,32 @@
     "environment": "sandbox",
     "protocol": "Accounting API + OAuth 2.0",
     "credential_storage": "server-only private configuration",
-    "status": "reference_mappings_created_readback_and_replay_verified",
+    "status": "one_synthetic_usd_bill_and_billpayment_roundtrip_verified",
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true,
     "read_only_verified_at": "2026-10-25T09:45:48.270727+00:00",
     "account_count": 89,
     "vendor_count": 26,
-    "external_writes": 8,
+    "external_writes": 10,
     "mappings": "verified",
     "followup_api": "owner_authorized_sandbox_mapping_and_accounting_verification",
     "reference_writes": 8,
-    "accounting_transaction_writes": 0,
-    "mapping_hash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff"
+    "accounting_transaction_writes": 2,
+    "mapping_hash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff",
+    "happy_path_evidence": "docs/ap-orchestration/evidence/C4-live-happy-path.json"
   },
-  "last_updated_at": "2026-10-25T11:23:37.869154+00:00",
+  "last_updated_at": "2026-10-25T11:41:11.375312+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",
     "status": "real_browser_login_and_explicit_scoped_binding_verified",
     "flow": "official browser login; Convex issuer/audience validation; no manual JWT sharing",
     "user_authorizes_sandbox_payment": true,
-    "next_action": "User reviews the prepared synthetic INV-1001 fields and bill in the normal browser; actual payment authorization remains separate. No JWT requested/extracted or simulated identity used.",
+    "next_action": "Actual login, field/bill approval and user-click payment authorization completed for INV-1001. Negative/expiry/logout identity acceptance remains separate.",
     "last_browser_check": {
-      "at": "2026-10-25T11:23:37.869154+00:00",
+      "at": "2026-10-25T11:41:11.375312+00:00",
       "case_id": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
-      "state": "signed_in; field_review_required; bill_held_unposted; payment_not_requested; execution_not_started",
-      "decision_reason": "empty",
-      "review_confirmation": false
+      "state": "reviewed; bill_approved_recognized; payment_authorized; settled_matched; outstanding0; QBO_Bill145_BillPayment146_verified"
     }
   },
   "verification_checkpoint": {
@@ -1084,5 +1086,13 @@
       "sourceChunkScopeMismatches": 14,
       "classification": "owner-prepared actual local records including C02 original-PDF discrepancy; external Claude review pending"
     }
+  },
+  "external_happy_path": {
+    "status": "passed",
+    "scope": "one synthetic USD678.60 INV-1001; official provider sandboxes",
+    "evidence": "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+    "bank_close": "not_complete_unmatched_test_funding_deposit",
+    "webhook_delivery": "not_claimed",
+    "claude_review": "pending"
   }
 }
