@@ -14,9 +14,13 @@ records. Keep all figures attached to the selected simulation.
   belong in the token block. Use the shared spacing tokens.
 - System sans for headings, body, labels, and controls; monospace only for actual
   code, hashes, and record content. Financial values use tabular numerals.
-- A persistent 224px sidebar for the nine views and a white main workspace.
+- A persistent 224px sidebar for Invoices and the nine simulation views, with a white main workspace.
   Content caps at 1600px. Below 960px, a view selector replaces the sidebar.
-  Scenario selection stays in the top bar and is reflected in the URL.
+  Scenario selection stays in the top bar on simulation views and is reflected in the URL.
+  Invoices shows its own company, workspace ID and runtime mode. Its HTTP gateway
+  determines the invoice workspace; changing the simulation scenario never changes
+  invoice totals. Invoice review uses the shared modal drawer, semantic tokens,
+  labelled mobile table rows and automatic dark palette.
 - Cash, accounts payable, and revenue lead on the original operational views.
   Bank & cash and Finance flow have their own focused summaries. Operational counts live in an
   accessible Simulation activity disclosure, with the simulation date visible.

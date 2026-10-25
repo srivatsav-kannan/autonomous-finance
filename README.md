@@ -52,7 +52,13 @@ A focused workflow for one company in USD: import invoices, credit memos and sup
 4. Accept the exact proposal, exclude it, or request additional evidence. Decisions survive refresh and restart. Stale proposals and conflicting retries are rejected.
 5. Import a late correction and inspect the resumed result.
 
-The default runtime is explicitly **deterministic**: its narrow parser handles documented text/CSV layouts and leaves unfamiliar evidence unresolved. The bounded investigator supports source, related-record and policy tools; model proposals require human review. See the [startup guide](docs/invoice-mvp/STARTUP.md), [acceptance record](docs/invoice-mvp/ACCEPTANCE.md), [architecture and trust boundaries](docs/invoice-mvp/ARCHITECTURE.md), [frozen evaluation protocol](docs/invoice-mvp/evaluation-protocol.md) and [results](docs/invoice-mvp/evaluation-results.md), and the [application benchmark harness](evals/invoice-mvp/README.md).
+The default runtime is explicitly **deterministic**: its narrow parser handles documented text/CSV layouts and leaves unfamiliar evidence unresolved. The optional OpenAI investigator selects source, related-record and policy tools; model proposals require human review. There is no second model reviewer and no measured claim that multiple product agents improve results.
+
+**Invoices** is a view in the finance workbench's shared navigation, next to Inbox, Bank & cash, Finance flow and the other simulation views. The default route and `/invoices` open it; `/legacy` opens the simulation inbox. Invoice company and totals come from the invoice gateway (:8790); simulation scenarios and bank balances stay separate, and Invoices works without a configured simulation backend. To run it locally, follow the [startup guide](docs/invoice-mvp/STARTUP.md).
+
+Measured limits: one approved, capped OpenAI batch (59 calls, $1.20 in provider-reported usage) left the baseline **unscored** (stopped before submission) and the actual app at **0/18** on the original Invoice Sandbox (all 148 sources unresolved) and **4/9** on the frozen held-out suite. A working synthetic demo does not establish unfamiliar-document accuracy or production readiness. Follow-up evaluation design is tracked in #66.
+
+See the [acceptance record](docs/invoice-mvp/ACCEPTANCE.md), [architecture and trust boundaries](docs/invoice-mvp/ARCHITECTURE.md), [live results and comparison limits](docs/invoice-mvp/evaluation-openai-results.md), [frozen evaluation protocol](docs/invoice-mvp/evaluation-protocol.md) and [deterministic results](docs/invoice-mvp/evaluation-results.md), and the [application benchmark harness](evals/invoice-mvp/README.md).
 
 ## Run it
 

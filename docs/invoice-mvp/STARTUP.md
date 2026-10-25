@@ -51,7 +51,16 @@ The gateway listens at `http://127.0.0.1:8790`. Startup resumes interrupted pend
 npm run console
 ```
 
-Open `http://127.0.0.1:5173`. The invoice workspace is the default page and is also available at `/invoices`; the historical console remains at `/legacy`.
+Open `http://127.0.0.1:5173`. Invoices is the default view in the updated finance workbench, also available at `/invoices` or `?view=invoices`. All nine simulation views remain in the same navigation; `/legacy` opens the simulation inbox.
+
+Invoice company, runtime mode, imports and totals come from the invoice gateway.
+The Scenario selector appears only on simulation views; its URL hash never selects
+an invoice workspace. The invoice view remains usable without `VITE_CONVEX_URL`.
+To connect simulation views to a different existing local backend, supply its URL
+when starting the console (for example, `VITE_CONVEX_URL=http://127.0.0.1:3220 npm run console`).
+The invoice proxy defaults to :8790; `INVOICE_MVP_GATEWAY_URL` can select a different
+loopback gateway for an isolated test. Set the gateway's allowed browser origin to
+match the test console's hostname and port.
 
 Use the demo import control, inspect customer totals and open their contributing documents. Open the disputed invoice, read the specific question, then accept or exclude that exact proposal with a reason. Refresh the page to confirm the recorded result and audit history. Add the demo's late correction to see the earlier version superseded. The unfamiliar service recap should remain **Evidence missing** until corrected evidence is supplied or a human excludes it.
 
@@ -94,4 +103,11 @@ For the original scorer and held-out suite, follow the [evaluation harness instr
 
 The OpenAI product configuration is `INVOICE_MVP_MODE=live_model`, `INVOICE_MVP_LIVE_OPT_IN=1`, `INVOICE_MVP_PROVIDER=openai`, with `OPENAI_API_KEY` supplied privately to the server. The model is fixed to `gpt-6.1-sol`, high reasoning effort, 4,096 maximum output tokens, default service tier, and no caching, retries or fallback. Configure explicit request bounds, token prices and persistent run caps exactly as described in the [OpenAI evaluation contract](evaluation-openai.md). Starting the live gateway does not dispatch model calls: processing requires an explicit live request. Keep the default deterministic configuration for the free browser demo.
 
-The current local demos are the original invoice workspace at `http://127.0.0.1:5173/`, the fresh `d08165c` acceptance workspace at `http://localhost:5181/`, and the separately updated broad simulation UI at `http://127.0.0.1:5180/?view=inbox#finance-workbench`. The new simulation UI is not integrated into this invoice branch. Multiple invoice gateways share a cookie name on the same hostname, even across ports; simultaneous browser polling can replace each other's session cookie and reject writes. Use a separate browser profile or hostname for a second invoice gateway. This limitation does not affect the evaluator's isolated cookie jars.
+The integrated local demo is `http://127.0.0.1:5173/?view=invoices#finance-workbench`.
+It uses the original invoice gateway on :8790 and the existing simulation backend
+on :3220. The earlier acceptance workspace on :5181 and the teammate's simulation
+UI on :5180 remain separate historical/demo processes. The UI integration was
+checked with a fresh deterministic workspace, `invoice-ui-integration-20261024`;
+no benchmark run IDs or paid evaluation ledgers were reused.
+
+Multiple invoice gateways share a cookie name on the same hostname, even across ports; simultaneous browser polling can replace each other's session cookie and reject writes. Use a separate browser profile or hostname for a second invoice gateway. This limitation does not affect the evaluator's isolated cookie jars.

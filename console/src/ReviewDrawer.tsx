@@ -7,9 +7,10 @@ type ReviewDrawerProps = {
   children: ReactNode;
   fallbackFocusId?: string;
   preferFallbackFocus?: boolean;
+  closeDisabled?: boolean;
 };
 
-export function ReviewDrawer({ open, onClose, labelledBy, children, fallbackFocusId, preferFallbackFocus = false }: ReviewDrawerProps) {
+export function ReviewDrawer({ open, onClose, labelledBy, children, fallbackFocusId, preferFallbackFocus = false, closeDisabled = false }: ReviewDrawerProps) {
   const dialog = useRef<HTMLDialogElement>(null);
   const backdropPress = useRef(false);
   const preferFallback = useRef(preferFallbackFocus);
@@ -61,7 +62,7 @@ export function ReviewDrawer({ open, onClose, labelledBy, children, fallbackFocu
         backdropPress.current = false;
       }}
     >
-      <button type="button" className="drawer-close" aria-label="Close review" onClick={onClose}>
+      <button type="button" className="drawer-close" aria-label="Close review" onClick={onClose} disabled={closeDisabled}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
           <path d="m6 6 12 12M18 6 6 18" />
         </svg>
