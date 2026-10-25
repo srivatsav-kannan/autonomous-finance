@@ -1,3 +1,4 @@
+import type {OperationalTimings} from "./operational-timing";
 import {closeExportRequestSchema} from "./close-contracts";
 import type {QBOCloseBridge} from "./quickbooks/close-runtime";
 import http, {type IncomingMessage,type ServerResponse} from "node:http";
@@ -37,6 +38,7 @@ export interface APWorkspaceService {
  close?:CloseOperations;
  closeAccounting?:QBOCloseBridge;
  corrections?:CorrectionOperations;
+ operationalTimings?():Promise<OperationalTimings>;
  runtime():unknown;
 }
 export type APExternalAuthentication = {
@@ -114,6 +116,10 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
    }
    // A browser cookie alone never authenticates an external human.
    if(req.method==="GET"&&!sessionValid(req,subject))throw new APHttpError("session_required",403,"Open the AP workspace before reading source or case details.");
+   if(req.method==="GET"&&url.pathname===PREFIX+"/metrics"){
+    if(!service.operationalTimings)throw new APHttpError("capability_unavailable",503,"Operational event timings are unavailable on this service.");
+    return send(res,await service.operationalTimings());
+   }
    const creditApplication=/^\/api\/ap-system\/cases\/([^/]+)\/credit-applications\/([^/]+)$/.exec(url.pathname);
    if(req.method==="GET"&&creditApplication){
     if(!service.corrections)throw new APHttpError("capability_unavailable",503,"Credit application evidence is unavailable.");

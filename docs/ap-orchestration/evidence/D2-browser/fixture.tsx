@@ -1,3 +1,4 @@
+import {timingUIFixture} from "../../../../tests/ap-system-timing-ui.fixture";
 import {costUIFixture} from "../../../../tests/ap-system-cost-ui.fixture";
 import {useState,useEffect,type CSSProperties} from "react";
 import {createRoot} from "react-dom/client";
@@ -30,6 +31,7 @@ window.fetch=async(input,init)=>{
  if(path.startsWith("/close/cost-state/"))return reply(costUIFixture(decodeURIComponent(path.split("/").at(-1)!)));
  if(path.startsWith("/close/"))return reply(closeUIFixture());
  if(path==="/cases")return reply(cases);
+ if(path==="/metrics")return reply(timingUIFixture(cases));
  if(path==="/business")return reply({...raw.governance,policies:raw.governance.policies.map(p=>({...p,policy:{...p.policy,accounts:[...p.policy.accounts,{account:"6000",treatment:"expense"},{account:"1200",treatment:"inventory"}]}}))});
  if(path==="/payment-runs")return reply([{runId:run.runId,snapshotHash:run.snapshotHash,caseIds:run.items.map(i=>i.caseId),executionDate:run.executionDate,createdAt:run.createdAt}]);
  if(path===`/payment-runs/${run.runId}`)return reply(run);

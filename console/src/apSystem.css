@@ -235,3 +235,7 @@
 .aps-close :is(input,select,textarea) { max-width: 100%; }
 
 .aps-cost-review { border-block-start: 1px solid var(--line); padding-block: var(--space-md); margin-block: var(--space-md); }
+
+.aps-timings { margin-block: var(--space-md); overflow-wrap: anywhere; }
+.aps-timings > summary { min-height: 44px; padding-block: var(--space-sm); }
+.aps-timings select { max-width: 100%; }
