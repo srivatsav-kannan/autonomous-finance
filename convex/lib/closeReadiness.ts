@@ -82,9 +82,14 @@ export async function readCloseReadiness(ctx: QueryCtx, runId: string, period: s
   // Backdated bills and held obligations still matter even if their source was
   // received later, or a historical bill predates source-event enforcement.
   for (const bill of bills.filter((b) => b.invoiceDate <= through)) await checkBill(bill);
-  const head = await ctx.db.query("ledgerHeads").withIndex("by_run", (q) => q.eq("runId", runId)).unique();
+  // Only this period and earlier: later postings (next-day entries, settlements
+  // dated after period end) must not silently invalidate a signature.
+  const ledger = (await ctx.db.query("journalEntries")
+    .withIndex("by_run_period", (q) => q.eq("runId", runId))
+    .filter((q) => q.lte(q.field("period"), period)).collect())
+    .map((e) => ({ id: e._id, hash: e.hash, status: e.status })).sort((a, b) => a.id.localeCompare(b.id));
   const snapshotHash = await sha256Hex(canonical({
-    runId, period, ledgerHead: head?.hash ?? "genesis",
+    runId, period, ledger,
     documents: documents.map((d) => ({ id: d._id, occurredOn: d.occurredOn })).sort((a, b) => a.id.localeCompare(b.id)),
     dispositions: dispositions.sort((a, b) => a.documentId.localeCompare(b.documentId)),
     bills: [...reviewed.values()].map((b) => ({ id: b._id, status: b.status, entryId: b.entryId,

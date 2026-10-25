@@ -45,8 +45,9 @@ fresh scenario for full coverage. Old saved reports display an incomplete status
 when rendered without the new field.
 
 These checks can expose existing workflow defects. For example, a disputed
-marketplace shortfall remains a receivable, and a shipment short-paid for missing
-goods must not receive the same credit deduction again. Expanding the evaluator
+marketplace shortfall remains a receivable. (A shipment short-paid for missing
+goods must not receive the same credit deduction again; the AP clerk now records
+such a credit memo as consumed by the short-paid invoice.) Expanding the evaluator
 does not repair those separate accounting workflows or make every planted-error
 scenario pass.
 

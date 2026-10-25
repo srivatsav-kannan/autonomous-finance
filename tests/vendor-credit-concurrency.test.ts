@@ -20,6 +20,7 @@ let mem: MemoryStore;
 function runtime(seatId: string, store = mem) {
   const rt = new SeatRuntime("test", { seatId, role: "ap_clerk", name: seatId }, "token", store, {} as WorldBank);
   vi.spyOn(rt.kernel.client, "mutation").mockResolvedValue({ ok: true });
+  vi.spyOn(rt.kernel.client, "query").mockResolvedValue([]);
   vi.spyOn(rt, "simDate").mockResolvedValue("2026-01-05");
   return rt;
 }
@@ -70,6 +71,20 @@ describe("AP credit updates", () => {
       .rejects.toMatchObject({ code: "schema" });
     expect(await mem.head()).toBe(before);
     expect(ap.kernel.client.mutation).not.toHaveBeenCalled();
+  });
+
+  it("consumes a credit already short-paid on its reference invoice instead of leaving it open", async () => {
+    const ap = runtime("ap-1");
+    vi.mocked(ap.kernel.client.query).mockResolvedValue([{ invoiceNumber: "1", status: "approved", exceptions: ["short_shipment: KALE-24 invoiced 6, received 4"] }]);
+    expect((await credit(ap, "CREDIT-A")).outcome).toBe("recorded");
+    expect((await mem.read<Vendor>(vendorPath))!.credits).toEqual([expect.objectContaining({ id: "CREDIT-A", appliedTo: "1" })]);
+  });
+
+  it("leaves a credit open when its reference invoice was paid in full", async () => {
+    const ap = runtime("ap-1");
+    vi.mocked(ap.kernel.client.query).mockResolvedValue([{ invoiceNumber: "1", status: "approved", exceptions: [] }]);
+    await credit(ap, "CREDIT-A");
+    expect((await mem.read<Vendor>(vendorPath))!.credits[0]!.appliedTo).toBeUndefined();
   });
 
   it("keeps both credits when separate AP seats have warmed vendor caches", async () => {

@@ -161,6 +161,15 @@ describe("received invoice completeness at the kernel close boundary", () => {
     expect(await f.sign(first)).toMatchObject({ ok: true, status: "closed", signedBy: [second.seatId, first.seatId] });
   });
 
+  it("keeps a signature when only a later period is posted to", async () => {
+    const f = await fixture();
+    await f.sign();
+    await f.h.seed("periods", { runId: f.controller.runId, period: "2026-02", status: "open" });
+    const later = await f.source({ occurredOn: "2026-02-03" });
+    expect(await f.bill(later, { invoiceDate: "2026-02-03" })).toMatchObject({ ok: true, entryId: expect.any(String) });
+    expect(await f.sign(f.human)).toMatchObject({ ok: true, status: "closed", signedBy: [f.controller.seatId, f.human.seatId] });
+  });
+
   it("does not reuse historical signatures without a snapshot", async () => {
     const f = await fixture();
     await f.h.ctx.db.patch(f.h.all("periods")[0]!._id, { closedBy: [f.controller.seatId], memoryTag: "stale" });
