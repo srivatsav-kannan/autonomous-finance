@@ -15,3 +15,9 @@ Base `6114a03`, branch `codex/ap-system-d2`.
 Validation: main and test typechecks pass; 24 targeted HTTP/UI tests pass; console build passes (existing large main-chunk warning remains); static design check 0 FAIL/0 WARN, one existing answered F7; diff whitespace check passes. All HTTP tests use explicit service doubles; no backend/bank/QuickBooks writes occurred.
 
 Remaining D2 work: payment-run selection/review UI, operational summaries/narrative/related-case navigation, B3 governance/acceptance/credit UI once integrated, QBO B3 credit/application/correction holds once C4 contract lands, focused new regressions and responsive light/dark CUA evidence. This first checkpoint has no browser visual acceptance claim.
+
+## Checkpoint 2 — runs and explicit human allowlist
+
+Payment run selection and frozen aggregate/per-case review now share the AP workspace, with separate authorization/cancel confirmations and related case navigation. Metrics count only known unique invoice obligations and disclose unknown approved amounts. Local request state is preserved while list/session generations refresh. Private AP_HUMAN_SUBJECTS supports explicitly listed distinct approvers; every request still checks current backend binding. No live identity enrollment or configuration was changed.
+
+Fixed a sibling-key collision between APAccounting and APActions by using accounting:/review: prefixes. Focused unit/render/auth HTTP tests: 37 pass; main/tests typechecks and console build pass; static design check 0 FAIL/0 WARN. Responsive CUA render and repeated accounting-tab DOM-count regression remain for the next D2 evidence checkpoint. No integrated or external accounting acceptance claimed.

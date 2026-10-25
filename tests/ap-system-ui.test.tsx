@@ -1,6 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { APSystemWorkspace, APCaseStatus, APActions, APMatching, APAccounting } from "../console/src/APSystemWorkspace";
+import { APSystemWorkspace, APOperationalMetrics, APCaseStatus, APActions, APMatching, APAccounting } from "../console/src/APSystemWorkspace";
+import { APPaymentRunReview, runEligible } from "../console/src/APSystemRuns";
+import type { PaymentRunDetail } from "../src/ap-system/workspace-operations";
 import { APSystemEvidence, EvidencePage } from "../console/src/APSystemEvidence";
 import { apFieldLabel, apFieldValue, apMoney, displayedFrame, regionPolygon, reviewPayload, sourceForEvidence, paymentBelongsToCase } from "../console/src/apSystemView";
 import { configureAPSession } from "../console/src/apAuthSession";
@@ -16,6 +18,22 @@ describe("AP case workspace evidence boundaries",()=>{
     expect(html).toMatch(/disabled="" aria-expanded="false">Upload documents<\/button>/);
     expect(html).not.toContain("Case unavailable");
     expect(html).not.toContain("No AP cases yet");
+  });
+  it("reviews run cash only when every frozen payment is available and excludes queued cases",()=>{
+    const c=apUIFixture();c.states.document="reviewed";c.states.business="approved";c.links.recognitionJournalId="recognition";c.amounts.outstandingCents=10550;
+    expect(runEligible(c)).toBe(true);
+    const run:PaymentRunDetail={runId:"run-fixture",scope:c.scope,requestedBy:"fixture",snapshotHash:c.snapshotHash,executionDate:"2026-11-01",createdAt:c.createdAt,items:[{caseId:c.caseId,caseRevision:1,caseSnapshotHash:c.snapshotHash,versionId:"payment-fixture",paymentSnapshotHash:c.snapshotHash,payment:null}]};
+    const html=renderToStaticMarkup(<APPaymentRunReview run={run} cases={[c]} onOpenCase={()=>{}}/>);
+    expect(html).toContain("Payment snapshot unavailable");expect(html).toContain("Not established");expect(html).not.toContain("$0.00");expect(html).toContain("2026-11-01 (UTC)");
+    c.payments=[{versionId:"p",status:"queued",amountCents:100,commandId:null,beneficiaryVersion:"v1",providerTransferId:null,authorizedBy:[]}];
+    expect(runEligible(c)).toBe(false);
+  });
+  it("does not aggregate duplicate or unknown invoice obligations as established cash",()=>{
+    const c=apUIFixture();c.states.business="approved";c.amounts.outstandingCents=10000;
+    const duplicate={...c,caseId:"duplicate",links:{...c.links,duplicateOfCaseId:c.caseId}};
+    const unknown={...c,caseId:"unknown",amounts:{...c.amounts,outstandingCents:null}};
+    const html=renderToStaticMarkup(<APOperationalMetrics cases={[c,duplicate,unknown]}/>);
+    expect(html).toContain("$100.00");expect(html).toContain("1 approved case amount unavailable");expect(html).not.toContain("$200.00");
   });
   it("names source fields for readers and formats cents without altering raw citations",()=>{
     expect(apFieldLabel("totalCents")).toBe("Total amount");

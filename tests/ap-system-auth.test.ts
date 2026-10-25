@@ -40,6 +40,15 @@ describe("AP verified human identity boundary",()=>{
    expect(authorize).toHaveBeenCalledTimes(approvedSubject?1:0);
   }
  });
+ it("requires both the private multi-user allowlist and each current backend binding",async()=>{
+  const subjects=["auth0|approver-a","auth0|approver-b","auth0|notlisted","auth0|revoked"];
+  const authorize=vi.fn(async(client:ConvexHttpClient)=>{if((client as unknown as {subject:string}).subject==="auth0|revoked")throw Error("revoked");});
+  for(const subject of subjects){
+   const auth=createAPExternalAuthentication({config:{...config,approvedSubject:undefined,approvedSubjects:[...subjects.filter(s=>s!=="auth0|notlisted").map(s=>issuer+"|"+s)]},convexUrl:"http://127.0.0.1:3252",authorize,service:()=>({}) as APWorkspaceService,clientFactory:()=>({subject,setAuth:vi.fn(),clearAuth:vi.fn(),query:vi.fn().mockResolvedValue({issuer,subject,tokenIdentifier:issuer+"|"+subject})}) as unknown as ConvexHttpClient});
+   expect((await auth.authenticate("opaque-fixture")).approved).toBe(subject==="auth0|approver-a"||subject==="auth0|approver-b");
+  }
+  expect(authorize).toHaveBeenCalledTimes(3);
+ });
  it("whoami requires ctx.auth and never inserts a human seat",async()=>{
   const t=convexTest(schema,modules),whoami=makeFunctionReference<"query">("apIdentity:whoami");
   await expect(t.query(whoami,{})).rejects.toThrow(/authentication_required/);
@@ -63,6 +72,12 @@ describe("AP sandbox startup configuration",()=>{
   for(const bad of ["http://unit-fixture.auth0.com/","https://unit-fixture.auth0.com","https://ap-demo.invalid/","https://unit-fixture.auth0.com/other"])expect(()=>parseAPAuth0Config({...env,AP_HUMAN_AUTH_ISSUER:bad})).toThrow();
   expect(()=>parseAPAuth0Config({...env,AP_HUMAN_AUTH_AUDIENCE:""})).toThrow();
   expect(()=>parseAPAuth0Config({...env,AP_HUMAN_SUBJECT:"https://ap-demo.invalid|human"})).toThrow();
+ });
+ it("parses only explicit private same-issuer subject lists and retains single-subject compatibility",()=>{
+  const subjects=[issuer+"|auth0|a",issuer+"|auth0|b"];
+  expect(parseAPAuth0Config({...env,AP_HUMAN_SUBJECT:config.approvedSubject,AP_HUMAN_SUBJECTS:JSON.stringify([...subjects,subjects[0]])})).toMatchObject({approvedSubject:config.approvedSubject,approvedSubjects:subjects});
+  for(const value of ["not json","{}",JSON.stringify([issuer+"|"]),JSON.stringify(["https://other.auth0.com/|auth0|a"]),JSON.stringify([""])])expect(()=>parseAPAuth0Config({...env,AP_HUMAN_SUBJECTS:value})).toThrow();
+  expect(()=>parseAPAuth0Config({...env,AP_HUMAN_SUBJECT:issuer+"|"})).toThrow();
  });
  it("supports identity-only owner setup and exposes no private scope or credentials",()=>{
   const parsed=parseAPSandboxConfig(env,"/private/tmp/auth0-unit");

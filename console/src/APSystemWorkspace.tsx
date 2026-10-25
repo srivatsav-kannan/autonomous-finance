@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import type { APCaseDetail, ReviewRequest, SourceDocument } from "../../src/ap-system/contracts";
+import { APSystemRuns } from "./APSystemRuns";
 import { APSystemQuickBooks } from "./APSystemQuickBooks";
 import { APSystemEvidence } from "./APSystemEvidence";
 import { apError, apSystemApi, downloadOriginal, type PaymentDetail } from "./apSystemApi";
@@ -9,6 +10,7 @@ import { Icon } from "./Icon";
 import "./apSystem.css";
 
 export type APSystemContext = { runId: string; organizationId: string; provider: string; identityMode: APCaseDetail["identityMode"] };
+const WORKSPACES = ["cases", "runs"] as const;
 const VIEWS = ["evidence", "matching", "accounting", "history"] as const;
 const FILTERS = ["all", "attention", "approved", "settled"] as const;
 const dateTime = (value: number) => new Date(value).toLocaleString();
@@ -16,6 +18,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
   const [listResult,setListResult]=useState<{generation:number;cases?:APCaseDetail[];error?:string}>();
   const [detailResult,setDetailResult]=useState<{generation:number;caseId:string;detail?:APCaseDetail;error?:string}>();
   const [selectedId,setSelectedId]=useUrlState("case");
+  const [workspace,setWorkspace]=useUrlState("apWorkspace","cases",WORKSPACES);
   const [filter,setFilter]=useUrlState("apFilter","all",FILTERS);
   const [search,setSearch]=useUrlState("apSearch");
   const [view,setView]=useUrlState("apView","evidence",VIEWS);
@@ -48,9 +51,11 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
   }),[cases,search,filter]);
   return <section className="aps-app" aria-label="Accounts payable workspace">
     <div className="page-heading"><div><h2>Accounts payable</h2><p className="lede">Inspect the obligation, its approvals and the outcome.</p></div><div className="aps-heading-actions"><button type="button" onClick={refresh} disabled={busy}>Refresh</button><button type="button" className="primary" onClick={()=>setShowUpload(v=>!v)} disabled={busy||!sessionReady} aria-expanded={showUpload}>Upload documents</button></div></div>
-    {showUpload && <APUpload sessionReady={sessionReady} onBusy={setBusy} onComplete={id=>{setSelectedId(id);setShowUpload(false);refresh();}} />}
+    {showUpload && <APUpload sessionReady={sessionReady} onBusy={setBusy} onComplete={id=>{setWorkspace("cases");setSelectedId(id);setShowUpload(false);refresh();}} />}
     {listError && <div className="aps-error" role="alert"><strong>Case list unavailable</strong><p>{listError}</p><button type="button" onClick={refresh} disabled={busy}>Retry connection</button></div>}
-    <div className="aps-workspace-grid">
+    <div className="aps-tabs" role="group" aria-label="Workspace sections">{WORKSPACES.map(section=><button key={section} disabled={busy} aria-pressed={workspace===section} className={workspace===section?"is-selected":""} onClick={()=>setWorkspace(section)}>{section==="runs"?"Payment runs":"Cases"}</button>)}</div>
+    {cases && <APOperationalMetrics cases={cases}/>}
+    {workspace==="runs" ? (listResult?.cases?<APSystemRuns cases={listResult.cases} busy={busy||!sessionReady} onBusy={setBusy} onChanged={refresh} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>:!listError&&<APLoading label="Opening payment run workspace…"/>) : <div className="aps-workspace-grid">
       <aside className="aps-case-queue" aria-label="AP cases"><div className="aps-queue-controls">
         <label className="search-field"><Icon name="search"/><input type="search" placeholder="Supplier, invoice or source" aria-label="Search AP cases" value={search} onChange={e=>setSearch(e.target.value)} /></label>
         <label className="aps-filter-label">Show<select value={filter} onChange={e=>setFilter(e.target.value as typeof filter)} aria-label="Filter AP cases">{FILTERS.map(v=><option key={v} value={v}>{v === "attention" ? "Needs attention" : apLabel(v)}</option>)}</select></label>
@@ -75,8 +80,14 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
           <APActions key={`review:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>
         </>}
       </div>
-    </div>
+    </div>}
   </section>;
+}
+export function APOperationalMetrics({cases}:{cases:APCaseDetail[]}){
+ const obligations=cases.filter(c=>!c.links.duplicateOfCaseId&&c.candidate?.kind==="invoice");
+ const approved=obligations.filter(c=>c.states.business==="approved"),known=approved.filter(c=>c.amounts.outstandingCents!==null),missing=approved.length-known.length;
+ const outstanding=known.reduce((sum,c)=>sum+c.amounts.outstandingCents!,0);
+ return <section className="aps-operational" aria-label="Workspace operational metrics"><dl className="aps-amounts"><div><dt>Cases needing attention</dt><dd>{cases.filter(caseNeedsAttention).length}<small>of {cases.length} cases in this run</small></dd></div><div><dt>Approved outstanding</dt><dd>{apMoney(outstanding)}<small>{missing?`${missing} approved case amount unavailable`:`Across ${approved.length} unique invoices`}</small></dd></div><div><dt>Execution needs review</dt><dd>{cases.filter(c=>["returned","failed","unknown"].includes(c.states.execution)).length}<small>Inspect bank evidence before retrying</small></dd></div></dl><p className="aps-caption">Recognizing a bill records the obligation. Applied supplier credits reduce what is owed; a verified cash settlement records money leaving the bank. QuickBooks synchronization is a separate, receipt-backed operation.</p></section>;
 }
 function APLoading({label}:{label:string}){return <div className="aps-loading" role="status"><p>{label}</p><span/><span/><span/></div>;}
 export function APCaseStatus({detail}:{detail:APCaseDetail}){

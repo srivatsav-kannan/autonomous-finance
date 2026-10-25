@@ -31,7 +31,7 @@ export function parseAPSandboxConfig(env:Record<string,string|undefined>,root=pr
 export function createAPSandboxRuntime(config:ReturnType<typeof parseAPSandboxConfig>,env:Record<string,string|undefined>) {
  // This client carries agent credentials only as explicit mutation arguments. Never a human/admin token.
  const agent=new ConvexHttpClient(config.convexUrl);
- const runtime=()=>({contractVersion:AP_CONTRACT_VERSION,policyVersion:AP_POLICY_VERSION,identityMode:"authenticated_human",providerMode:"Increase sandbox",paymentExecution:"separate_worker",providerFileLoaded:Boolean(env.LLAMA_CLOUD_API_KEY),ownerBindingConfigured:Boolean(config.auth.approvedSubject)});
+ const runtime=()=>({contractVersion:AP_CONTRACT_VERSION,policyVersion:AP_POLICY_VERSION,identityMode:"authenticated_human",providerMode:"Increase sandbox",paymentExecution:"separate_worker",providerFileLoaded:Boolean(env.LLAMA_CLOUD_API_KEY),ownerBindingConfigured:Boolean(config.auth.approvedSubject||config.auth.approvedSubjects?.length)});
  const auth=createAPExternalAuthentication({config:config.auth,convexUrl:config.convexUrl,
   authorize:async human=>{await human.query(makeFunctionReference<"query">("apIdentity:workspaceAccess"),{scope:config.scope});},
   service:human=>{
