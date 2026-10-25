@@ -67,72 +67,68 @@ We think agents shouldn't use tools built for humans. If agents are going to run
 
 ### What it does
 
-Autonomous Finance runs the finance function of a simulated Sweetgreen, Inc., calibrated to its FY2025 10-K: $679.5M revenue, 281 restaurants. We demo 3 stores over 14 days.
+Autonomous Finance runs accounts payable for a restaurant chain modeled on Sweetgreen. Agents do the work. People make the decisions that need a person: approving a bill, releasing a payment, settling a dispute.
 
-**Accounts payable, end to end:**
-- Invoices arrive in different formats. Known formats are parsed by code. For a format nobody has seen, the model reads it once and an agent writes a parser for it (regexes and field mappings as JSON). The controller agent tests the parser before it's used. After that, invoices in that format are parsed by code with no model call.
-- Each bill is checked against the contract price, the receiving log, open credits and earlier invoices. Short shipments, price overcharges and duplicates are held with the exact reason.
+**One invoice, from PDF to reconciled payment (`/ap-system`):**
+- An invoice arrives as a PDF, along with its purchase order and delivery receipt. Each field we extract links back to where it appears in the original, so a reviewer can check it against the source.
+- Approving the fields, approving the bill and releasing the payment are three separate decisions. Approving a bill records what we owe. It doesn't pay anything.
+- If an invoice bills for more than was ordered or delivered, the case is held and a person decides. The agent doesn't quietly pay less. If only part of an invoice is accepted, the rest stays visible as disputed.
+- Payments go out through Increase, a bank API. If the bank accepts a payment and our worker crashes before recording it, a new worker asks the bank about the original payment instead of sending a second one. The result is one transfer and one entry in the books.
+- The approved bill and the settled payment are written into QuickBooks, so the company's accountants see them in the tool they already use. Paying a bill reduces what we owe and our cash. It doesn't record the expense a second time.
+- We ran one synthetic $678.60 invoice through the real QuickBooks and Increase sandboxes (their test versions): QuickBooks Bill 145, BillPayment 146 linked to it, and one Increase transfer matched to its bank debit.
+
+**The agents, and the rest of the department:**
+- In our simulated Sweetgreen (calibrated to its FY2025 10-K: $679.5M revenue, 281 restaurants), invoices arrive in different formats. For a format nobody has seen, the model reads it once and an agent writes a parser for it. The controller agent tests the parser before it's used, and after that the format is read by code with no model call.
+- Each bill is checked against the contract price, the receiving log, open credits and earlier invoices. Short shipments, overcharges and duplicates are held with the exact reason.
 - A "new bank details" email from a look-alike domain, with "ignore previous instructions" in it, is refused. Even if an agent were fooled, it couldn't change the bank details. The database only accepts that change when a human approves it, and that human can't be the one who proposed it.
-- Payments of $50k or more go to the human CFO's inbox with the evidence attached. The agent that requested a payment can never approve it.
-- If the bank accepts a payment and the worker dies before recording it, a new worker resends the saved request with the same key, gets the original transfer back and books it once.
 - Ask a question like "why did you hold INV-1002?" and the answer cites the git commits where those decisions were recorded.
-
-The same system also runs the rest of the finance department: cash application, revenue, payroll, leases and month-end close. If AP moves at agent speed but cash and close still wait on humans in spreadsheets, AP just ends up waiting on them. So the whole department runs on the same ledger.
+- The same system runs cash application, revenue, payroll, leases and the month-end close. If AP moves at agent speed but cash and close still wait on people in spreadsheets, AP just ends up waiting on them.
 
 ### How we built it
 
-- **Ledger and controls (Convex):** every change to the books is one database transaction, in integer cents, with double entry, an idempotency key and a hash chain. Twelve agents (AP clerk, controller, payments and so on) each have their own login and limits. The limits are checked in the database, not written in prompts. For example:
-  - a cash entry needs a matching bank transaction
-  - a bill needs a received invoice
-  - whoever requests a payment can't approve it
-  - closing a month needs a human signature
-
-  The task queue and the CFO's login also live in Convex, and the console updates live from it.
-- **Memory (git):** company knowledge (vendors, bank details, policies, parsers and every decision) is YAML in a git repo, checked against a schema. Each change is a commit by the agent that made it. Changes to bank details or parsers go on a branch that a different agent has to merge, so any number can be traced back with `git blame`.
-- **Agents (TypeScript + OpenAI `gpt-6.1-sol`):** routine work is plain code. The model reads unfamiliar documents, makes judgment calls and answers "why" questions, using typed tools checked with zod. In a 14-day run, 92% of tasks never call the model. Every model call goes through one client with a hard spend cap.
-- **Payments:** before a payment is sent, the exact request and its idempotency key are saved. One worker at a time can hold it, for 30 seconds. If that worker dies, another one takes over and asks the bank about the original payment instead of sending a new one. We test against a local bank simulator that can drop responses, and we built an adapter for the Increase sandbox.
-- **Simulator and evals:** a simulator generates 14 days of invoices, bank activity, sales and payroll, with 13 planted errors and 3 legitimate look-alikes. We score each run against an answer key the agents never see, and check the books against a separate ledger on every account. We also adapted 15 public tasks (APEX-Accounting, DABstep, Invoice Sandbox, FinBalance) so our agents could run them.
-- **Console (React + Vite):** Inbox, Finance flow, Live activity, Ledger, Memory, Evals, and a Control room where you can send in fraud, duplicate invoices and unknown wires.
+- **Ledger and controls (Convex):** every change to the books is one database transaction, in integer cents, with double entry, an idempotency key and a hash chain. Each agent has its own login and limits, and the database checks them on every write. For example, a cash entry needs a matching bank transaction, and whoever requests a payment can't approve it.
+- **The AP case:** one case links the original documents, the reviewed fields, the bill, its journal entries, the payment and the bank evidence. LlamaParse reads the PDFs, and our code links each field to its place in the source and checks the arithmetic.
+- **Payments:** the exact request and its key are saved before anything is sent. One worker at a time can hold a payment. We test against our own bank simulator, which can drop responses, and run the real thing through the Increase sandbox.
+- **QuickBooks:** a connector that writes the approved bill and the settled payment, then reads them back to check they match our books. If a write's outcome is unknown, it looks the record up instead of posting it again.
+- **People:** the human approver signs in with Auth0. Agents never hold the human's login.
+- **Memory (git):** vendors, bank details, policies, parsers and every decision are YAML in a git repo. Each change is a commit by the agent that made it, so any number can be traced back with `git blame`.
+- **Agents (TypeScript + OpenAI `gpt-6.1-sol`):** routine work is plain code. The model reads unfamiliar documents, makes judgment calls and answers "why" questions through typed tools. Every model call goes through one client with a hard spend cap.
+- **Simulator and evals:** a simulator generates 14 days of invoices, bank activity, sales and payroll with 13 planted errors and 3 legitimate look-alikes, scored against an answer key the agents never see. We also adapted 15 public finance tasks (APEX-Accounting, DABstep, Invoice Sandbox, FinBalance) so our agents could run them.
 
 ### Challenges we ran into
 
-- **Model-written parsers.** The first version ran the model's JavaScript in `node:vm`, which isn't a security boundary, inside a process that holds credentials. We replaced it with JSON parser specs that fixed code applies, with checks on every regex. Nothing the model writes is executed.
-- **Paying exactly once when the bank doesn't answer.** A timeout doesn't mean the payment failed. We save the request and its key before sending, let only one worker hold the payment at a time, and on recovery ask the bank about the original instead of sending a new one. CI kills the worker in the middle of a payment on every pull request.
-- **Keeping the CFO's login away from the agents.** The CFO's token sat in the same file the agents loaded, so we split it out. What each approval button does is now stored in the database, so the agent asking the question can't change it.
-- **Measuring honestly.** Our first benchmark harness gave the first agent half the turn budget, so it ran out of turns before writing an answer. Fixing that changed our team score from 86.7% to 93.3%.
+- **Paying exactly once when the bank doesn't answer.** A timeout doesn't mean the payment failed. We save the request before sending, let only one worker hold it, and on recovery ask the bank about the original instead of sending a new one.
+- **Real services behave differently from fakes.** QuickBooks' real sandbox leaves a field out of payment responses that our connector required, so the first real readback failed. The connector now checks the linked bill instead.
+- **Model-written parsers.** The first version ran the model's JavaScript inside a process that holds credentials. We replaced it with JSON parser specs that fixed code applies. Nothing the model writes is executed.
+- **Measuring honestly.** Our first benchmark harness gave one agent half the turn budget, so it ran out of turns before writing an answer. Fixing that changed our team score from 86.7% to 93.3%.
 
 ### Accomplishments that we're proud of
 
 All measured, with raw outputs in the repo:
-- **Simulated company, 4 seeds:**
-  - 13 of 13 planted errors caught on every seed
-  - 3 of 3 look-alikes left alone, 0 false alarms
-  - 64 of 64 invoices read
-  - books correct on every account
-  - $0.04–0.05 and 71–82 seconds per 14-day run
-- **Same model, our ledger's tools vs spreadsheet tools, 11 tasks:** 12 vs 71 tool calls, 45 vs 94 seconds, $0.12 vs $0.48. With our tools it caught 4 of 4 planted errors. With the spreadsheet it caught 3 of 4.
-- **156 bookkeeping operations with 18 bad ones mixed in, no model:** our ledger stopped all 18. The spreadsheet flagged 8 after the fact and never caught 10, including self-approval and posting to a closed month.
-- **15 public benchmark tasks:** our agents scored 93.3% (14 of 15) and the same model alone scored 84.0% (12 of 15). The controller's review fixed both answers the model got wrong alone, at about 1.7× the cost. Small sample, one run each.
-- **Controls:** 22 of 22 control tests pass against the live database.
+- **The sandbox run:** one synthetic invoice went from PDF to approval, an Increase payment, a QuickBooks bill and payment, and a reconciled bank debit.
+- **Simulated Sweetgreen, 14 days, 3 stores:** 13 of 13 planted errors caught, 3 of 3 look-alikes left alone, 0 false alarms. Since the new AP rules, two of those invoices wait for a person's decision instead of being short-paid automatically. In our earlier runs across 4 seeds, the books matched on every account.
+- **Same model, our ledger's tools vs spreadsheet tools, 11 tasks:** 12 vs 71 tool calls, 45 vs 94 seconds, $0.12 vs $0.48.
+- **15 public benchmark tasks:** our agents scored 93.3% and the same model alone scored 84.0%.
+- **Controls:** 22 of 22 control tests pass. A separate review by another Claude model checked the accounting: every journal balances, and paying a bill never records the expense twice.
 
 ### What we learned
 
 - Put the controls in the database. An agent can be talked out of a rule written in its prompt. It can't get past a database write that rejects the action.
-- Most finance work doesn't need a model. We only call it for new formats and judgment calls, so a 14-day run costs about 5 cents.
-- A second agent reviewing the first catches real mistakes. On the public benchmark tasks, the controller's review fixed both answers the model got wrong on its own.
+- Approving a bill and releasing money are different decisions, and the software should treat them that way.
+- Fakes only get you so far. The real QuickBooks sandbox found a bug our tests didn't.
+- Most finance work doesn't need a model. We call it for new formats and judgment calls.
 
 ### What's next
 
-- Full three-way matching (purchase order, receipt, invoice), so a bill with no receiving record is held for review instead of approved.
-- PDF upload with field highlighting, and a small hand-labeled set of documents.
-- A real run against the Increase sandbox, then one ERP connector.
-- If the evidence behind an approval changes, the approval is withdrawn and has to be given again.
+- Fix the three gaps the review found: the person who approved a bill can also release its payment, and payments have no amount limits. In the simpler setup, one person can still do every step. And the disputed part of an invoice can't later be approved on the same invoice.
+- Run more invoices through the sandboxes, including returns and credits, and verify Increase's webhooks.
+- Read more document formats, and turn reviewed corrections into rules the agents reuse.
 
 **Atlassian track:** Best Security Solution for Agents.
 
 ## Built with
 
-`typescript` `convex` `react` `vite` `node.js` `openai` `zod` `git` `yaml` `python` `vitest` `playwright` `exceljs` `increase` `github-actions`
+`typescript` `convex` `react` `vite` `node.js` `openai` `zod` `git` `yaml` `python` `vitest` `playwright` `exceljs` `increase` `github-actions` `quickbooks` `auth0` `llamaparse`
 
 ## Try it out links
 
