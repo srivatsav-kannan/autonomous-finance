@@ -75,10 +75,13 @@ export const bankTransactionSchema = z.object({
   id: nonempty, scope: bankScopeSchema,
   // Unrelated account activity legitimately has no payment/transfer identity.
   transferId: z.string(), commandId: z.string(), amountCents: safeInteger.refine(value => value !== 0),
-  currency: z.literal("USD"), status: z.enum(["pending", "posted"]), purpose: z.enum(["debit", "return", "other"]),
-  sourceCategory: nonempty.optional(), createdAt: instant, postedAt: instant.optional(), originalTransactionId: nonempty.optional(),
+  // A completed pending hold is not cash evidence; only status=posted can be posted.
+  currency: z.literal("USD"), status: z.enum(["pending", "complete", "posted"]), purpose: z.enum(["debit", "return", "other"]),
+  sourceCategory: nonempty.optional(), createdAt: instant, postedAt: instant.optional(), completedAt: instant.optional(),
+  originalTransactionId: nonempty.optional(),
 }).strict().superRefine((transaction, ctx) => {
   if ((transaction.status === "posted" && !transaction.postedAt) ||
+      (transaction.status === "complete" && !transaction.completedAt) ||
       (transaction.purpose !== "other" && (!transaction.commandId.trim() || !transaction.transferId.trim())) ||
       (transaction.purpose === "debit" && transaction.amountCents >= 0) ||
       (transaction.purpose === "return" && (transaction.amountCents <= 0 || !transaction.originalTransactionId || transaction.originalTransactionId === transaction.id))) {
