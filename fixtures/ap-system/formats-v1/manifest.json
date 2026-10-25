@@ -1,0 +1,75 @@
+{
+  "version": "formats-v1",
+  "provenance": "synthetic",
+  "license": "Project-authored engineering controls; no actual supplier data",
+  "generator": "generate.py; ReportLab + Pillow + pdftoppm",
+  "sources": [
+    {
+      "id": "native-pdf",
+      "path": "../golden-state-v1/input/invoice.pdf",
+      "mimeType": "application/pdf",
+      "sha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83",
+      "byteLength": 2869,
+      "description": "native PDF reused by immutable hash"
+    },
+    {
+      "id": "scanned-pdf",
+      "path": "input/invoice-scanned.pdf",
+      "mimeType": "application/pdf",
+      "sha256": "e57ca9515fb6c5142fc374f7b65d88a22452fb0e849ff098bd2152035bb41a40",
+      "byteLength": 83417,
+      "description": "Raster-only synthetic scan proxy from native PDF; not genuine archival scan"
+    },
+    {
+      "id": "png",
+      "path": "input/invoice-scan.png",
+      "mimeType": "image/png",
+      "sha256": "a81428e883b3fb9a11d97cfc0b9d3faa115699404c4e44aa43b67aa394c2da95",
+      "byteLength": 71725,
+      "description": "Grayscale blur/contrast synthetic scan proxy"
+    },
+    {
+      "id": "jpeg",
+      "path": "input/invoice-scan.jpg",
+      "mimeType": "image/jpeg",
+      "sha256": "8e797f89cbe9771cc023fcd04ba25cf8cee0ca6337a812dc1c9ee6520ecf5cf4",
+      "byteLength": 72269,
+      "description": "Lossy JPEG quality70 scan proxy"
+    },
+    {
+      "id": "multipage-tiff",
+      "path": "input/invoice-two-page.tiff",
+      "mimeType": "image/tiff",
+      "sha256": "a14065ecf2ed368bf4a5fb33f6cea278de62665aa571bbe5c70f4f47d1ba119b",
+      "byteLength": 83344,
+      "description": "Two distinct ordered grayscale pages, deflate TIFF"
+    },
+    {
+      "id": "unreadable-png",
+      "path": "input/invoice-unreadable.png",
+      "mimeType": "image/png",
+      "sha256": "c6d61060e6c2ef88b2b66f140735381d2343beb9501d7dd25f4ad9bd4d532a0b",
+      "byteLength": 5267,
+      "description": "Intentionally absent invoice content negative control"
+    },
+    {
+      "id": "ubl-positive-tax",
+      "path": "input/invoice-ubl.xml",
+      "mimeType": "application/xml",
+      "sha256": "3fa9c10d8450b0ca33d24ac2a66b61f20cb24196a3e119f765b7cd17f0928754",
+      "byteLength": 2816,
+      "description": "Project-authored declared UBL2.1 subset, explicit positive tax"
+    },
+    {
+      "id": "ubl-unknown-profile",
+      "path": "input/invoice-unknown-profile.xml",
+      "mimeType": "application/xml",
+      "sha256": "b553a0bf34accdd5da2038c90e0c85df930913056c3f05b5a3e61dec7470c712",
+      "byteLength": 2812,
+      "description": "Unknown profile negative control"
+    }
+  ],
+  "expectedResultsFile": "evaluation/expected-profiles.json",
+  "expectedResultsAccess": "evaluation_only_not_runtime",
+  "baseNativeSha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83"
+}

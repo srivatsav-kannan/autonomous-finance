@@ -1,0 +1,23 @@
+{
+  "reviewer": "/root/verifier",
+  "baseline": "190201f811b7ea24d4945aec84d79a45b93e9157",
+  "derivedBeforeTestExecution": true,
+  "amountCents": 67860,
+  "basis": "V1 independently reviewed originals: 5*3850 + 4*4275 + 3*6890 + 2*5420. V2 manually supplies those known facts with unresolved geometry; it is not a parser accuracy run.",
+  "expectations": {
+    "missingReceipt": "Hold, accepted null, zero bills/commands/transfers/journals.",
+    "contradictoryContent": "Field approval fails, no obligation or transfer.",
+    "quantityConflict": "Supplier claim 71710 preserved, po_mismatch and receipt_mismatch remain after field review, zero recognition/payment.",
+    "duplicateDelivery": "Renamed identical packet and operation replay preserve one case/bill/recognition/payment/settlement.",
+    "sameFilenameDifferentSource": "Changed source hash plus distinct invoice identity remains a separate held case.",
+    "preAuthorizationRevision": "Old field approval invalidated; recognized unsent reservation cancels if present, stale authorization fails.",
+    "queuedUnsentRevision": "Original command cancelled, reservations released, zero bank sends, reapproval of posted correction prohibited.",
+    "possibleSendRevision": "Original request/key/reservations retained, no replacement payment, reconciliation may finish original payment.",
+    "staleSelfApproval": "Old revision/hash, anonymous/agent/foreign issuer and own-created case approval fail.",
+    "lostResponse": "Original operation lookup recovers one persisted FakeBank transfer; no second create; settlement one cash journal.",
+    "interruptedPosting": "Bank observed settled does not imply local posting. Failure rolls back journal/balances; retry posts once; duplicate notices/observations do not duplicate economic effects.",
+    "geometry": "Wrong page/frame, stale source revision and missing/duplicate/mismatched text must not produce accepted precise binding. Interrupted fallback stays unresolved; successful retry may derive exact regions."
+  },
+  "externalGates": ["Increase", "QuickBooks Online", "AP practitioner"],
+  "notClaimed": ["live browser validation", "new parser provider accuracy", "external sandbox verification"]
+}

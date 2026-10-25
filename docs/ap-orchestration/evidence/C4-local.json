@@ -1,0 +1,93 @@
+{
+  "workstream": "C4",
+  "status": "LOCAL_IMPLEMENTED_EXTERNAL_NOT_RUN",
+  "baseline": "4f7d76d65fac31018642217cca96ebbfeade5ad3",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contractVersion": "ap-evidence-v1",
+  "qboEnvironment": "sandbox",
+  "qboMinorVersion": 75,
+  "latestVersionClaim": false,
+  "tests": {
+    "totalPassed": 47,
+    "totalFailed": 0,
+    "c4Passed": 28,
+    "existingRegressionPassed": 19,
+    "files": 5
+  },
+  "typechecks": {
+    "main": "PASS",
+    "convex": "PASS",
+    "tests": "PASS"
+  },
+  "external": {
+    "oauthGrant": "NOT_RUN",
+    "companyRead": "NOT_RUN",
+    "accountingWrite": "NOT_RUN",
+    "reason": "No owner account, Development credentials or OAuth grant exists",
+    "actualExternalIds": []
+  },
+  "persistentServicesStarted": false,
+  "sharedBackendWrites": 0,
+  "files": [
+    {
+      "path": "convex/apAccountingExport.ts",
+      "sha256": "420c9c24a3158f26cd92c6d11aa53daa7566e9570c4671200345acd4a22a00b1"
+    },
+    {
+      "path": "docs/ap-orchestration/QUICKBOOKS-SETUP.md",
+      "sha256": "01a9e8036b8b376aca4667cca71a1fa3a5ccc4f604f6048579ad42370cd61d57"
+    },
+    {
+      "path": "scripts/ap-system/quickbooks-callback.ts",
+      "sha256": "e7d33d495d86dbfc068b1ccb2684d1f6330945d0a380ffbb981699fc65754e6d"
+    },
+    {
+      "path": "scripts/ap-system/quickbooks-cli.ts",
+      "sha256": "9a828f6f4253bc35cdf34f0e0c7856e7fab5b0f51e5981c7053df6ed5c134470"
+    },
+    {
+      "path": "src/ap-system/quickbooks/callback.ts",
+      "sha256": "559563aea1cc26e1ccac34315e12433945946a384ccaa5ecded5a61cfba4e456"
+    },
+    {
+      "path": "src/ap-system/quickbooks/client.ts",
+      "sha256": "dbff10e03e90f84b536f604963c990396bf0a6385681a9a49dd789b4296cb7f7"
+    },
+    {
+      "path": "src/ap-system/quickbooks/index.ts",
+      "sha256": "a387684fa4f46f0e640b03b2b896567dcd6178073ebcd4aad8408f0cf96536a1"
+    },
+    {
+      "path": "src/ap-system/quickbooks/oauth.ts",
+      "sha256": "1bb0a55a434349b694045f8d366cd19e2fbfc4820643723fe0749f86e00fab9c"
+    },
+    {
+      "path": "src/ap-system/quickbooks/plans.ts",
+      "sha256": "023330c288cd9983dcf2f41ea31761591d04d9574e2653f46a9cc4c881bb632f"
+    },
+    {
+      "path": "src/ap-system/quickbooks/private-store.ts",
+      "sha256": "f00ff6ee0e384ecb1315b1d5eeb47ad12405a6de1425437fec339817c4354ffc"
+    },
+    {
+      "path": "src/ap-system/quickbooks/sync.ts",
+      "sha256": "d60aad825ebc782c343e26f2700ea2ff68278772d1af000a3bb491ba73686137"
+    },
+    {
+      "path": "src/ap-system/quickbooks/types.ts",
+      "sha256": "f5d9339206170afec5acb95387b2cd4781a59c9db112fe29276d7e4b9abbbaab"
+    },
+    {
+      "path": "tests/ap-system/quickbooks-callback.test.ts",
+      "sha256": "d238d927ab35e0115a80c8e2e3c2dbc496d73c8120ada5fe9046b61b8dc28cba"
+    },
+    {
+      "path": "tests/ap-system/quickbooks-export.test.ts",
+      "sha256": "ee72897bc02e8e4025e0afa91d1883d17c1d0547adc2fd24ab9dc893d9369a62"
+    },
+    {
+      "path": "tests/ap-system/quickbooks-protocol.test.ts",
+      "sha256": "584eaac907c8aacb59a48ab2e4b13cc311795f256b3f519de33b57b8de184d72"
+    }
+  ]
+}

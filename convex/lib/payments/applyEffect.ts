@@ -37,7 +37,10 @@ export async function claimEffect(ctx: MutationCtx, args: DispatcherArgs & { wor
         throw new Error("Historical dispatch is ambiguous; original first attempt required for review");
       }
       try {
-        await assertDispatchAuthority(ctx, config, row, firstDispatch);
+        const authority = await assertDispatchAuthority(ctx, config, row, firstDispatch);
+        // Business timing is frozen in the approved snapshot, never in mutable retry state.
+        // Waiting consumes no lease, attempt or recovery budget; a possible send still reconciles.
+        if (firstDispatch && authority.notBefore > now) continue;
       } catch (error) {
         // Persist review work instead of endlessly retrying stale approval. Preserve all
         // reservations: corrupt snapshot data is not sufficient authority to release them.

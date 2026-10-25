@@ -1,0 +1,33 @@
+{
+  "runId": "ap97-capacity-1792918197314",
+  "provider": "fake/local",
+  "identityMode": "agent_test",
+  "inputKind": "synthetic binary stand-in, no parser/business acceptance",
+  "checkedAt": "2026-10-25T08:50:06.756Z",
+  "results": [
+    {
+      "size": 1200000,
+      "caseId": "js7ehvwpdxhbpykzpyssxnz6m98gz7d1",
+      "accepted": true,
+      "roundTripHash": "f48d00cb89d8e79ada420b8bc839ee6c9d61b5b36b90e91b076d0fa641892c3e",
+      "economicEffects": 0,
+      "elapsedMs": 69
+    },
+    {
+      "size": 8388608,
+      "caseId": "js78qa38jnbag46z1qparf811x8gymsh",
+      "accepted": true,
+      "roundTripHash": "ad97f87076920684e2ca66fc44e5d322797dc9d64706b174e51b5d0828937043",
+      "economicEffects": 0,
+      "elapsedMs": 239
+    },
+    {
+      "size": 8388609,
+      "accepted": false,
+      "expectedCode": "source_too_large",
+      "elapsedMs": 59
+    }
+  ],
+  "observedAndFixed": "Initial 8MiB exceeded the 64MB isolate heap. Validate byte bounds and hashes before replay; fingerprint metadata/source hashes instead of base64; direct buffer decode avoids iterable array. Rerun below passed.",
+  "throughputLimit": "Consecutive large writes reached local TooManyWrites quota; spaced checks by three seconds. Bound is per packet, not guaranteed sustained throughput."
+}
