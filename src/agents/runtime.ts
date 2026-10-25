@@ -28,8 +28,9 @@ export class SeatRuntime {
     readonly seat: { seatId: string; role: Role; name: string; effort?: string },
     token: string,
     readonly mem: MemoryStore,
+    client?: ConstructorParameters<typeof SeatClient>[3],
   ) {
-    this.kernel = new SeatClient(runId, seat.seatId, token);
+    this.kernel = new SeatClient(runId, seat.seatId, token, client);
   }
 
   get author() {

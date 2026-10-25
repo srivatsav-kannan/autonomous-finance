@@ -13,8 +13,8 @@ export function newToken(): string {
   return randomBytes(24).toString("hex");
 }
 
-export function convex(): ConvexHttpClient {
-  return new ConvexHttpClient(env("CONVEX_URL", process.env.VITE_CONVEX_URL));
+export function convex(options?: ConstructorParameters<typeof ConvexHttpClient>[1]): ConvexHttpClient {
+  return new ConvexHttpClient(env("CONVEX_URL", process.env.VITE_CONVEX_URL), options);
 }
 
 /** A seat's authenticated handle on the kernel. Every call carries the seat's identity. */
