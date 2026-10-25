@@ -53,6 +53,7 @@ export function kernelHarness() {
       const filters: [string, unknown][] = [];
       const predicates: ((row: Row) => boolean)[] = [];
       let indexName = "";
+      let descending = false;
       type Expression = (row: Row) => unknown;
       const evaluate = (value: unknown, row: Row) => typeof value === "function" ? (value as Expression)(row) : value;
       const expressions = {
@@ -73,10 +74,15 @@ export function kernelHarness() {
           predicates.push(build(expressions));
           return query;
         },
+        order(direction: "asc" | "desc") {
+          descending = direction === "desc";
+          return query;
+        },
         async collect() {
           const matches = [...rows(table).values()].filter((row) =>
             filters.every(([field, value]) => row[field] === value) && predicates.every((test) => test(row)));
           if (indexName === "by_run_role_status") matches.sort((a, b) => (a.priority as number) - (b.priority as number));
+          if (descending) matches.reverse();
           return structuredClone(matches);
         },
         async first() {

@@ -25,6 +25,11 @@ export interface Capabilities {
   paymentsRequest: boolean;
   /** Max single payment this seat may approve, in cents. 0 = may not approve. */
   paymentsApproveLimit: number;
+  /**
+   * May add the independent second approval above its own limit, but only on a payment that
+   * also requires a human, so it never helps another agent cover an amount neither may approve.
+   */
+  paymentsCoApprove: boolean;
   paymentsExecute: boolean;
   /** Memory path prefixes this seat may merge proposals for. */
   memoryMerge: string[];
@@ -40,6 +45,7 @@ const NONE: Capabilities = {
   billsRecord: false,
   paymentsRequest: false,
   paymentsApproveLimit: 0,
+  paymentsCoApprove: false,
   paymentsExecute: false,
   memoryMerge: [],
   periodClose: false,
@@ -63,8 +69,9 @@ export const ROLE_CAPABILITIES: Record<Role, Capabilities> = {
     taskRoles: ALL_AGENT_ROLES,
     asks: true,
   },
-  // Second approver for dual-approval payments below the human threshold.
-  cfo_agent: { ...NONE, seatsManage: true, taskRoles: ALL_AGENT_ROLES, asks: true, memoryMerge: ["playbooks/"], paymentsApproveLimit: 49_999_99 },
+  // The independent agent approver on dual-approval payments: second to the controller within
+  // its limit, and co-approver with the human above the controller's or its own limit.
+  cfo_agent: { ...NONE, seatsManage: true, taskRoles: ALL_AGENT_ROLES, asks: true, memoryMerge: ["playbooks/"], paymentsApproveLimit: 49_999_99, paymentsCoApprove: true },
   controller: {
     ...NONE,
     billsRecord: true,
@@ -127,6 +134,12 @@ export const ROLE_CAPABILITIES: Record<Role, Capabilities> = {
   invoice_investigator: NONE,
   world: NONE,
 };
+
+/** Whether this seat's approval can count toward a payment (requester and duplicate checks aside). */
+export function canApprovePayment(caps: Capabilities, p: { amountCents: number; requiresHuman: boolean; requiredApprovals: number }): boolean {
+  if (caps.paymentsApproveLimit <= 0) return false;
+  return p.amountCents <= caps.paymentsApproveLimit || (caps.paymentsCoApprove && p.requiresHuman && p.requiredApprovals > 1);
+}
 
 export function canPost(caps: Capabilities, accountCode: string): boolean {
   return caps.post.some((prefix) => accountCode.startsWith(prefix));
