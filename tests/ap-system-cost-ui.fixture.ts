@@ -1,0 +1,4 @@
+import type {CostState} from "../src/ap-system/cost-contracts";
+export function costUIFixture(originalEntryId="synthetic-accrual-journal"):CostState{
+ return {originalEntryId,billId:null,accrualId:"synthetic-accrual",snapshotHash:"7".repeat(64),latestDate:"2026-10-20",supplierId:"synthetic-supplier",originalShares:[{originalLineId:"accrual",allocationIndex:0,account:"6000",store:"synthetic-store",treatment:"expense",period:"2026-10",side:"credit",amountCents:2000,remainingCents:2000},{originalLineId:"discount",allocationIndex:0,account:"6000",store:"synthetic-store",treatment:"expense",period:"2026-10",side:"debit",amountCents:100,remainingCents:100}],positions:[{account:"6000",store:"synthetic-store",balanceCents:900},{account:"1200",store:"synthetic-store",balanceCents:1000}],corrections:[{actionId:"synthetic-cost-action",entryId:"synthetic-cost-journal",date:"2026-10-20",fromAccount:"6000",toAccount:"1200",store:"synthetic-store",amountCents:1000}]};
+}

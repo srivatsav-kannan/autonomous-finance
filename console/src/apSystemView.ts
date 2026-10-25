@@ -57,3 +57,10 @@ export function paymentAmountInput(value:string,outstandingCents:number|null):nu
   if(cents<=0n||cents>BigInt(outstandingCents))throw new Error("Payment must be positive and no more than the approved outstanding balance.");
   return Number(cents);
 }
+
+/** General accounting proposals have no implied balance or blank default. */
+export function accountingAmountInput(value:string,allowZero=false):number{
+ if(!value.trim())throw new Error("Enter an explicit USD amount.");
+ if(allowZero&&/^0(?:\.0{1,2})?$/.test(value.trim()))return 0;
+ return paymentAmountInput(value,Number.MAX_SAFE_INTEGER);
+}

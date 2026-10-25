@@ -233,3 +233,5 @@
 .aps-close .aps-evidence-picker { max-height: 22rem; overflow: auto; padding: var(--space-sm); }
 .aps-close-action { overflow-wrap: anywhere; }
 .aps-close :is(input,select,textarea) { max-width: 100%; }
+
+.aps-cost-review { border-block-start: 1px solid var(--line); padding-block: var(--space-md); margin-block: var(--space-md); }

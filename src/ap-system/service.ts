@@ -40,6 +40,7 @@ export function createAPWorkspaceService(options:{
   },
  };
  const close:CloseOperations={
+  costState:originalEntryId=>human.query(makeFunctionReference<"query">("apClose:costState"),{scope,originalEntryId}),
   view:async period=>({...await human.query(makeFunctionReference<"query">("apClose:view"),{scope,period:periodSchema.parse(period)}),controllerProposalAvailable:!!options.controllerCredential}),
   execute:async(operation,input)=>{
    const parsed=closeOperationSchemas[operation].parse(input);

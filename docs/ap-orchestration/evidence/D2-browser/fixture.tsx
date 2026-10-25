@@ -1,3 +1,4 @@
+import {costUIFixture} from "../../../../tests/ap-system-cost-ui.fixture";
 import {useState,useEffect,type CSSProperties} from "react";
 import {createRoot} from "react-dom/client";
 import {APSystemWorkspace} from "../../../../console/src/APSystemWorkspace";
@@ -25,9 +26,10 @@ window.fetch=async(input,init)=>{
   return reply({error:{code:"fixture_no_external_write",reason:"Synthetic fixture external writes and readback are disabled."}},403);
  }
  if(init?.method==="POST"){action=`Synthetic only: ${path}. No backend or external request sent.`;window.dispatchEvent(new Event("fixture-action"));if(path==="/payment-runs")return reply({runId:run.runId,snapshotHash:run.snapshotHash});if(path.endsWith("/authorize")){run.items.forEach(i=>i.payment.status="queued");return reply({commandIds:["synthetic-command-a","synthetic-command-b"]});}if(path.endsWith("/cancel")){run.items.forEach(i=>i.payment.status="cancelled");return reply({ok:true});}if(path.startsWith("/business/")||path.startsWith("/close/")||path.includes("/corrections/"))return reply({ok:true});if(correctionMode&&path.endsWith("/accounting/preview"))return reply({plan:correctionPlanFixture(path.split("/")[2]),planHash:"f".repeat(64),externalWrites:0});return reply({error:{code:"fixture_read_only",reason:"This fixture does not simulate accounting or bank writes."}},409);}
+ if(path.startsWith("/close/cost-state/"))return reply(costUIFixture(decodeURIComponent(path.split("/").at(-1)!)));
  if(path.startsWith("/close/"))return reply(closeUIFixture());
  if(path==="/cases")return reply(cases);
- if(path==="/business")return reply(raw.governance);
+ if(path==="/business")return reply({...raw.governance,policies:raw.governance.policies.map(p=>({...p,policy:{...p.policy,accounts:[...p.policy.accounts,{account:"6000",treatment:"expense"},{account:"1200",treatment:"inventory"}]}}))});
  if(path==="/payment-runs")return reply([{runId:run.runId,snapshotHash:run.snapshotHash,caseIds:run.items.map(i=>i.caseId),executionDate:run.executionDate,createdAt:run.createdAt}]);
  if(path===`/payment-runs/${run.runId}`)return reply(run);
  if(path.endsWith("/corrections")){const proposal=correctionUIFixture(path.split("/")[2]);return reply({proposals:correctionMode?[{...proposal,status:fixtureMode==="corrections"?"approved":"pending"}]:[],controllerProposalAvailable:true});}

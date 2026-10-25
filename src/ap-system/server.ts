@@ -114,6 +114,12 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
    }
    // A browser cookie alone never authenticates an external human.
    if(req.method==="GET"&&!sessionValid(req,subject))throw new APHttpError("session_required",403,"Open the AP workspace before reading source or case details.");
+   const costState=/^\/api\/ap-system\/close\/cost-state\/([^/]+)$/.exec(url.pathname);
+   if(req.method==="GET"&&costState){
+    if(!service.close)throw new APHttpError("capability_unavailable",503,"Current cost allocation evidence is unavailable.");
+    const originalEntryId=z.string().trim().min(1).max(240).parse(decodeURIComponent(costState[1]!));
+    return send(res,await service.close.costState(originalEntryId));
+   }
    const close=/^\/api\/ap-system\/close\/([^/]+)$/.exec(url.pathname);
    if(close){
     if(!service.close)throw new APHttpError("capability_unavailable",503,"Period close is not available on this AP service.");

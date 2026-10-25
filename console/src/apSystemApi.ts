@@ -1,3 +1,4 @@
+import type {CostState} from "../../src/ap-system/cost-contracts";
 import {closeOperationSchemas,periodSchema,type CloseOperation,type CloseInputs,type CloseView} from "../../src/ap-system/close-operations";
 import {accountingCorrectionRequestSchema,domainVoteSchema,type CorrectionView,type CorrectionVote} from "../../src/ap-system/correction-operations";
 import type {AccountingCorrectionRequest} from "../../src/ap-system/quickbooks/corrections";
@@ -78,6 +79,7 @@ export function accountingSelection(value?:APAccountingSelection|string):APAccou
  return input;
 }
 export const apSystemApi = {
+  costState:(originalEntryId:string,signal?:AbortSignal)=>request<CostState>(`/close/cost-state/${encodeURIComponent(originalEntryId)}`,undefined,signal),
   closeAccountingStatus:(selection:CloseExportRequest,signal?:AbortSignal)=>request<QBOCloseStatus>("/close/accounting/status",{request:closeExportRequestSchema.strict().parse(selection)},signal),
   closeAccountingPreview:(selection:CloseExportRequest)=>request<QBOClosePreview>("/close/accounting/preview",{request:closeExportRequestSchema.strict().parse(selection)}),
   closeAccountingSubmit:(selection:CloseExportRequest,expectedPlanHash:string)=>request<QBOCloseSubmit>("/close/accounting/submit",{request:closeExportRequestSchema.strict().parse(selection),expectedPlanHash}),
