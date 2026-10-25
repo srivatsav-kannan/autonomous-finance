@@ -36,6 +36,7 @@ Run from `autonomous-finance/`, each in its own terminal, about 10 minutes befor
 
 ```bash
 npm run backend                                      # local Convex; leave running
+npm run gateway:token                                # once per checkout: shared console/gateway token in .env.local (#82)
 npm run gateway                                      # human seat on :8787
 npm run console                                      # http://localhost:5173
 npm run world -- --run demo --stores 3 --days 14 --pace 20000 --close
