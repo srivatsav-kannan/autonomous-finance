@@ -4,10 +4,10 @@ import { scopeValidator } from "./demoSchema";
 
 export const transactionValidator = v.object({
   id: v.string(), scope: scopeValidator, transferId: v.string(), commandId: v.string(),
-  amountCents: v.number(), currency: v.literal("USD"), status: v.union(v.literal("pending"), v.literal("posted")),
+  amountCents: v.number(), currency: v.literal("USD"), status: v.union(v.literal("pending"), v.literal("complete"), v.literal("posted")),
   purpose: v.union(v.literal("debit"), v.literal("return"), v.literal("other")), createdAt: v.string(),
   sourceCategory: v.optional(v.string()),
-  postedAt: v.optional(v.string()), originalTransactionId: v.optional(v.string()),
+  postedAt: v.optional(v.string()), completedAt: v.optional(v.string()), originalTransactionId: v.optional(v.string()),
 });
 export const observationValidator = v.object({
   id: v.string(), scope: scopeValidator, commandId: v.string(), requestHash: v.string(),

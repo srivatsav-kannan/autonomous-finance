@@ -11,6 +11,7 @@
 import type * as admin from "../admin.js";
 import type * as ap from "../ap.js";
 import type * as asks from "../asks.js";
+import type * as bank from "../bank.js";
 import type * as demoEvidence from "../demoEvidence.js";
 import type * as demoEvidenceSchema from "../demoEvidenceSchema.js";
 import type * as demoPayments from "../demoPayments.js";
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   ap: typeof ap;
   asks: typeof asks;
+  bank: typeof bank;
   demoEvidence: typeof demoEvidence;
   demoEvidenceSchema: typeof demoEvidenceSchema;
   demoPayments: typeof demoPayments;

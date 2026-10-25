@@ -280,6 +280,8 @@ export default defineSchema({
     seatId: v.string(),
     operation: v.string(),
     reason: v.string(),
+    sourceDocumentId: v.optional(v.string()),
+    relatedBillId: v.optional(v.id("bills")),
     at: v.number(),
   }).index("by_run_at", ["runId", "at"]),
 

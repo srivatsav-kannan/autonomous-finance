@@ -14,7 +14,7 @@ export async function withTaskLease<T>(renew: () => Promise<Renewal>, work: () =
     pending = Promise.resolve().then(renew).then((result) => {
       if (!result.ok) lost = new TaskLeaseLost(`${result.code}: ${result.error}`);
     }, (error: unknown) => {
-      lost = new TaskLeaseLost(`lease renewal failed: ${error instanceof Error ? error.message : String(error)}`);
+      lost = new TaskLeaseLost("lease renewal failed", { cause: error });
     }).finally(() => { renewing = false; });
   }, 30_000);
   let result: T;

@@ -14,10 +14,11 @@ records. Keep all figures attached to the selected simulation.
   belong in the token block. Use the shared spacing tokens.
 - System sans for headings, body, labels, and controls; monospace only for actual
   code, hashes, and record content. Financial values use tabular numerals.
-- A persistent 224px sidebar for the seven views and a white main workspace.
+- A persistent 224px sidebar for the nine views and a white main workspace.
   Content caps at 1600px. Below 960px, a view selector replaces the sidebar.
   Scenario selection stays in the top bar and is reflected in the URL.
-- Cash, accounts payable, and revenue lead. Operational counts live in an
+- Cash, accounts payable, and revenue lead on the original operational views.
+  Bank & cash and Finance flow have their own focused summaries. Operational counts live in an
   accessible Simulation activity disclosure, with the simulation date visible.
 - The inbox uses underlined status filters, search, sort, and compact decision
   rows. Each row opens a native modal drawer with the full request, real source
@@ -26,6 +27,14 @@ records. Keep all figures attached to the selected simulation.
   after the gateway accepts it; completed records remain in Answered.
 - The ledger has searchable Journal entries and Trial balance views. CSV export
   contains the visible filtered records and protects text from formula execution.
+- Bank & cash shows the three ledger cash accounts, dated book-balance history,
+  and the complete simulated bank feed. Account, status and search filters persist
+  in the URL. Transaction drawers link journal evidence and human inbox requests.
+  Recorded and reconciled are separate states; book balances are never presented
+  as bank-confirmed available funds. Charts space dates by elapsed time.
+- Finance flow connects source records, specialist agents, control checks and
+  books/payments. The stage selector reveals responsibilities and real scenario
+  counts. Arrows explain the system, not individual transaction traces.
 - Use density and progressive disclosure for richness. Do not add decorative
   charts, fake balances, unconnected payment controls, or testimonial content.
 - Labels use sentence case. Headings state the task. Preserve the simulated-company
@@ -48,7 +57,8 @@ console running for rendered checks. Details are in `docs/HALLMARK.md`.
 
 The native Figma reference lives at
 [Autonomous Finance — Finance workbench](https://www.figma.com/design/qUwizlNQktZ68GJjaoKUo5).
-It illustrates the inbox and review drawer using a real simulation snapshot.
+It illustrates the inbox, review drawer, Bank & cash, and Finance flow using real
+simulation snapshots.
 The React implementation remains the runtime source of truth. Figma uses Inter
 as an available fallback for the app’s system sans. Design edits require an
 explicit implementation pass; the canvas is not automatically synchronized.

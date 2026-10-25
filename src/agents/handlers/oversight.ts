@@ -19,33 +19,51 @@ export const dailyDigest: Handler = async (rt, task) => {
 
 /**
  * Close checklist. The controller signs only when the ledger chain verifies, suspense is empty
- * and nothing is held; the human CFO co-signs in the console (two-key close).
+ * and received invoices have kernel dispositions; the human CFO co-signs (two-key close).
  */
 export const runClose: Handler = async (rt, task) => {
   const period = String(task.payload.period ?? (await rt.simDate()).slice(0, 7));
   const chain = await rt.kernel.client.query(api.ledger.verifyChain, { runId: rt.runId });
   const tb = await rt.kernel.client.query(api.ledger.trialBalance, { runId: rt.runId, period });
   const suspense = tb.find((a) => a.code === "6900")?.net ?? 0;
-  const held = await rt.kernel.client.query(api.ap.bills, { runId: rt.runId, status: "held" });
+  const sources = await rt.kernel.client.query(api.ledger.closeReadiness, { runId: rt.runId, period });
   const net = tb.reduce((s, a) => s + a.net, 0);
   const checks = [
     { ok: chain.ok, text: chain.ok ? `ledger hash chain verifies (${chain.entries} entries)` : `ledger chain broken at #${"brokenAt" in chain ? chain.brokenAt : "?"}` },
     { ok: net === 0, text: `trial balance nets to ${formatMoney(net)}` },
     { ok: suspense === 0, text: suspense === 0 ? "suspense is empty" : `${formatMoney(suspense)} in suspense` },
-    { ok: held.length === 0, text: held.length === 0 ? "no held bills" : `${held.length} held bill(s)` },
+    { ok: sources.ready, text: sources.ready ? `all ${sources.sourceInvoiceCount} received invoice(s) have resolved dispositions and accruals`
+      : `${sources.blockerCount} source/bill blocker(s): ${sources.blockers.map((b) => b.reason).join("; ")}` },
   ];
-  const ready = checks.every((c) => c.ok);
   const tag = `close-${period}-${Date.now()}`;
-  const d = await rt.decide({
-    kind: "close", subject: { type: "period", id: period }, outcome: ready ? "act" : "hold", confidence: 0.95, task: task._id,
-    summary: `${ready ? "Ready to close" : "Not ready to close"} ${period}: ${checks.map((c) => c.text).join("; ")}`,
-    facts: checks.map((c, i) => ({ key: `check.${i}`, value: c.text, source: { kind: "ledger" as const, ref: period } })),
-    rules: [],
+  const checklistReady = checks.every((c) => c.ok);
+  // The tag must contain the reviewed decision, rather than being created before it.
+  // Snapshot identity also gives a retry after changed sources a distinct review.
+  let d = await rt.decide({
+    kind: "close", subject: { type: "period", id: `${period}@${sources.snapshotHash}` },
+    outcome: checklistReady ? "act" : "hold", confidence: 0.95, task: task._id,
+    summary: `${checklistReady ? "Ready for kernel close validation" : "Not ready to close"} ${period}: ${checks.map((c) => c.text).join("; ")}`,
+    facts: [
+      ...checks.map((c, i) => ({ key: `check.${i}`, value: c.text, source: { kind: "ledger" as const, ref: period } })),
+      { key: "close.snapshot", value: sources.snapshotHash, source: { kind: "ledger", ref: period } },
+    ], rules: [],
   });
-  if (ready) {
-    await rt.mem.tag(tag, `Books for ${period} signed by controller`, rt.author);
-    await rt.kernel.client.mutation(api.ledger.signClose, { ...rt.kernel.auth, period, memoryTag: tag });
+  if (checks.every((c) => c.ok)) {
+    await rt.mem.tag(tag, `Close review candidate for ${period}`, rt.author);
+    const signed = await rt.kernel.client.mutation(api.ledger.signClose, {
+      ...rt.kernel.auth, period, memoryTag: tag, expectedSnapshotHash: sources.snapshotHash,
+    });
+    if (!signed.ok) {
+      checks.push({ ok: false, text: `Kernel refused close signature: ${signed.error}` });
+      d = await rt.decide({
+        kind: "close_refused", subject: { type: "period", id: `${period}@${sources.snapshotHash}` },
+        outcome: "hold", confidence: 1, task: task._id,
+        summary: `Not ready to close ${period}: ${signed.error}`,
+        facts: [{ key: "kernel.refusal", value: signed, source: { kind: "ledger", ref: period } }], rules: [],
+      });
+    }
   }
+  const ready = checks.every((c) => c.ok);
   await rt.handoff("audit.review", "auditor", { period, closeDecision: d.path }, `audit:${period}:${tag}`, task._id, 5);
   await rt.ask({
     to: "human_cfo", severity: "decision", title: ready ? `Co-sign the ${period} close` : `${period} isn't ready to close`,
