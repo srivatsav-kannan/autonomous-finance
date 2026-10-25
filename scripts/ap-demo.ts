@@ -18,9 +18,13 @@ import { DemoAPAgent, DemoPaymentsAgent } from "../src/payments/agents";
 import { demoInvoice } from "../src/payments/demo-invoice";
 import increaseProvenance from "../src/integrations/fixtures/increase/provenance.json";
 import { BankProviderError, canonicalJson, type BankScope, type BankTransaction } from "../src/integrations/contracts";
+import type { Id } from "../convex/_generated/dataModel";
+import { BROWSER_APPROVAL_TIMEOUT_MS, parseDemoArgs } from "./ap-demo-options";
+import { startLocalOidcIssuer } from "./testing/local-oidc-issuer";
 
-const profile = process.argv[2] ?? "local";
-if (!["local", "sandbox"].includes(profile)) throw new Error("Usage: npm run demo:local | npm run demo:sandbox");
+const options = parseDemoArgs(process.argv.slice(2));
+const profile = options.profile;
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const sandbox = sandboxConfiguration();
 const required = ["CONVEX_URL", "KERNEL_ADMIN_SECRET", "AP_DISPATCH_SECRET", "AP_EVIDENCE_SECRET", "AP_HUMAN_JWT", "AP_HUMAN_SUBJECT", "AP_RUN_ID", "AP_ORGANIZATION_ID", "AP_SANDBOX_FUNDING"];
 if (profile === "sandbox") {
@@ -36,7 +40,10 @@ fs.mkdirSync(artifactDir, { recursive: true, mode: 0o700 });
 const random = () => randomBytes(32).toString("hex");
 let url = process.env.CONVEX_URL ?? process.env.VITE_CONVEX_URL;
 const secrets = { admin: process.env.KERNEL_ADMIN_SECRET ?? random(), dispatcher: process.env.AP_DISPATCH_SECRET ?? random(), evidence: process.env.AP_EVIDENCE_SECRET ?? random() };
-const humanSubject = process.env.AP_HUMAN_SUBJECT ?? "https://ap-demo.invalid|local-human-fixture";
+// --browser-approval: a loopback OIDC test issuer signs the JWT a human pastes into /ap-demo,
+// and the backend verifies it like any configured identity provider (local only).
+const oidc = options.browserApproval ? await startLocalOidcIssuer("ap-demo-browser") : undefined;
+const humanSubject = oidc?.tokenIdentifier ?? process.env.AP_HUMAN_SUBJECT ?? "https://ap-demo.invalid|local-human-fixture";
 let localAdminKey: string | undefined;
 let identityMode = "verified_jwt";
 if (profile === "local") {
@@ -45,17 +52,20 @@ if (profile === "local") {
   const deployment = JSON.parse(fs.readFileSync(configPath, "utf8")) as { ports: { cloud: number }; adminKey: string };
   url = `http://127.0.0.1:${deployment.ports.cloud}`;
   // Explicitly a simulator identity fixture. Never available for Increase or to agent processes.
-  identityMode = "local_admin_simulated_human";
-  localAdminKey = deployment.adminKey;
-  const changes = Object.entries({ KERNEL_ADMIN_SECRET: secrets.admin, AP_DISPATCH_SECRET: secrets.dispatcher, AP_EVIDENCE_SECRET: secrets.evidence, AP_BANK_SCOPE: JSON.stringify(scope) }).map(([name,value]) => ({name,value}));
+  identityMode = oidc ? "local_oidc_test_identity" : "local_admin_simulated_human";
+  if (!oidc) localAdminKey = deployment.adminKey;
+  const changes = Object.entries({ KERNEL_ADMIN_SECRET: secrets.admin, AP_DISPATCH_SECRET: secrets.dispatcher, AP_EVIDENCE_SECRET: secrets.evidence, AP_BANK_SCOPE: JSON.stringify(scope),
+    ...(oidc ? { AP_HUMAN_AUTH_ISSUER: oidc.issuer, AP_HUMAN_AUTH_AUDIENCE: oidc.audience } : {}) }).map(([name,value]) => ({name,value}));
   const configured = await fetch(`${url}/api/update_environment_variables`, {method:"POST",headers:{Authorization:`Convex ${deployment.adminKey}`,"Content-Type":"application/json"},body:JSON.stringify({changes}),redirect:"error"});
   if (!configured.ok) throw new Error(`Local environment setup failed (HTTP ${configured.status}); verify npm run backend is running`);
 }
 if (!url) throw new Error("CONVEX_URL required");
-const client = new ConvexHttpClient(url);
-const human = new ConvexHttpClient(url);
+const convexUrl: string = url;
+const client = new ConvexHttpClient(convexUrl);
+const human = new ConvexHttpClient(convexUrl);
+const humanJwt = oidc ? oidc.token() : process.env.AP_HUMAN_JWT;
 if (localAdminKey) (human as unknown as { setAdminAuth(key: string, identity: {issuer: string; subject: string; tokenIdentifier: string}): void }).setAdminAuth(localAdminKey, { issuer: "https://ap-demo.invalid", subject: "local-human-fixture", tokenIdentifier: humanSubject });
-else human.setAuth(process.env.AP_HUMAN_JWT!);
+else human.setAuth(humanJwt!);
 const source = demoInvoice(7, "2026-01-05");
 const today = profile === "sandbox" ? new Date().toISOString().slice(0, 10) : source.invoice.invoiceDate;
 const evidenceAuth = {scope,token:secrets.evidence};
@@ -100,9 +110,39 @@ fs.writeFileSync(path.join(artifactDir,"invoice.json"), JSON.stringify(source.ev
 const {billId} = await ap.recordInvoice({vendor:source.vendor,invoiceNumber:source.invoice.invoiceNumber,invoiceDate:source.invoice.invoiceDate,originalCents:source.invoice.totalCents,evidence:[source.event.externalId]});
 await client.mutation(api.demoPayments.acceptBill, {scope,seatId:"controller",token:tokens.controller,billId,approvedCents:source.invoice.totalCents});
 const requested = await payments.requestPayment([billId], `invoice:${source.event.externalId}`);
-const approved = await createPaymentCommandService(createConvexPaymentCommands(human, scope, { kind: "human" })).approveAndQueue({
-  commandId: `approve:${requested.versionId}`, command: { type: "ApprovePayment", ...requested },
-});
+/** Hand the approval to a human in /ap-demo: print the session file, then wait for the queued command. */
+async function awaitBrowserApproval(issuer: NonNullable<typeof oidc>, jwt: string): Promise<{ commandId: Id<"demoCommands"> }> {
+  // The running convex dev process may need a moment to deploy the changed auth config.
+  for (let attempt = 0; ; attempt++) {
+    try { await human.query(api.demoPayments.humanReview, { scope }); break; }
+    catch (error) { if (attempt >= 30) throw error; await sleep(1000); }
+  }
+  const wrongAudience = new ConvexHttpClient(convexUrl); wrongAudience.setAuth(issuer.token({ aud: "wrong-audience" }));
+  const expired = new ConvexHttpClient(convexUrl); expired.setAuth(issuer.token({ exp: 1 }));
+  await assert.rejects(wrongAudience.query(api.demoPayments.humanReview, { scope }));
+  await assert.rejects(expired.query(api.demoPayments.humanReview, { scope }));
+  const credentialsPath = path.join(artifactDir, "browser-session.json");
+  fs.writeFileSync(credentialsPath, JSON.stringify({ scope, jwt }), { mode: 0o600 });
+  process.on("exit", () => fs.rmSync(credentialsPath, { force: true })); // The test JWT never outlives this process.
+  console.log(JSON.stringify({ status: "awaiting_browser_approval", identityMode, credentialsPath, scope, amountCents: source.invoice.totalCents,
+    versionId: requested.versionId, negativeAuthChecks: ["wrong_audience_rejected", "expired_token_rejected"],
+    next: `Open /ap-demo, paste this file's scope and jwt, and approve within ${BROWSER_APPROVAL_TIMEOUT_MS / 60_000} minutes. The crash and recovery then run here.` }, null, 2));
+  const deadline = Date.now() + BROWSER_APPROVAL_TIMEOUT_MS;
+  for (;;) {
+    const command = (await human.query(api.demoPayments.humanReview, { scope })).commands[0];
+    if (command) {
+      assert.equal(command.command.commandId, requested.versionId);
+      console.log("Browser approval recorded; dispatching. The dispatcher will be killed after the bank accepts.");
+      return { commandId: command._id };
+    }
+    if (Date.now() > deadline) throw new Error(`Browser approval timed out after ${BROWSER_APPROVAL_TIMEOUT_MS / 60_000} minutes`);
+    await sleep(1000);
+  }
+}
+const approved = oidc ? await awaitBrowserApproval(oidc, humanJwt!)
+  : await createPaymentCommandService(createConvexPaymentCommands(human, scope, { kind: "human" })).approveAndQueue({
+    commandId: `approve:${requested.versionId}`, command: { type: "ApprovePayment", ...requested },
+  });
 let bankEvidence: unknown;
 let processRecovery: unknown;
 if (profile === "local") {
@@ -174,7 +214,16 @@ if (profile === "local") {
   assert.equal(killed.signal, "SIGKILL"); assert.equal(killed.exitCode, null);
   assert.equal(bank.harness.inspect().transfers.length,1);
   console.log("Bank accepted; parent SIGKILLed the paused worker before local completion. Waiting for the 30-second lease to expire.");
-  await new Promise(resolve=>setTimeout(resolve,31_000));
+  // Wait at least the requested time AND until the killed worker's recorded lease has expired.
+  const waitUntil = Date.now() + options.leaseWaitMs;
+  for (let lastNotice = Infinity; ;) {
+    const leaseExpiresAt = (await human.query(api.demoPayments.humanReview, { scope })).commands[0]!.leaseExpiresAt ?? 0;
+    const remaining = Math.max(waitUntil, leaseExpiresAt + 1_000) - Date.now();
+    if (remaining <= 0) break;
+    const seconds = Math.ceil(remaining / 1000);
+    if (seconds <= lastNotice - 10) { console.log(`Recovery dispatcher starts in ${seconds} s.`); lastNotice = seconds; }
+    await sleep(Math.min(remaining, 1000));
+  }
   const restarted = await child();
   assert.equal(restarted.exitCode, 0); assert.equal(restarted.signal, null);
   const pending = await human.query(api.demoPayments.humanReview, { scope });
@@ -194,6 +243,12 @@ if (profile === "local") {
     acceptedCommandSha256: killed.acceptedCommandSha256, lookupCommandSha256: restarted.lookupCommandSha256,
     recoveredTransferId: restarted.recoveredTransferId, restartCreateTransferCalls: restarted.createTransferCalls,
     recordedTransferId: pending.commands[0]!.providerTransferId ?? null, originalTransferId: transfer.id, replay };
+  // The recovery invariants CI also checks from the report (scripts/testing/recovery-evidence.mjs),
+  // asserted in-process so a browser-approval run proves them without the CI harness.
+  assert.equal(restarted.createTransferCalls, 0, "Restarted dispatcher must recover by lookup, not by submitting");
+  assert.equal(restarted.recoveredTransferId, transfer.id, "Restarted dispatcher must recover the original transfer");
+  assert.equal(pending.commands[0]!.providerTransferId, transfer.id, "Convex must record the original transfer");
+  assert.deepEqual(replay, { transferId: transfer.id, errorClass: null }, "Same-key replay must return the original transfer");
   bank.harness.settle(transfer.id);
   const generatedNotifications=bank.harness.inspect().events.length;
   const delivered=bank.harness.drainNotifications({drop:true});
@@ -220,6 +275,7 @@ const review=await human.query(api.demoPayments.humanReview,{scope});
 const evidence=await human.query(api.demoEvidence.humanView,{scope});
 const paymentEvidence=evidence.transactions.filter(t=>t.transaction.commandId===requested.versionId&&t.transaction.purpose==="debit");
 assert.equal(review.commands.length,1);assert.equal(review.commands[0]?.execution,"settled");assert.equal(review.commands[0]?.posting,"posted");assert.equal(review.commands[0]?.reconciliation,"matched");assert.equal(paymentEvidence.length,1);assert.equal(evidence.blockers.length,0);
+if (profile==="local") assert.ok(paymentEvidence[0]!.entryId, "The settled debit must link to its one journal entry");
 assert.ok(fundingTransactions.every(tx=>evidence.transactions.some(t=>t.transaction.id===tx.id&&t.fundingApproval&&t.entryId)));
 const closeResults=[];
 for (const period of periods) {
@@ -228,5 +284,11 @@ for (const period of periods) {
   assert.equal(closed.status,"closed");closeResults.push({period,...closed});
 }
 const providerContract=profile==="sandbox"?{provider:"increase",environment:"sandbox",specVersion:increaseProvenance.upstreamInfoVersion,specSha256:increaseProvenance.upstreamSha256,pinnedSubsetSha256:increaseProvenance.subsetSha256,fixtureSha256:increaseProvenance.fixtureSha256}:{provider:"fake",environment:"local",contractVersion:1,storage:"sqlite"};
-const report={profile,status:"passed",identityMode,commit:spawnSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).stdout.trim(),scope,providerContract,seed:7,fixtureHash:createHash("sha256").update(JSON.stringify(source.event)).digest("hex"),faultSchedule:profile==="local"?["accept_then_lost_response","worker_exit","missing_webhook"]:[],versionId:requested.versionId,commandId:approved.commandId,bankEvidence,review,evidence,closeResults,processRecovery};
-const reportPath=path.join(artifactDir,"report.json");fs.writeFileSync(reportPath,JSON.stringify(report,null,2));console.log(JSON.stringify({profile,status:"passed",identityMode,reportPath,commandId:approved.commandId,transactionId:paymentEvidence[0]?.transaction.id,entryId:paymentEvidence[0]?.entryId,closeResults},null,2));
+const report={profile,status:"passed",identityMode,...(oidc?{approval:"browser_local_oidc",negativeAuthChecks:["wrong_audience_rejected","expired_token_rejected"]}:{}),commit:spawnSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).stdout.trim(),scope,providerContract,seed:7,fixtureHash:createHash("sha256").update(JSON.stringify(source.event)).digest("hex"),faultSchedule:profile==="local"?["accept_then_lost_response","worker_exit","missing_webhook"]:[],versionId:requested.versionId,commandId:approved.commandId,bankEvidence,review,evidence,closeResults,processRecovery};
+const reportPath=path.join(artifactDir,"report.json");fs.writeFileSync(reportPath,JSON.stringify(report,null,2));console.log(JSON.stringify({profile,status:"passed",identityMode,reportPath,commandId:approved.commandId,transactionId:paymentEvidence[0]?.transaction.id,entryId:paymentEvidence[0]?.entryId,closeResults,
+  ...(oidc?{proof:{approvedInBrowser:true,dispatcherKilledAfterBankAccepted:true,recoveredAfterLeaseExpiry:true,bankTransfers:1,restartCreateTransferCalls:0,postedDebits:1,paymentJournalEntries:1,closeBlockers:0}}:{})},null,2));
+if (oidc) {
+  // Keep the local test issuer alive so the browser can refresh the final state.
+  console.log(JSON.stringify({ status: "awaiting_shutdown", note: "Refresh /ap-demo now: settled / posted / matched, zero blockers and a healthy operator view. No worker keeps running after the demo, so about a minute later Operator health correctly reports both workers stale. Press Ctrl-C to stop the test issuer and delete browser-session.json." }, null, 2));
+  for (const signal of ["SIGINT", "SIGTERM"] as const) process.once(signal, () => { oidc.close(); process.exit(0); });
+}

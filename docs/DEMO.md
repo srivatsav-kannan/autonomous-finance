@@ -46,6 +46,7 @@ npm run agents -- --run demo
 - **Pace:** at `--pace 20000` (one simulated day every 20 seconds) the run is mid-month when judges walk up. Start the world about 4 minutes early so the inbox has decisions and the agents have already learned a parser.
 - **Keys:** `OPENAI_API_KEY` goes in `.env.local`. Agent spend is capped by `AGENT_MAX_USD` (default $15); see `var/agent-spend.json`. A full 14-day run costs a few cents.
 - **Admin secret:** `npm run demo:local` resets the backend's `KERNEL_ADMIN_SECRET` to a random value when the variable isn't exported. Run it with `.env.local` loaded, or restore the secret afterwards; otherwise the eval and world runners fail with `bad_admin_secret`.
+- **AP recovery (2:25):** with the backend and console up, run `npm run demo:local -- --browser-approval`, paste the printed `browser-session.json` scope and JWT into `/ap-demo`, tick auto-reload and approve; the terminal then kills the dispatcher after the bank accepts, recovers after the 30 s lease and asserts one transfer and one journal entry ([details](ap-demo.md#browser-approval-then-crash-recovery-one-flow-for-judges)).
 - **Backup:** have the recorded video ready in case the venue network fails. Everything runs locally except the model calls.
 
 ## The 3-minute live script

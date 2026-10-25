@@ -87,6 +87,10 @@ test("human reviews invoice, approves, sees pending then verified settlement and
   await page.goto(`${fixture.config.consoleUrl}/ap-demo`);
   await connect(page, fixture.config.humanJwt);
   await expect(page.getByRole("heading", { name: "Payment versions" })).toBeVisible();
+  // #56: the read-only operator health view loads with the review and labels thresholds as targets.
+  const health = page.locator("section").filter({ has: page.getByRole("heading", { name: "Operator health", exact: true }) });
+  await expect(health).toContainText("Targets, not measurements");
+  await expect(health.getByRole("button")).toHaveCount(0);
   const versions = page.locator("section").filter({ has: page.getByRole("heading", { name: "Payment versions", exact: true }) });
   const dispatch = page.locator("section").filter({ has: page.getByRole("heading", { name: "Dispatch and recovery", exact: true }) });
   // Seed 7 supplies INV-1001; the kernel's canonical invoice identity is 1001.

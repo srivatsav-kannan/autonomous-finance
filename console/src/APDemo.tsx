@@ -6,6 +6,8 @@ import type { Id } from "../../convex/_generated/dataModel";
 import type { BankScope } from "../../src/integrations/contracts";
 import { createConvexPaymentCommands } from "../../src/payments/adapters/convex-payment-commands";
 import { createPaymentCommandService } from "../../src/payments/application/payment-commands";
+import { OperatorHealthPanel } from "./OperatorHealth";
+import type { OperatorHealth } from "./operatorHealthView";
 import "./APDemo.css";
 
 type Review = FunctionReturnType<typeof api.demoPayments.humanReview>;
@@ -37,6 +39,8 @@ export function APDemo() {
   const [scope, setScope] = useState<BankScope | null>(null);
   const [review, setReview] = useState<Review | null>(null);
   const [evidence, setEvidence] = useState<Evidence | null>(null);
+  const [health, setHealth] = useState<{ value?: OperatorHealth; error?: string } | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -45,13 +49,23 @@ export function APDemo() {
   useEffect(() => () => { session.current?.client.clearAuth(); session.current = null; }, []);
 
   async function load(active: Session) {
-    const [r, e] = await Promise.all([
+    const [r, e, h] = await Promise.all([
       active.client.query(api.demoPayments.humanReview, { scope: active.scope }),
       active.client.query(api.demoEvidence.humanView, { scope: active.scope }),
+      // Health is observability: a failure here must not block payment review.
+      active.client.query(api.demoOps.operatorHealth, { scope: active.scope }).then(value => ({ value }), (error: unknown) => ({ error: failure(error) })),
     ]);
     if (session.current !== active) return;
-    setReview(r); setEvidence(e); setUpdatedAt(Date.now());
+    setReview(r); setEvidence(e); setHealth(h); setUpdatedAt(Date.now());
   }
+  useEffect(() => {
+    if (!autoRefresh || !scope) return;
+    const timer = setInterval(() => {
+      const active = session.current;
+      if (active) load(active).catch(e => { if (session.current === active) setError(failure(e)); });
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [autoRefresh, scope]);
   async function connect(event: FormEvent) {
     event.preventDefault(); setBusy(true); setError(""); setMessage("");
     try {
@@ -67,12 +81,12 @@ export function APDemo() {
       if (session.current === active) setScope(selected);
     } catch (e) {
       session.current?.client.clearAuth(); session.current = null;
-      setError(failure(e)); setReview(null); setEvidence(null);
+      setError(failure(e)); setReview(null); setEvidence(null); setHealth(null);
     } finally { setBusy(false); }
   }
   function disconnect() {
     session.current?.client.clearAuth(); session.current = null;
-    setJwt(""); setScope(null); setReview(null); setEvidence(null); setMessage(""); setError(""); setUpdatedAt(undefined);
+    setJwt(""); setScope(null); setReview(null); setEvidence(null); setHealth(null); setAutoRefresh(false); setMessage(""); setError(""); setUpdatedAt(undefined);
   }
   async function action(operation: (active: Session) => Promise<unknown>, success: string) {
     const active = session.current;
@@ -121,6 +135,7 @@ export function APDemo() {
         <div className="ap-row"><h2>{scope.runId}</h2><button disabled={busy} onClick={() => action(async () => undefined, "Review refreshed.")}>{busy ? "Working…" : "Refresh"}</button></div>
         <p>{scope.organizationId} · {scope.provider} / {scope.environment} · USD account <code>{scope.accountId}</code></p>
         <p className="muted">Responsible operator: {operator}. Last refreshed: {when(updatedAt)}.</p>
+        <label className="ap-auto-refresh"><input type="checkbox" checked={autoRefresh} onChange={event => setAutoRefresh(event.target.checked)} /> Reload this view every 3 seconds</label>
         {review && !review.executionConfig.eligible && <p className="ap-error" role="status">
           Payment execution is paused for review. {review.executionConfig.reason} Approval and recovery are unavailable for this account configuration.
         </p>}
@@ -135,6 +150,7 @@ export function APDemo() {
         {!review.commands.length && <p>No approved commands have been queued.</p>}
         {review.commands.map(command => <CommandReview key={command._id} command={command} busy={busy} eligible={review.executionConfig.eligible} resume={resume} cancel={cancel} operator={operator} />)}
       </section>}
+      {health && <OperatorHealthPanel health={health.value} error={health.error} />}
       {evidence && <section className="ap-panel">
         <h2>Close blockers · {evidence.blockers.length}</h2>
         {evidence.blockers.length ? <ul className="ap-blockers">{evidence.blockers.map((blocker, index) => <li key={`${blocker.kind}:${blocker.id}:${index}`}><strong>{blocker.kind}</strong> <code>{blocker.id}</code><p>{blocker.reason}</p></li>)}</ul> : <p className="ap-success">All imported bank activity is explained and the AP flow has no open blockers.</p>}
