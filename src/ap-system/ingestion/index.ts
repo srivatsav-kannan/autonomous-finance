@@ -17,6 +17,8 @@ import {
 } from "./extraction";
 import { inspectPdf, inspectImage, type OcrOptions } from "./ocr";
 import { saveArtifact, sha256 } from "./storage";
+import { parseXml, extractXmlCandidate, type XmlOutput } from "./xml";
+import { pageStatuses } from "./pages";
 export { renderPage } from "./ocr";
 export type { TrustedContext } from "./extraction";
 export type Upload = {
@@ -42,6 +44,7 @@ export type ParsedDocument = {
   source: SourceDocument;
   output: ProviderOutput | null;
   failure: string | null;
+  xml?: XmlOutput;
 };
 export async function parseDocument(
   input: Upload & { storageRoot: string; options?: UploadOptions },
@@ -49,10 +52,21 @@ export async function parseDocument(
   const { bytes, name, mimeType, storageRoot } = input;
   if (!bytes.byteLength || bytes.byteLength > 8 * 1024 * 1024)
     throw new Error("unsupported_upload_size");
+  const xmlMime = [
+    "application/xml",
+    "text/xml",
+    "application/ubl+xml",
+  ].includes(mimeType);
   if (
-    !["application/pdf", "image/png", "image/jpeg", "image/tiff"].includes(
-      mimeType,
-    )
+    ![
+      "application/pdf",
+      "image/png",
+      "image/jpeg",
+      "image/tiff",
+      "application/xml",
+      "text/xml",
+      "application/ubl+xml",
+    ].includes(mimeType)
   )
     throw new Error("unsupported_document_mime");
   if (
@@ -64,10 +78,11 @@ export async function parseDocument(
     original = await saveArtifact(
       storageRoot,
       bytes,
-      mimeType === "application/pdf" ? "pdf" : "image",
+      xmlMime ? "xml" : mimeType === "application/pdf" ? "pdf" : "image",
     );
-  const pdf =
-    mimeType === "application/pdf"
+  const pdf = xmlMime
+    ? { count: 1, frames: [] }
+    : mimeType === "application/pdf"
       ? await inspectPdf(bytes, storageRoot, input.options?.ocr || {})
       : await inspectImage(bytes, storageRoot, input.options?.ocr || {});
   const pageCount = pdf.count;
@@ -100,6 +115,21 @@ export async function parseDocument(
     parser: null,
   };
   try {
+    if (xmlMime) {
+      const xml = await parseXml(bytes, storageRoot);
+      if (source.kind !== "invoice")
+        xml.failure = "xml_document_kind_unsupported";
+      source.parser = xml.processor;
+      source.extractedText = Buffer.from(bytes).toString("utf8");
+      source.pageStatus = [
+        {
+          page: 1,
+          status: xml.failure ? "failed" : "complete",
+          reason: xml.failure,
+        },
+      ];
+      return { source, output: null, xml, failure: xml.failure };
+    }
     const output = await parseWithLlama(
       bytes,
       name,
@@ -113,31 +143,10 @@ export async function parseDocument(
     source.extractedText = String(
       output.result.text_full ?? output.result.markdown_full ?? "",
     );
-    source.pageStatus = source.pageStatus.map((p) => {
-      const found = pages.find(
-        (x: Record<string, unknown>) => x.page_number === p.page,
-      );
-      return {
-        ...p,
-        status: !found
-          ? "missing"
-          : found.success === true
-            ? "complete"
-            : "failed",
-        reason: !found
-          ? "Provider omitted page"
-          : found.success === true
-            ? null
-            : "Provider page failed",
-      };
-    });
-    // Do not silently discard extra provider pages, e.g. a multipage TIFF counted as one.
-    if (pages.length !== pageCount)
-      source.pageStatus = source.pageStatus.map((p) => ({
-        ...p,
-        status: "failed",
-        reason: "Provider/original page count mismatch",
-      }));
+    source.pageStatus = pageStatuses(pageCount, pages);
+    output.result.__apPageCoverageValid = source.pageStatus.every(
+      (p) => p.status === "complete",
+    );
     return { source, output, failure: null };
   } catch (error) {
     const failure =
@@ -199,7 +208,11 @@ export async function combineUploads(input: {
     reasons: [invoice.failure ?? "invoice_parse_failed"],
   };
   let candidate: APIntake["candidate"] = null;
-  if (invoice.output) {
+  if (invoice.xml) {
+    const result = extractXmlCandidate(invoice.source, invoice.xml, context);
+    candidate = result.candidate;
+    extraction = result.extraction;
+  } else if (invoice.output) {
     try {
       const result = await extractCandidate(
         invoice.source,

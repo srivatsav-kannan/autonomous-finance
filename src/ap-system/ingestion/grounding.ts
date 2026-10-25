@@ -42,6 +42,9 @@ export type Page = {
   frame: CoordinateFrame;
   complete: boolean;
   rotation: number;
+  nativeValid?: boolean;
+  rawValid?: boolean;
+  providerScale?: { x: number; y: number };
 };
 export type GroundingData = {
   pages: Page[];
@@ -74,6 +77,11 @@ function span(md: string, s: unknown) {
 }
 export function providerGrounding(output: ProviderOutput): GroundingData {
   const rawPages: Json[] = output.result.items?.pages ?? [];
+  const coverageValid =
+    output.result.__apPageCoverageValid !== false &&
+    rawPages.every((p, i) => p.page_number === i + 1) &&
+    (!output.result.__apOriginalFrames ||
+      output.result.__apOriginalFrames.length === rawPages.length);
   const pages: Page[] = rawPages
     .filter(
       (p) =>
@@ -94,7 +102,7 @@ export function providerGrounding(output: ProviderOutput): GroundingData {
         rotation: 0,
         transform: [1, 0, 0, 1, 0, 0],
       },
-      complete: p.success === true,
+      complete: p.success === true && coverageValid,
       rotation: (() => {
         const original = output.result.__apOriginalFrames?.find(
           (f: Json) => f.page === p.page_number,
@@ -118,6 +126,34 @@ export function providerGrounding(output: ProviderOutput): GroundingData {
         );
       })(),
     }));
+  for (const p of pages) {
+    const validArtifact = (records: Json[], native: boolean) => {
+      const found = records.filter((r) => r.page_number === p.number);
+      return (
+        found.length === 1 &&
+        (!native || found[0]!.success === true) &&
+        Math.abs(found[0]!.page_width - p.frame.width) < 0.1 &&
+        Math.abs(found[0]!.page_height - p.frame.height) < 0.1
+      );
+    };
+    p.nativeValid = validArtifact(output.grounded, true);
+    p.rawValid = validArtifact(output.rawWords, false);
+    const original = output.result.__apOriginalFrames?.find(
+      (f: Json) => f.page === p.number,
+    );
+    if (original?.units === "pixel") {
+      p.providerScale = {
+        x: original.width / p.frame.width,
+        y: original.height / p.frame.height,
+      };
+      p.frame = {
+        ...p.frame,
+        width: original.width,
+        height: original.height,
+        units: "pixel",
+      };
+    }
+  }
   const native: NativeRegion[] = [];
   for (const page of output.grounded) {
     for (const [ii, item] of (page.items ?? []).entries()) {
@@ -185,6 +221,27 @@ export function providerGrounding(output: ProviderOutput): GroundingData {
         line: `raw:${page.page_number}:${Math.round(w.y / (w.h || 1))}`,
         box: box(w),
       });
+  for (const n of native) {
+    const scale = pages.find((p) => p.number === n.page)?.providerScale;
+    if (scale)
+      n.regions = n.regions.map((r) => ({
+        ...r,
+        x: r.x * scale.x,
+        y: r.y * scale.y,
+        width: r.width * scale.x,
+        height: r.height * scale.y,
+      }));
+  }
+  for (const w of words) {
+    const scale = pages.find((p) => p.number === w.page)?.providerScale;
+    if (scale)
+      w.box = {
+        x: w.box.x * scale.x,
+        y: w.box.y * scale.y,
+        width: w.box.width * scale.x,
+        height: w.box.height * scale.y,
+      };
+  }
   return { pages, native, words, processor: output.processor };
 }
 export function uniqueExactWords(
@@ -287,7 +344,24 @@ export async function groundText(
     elementPath: null,
   };
   const wanted = normalize(query);
-  const native = (opts.nativeHint ? [opts.nativeHint] : data.native).filter(
+  const hint = opts.nativeHint;
+  const scale = hint
+    ? data.pages.find((p) => p.number === hint.page)?.providerScale
+    : undefined;
+  const scaledHint =
+    hint && scale
+      ? {
+          ...hint,
+          regions: hint.regions.map((r) => ({
+            ...r,
+            x: r.x * scale.x,
+            y: r.y * scale.y,
+            width: r.width * scale.x,
+            height: r.height * scale.y,
+          })),
+        }
+      : hint;
+  const native = (scaledHint ? [scaledHint] : data.native).filter(
     (n) =>
       normalize(n.text) === wanted &&
       (opts.page === undefined || n.page === opts.page),
@@ -309,6 +383,7 @@ export async function groundText(
     if (
       p &&
       p.complete &&
+      p.nativeValid !== false &&
       p.rotation === 0 &&
       n.regions.every((r) => validBox(r, p.frame))
     )
@@ -329,6 +404,7 @@ export async function groundText(
     if (
       p &&
       p.complete &&
+      p.rawValid !== false &&
       p.rotation === 0 &&
       raw.words.every((w) => validBox(w.box, p.frame))
     )
