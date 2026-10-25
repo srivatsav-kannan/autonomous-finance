@@ -183,6 +183,12 @@ describe("independent cash evidence and separate returns", () => {
     expect(() => assertPostingEvidence(command, observation, { ...debit, status: "pending", postedAt: undefined })).toThrow();
     expect(() => assertPostingEvidence(command, observation, { ...debit, id: "other-debit" })).toThrow();
   });
+  it("accepts a completed pending hold as data but never as cash evidence", () => {
+    const hold: BankTransaction = { ...debit, id: "hold", status: "complete", postedAt: undefined, completedAt: "2026-01-03T00:00:00.000Z" };
+    expect(parseBankTransaction(hold)).toEqual(hold);
+    expect(() => parseBankTransaction({ ...hold, completedAt: undefined })).toThrow();
+    expect(() => assertPostingEvidence(command, observation, hold)).toThrow();
+  });
   it("retains unrelated posted account activity but cannot apply it as an AP payment", () => {
     const other: BankTransaction = { ...debit, purpose: "other", amountCents: 10_000, commandId: "", transferId: "", sourceCategory: "inbound_wire_transfer" };
     expect(parseBankTransaction(other)).toEqual(other);
