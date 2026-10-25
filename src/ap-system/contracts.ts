@@ -1,4 +1,6 @@
 import { z } from "zod";
+import {domainCaseProjectionSchema} from "./domain-contracts";
+export * from "./domain-contracts";
 
 /** Owned by Master. Additive changes require a recorded contract version. */
 export const AP_CONTRACT_VERSION = "ap-evidence-v1" as const;
@@ -72,7 +74,7 @@ export const candidateLineSchema = z.object({
 export const candidateSchema = z.object({
   candidateId:id, revision:z.number().int().positive(), sources:z.array(sourceBindingSchema).min(1),
   extractedSupplierName:id, supplierId:z.string().nullable(), invoiceNumber:id,
-  invoiceDate:date, dueDate:date.nullable(), terms:z.string().nullable(), currency:z.literal("USD"),
+  invoiceDate:date, dueDate:date.nullable(), terms:z.string().nullable(), currency:z.string().regex(/^[A-Z]{3}$/),
   kind:z.enum(["invoice","credit_note"]), appliesToBillId:z.string().nullable(),
   lines:z.array(candidateLineSchema).min(1), freightAllocations:z.array(allocationSchema), discountAllocations:z.array(allocationSchema), subtotalCents:centsSchema, taxCents:centsSchema,
   freightCents:centsSchema, discountCents:centsSchema, totalCents:centsSchema,
@@ -128,6 +130,7 @@ export const statesSchema = z.object({
   reconciliation:z.enum(["unmatched","matched","exception"]),
 });
 export const caseDetailSchema = z.object({
+  domain:domainCaseProjectionSchema.optional(),
   contractVersion:z.literal(AP_CONTRACT_VERSION), caseId:id, runId:id, organizationId:id,
   revision:z.number().int().positive(), candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), sources:z.array(sourceDocumentSchema),
   currentSourceBindings:z.array(sourceBindingSchema).min(1),

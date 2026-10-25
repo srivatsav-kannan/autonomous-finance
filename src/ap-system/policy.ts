@@ -53,6 +53,7 @@ export function evaluatePolicy(
         ["complete_invoice_fields"],
       ),
     ];
+  if(c.currency!=="USD")result.push(exception("unsupported_currency","This ledger/payment policy supports USD only.","controller",["supported_currency_policy"]));
   if (c.kind !== "invoice")
     result.push(
       exception(

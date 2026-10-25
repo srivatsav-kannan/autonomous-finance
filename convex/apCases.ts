@@ -1,3 +1,4 @@
+import { activeBusinessPolicy } from "./lib/apSystem/businessAuthority";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
@@ -366,7 +367,7 @@ export const reviewFields = mutation({
     const input = currentReview(row, request);
     if (row.createdBy === seat.seatId)
       deny("self_approval", "The case creator cannot review their own intake");
-    if (row.billId)
+    if (row.billId && !row.domainApprovalId && !(await activeBusinessPolicy(ctx, args.scope)))
       deny(
         "posted_correction_required",
         "A recognized bill requires the controlled correction workflow",
@@ -460,6 +461,8 @@ export const approveBill = mutation({
         decisionId: string;
       };
     const row = await caseRow(ctx, args.scope, request.caseId);
+    if (row.domainApprovalId || await activeBusinessPolicy(ctx, args.scope))
+      deny("business_route_required", "Configured business governance requires the explicit amount/allocation and sequential group approval route");
     const input = currentReview(row, request);
     const c = input.candidate;
     if (row.createdBy === seat.seatId)

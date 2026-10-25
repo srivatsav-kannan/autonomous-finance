@@ -1,3 +1,4 @@
+import { businessProjection } from "./businessProjection";
 import type { QueryCtx } from "../../_generated/server";
 import type { Doc } from "../../_generated/dataModel";
 import {
@@ -87,6 +88,7 @@ export async function projectCase(
           .collect()
       ).filter((v) => v.snapshot.bills.some((b) => b.billId === bill._id))
     : [];
+  const business = await businessProjection(ctx, row, bill, versions);
   const commands = (
     await ctx.db
       .query("demoCommands")
@@ -103,7 +105,7 @@ export async function projectCase(
   );
   const journalIds = [
     ...new Set(
-      [bill?.entryId, ...transactions.map((t) => t.entryId)].filter(
+      [bill?.entryId, business?.credit?.entryId, ...(business?.domain.creditLinks.map((l) => l.entryId as NonNullable<typeof bill>["entryId"]) ?? []), ...transactions.map((t) => t.entryId)].filter(
         (id): id is NonNullable<typeof id> => !!id,
       ),
     ),
@@ -120,12 +122,12 @@ export async function projectCase(
       processor: safeProcessor(e.grounding.processor),
     },
   }));
-  const exceptions = evaluatePolicy(
+  const exceptions = business?.exceptions ?? evaluatePolicy(
     input,
     config.beneficiary.vendor,
     row.documentStatus === "reviewed",
   );
-  if (bill?.entryId && row.businessStatus !== "approved")
+  if (!business && bill?.entryId && row.businessStatus !== "approved")
     exceptions.push({
       exceptionId: "posted_correction_required",
       code: "posted_correction_required",
@@ -138,8 +140,9 @@ export async function projectCase(
       status: "open",
       resolution: null,
     });
-  const approved = bill?.approvedCents ?? null;
+  const approved = bill?.approvedCents ?? business?.credit?.amountCents ?? null;
   return {
+    ...(business ? { domain: business.domain } : {}),
     contractVersion: AP_CONTRACT_VERSION,
     caseId: row._id,
     runId: row.scope.runId,
@@ -170,7 +173,7 @@ export async function projectCase(
         approved === null
           ? null
           : Math.max(0, (input.candidate?.totalCents ?? approved) - approved),
-      creditedCents: 0,
+      creditedCents: business?.domain.appliedCreditCents ?? 0,
       instructedCents: versions
         .filter((v) => ["queued", "settled", "returned"].includes(v.status))
         .reduce(
@@ -180,14 +183,14 @@ export async function projectCase(
               ?.amountCents ?? 0),
           0,
         ),
-      settledCents: bill?.paidCents ?? 0,
+      settledCents: business?.domain.cashSettledCents ?? bill?.paidCents ?? 0,
       outstandingCents:
-        approved === null ? null : approved - (bill?.paidCents ?? 0),
+        approved === null ? null : business?.credit ? 0 : approved - (bill?.paidCents ?? 0),
     },
     states: {
       document: row.documentStatus,
       business: row.businessStatus,
-      accounting: bill?.entryId ? "recognized" : "unposted",
+      accounting: bill?.entryId || business?.credit?.entryId ? "recognized" : "unposted",
       authorization: !payment
         ? "not_requested"
         : payment.status === "cancelled"
@@ -201,7 +204,7 @@ export async function projectCase(
           ? "matched"
           : "unmatched",
     },
-    policyVersion: AP_POLICY_VERSION,
+    policyVersion: business?.policyVersion ?? AP_POLICY_VERSION,
     snapshotHash: row.snapshotHash,
     scope: row.scope,
     identityMode: row.identityMode,
@@ -241,7 +244,7 @@ export async function projectCase(
     links: {
       billId: bill?._id ?? null,
       billVersion: bill?.version ?? null,
-      recognitionJournalId: bill?.entryId ?? null,
+      recognitionJournalId: bill?.entryId ?? business?.credit?.entryId ?? null,
       paymentVersionIds: versions.map((v) => v._id),
       commandIds: commands.map((c) => c._id),
       bankTransactionIds: transactions.map((t) => t.transaction.id),
