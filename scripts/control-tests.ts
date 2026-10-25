@@ -234,5 +234,8 @@ if (billId) {
 
 const held = results.filter((r) => r.held).length;
 console.log(`\n${held}/${results.length} controls held (run ${runId})`);
-fs.mkdirSync(path.join("docs", "evals"), { recursive: true });
-fs.writeFileSync(path.join("docs", "evals", "control-tests.json"), JSON.stringify({ runId, at: new Date().toISOString(), held, total: results.length, results }, null, 2));
+// --out DIR keeps a run's results out of the committed docs/evals (used by npm run evals).
+const outIndex = process.argv.indexOf("--out");
+const outDir = outIndex >= 0 ? process.argv[outIndex + 1]! : path.join("docs", "evals");
+fs.mkdirSync(outDir, { recursive: true });
+fs.writeFileSync(path.join(outDir, "control-tests.json"), JSON.stringify({ runId, at: new Date().toISOString(), held, total: results.length, results }, null, 2));

@@ -9,6 +9,37 @@ The infrastructure underneath is rebuilt for agents, not humans:
 
 Built at Cal Hacks 13.0 for the Hyphenate track, *The Hyphenated Enterprise: Autonomous Systems for Finance*.
 
+## Quick start
+
+Needs Node 24.18+, Python 3.11+ and git. No Convex account; no API key for the free path.
+
+```bash
+git clone https://github.com/srivatsav-kannan/autonomous-finance && cd autonomous-finance && npm ci
+npm run setup               # checks tools, writes .env.local and local secrets, prepares benchmark data; safe to rerun
+npm run backend             # terminal 1: local Convex backend; leave it running
+npm run backend:configure   # terminal 2, once the backend is up: copies .env.local settings to the deployment
+npm run scenario            # runs scenario-1 (seed 7, 3 stores, 14 days, planted errors, close) and prints a briefing
+npm run console             # http://127.0.0.1:5173/?view=inbox#scenario-1
+```
+
+Approving or answering items in the console also needs `npm run gateway` (the human seat) in another terminal. Add `OPENAI_API_KEY=...` to `.env.local` to turn on the model; without it the agents run their deterministic paths, and every command says so. Without a model, 21 of 64 invoices are in formats only the model reads, so the books and the close stay incomplete.
+
+Run every eval:
+
+```bash
+npm run evals                               # free: control tests, world (model off), spreadsheet benchmark, external rules-only
+npm run evals -- --paid --budget-usd 15     # also the model evals; needs OPENAI_API_KEY, prints per-run estimates first
+```
+
+Ask questions about scenario-1 (works without the gateway or console):
+
+```bash
+npm run scenario
+npm run ask -- "Why was INV-1002 held?"
+```
+
+Details: [Setup and evals reference](#setup-and-evals-reference). Measured results: [docs/RESULTS.md](docs/RESULTS.md).
+
 > The company is **Sweetgreen, Inc.** (NYSE: SG), simulated and calibrated to its FY2025 SEC filings: $679.5M revenue, 281 restaurants, $19.9M AP, $7.2M gift card liability, $354.5M lease liability. Not affiliated with Sweetgreen. All transactions, counterparties and people are simulated.
 
 ## What's different
@@ -70,7 +101,7 @@ npm ci
 npm run backend                       # local Convex (no account needed); keep it running
 ```
 
-On a fresh local deployment, the first function deployment can report missing auth configuration while the backend remains running. Once it has created `.env.local`, set these local simulator placeholders from a second terminal in the same checkout:
+On a fresh local deployment, the first function deployment can report missing auth configuration while the backend remains running. `npm run backend:configure` sets everything below; to do it by hand, set these local simulator placeholders from a second terminal in the same checkout:
 
 ```bash
 npx convex env set AP_HUMAN_AUTH_ISSUER https://ap-demo.invalid
@@ -87,7 +118,9 @@ npm run demo:local
 
 The [AP demo guide](docs/ap-demo.md) documents immutable human approval, a lost bank response, a killed/restarted dispatcher, missing webhook recovery, journal posting and reconciliation. The local run uses an explicitly simulated human identity. Real JWT approval, Increase sandbox credentials and live webhook delivery are separate checks; missing credentials report `NOT_RUN`.
 
-For the broader legacy profile, choose an admin secret, set it interactively, and put the same value in the uncommitted `.env.local`:
+`npm run demo:local` reuses the `KERNEL_ADMIN_SECRET` in `.env.local`; if none is set it generates one and saves it there, so the deployment and the other runners keep matching.
+
+For the broader legacy profile, the deployment's admin secret must equal the one in the uncommitted `.env.local`. `npm run setup` and `npm run backend:configure` handle this; by hand:
 
 ```bash
 npx convex env set KERNEL_ADMIN_SECRET
@@ -153,6 +186,20 @@ by the scenario. Rent arrives on the first observed day of each month. Monthly
 supplier bills arrive on the fifth, clamped to that month's observed interval for
 partial months. This fixture models a full monthly obligation even when only part
 of the month is simulated; it does not prorate bills.
+
+## Setup and evals reference
+
+**`npm run setup`** (`scripts/setup.ts`) is idempotent. It checks Node 24.18+, Python 3.11+ and git; creates `.env.local` from `.env.example` if missing, or appends only the settings it lacks; generates `KERNEL_ADMIN_SECRET` if it is missing or `change-me`; generates `VITE_GATEWAY_TOKEN` if missing (`npm run gateway:token` rotates it); creates `var/benchmarks/.venv`, installs the readers and prepares both benchmark batches (`bench:prepare -- --batch eight` and `--batch extra`). It never prints secrets. `--skip-bench` skips the benchmark data.
+
+**`npm run backend:configure`** (`scripts/backend-configure.ts`) runs once the backend is up, and again after a backend reset. It sets `KERNEL_ADMIN_SECRET` (from `.env.local`) and `AP_HUMAN_AUTH_ISSUER` / `AP_HUMAN_AUTH_AUDIENCE` (local placeholders `https://ap-demo.invalid` / `ap-demo`, unless `.env.local` sets them) with `npx convex env set`, passing values on stdin. It points `CONVEX_URL` and `VITE_CONVEX_URL` at the running local backend, then waits until the deployment accepts the admin secret. To run a second checkout beside another one, give its backend other ports: `npm run backend -- --local-cloud-port 3410 --local-site-port 3411`.
+
+**`npm run scenario`** (`scripts/scenario.ts`) creates run `scenario-1`, plays the 14 days with no pacing, sends the period end, waits for the agents to finish, scores the run against the answer key (`var/evals/scenario-1.md`, also shown in the console's Evals view) and prints a briefing: what happened, which planted errors were caught, what is waiting for a human, why the close is blocked, and example questions. Rerunning prints the briefing again; an interrupted run resumes. `--run scenario-2` starts a separate run, for example after adding a model key.
+
+**`npm run ask -- "question" [--run id]`** (`scripts/ask.ts`) answers from the record with the same code as the console's "Ask why" (`src/human/why.ts`). With a model it runs the cited-answer tool loop over git memory and the ledger. Without one it ranks decision commits by the question's keywords and lists them with their SHAs; that path reads only git memory, so it needs no backend.
+
+**`npm run evals`** (`scripts/evals.ts`) runs, in order, with inference off: the 20 control tests, the world on seed 7, the spreadsheet-vs-kernel benchmark, and all 15 external tasks in rules-only mode. It needs the backend. Output goes to `var/evals/suite-<time>/`, the table to `var/evals/summary-<time>.md`; the committed `docs/evals/` files are not touched. The model-off world catches the planted errors but its books fail, because the unread invoices have no bills; the table says so.
+
+**`--paid --budget-usd N`** adds the world on seeds 7, 11, 23 and 42, the agent spreadsheet comparison, and full team vs generalist on all 15 external tasks (30 turns, APEX judge). It refuses to start without `--budget-usd` or `OPENAI_API_KEY`. The budget is split 2.5% per world seed, 15% to the spreadsheet comparison and 75% to the external benchmarks; each run stops at its share. It prints the per-run estimate and cap first, then writes a one-time approved copy of `benchmarks/external-models.json` to `var/external-models.evals-<time>.json`, capped at the external share. The checked-in policy stays `approval: null`. The measured cost of the whole paid set was about $7 ([docs/RESULTS.md](docs/RESULTS.md)), so $15 leaves headroom.
 
 ## Layout
 

@@ -137,6 +137,8 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
             <select value={runId} onChange={(e) => selectRun(e.target.value)} aria-label="Scenario" disabled={!runs?.length}>
               {!runs?.length && <option value={runId}>{!simulationAvailable ? "Backend not configured" : runs ? "No scenarios" : "Loading scenarios…"}</option>}
               {(runs ?? []).map((r) => <option key={r.runId} value={r.runId}>{r.label} ({r.runId})</option>)}
+              {/* A run linked by URL (e.g. #scenario-1) stays selectable after newer runs push it out of the recent list. */}
+              {!!runs?.length && runId && !runs.some((r) => r.runId === runId) && <option value={runId}>{runId}</option>}
             </select>
           </label>}
         </header>

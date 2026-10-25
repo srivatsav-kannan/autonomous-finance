@@ -180,4 +180,4 @@ Result: one transfer, one posted debit, one journal entry. The month closes with
 
 ## Reproduce
 
-See the README's "Run the evals" section. Each eval above maps to one command.
+`npm run evals -- --paid --budget-usd 15` reruns every eval above in one command (`npm run evals` alone runs the free part); the payment-recovery run is `npm run demo:local`. See the README's [Quick start](../README.md#quick-start).
