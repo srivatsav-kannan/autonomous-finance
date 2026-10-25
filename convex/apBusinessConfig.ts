@@ -1,3 +1,5 @@
+import { contactOriginSchema } from "../src/ap-system/supplier-contact-contracts";
+import { independentContactEvidence } from "./lib/apSystem/supplierContactEvidence";
 import { invalidateBusinessPayments } from "./lib/apSystem/businessInvalidation";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
@@ -22,6 +24,7 @@ import {
   requireGroup,
   assertHumanSubject,
   readApprovedSupplierRevision,
+  authorizedSupplierContact,
 } from "./lib/apSystem/businessAuthority";
 const agent = { scope: scopeValidator, seatId: v.string(), token: v.string() };
 async function evidence(
@@ -148,9 +151,10 @@ export const registerTrustedContact = mutation({
     phone: v.string(),
     evidence: v.any(),
     mode: v.union(v.literal("simulated"), v.literal("operator_recorded")),
+    origin: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
-    const { subject } = await requirePaymentHuman(ctx, args.scope);
+    const { subject, seat } = await requirePaymentHuman(ctx, args.scope);
     const policy = await requireBusinessPolicy(ctx, args.scope);
     requireGroup(policy.value, policy.value.supplierVerificationGroup, subject);
     if (!/^\+[1-9]\d{7,14}$/.test(args.phone) || !args.supplierId.trim())
@@ -165,11 +169,17 @@ export const registerTrustedContact = mutation({
       );
     const bindings = supplierProposalSchema.shape.evidence.parse(args.evidence);
     await evidence(ctx, args.scope, bindings, true);
+    const origin=args.origin===undefined?undefined:contactOriginSchema.parse(args.origin);
+    if(origin) {
+      if(origin.acquiredAt>Date.now()) deny("contact_origin_invalid","The independent source cannot be acquired in the future");
+      await independentContactEvidence(ctx,args.scope,bindings,args.phone);
+    }
     const op = await replay(ctx, args.scope, `contact:${args.idempotencyKey}`, {
       supplierId: args.supplierId,
       phone: args.phone,
       bindings,
       mode: args.mode,
+      ...(origin?{origin}:{}),
       subject,
     });
     if (op.prior) return op.prior.result;
@@ -180,6 +190,8 @@ export const registerTrustedContact = mutation({
       evidence: bindings,
       mode: args.mode,
       recordedBy: subject,
+      recordedSeatId: seat.seatId,
+      ...(origin?{origin}:{}),
       createdAt: Date.now(),
     });
     const result = { contactId };
@@ -237,7 +249,7 @@ export const proposeSupplier = mutation({
     if (supplier?.activeRevision) {
       // Read immutable contact for repair even when old human authority is no longer current.
       const prior = await readApprovedSupplierRevision(ctx, args.scope, proposal.supplierId);
-      if (prior.value.contactId !== proposal.contactId)
+      if (await authorizedSupplierContact(ctx,args.scope,proposal.supplierId,prior.value.contactId) !== proposal.contactId)
         deny(
           "trusted_contact_change",
           "Bank-detail changes must use the previously approved contact; separately govern contact replacement before a bank change",
@@ -394,6 +406,11 @@ export const approveSupplier = mutation({
         "supplier_revision_conflict",
         "Supplier active revision changed before approval",
       );
+    if(supplier.activeRevision) {
+      const prior=await readApprovedSupplierRevision(ctx,args.scope,row!.supplierId);
+      if(await authorizedSupplierContact(ctx,args.scope,row!.supplierId,prior.value.contactId)!==proposal.contactId)
+        deny("trusted_contact_change","Supplier verification must use the currently governed contact");
+    }
     await ctx.db.patch(row!._id, {
       status: "approved",
       approvedBy: subject,

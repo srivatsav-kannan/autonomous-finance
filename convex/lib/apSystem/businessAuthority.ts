@@ -11,6 +11,8 @@ import {
 } from "../../../src/ap-system/domain-contracts";
 import { assertRowScope, getPaymentConfig } from "../demoAuth";
 import { deny } from "./shared";
+import { contactChangeProposalSchema, contactOriginSchema, type ContactChangeReview } from "../../../src/ap-system/supplier-contact-contracts";
+import { independentContactEvidence } from "./supplierContactEvidence";
 export type BusinessVote = {
   subject: string;
   principal: string;
@@ -95,6 +97,8 @@ export async function readApprovedSupplierRevision(
 export async function currentSupplier(ctx: QueryCtx, scope: BankScope, supplierId: string) {
   const revision = await readApprovedSupplierRevision(ctx, scope, supplierId);
   const policy = await requireBusinessPolicy(ctx, scope);
+  const contactId = await authorizedSupplierContact(ctx,scope,supplierId,revision.value.contactId);
+  if (revision.value.contactId !== contactId) deny("supplier_contact_recertification_required","Independently verify and approve a new supplier revision through the newly approved contact before resuming business or payment authority");
   requireGroup(policy.value, policy.value.supplierVerificationGroup, revision.verifiedBy!);
   requireGroup(policy.value, policy.value.supplierApprovalGroup, revision.approvedBy!);
   const verifier = await assertHumanSubject(ctx,scope,revision.verifiedBy!);
@@ -393,4 +397,118 @@ export async function resolveAPBusinessPaymentAuthority(
       "B3 bills cannot use a mixed legacy/default beneficiary request",
     );
   return beneficiary ? { beneficiary } : null;
+}
+
+/** Retained human source/review authority is checked again at approval and every future business gate. */
+export async function assertContactChangeParticipants(
+  ctx: QueryCtx,
+  scope: BankScope,
+  row: Doc<"apSupplierContactChanges">,
+  policy: BusinessPolicy,
+  complete = false,
+) {
+  const p = contactChangeProposalSchema.parse(row.proposal);
+  const seen = new Set([row.proposedBy]);
+  if (p.resolution === "replace") {
+    const id = ctx.db.normalizeId("apSupplierContacts", p.newContactId),
+      contact = id ? await ctx.db.get(id) : null;
+    if (
+      !contact ||
+      contact.supplierId !== p.supplierId ||
+      !contact.recordedSeatId ||
+      !contact.origin
+    )
+      deny(
+        "contact_origin_required",
+        "Replacement requires a separately retained source and current recorder identity",
+      );
+    assertRowScope(contact, scope);
+    contactOriginSchema.parse(contact.origin);
+    requireGroup(policy, policy.supplierVerificationGroup, contact.recordedBy);
+    const recorder = await assertHumanSubject(ctx, scope, contact.recordedBy);
+    if (recorder.seatId !== contact.recordedSeatId || seen.has(recorder.seatId))
+      deny(
+        "contact_segregation",
+        "The source recorder must retain a distinct current human identity",
+      );
+    seen.add(recorder.seatId);
+    await independentContactEvidence(
+      ctx,
+      scope,
+      contact.evidence,
+      contact.phone,
+    );
+  }
+  await independentContactEvidence(ctx, scope, p.oldChannel.evidence);
+  const entries: [ContactChangeReview | undefined, string | undefined][] = [
+    [row.verification, policy.supplierVerificationGroup],
+    [row.escalation, policy.supplierContactEscalationGroup],
+    [row.decision, policy.supplierApprovalGroup],
+  ];
+  for (const [review, group] of entries) {
+    if (!review) continue;
+    if (!group)
+      deny(
+        "contact_escalation_policy_required",
+        "Explicitly configure the independent contact escalation group",
+      );
+    requireGroup(policy, group, review.subject);
+    const seat = await assertHumanSubject(ctx, scope, review.subject);
+    if (seat.seatId !== review.seatId || seen.has(seat.seatId))
+      deny(
+        "contact_segregation",
+        "Source recorder, proposer, verifier, escalator and approver must retain distinct current seats",
+      );
+    seen.add(seat.seatId);
+    if (review.evidence)
+      await independentContactEvidence(ctx, scope, review.evidence);
+  }
+  if (
+    complete &&
+    (!row.verification ||
+      !row.decision ||
+      row.decision.outcome !== "approved" ||
+      (p.oldChannel.status === "unavailable" && !row.escalation))
+  )
+    deny(
+      "contact_reviews_required",
+      "Independent verification, any required escalation and final approval must all be retained",
+    );
+}
+export async function authorizedSupplierContact(
+  ctx: QueryCtx,
+  scope: BankScope,
+  supplierId: string,
+  priorContactId: string,
+) {
+  const supplier = await ctx.db
+    .query("apSuppliers")
+    .withIndex("by_supplier", (q) =>
+      q.eq("scope.runId", scope.runId).eq("supplierId", supplierId),
+    )
+    .unique();
+  if (!supplier) return priorContactId;
+  assertRowScope(supplier, scope);
+  if (supplier.contactReviewId)
+    deny(
+      "supplier_contact_review_pending",
+      "Contact governance is unresolved; review or supersede the retained proposal before new business/payment authority",
+    );
+  if (!supplier.contactAuthorityId) return priorContactId;
+  const change = await ctx.db.get(supplier.contactAuthorityId);
+  if (!change || change.status !== "approved")
+    deny(
+      "contact_authority_invalid",
+      "The approved contact replacement authority is unavailable",
+    );
+  assertRowScope(change, scope);
+  const p = contactChangeProposalSchema.parse(change.proposal);
+  if (p.supplierId !== supplierId || p.resolution !== "replace")
+    deny(
+      "contact_authority_invalid",
+      "Contact authority belongs to another supplier or resolution",
+    );
+  const policy = await requireBusinessPolicy(ctx, scope);
+  await assertContactChangeParticipants(ctx, scope, change, policy.value, true);
+  return p.newContactId;
 }

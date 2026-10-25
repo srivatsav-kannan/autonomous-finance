@@ -40,6 +40,7 @@ export const businessPolicySchema = z
       .min(1),
     supplierVerificationGroup: id,
     supplierApprovalGroup: id,
+    supplierContactEscalationGroup: id.optional(),
     varianceApprovalGroup: id,
     bands: z
       .array(
@@ -79,6 +80,7 @@ export const businessPolicySchema = z
     for (const group of [
       p.supplierVerificationGroup,
       p.supplierApprovalGroup,
+      ...(p.supplierContactEscalationGroup ? [p.supplierContactEscalationGroup] : []),
       p.varianceApprovalGroup,
       ...p.bands.flatMap((b) =>
         b.steps.flatMap((s) => [

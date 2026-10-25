@@ -99,6 +99,20 @@ export const apSystemTables = {
   })
     .index("by_run", ["scope.runId"])
     .index("by_version", ["scope.runId", "version"]),
+  apSupplierContactChanges: defineTable({
+    scope: scopeValidator,
+    supplierId: v.string(),
+    proposal: v.any(),
+    hash: v.string(),
+    policyHash: v.string(),
+    supplierHash: v.string(),
+    proposedBy: v.string(),
+    status: v.string(),
+    createdAt: v.number(),
+    verification: v.optional(v.any()),
+    escalation: v.optional(v.any()),
+    decision: v.optional(v.any()),
+  }).index("by_supplier", ["scope.runId", "supplierId"]),
   apSupplierContacts: defineTable({
     scope: scopeValidator,
     supplierId: v.string(),
@@ -106,12 +120,16 @@ export const apSystemTables = {
     evidence: v.any(),
     mode: v.string(),
     recordedBy: v.string(),
+    recordedSeatId: v.optional(v.string()),
+    origin: v.optional(v.any()),
     createdAt: v.number(),
   }).index("by_supplier", ["scope.runId", "supplierId"]),
   apSuppliers: defineTable({
     scope: scopeValidator,
     supplierId: v.string(),
     activeRevision: v.optional(v.number()),
+    contactReviewId: v.optional(v.id("apSupplierContactChanges")),
+    contactAuthorityId: v.optional(v.id("apSupplierContactChanges")),
     createdAt: v.number(),
   }).index("by_supplier", ["scope.runId", "supplierId"]),
   apSupplierRevisions: defineTable({
