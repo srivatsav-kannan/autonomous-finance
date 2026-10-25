@@ -1,3 +1,4 @@
+import { assertLegacyRun } from "./lib/demoAuth";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
@@ -12,6 +13,8 @@ import {
   storeIdempotency,
 } from "./lib/kernel";
 import { appendEntry } from "./lib/post";
+import { normalizeInvoiceNumber } from "./lib/invoiceIdentity";
+export { normalizeInvoiceNumber } from "./lib/invoiceIdentity";
 
 const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 
@@ -22,11 +25,6 @@ const billLine = v.object({
   unitCents: v.number(),
   amountCents: v.number(),
 });
-
-/** "INV-000123", "inv 123" and "123" are the same invoice for duplicate detection. */
-export function normalizeInvoiceNumber(n: string): string {
-  return n.toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/^(INVOICE|INV|NO)/, "").replace(/^0+/, "");
-}
 
 /**
  * Record a vendor bill and the clerk's decision. The kernel enforces:
@@ -56,6 +54,7 @@ export const recordBill = mutation({
     taskId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const op = "ap.recordBill";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
@@ -97,8 +96,13 @@ export const recordBill = mutation({
       .collect();
     const live = prior.find((b) => b.status !== "rejected");
     if (live && args.decision !== "reject") {
+      const source = (await ctx.db.query("events")
+        .withIndex("by_run_type", (q) => q.eq("runId", args.runId).eq("type", "document.received"))
+        .collect()).find((e) => e._id === args.documentEventId &&
+          (e.payload?.kind === "invoice" || e.payload?.kind === "lease_invoice"));
       return await recordViolation(ctx, args.runId, args.seatId, op,
-        fail("duplicate_invoice", `${args.vendor} invoice ${args.invoiceNumber} duplicates a bill already recorded (${live.status})`));
+        fail("duplicate_invoice", `${args.vendor} invoice ${args.invoiceNumber} duplicates a bill already recorded (${live.status})`),
+        source ? { sourceDocumentId: source._id, relatedBillId: live._id } : undefined);
     }
 
     const run = await getRun(ctx, args.runId);
@@ -183,6 +187,7 @@ export const resolveHeldBill = mutation({
     memorySha: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const op = "ap.resolveHeldBill";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
@@ -237,6 +242,7 @@ export const resolveHeldBill = mutation({
 export const bills = query({
   args: { runId: v.string(), status: v.optional(v.string()), vendor: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     let rows = await ctx.db
       .query("bills")
       .withIndex("by_run_vendor_invoice", (q) => (args.vendor ? q.eq("runId", args.runId).eq("vendor", args.vendor) : q.eq("runId", args.runId)))
@@ -249,6 +255,7 @@ export const bills = query({
 export const bill = query({
   args: { runId: v.string(), billId: v.id("bills") },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const b = await ctx.db.get(args.billId);
     return b && b.runId === args.runId ? b : null;
   },

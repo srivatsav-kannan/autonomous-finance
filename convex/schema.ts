@@ -1,5 +1,7 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { demoTables } from "./demoSchema";
+import { demoEvidenceTables } from "./demoEvidenceSchema";
 
 // Every table is scoped by runId (a scenario namespace) so eval runs and demo resets never mix.
 
@@ -24,6 +26,8 @@ export const lineValidator = v.object({
 });
 
 export default defineSchema({
+  ...demoTables,
+  ...demoEvidenceTables,
   runs: defineTable({
     runId: v.string(),
     label: v.string(),
@@ -67,6 +71,7 @@ export default defineSchema({
     period: v.string(), // YYYY-MM
     status: v.union(v.literal("open"), v.literal("closed")),
     closedBy: v.optional(v.array(v.string())),
+    closeSnapshotHash: v.optional(v.string()), // Scoped AP signatures apply only to this reviewed state.
     closedAt: v.optional(v.number()),
     ledgerHead: v.optional(v.string()),
     memoryTag: v.optional(v.string()),
@@ -275,6 +280,8 @@ export default defineSchema({
     seatId: v.string(),
     operation: v.string(),
     reason: v.string(),
+    sourceDocumentId: v.optional(v.string()),
+    relatedBillId: v.optional(v.id("bills")),
     at: v.number(),
   }).index("by_run_at", ["runId", "at"]),
 

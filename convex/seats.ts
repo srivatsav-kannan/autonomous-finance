@@ -1,3 +1,4 @@
+import { assertLegacyRun } from "./lib/demoAuth";
 import { workerRequest } from "./lib/workerRequest";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
@@ -23,6 +24,7 @@ export const spawnSeat = mutation({
     reason: v.string(),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const op = "seats.spawnSeat";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
@@ -56,6 +58,7 @@ export const spawnSeat = mutation({
 export const retireSeat = mutation({
   args: { ...seatArgs, targetSeatId: v.string(), reason: v.string() },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const op = "seats.retireSeat";
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, op, auth);
@@ -76,6 +79,7 @@ export const retireSeat = mutation({
 export const list = query({
   args: { runId: v.string() },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const rows = await ctx.db
       .query("seats")
       .withIndex("by_run_seat", (q) => q.eq("runId", args.runId))

@@ -1,3 +1,4 @@
+import { assertLegacyRun } from "./lib/demoAuth";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
@@ -14,6 +15,7 @@ import {
 } from "./lib/kernel";
 import { appendEntry } from "./lib/post";
 import { CHART } from "../src/core/accounts";
+import { readCloseReadiness } from "./lib/closeReadiness";
 
 const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
 
@@ -30,6 +32,7 @@ export const postEntry = mutation({
     memorySha: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "ledger.postEntry", auth);
     const { token: _t, ...payload } = args;
@@ -68,6 +71,7 @@ export const reverseEntry = mutation({
     memorySha: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "ledger.reverseEntry", auth);
     const { token: _t, ...payload } = args;
@@ -107,8 +111,9 @@ export const reverseEntry = mutation({
  * Once closed, posting to the period is rejected by the kernel.
  */
 export const signClose = mutation({
-  args: { ...seatArgs, period: v.string(), memoryTag: v.optional(v.string()) },
+  args: { ...seatArgs, period: v.string(), memoryTag: v.optional(v.string()), expectedSnapshotHash: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "ledger.signClose", auth);
     if (!auth.seat.caps.periodClose) {
@@ -120,7 +125,16 @@ export const signClose = mutation({
       .unique();
     if (!p) return fail("not_found", `period ${args.period} not found`);
     if (p.status === "closed") return { ok: true as const, status: "closed", signedBy: p.closedBy ?? [] };
-    const signedBy = Array.from(new Set([...(p.closedBy ?? []), args.seatId]));
+    const readiness = await readCloseReadiness(ctx, args.runId, args.period);
+    if (!readiness.ready || (args.expectedSnapshotHash && args.expectedSnapshotHash !== readiness.snapshotHash)) {
+      // A new unresolved source or changed review cannot retain old signatures.
+      await ctx.db.patch(p._id, { closedBy: [], closeSnapshotHash: undefined, memoryTag: undefined });
+      return await recordViolation(ctx, args.runId, args.seatId, "ledger.signClose", readiness.ready
+        ? fail("close_changed", "close inputs changed after review; refresh the checklist before signing")
+        : fail("close_blocked", `${readiness.blockerCount} source/bill close blocker(s): ${readiness.blockers.map((b) => b.reason).join("; ")}`));
+    }
+    const sameSnapshot = p.closeSnapshotHash === readiness.snapshotHash;
+    const signedBy = Array.from(new Set([...(sameSnapshot ? p.closedBy ?? [] : []), args.seatId]));
     const seats = await Promise.all(
       signedBy.map((s) =>
         ctx.db
@@ -142,19 +156,28 @@ export const signClose = mutation({
         closedAt: Date.now(),
         ledgerHead: head?.hash,
         memoryTag: args.memoryTag ?? p.memoryTag,
+        closeSnapshotHash: readiness.snapshotHash,
       });
       await logActivity(ctx, args.runId, args.seatId, "closed", `Period ${args.period} closed (signed by ${signedBy.join(", ")})`);
       return { ok: true as const, status: "closed", signedBy };
     }
-    await ctx.db.patch(p._id, { closedBy: signedBy, memoryTag: args.memoryTag ?? p.memoryTag });
+    await ctx.db.patch(p._id, { closedBy: signedBy, closeSnapshotHash: readiness.snapshotHash,
+      memoryTag: args.memoryTag ?? (sameSnapshot ? p.memoryTag : undefined) });
     await logActivity(ctx, args.runId, args.seatId, "signed", `Signed close for ${args.period}; waiting for ${hasHuman ? "controller" : "a human CFO"}`);
     return { ok: true as const, status: "open", signedBy };
   },
 });
 
+/** The same authoritative source/bill check used by each close signature. */
+export const closeReadiness = query({
+  args: { runId: v.string(), period: v.string() },
+  handler: async (ctx, args) => await readCloseReadiness(ctx, args.runId, args.period),
+});
+
 export const trialBalance = query({
   args: { runId: v.string(), period: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const rows = await ctx.db
       .query("balances")
       .withIndex("by_run_account_period", (q) => q.eq("runId", args.runId))
@@ -177,6 +200,7 @@ export const trialBalance = query({
 export const entries = query({
   args: { runId: v.string(), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     return await ctx.db
       .query("journalEntries")
       .withIndex("by_run_sequence", (q) => q.eq("runId", args.runId))
@@ -189,6 +213,7 @@ export const entries = query({
 export const verifyChain = query({
   args: { runId: v.string() },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const all = await ctx.db
       .query("journalEntries")
       .withIndex("by_run_sequence", (q) => q.eq("runId", args.runId))

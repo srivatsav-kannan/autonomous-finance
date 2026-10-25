@@ -1,3 +1,4 @@
+import { assertLegacyRun } from "./lib/demoAuth";
 import { workerRequest } from "./lib/workerRequest";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
@@ -33,6 +34,7 @@ export const createTask = mutation({
     parentTaskId: v.optional(v.id("tasks")),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "tasks.createTask", auth);
     if (!auth.seat.caps.taskRoles.includes(args.role as Role)) {
@@ -74,6 +76,7 @@ export const adminCreateTask = mutation({
     priority: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const denied = requireAdmin(args.secret);
     if (denied) return denied;
     const existing = await ctx.db
@@ -106,6 +109,7 @@ export const adminCreateTask = mutation({
 export const claimTask = mutation({
   args: { ...seatArgs, ...requestArgs },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "tasks.claimTask", auth);
     return await workerRequest(ctx, args, "tasks.claimTask", async () => {
@@ -149,6 +153,7 @@ export const claimTask = mutation({
 export const completeTask = mutation({
   args: { ...leaseArgs, ...requestArgs, result: v.optional(v.any()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "tasks.completeTask", auth);
     return await workerRequest(ctx, args, "tasks.completeTask", async () => {
@@ -169,6 +174,7 @@ export const completeTask = mutation({
 export const failTask = mutation({
   args: { ...leaseArgs, ...requestArgs, error: v.string(), retryInMs: v.optional(v.number()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "tasks.failTask", auth);
     return await workerRequest(ctx, args, "tasks.failTask", async () => {
@@ -195,6 +201,7 @@ export const failTask = mutation({
 export const waitTask = mutation({
   args: { ...leaseArgs, ...requestArgs, reason: v.string() },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "tasks.waitTask", auth);
     return await workerRequest(ctx, args, "tasks.waitTask", async () => {
@@ -228,6 +235,7 @@ export const heartbeatTask = mutation({
 export const queueStats = query({
   args: { runId: v.string() },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const all = await ctx.db
       .query("tasks")
       .withIndex("by_run_status", (q) => q.eq("runId", args.runId))
@@ -244,6 +252,7 @@ export const queueStats = query({
 export const get = query({
   args: { runId: v.string(), taskId: v.id("tasks") },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const t = await ctx.db.get(args.taskId);
     return t && t.runId === args.runId ? t : null;
   },

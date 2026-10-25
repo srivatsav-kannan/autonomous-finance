@@ -4,7 +4,6 @@ import { randomUUID } from "node:crypto";
 import { api, convex, hashToken, newToken } from "../core/kernel-client";
 import type { Role } from "../core/roles";
 import { MemoryStore } from "../memory/store";
-import { WorldBank } from "../world/bank";
 import { memoryDir, runDir } from "../world/scenario";
 import { LlmRefused, LlmUnavailable, MODEL } from "./llm";
 import { SeatRuntime, type Handler, type Task } from "./runtime";
@@ -50,6 +49,8 @@ export class DrainIncomplete extends Error {
 
 interface TeamOptions {
   log?: (s: string) => void;
+  handlers?: Record<string, Handler>;
+  model?: string;
   diagnostic?: (event: Diagnostic) => void;
   retry?: RetryOptions;
 }
@@ -61,7 +62,6 @@ interface TeamOptions {
 export class Team {
   readonly runtimes = new Map<string, SeatRuntime>();
   readonly mem: MemoryStore;
-  readonly bank: WorldBank;
   private tokensFile: string;
   private tokens: Record<string, string>;
   private stopped = false;
@@ -74,7 +74,6 @@ export class Team {
     this.report = opts.diagnostic ?? reportDiagnostic;
     this.control = new ControlPlane(this.report, opts.retry);
     this.mem = new MemoryStore(memoryDir(runId));
-    this.bank = new WorldBank(runId);
     this.tokensFile = path.join(runDir(runId), "seats.json");
     this.tokens = JSON.parse(fs.readFileSync(this.tokensFile, "utf8"));
   }
@@ -92,7 +91,7 @@ export class Team {
         continue;
       }
       if (this.runtimes.has(s.seatId) || !this.tokens[s.seatId]) continue;
-      this.runtimes.set(s.seatId, new SeatRuntime(this.runId, { seatId: s.seatId, role: s.role as Role, name: s.name, effort: s.effort }, this.tokens[s.seatId]!, this.mem, this.bank, convex({ fetch: workerFetch })));
+      this.runtimes.set(s.seatId, new SeatRuntime(this.runId, { seatId: s.seatId, role: s.role as Role, name: s.name, effort: s.effort }, this.tokens[s.seatId]!, this.mem, convex({ fetch: workerFetch })));
     }
   }
 
@@ -115,7 +114,7 @@ export class Team {
     // A claim already in flight at shutdown may commit; leave it for lease recovery.
     if (!task || this.stopped) return false;
     if ((task.leaseExpiresAt ?? 0) <= Date.now()) return false;
-    const handler = HANDLERS[task.type];
+    const handler = this.opts.handlers?.[task.type] ?? HANDLERS[task.type];
     if (!handler) throw new OperatorActionRequired(`no handler for task type ${task.type}`);
     const lease = { ...rt.kernel.auth, taskId: task._id, leaseAttempt: task.attempts };
     const before = { ...rt.usage };
@@ -168,7 +167,7 @@ export class Team {
     const telemetry = {
       ...rt.kernel.auth, requestId: randomUUID(), taskId: task._id,
       kind: llmTurns > 0 ? "llm" : "deterministic",
-      model: llmTurns > 0 ? MODEL : undefined,
+      model: llmTurns > 0 ? (this.opts.model ?? MODEL) : undefined,
       inputTokens: rt.usage.inputTokens - before.inputTokens,
       outputTokens: rt.usage.outputTokens - before.outputTokens,
       cacheReadTokens: rt.usage.cacheReadTokens - before.cacheReadTokens,

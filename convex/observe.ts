@@ -1,3 +1,4 @@
+import { assertLegacyRun } from "./lib/demoAuth";
 import { workerRequest } from "./lib/workerRequest";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
@@ -23,6 +24,7 @@ export const logRun = mutation({
     summary: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "observe.logRun", auth);
     return await workerRequest(ctx, args, "observe.logRun", async () => {
@@ -36,6 +38,7 @@ export const logRun = mutation({
 export const note = mutation({
   args: { ...seatArgs, kind: v.string(), text: v.string(), refs: v.optional(v.any()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "observe.note", auth);
     await ctx.db.insert("activity", { runId: args.runId, seatId: args.seatId, kind: args.kind, text: args.text, refs: args.refs, at: Date.now() });
@@ -54,6 +57,7 @@ export const recordCommit = mutation({
     trailers: v.any(),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "observe.recordCommit", auth);
     const existing = await ctx.db
@@ -78,6 +82,7 @@ export const recordCommit = mutation({
 export const overview = query({
   args: { runId: v.string() },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const run = await ctx.db.query("runs").withIndex("by_runId", (q) => q.eq("runId", args.runId)).unique();
     const balances = await ctx.db
       .query("balances")
@@ -118,6 +123,7 @@ export const overview = query({
 export const activity = query({
   args: { runId: v.string(), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     return await ctx.db
       .query("activity")
       .withIndex("by_run_at", (q) => q.eq("runId", args.runId))
@@ -129,6 +135,7 @@ export const activity = query({
 export const commits = query({
   args: { runId: v.string(), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     return await ctx.db
       .query("memoryCommits")
       .withIndex("by_run_at", (q) => q.eq("runId", args.runId))
@@ -140,6 +147,7 @@ export const commits = query({
 export const violations = query({
   args: { runId: v.string() },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     return await ctx.db
       .query("violations")
       .withIndex("by_run_at", (q) => q.eq("runId", args.runId))
@@ -151,6 +159,7 @@ export const violations = query({
 export const agentRuns = query({
   args: { runId: v.string() },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     return await ctx.db
       .query("agentRuns")
       .withIndex("by_run_at", (q) => q.eq("runId", args.runId))

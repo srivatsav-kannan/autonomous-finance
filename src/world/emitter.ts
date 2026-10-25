@@ -1,5 +1,6 @@
 import { AdminClient, api } from "../core/kernel-client";
-import { WorldBank } from "./bank";
+import type { WorldBank } from "./bank";
+import { Rng } from "./rng";
 import type { Scenario } from "./scenario";
 
 /**
@@ -7,10 +8,10 @@ import type { Scenario } from "./scenario";
  * POS exports, payout reports, payroll registers, plus yesterday's payment debits.
  * Every event carries an external id, so re-sending a day is harmless (exactly-once ingest).
  */
-export async function emitDay(sc: Scenario, date: string, admin = new AdminClient(), opts: { duplicateRate?: number } = {}) {
-  const bank = new WorldBank(sc.runId);
+export async function emitDay(sc: Scenario, date: string, admin = new AdminClient(), opts: { duplicateRate?: number; legacyBankFeed?: Pick<WorldBank, "debitsFor"> } = {}) {
+  const random = new Rng(sc.options.seed ^ Number(date.replaceAll("-", "")));
   const todays = sc.events.filter((e) => e.occurredOn === date);
-  const debits = bank.debitsFor(date).map((p) => ({
+  const debits = (opts.legacyBankFeed?.debitsFor(date) ?? []).map((p) => ({
     type: "bank.transaction",
     externalId: `opr-${p.bankRef}`,
     occurredOn: date,
@@ -29,7 +30,7 @@ export async function emitDay(sc: Scenario, date: string, admin = new AdminClien
   let ingested = 0;
   let duplicates = 0;
   for (const e of ordered) {
-    const sends = opts.duplicateRate && Math.random() < opts.duplicateRate ? 2 : 1;
+    const sends = opts.duplicateRate && random.next() < opts.duplicateRate ? 2 : 1;
     for (let i = 0; i < sends; i++) {
       const r = await admin.client.mutation(api.admin.ingestEvent, {
         secret: admin.secret,

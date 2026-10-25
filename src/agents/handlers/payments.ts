@@ -7,11 +7,10 @@ import type { Handler } from "../runtime";
 
 /**
  * End-of-day payment run: batch approved bills per vendor into payment requests (controller
- * approves), then execute and settle whatever is fully approved. Remit-to always comes from
+ * approves). Bank execution is handled only by the scoped AP dispatcher. Remit-to comes from
  * verified memory, never from a document.
  */
 export const paymentRun: Handler = async (rt, task) => {
-  const today = String(task.payload.occurredOn ?? (await rt.simDate()));
   const bills = await rt.kernel.client.query(api.ap.bills, { runId: rt.runId, status: "approved" });
   const unpaid = bills.filter((b) => !b.paymentIntentId);
   const byVendor = new Map<string, typeof unpaid>();
@@ -42,23 +41,9 @@ export const paymentRun: Handler = async (rt, task) => {
     await rt.handoff("payments.approve", "controller", { intentId: r.intentId }, `approve:${r.intentId}`, task._id, 2);
   }
 
-  let executed = 0;
-  for (const intent of await rt.kernel.client.query(api.payments.intents, { runId: rt.runId, status: "approved" })) {
-    const rec = await rt.vendor(intent.payee);
-    if (!rec) continue;
-    const blob = (await rt.mem.blobSha(`vendors/${intent.payee}.yaml`)) ?? rec.sha;
-    const current = { bank: rec.vendor.remitTo.bank, accountLast4: rec.vendor.remitTo.accountLast4, memorySha: blob };
-    const ex = await rt.kernel.client.mutation(api.payments.executePayment, { ...rt.kernel.auth, intentId: intent._id, currentRemitTo: current });
-    if (!ex.ok) {
-      await rt.note("blocked", `Execution of payment to ${intent.payee} refused: ${ex.error}`);
-      continue;
-    }
-    const sent = rt.bank.send({ intentId: intent._id, payee: intent.payee, amountCents: intent.amountCents, bank: current.bank, accountLast4: current.accountLast4, sentOn: today });
-    const st = await rt.kernel.client.mutation(api.payments.settlePayment, { ...rt.kernel.auth, intentId: intent._id, bankRef: sent.bankRef, settledOn: today });
-    if (!st.ok) throw new Error(`settle: ${st.code} ${st.error}`);
-    executed++;
-  }
-  return { outcome: "ran", summary: `requested ${requested}, executed ${executed}` };
+  // Submission belongs exclusively to PaymentDispatcher. Legacy scenario approvals
+  // are never treated as bank settlement; use the scoped AP demo for money movement.
+  return { outcome: "ran", summary: `requested ${requested}; bank execution requires the scoped AP dispatcher` };
 };
 
 const INJECTION = /(system note|ai assistant|ignore (all|previous)|pre-?approved|without asking|execute pending payments)/i;

@@ -5,7 +5,6 @@ import type { Role } from "../core/roles";
 import { MemoryStore, type FileChange } from "../memory/store";
 import type { Decision, Vendor, Store } from "../memory/schemas";
 import { BUILTIN_PARSERS, loadMemoryParsers, type Parser } from "../integrations/parsers";
-import { WorldBank } from "../world/bank";
 import { emptyUsage, type Usage } from "./llm";
 
 export type Task = Doc<"tasks">;
@@ -29,7 +28,6 @@ export class SeatRuntime {
     readonly seat: { seatId: string; role: Role; name: string; effort?: string },
     token: string,
     readonly mem: MemoryStore,
-    readonly bank: WorldBank,
     client?: ConstructorParameters<typeof SeatClient>[3],
   ) {
     this.kernel = new SeatClient(runId, seat.seatId, token, client);
