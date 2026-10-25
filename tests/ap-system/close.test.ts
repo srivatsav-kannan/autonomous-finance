@@ -934,3 +934,180 @@ describe("B4 adversarial period boundaries", () => {
     ).toBe(true);
   });
 });
+
+describe("B4 authoritative accounting exports", () => {
+  const exportRef = makeFunctionReference<"query">("apClose:accountingExport");
+  it("exports only the exact approved accrual with retained human seat authority", async () => {
+    const f = await setup(false);
+    const pending = await f.proposeClose({
+      kind: "accrual",
+      accrual: f.accrual(),
+    });
+    await expect(
+      f.humans.finance!.query(exportRef, {
+        scope: f.scope,
+        input: { actionId: pending.actionId },
+      }),
+    ).rejects.toThrow(/export_approval/);
+    await f.voteClose(pending, "owner");
+    await f.voteClose(pending, "finance");
+    const value = await f.humans.finance!.query(exportRef, {
+      scope: f.scope,
+      input: { actionId: pending.actionId },
+    });
+    expect(value.accounting).toMatchObject({
+      version: "ap-close-accounting-v1",
+      kind: "accrual",
+      amountCents: 7700,
+      caseId: f.detail.caseId,
+      approval: {
+        id: pending.actionId,
+        hash: pending.actionHash,
+        kind: "close",
+      },
+      journal: {
+        date: "2026-10-31",
+        lines: [
+          {
+            account: "5000",
+            debit: 7700,
+            credit: 0,
+            store: "sf-hayes-valley",
+            supplierId: f.supplier.supplierId,
+          },
+          {
+            account: "2010",
+            debit: 0,
+            credit: 7700,
+            store: null,
+            supplierId: f.supplier.supplierId,
+          },
+        ],
+      },
+    });
+    expect(
+      value.accounting.approval.votes.map(
+        (v: { subjectSeatId: string }) => v.subjectSeatId,
+      ),
+    ).toEqual(["human-owner", "human-finance"]);
+    await expect(
+      f.t.query(exportRef, {
+        scope: f.scope,
+        input: { actionId: pending.actionId },
+      }),
+    ).rejects.toThrow(/human/);
+  });
+  it("exports manual reversals by action or application with the same immutable effect identity", async () => {
+    const f = await setup(false),
+      a = await f.approveClose({ kind: "accrual", accrual: f.accrual() });
+    const reverse = await f.approveClose({
+      kind: "reverse_accrual",
+      accrualId: a.result.accrualId,
+      quantity: "1",
+      date: "2026-10-31",
+      evidence: [f.proof],
+      reason: "Explicit half accrual reversal",
+    });
+    const app = (
+      await f.t.run((ctx) => ctx.db.query("apAccrualApplications").collect())
+    )[0]!;
+    const byAction = await f.humans.finance!.query(exportRef, {
+      scope: f.scope,
+      input: { actionId: reverse.p.actionId },
+    });
+    const byApplication = await f.humans.finance!.query(exportRef, {
+      scope: f.scope,
+      input: { accrualApplicationId: app._id },
+    });
+    expect(byAction.accounting).toEqual(byApplication.accounting);
+    expect(byAction.accounting).toMatchObject({
+      kind: "accrual_reversal",
+      amountCents: 3850,
+      originalEntryId: a.result.entryId,
+      accrualId: a.result.accrualId,
+    });
+  });
+  it("exports the exact invoice-triggered reversal from its approved business plan without a second posting", async () => {
+    const f = await setup(false),
+      a = await f.approveClose({ kind: "accrual", accrual: f.accrual() });
+    const p = await f.t.mutation(br.propose!, {
+      ...f.ap,
+      input: {
+        caseId: f.detail.caseId,
+        expectedRevision: f.detail.revision,
+        snapshotHash: f.detail.snapshotHash,
+        idempotencyKey: "export-invoice-reversal",
+        policyVersion: f.policy.version,
+        supplierRevision: 1,
+        accountingDate: "2026-10-31",
+        acceptance: acceptance(f.input),
+        accrualApplications: [{ accrualId: a.result.accrualId, quantity: "2" }],
+      },
+    });
+    await f.vote(p);
+    const approved = await f.vote(p, "finance");
+    const app = (
+      await f.t.run((ctx) => ctx.db.query("apAccrualApplications").collect())
+    )[0]!;
+    const value = await f.humans.finance!.query(exportRef, {
+      scope: f.scope,
+      input: { accrualApplicationId: app._id },
+    });
+    expect(value.accounting).toMatchObject({
+      kind: "accrual_reversal",
+      actionId: null,
+      billId: approved.billId,
+      caseId: f.detail.caseId,
+      amountCents: 7700,
+      approval: { id: p.proposalId, kind: "business", hash: p.proposalHash },
+      journal: { date: "2026-10-31" },
+    });
+    expect(
+      await f.t.run((ctx) => ctx.db.query("journalEntries").collect()),
+    ).toHaveLength(3);
+  });
+  it("exports approved cost correction links and holds a retired retained voter or changed journal", async () => {
+    const f = await setup(),
+      a = await f.approveClose({
+        kind: "adjustment",
+        originalEntryId: f.recognized!.entryId,
+        date: "2026-10-31",
+        fromAccount: "5000",
+        toAccount: "1200",
+        amountCents: 7700,
+        store: "sf-hayes-valley",
+        evidence: [f.proof],
+        reason: "Supported inventory reclassification",
+      });
+    const request = { scope: f.scope, input: { actionId: a.p.actionId } };
+    const exported = await f.humans.finance!.query(exportRef, request);
+    expect(exported.accounting).toMatchObject({
+      kind: "cost_reclassification",
+      originalEntryId: f.recognized!.entryId,
+      billId: f.recognized!.billId,
+      caseId: f.detail.caseId,
+      amountCents: 7700,
+    });
+    await f.t.run(async (ctx) => {
+      const entry = await ctx.db.get(a.result.entryId as Id<"journalEntries">);
+      await ctx.db.patch(entry!._id, { memo: "changed after posting" });
+    });
+    await expect(f.humans.finance!.query(exportRef, request)).rejects.toThrow(
+      /export_journal/,
+    );
+    const g = await setup(false),
+      accrued = await g.approveClose({ kind: "accrual", accrual: g.accrual() });
+    await g.t.run(async (ctx) => {
+      const seat = (await ctx.db.query("seats").collect()).find(
+        (s) => s.seatId === "human-owner",
+      )!;
+      await ctx.db.patch(seat._id, { status: "retired" });
+    });
+    await expect(
+      g.humans.finance!.query(exportRef, {
+        scope: g.scope,
+        input: { actionId: accrued.p.actionId },
+      }),
+    ).rejects.toThrow(/inactive_approver/);
+  });
+});

@@ -1,3 +1,4 @@
+import { loadApprovedCloseExport } from "./lib/apSystem/closeExport";
 import { mutation, query } from "./_generated/server";
 import type { QueryCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
@@ -11,6 +12,7 @@ import {
   closeProposalSchema,
   closeVoteSchema,
   closeActionSchema,
+  closeExportRequestSchema,
   type CloseAction,
 } from "../src/ap-system/close-contracts";
 import type { ApprovalStep } from "../src/ap-system/domain-contracts";
@@ -148,6 +150,21 @@ async function evaluateAction(
       .reduce(
         (n, a) => n + (a.side === "credit" ? a.amountCents : -a.amountCents),
         0,
+      );
+    const originalLines = original.lines.filter(
+      (l) =>
+        l.account === action.fromAccount &&
+        (l.dims?.store ?? null) === action.store,
+    );
+    if (
+      new Set(originalLines.map((l) => l.dims?.vendor ?? null)).size > 1 ||
+      originalLines.some((l) =>
+        Object.keys(l.dims ?? {}).some((k) => !["vendor", "store"].includes(k)),
+      )
+    )
+      deny(
+        "adjustment_dimension_hold",
+        "Original allocation has ambiguous supplier or unsupported dimensions; correction must not silently change them",
       );
     const available = original.lines
       .filter(
@@ -839,6 +856,22 @@ export const view = query({
           q.eq("scope.runId", args.scope.runId).eq("period", period),
         )
         .collect(),
+    };
+  },
+});
+
+export const accountingExport = query({
+  args: { scope: scopeValidator, input: v.any() },
+  handler: async (ctx, args) => {
+    const { subject } = await requirePaymentHuman(ctx, args.scope);
+    return {
+      authorizedSubject: subject,
+      exportedAt: Date.now(),
+      accounting: await loadApprovedCloseExport(
+        ctx,
+        args.scope,
+        closeExportRequestSchema.parse(args.input),
+      ),
     };
   },
 });

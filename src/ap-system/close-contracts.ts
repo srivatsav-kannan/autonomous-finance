@@ -233,3 +233,56 @@ export type PeriodView = {
     reason: string;
   }[];
 };
+
+export const closeExportRequestSchema = z
+  .object({ actionId: id.optional(), accrualApplicationId: id.optional() })
+  .refine(
+    (r) => Number(!!r.actionId) + Number(!!r.accrualApplicationId) === 1,
+    "Choose one approved action or accrual application",
+  );
+export type CloseExportRequest = z.infer<typeof closeExportRequestSchema>;
+export type CloseAccountingExport = {
+  version: "ap-close-accounting-v1";
+  exportId: string;
+  kind: "accrual" | "accrual_reversal" | "cost_reclassification";
+  actionId: string | null;
+  accrualApplicationId: string | null;
+  caseId: string | null;
+  billId: string | null;
+  accrualId: string | null;
+  originalEntryId: string | null;
+  supplierId: string | null;
+  amountCents: number;
+  approval: {
+    id: string;
+    kind: "close" | "business";
+    hash: string;
+    policyHash: string;
+    approvedAt: number;
+    votes: {
+      subject: string;
+      principal: string;
+      subjectSeatId: string;
+      principalSeatId: string;
+      groupId: string;
+      stage: number;
+      stageStartedAt: number;
+      at: number;
+      delegationId: string | null;
+    }[];
+  };
+  journal: {
+    id: string;
+    hash: string;
+    date: string;
+    memo: string;
+    source: { kind: string; ref: string };
+    lines: {
+      account: string;
+      debit: number;
+      credit: number;
+      store: string | null;
+      supplierId: string | null;
+    }[];
+  };
+};
