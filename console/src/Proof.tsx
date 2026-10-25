@@ -12,7 +12,7 @@ export function ProofGroups() {
     <section className="proof" aria-labelledby="proof-heading">
       <div className="page-heading"><div>
         <h2 id="proof-heading">What we measured</h2>
-        <p className="lede">Benchmarks, sample cases, sandbox runs and test suites. Every number links to the file it came from.</p>
+        <p className="lede">This page lists the benchmarks, sample cases, sandbox runs and test suites that we measured, and every number links to the file that it came from.</p>
       </div></div>
       {PROOF_GROUPS.map((g) => {
         const counts = g.items.reduce<Record<string, number>>((acc, i) => ({ ...acc, [i.status]: (acc[i.status] ?? 0) + 1 }), {});
@@ -43,7 +43,7 @@ export function Connectors() {
     <section className="proof" aria-labelledby="connectors-heading">
       <div className="page-heading"><div>
         <h2 id="connectors-heading">Connectors</h2>
-        <p className="lede">The outside systems the department uses, and what we've proven against each one. Tests run against our fakes. The sandboxes are the real services with fake money and fake books.</p>
+        <p className="lede">These are the outside systems that the department uses and what we have proven against each one. Our tests run against fakes of these services, and the sandboxes are the real services with fake money and fake books.</p>
       </div></div>
       <div className="connector-live" role="status">
         {runtime === undefined ? "Checking the AP service…" : runtime === null ? "The AP service isn't running. Start everything with npm run demo." : <>

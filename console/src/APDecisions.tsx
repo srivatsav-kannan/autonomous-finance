@@ -8,11 +8,11 @@ import { Icon } from "./Icon";
 // Field review, bill approval and payment release are separate people (see the AP policy).
 export function apDecision(c: APCaseDetail): { label: string; who: string; reason: string } | null {
   const blocking = c.exceptions.find((e) => e.blocking && e.status === "open");
-  if (c.states.execution === "unknown") return { label: "Payment outcome unknown", who: "Payments", reason: "The bank may have accepted it. Recovery checks the original payment before anything is sent again." };
+  if (c.states.execution === "unknown") return { label: "Payment outcome unknown", who: "Payments", reason: "The bank may have accepted it, so recovery checks the original payment before anything is sent again." };
   if (c.states.document === "review_required") return { label: "Check the extracted fields", who: "Field reviewer", reason: "Compare the fields with the original documents." };
   if (c.states.document === "failed") return { label: "Document could not be read", who: "Field reviewer", reason: "Upload a clearer copy or enter the fields by hand." };
   if (c.states.business === "held") return { label: "Bill is on hold", who: "Bill approver", reason: blocking?.reason ?? "The invoice doesn't match the order or the delivery." };
-  if (c.states.document === "reviewed" && c.states.business === "unreviewed") return { label: "Approve the bill", who: "Bill approver", reason: blocking?.reason ?? "Approving records what we owe. It doesn't pay anything." };
+  if (c.states.document === "reviewed" && c.states.business === "unreviewed") return { label: "Approve the bill", who: "Bill approver", reason: blocking?.reason ?? "Approving the bill records what we owe, but it doesn't pay anything." };
   if (c.states.authorization === "awaiting_approval") return { label: "Release the payment", who: "Payment authorizer", reason: "A different person from the bill approver must release it." };
   if (blocking) return { label: "Exception to clear", who: blocking.ownerRole.replace(/_/g, " "), reason: blocking.reason };
   return null;
@@ -34,9 +34,9 @@ export function APDecisions({ apReady, onOpenCase, onOpenInvoices }: { apReady: 
     <section className="ap-decisions" aria-labelledby="ap-decisions-heading">
       <div className="page-heading"><div>
         <h3 id="ap-decisions-heading">Invoice decisions</h3>
-        <p className="lede">Accounts payable cases waiting on a person. Agents prepared them. Each one opens with its original documents.</p>
+        <p className="lede">These are the accounts payable cases that are waiting on a person. The agents have already prepared each one, and each one opens with its original documents.</p>
       </div></div>
-      {!apReady || error ? <div className="empty"><Icon name="file" /><strong>Choose who you're acting as</strong>Open Invoices and pick a reviewer, approver or payer. Their decisions then show here too.<button type="button" onClick={onOpenInvoices}>Open invoices</button></div>
+      {!apReady || error ? <div className="empty"><Icon name="file" /><strong>Choose who you're acting as</strong>Open Invoices and choose the reviewer, approver or payer that you are acting as, and their decisions will show up here as well.<button type="button" onClick={onOpenInvoices}>Open invoices</button></div>
         : cases === undefined ? <p className="aps-empty" role="status">Loading invoice decisions…</p>
         : !open.length ? <div className="empty queue-empty"><Icon name="check" /><strong>No invoice decisions waiting</strong>{cases.length} {cases.length === 1 ? "case" : "cases"} in accounts payable.</div>
         : <div className="table-scroll queue-table"><table className="grid decision-table">

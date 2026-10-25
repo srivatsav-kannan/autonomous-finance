@@ -28,10 +28,10 @@ const FILTERS = ["all", "attention", "approved", "settled"] as const;
 const dateTime = (value: number) => new Date(value).toLocaleString();
 export type APWorkspaceSection = typeof WORKSPACES[number];
 const SECTION_HEADINGS: Record<APWorkspaceSection, { title: string; lede: string }> = {
-  cases: { title: "Invoices", lede: "Each invoice is one case: the original documents, the checks, the decisions and what happened to the money." },
-  runs: { title: "Payments", lede: "Payments wait for a person to release them. Each one is tied to an approved bill and a fixed destination." },
-  governance: { title: "Policy & suppliers", lede: "Who can approve what, payment limits, and verified supplier bank details." },
-  close: { title: "Period close", lede: "What still blocks the month from closing, and who has to clear it." },
+  cases: { title: "Invoices", lede: "Each invoice is one case that holds the original documents, the checks, the decisions and what happened to the money." },
+  runs: { title: "Payments", lede: "Payments wait for a person to release them, and each one is tied to an approved bill and a fixed destination." },
+  governance: { title: "Policy & suppliers", lede: "This page sets who can approve what, the payment limits, and the verified bank details for each supplier." },
+  close: { title: "Period close", lede: "This page shows what still blocks the month from closing and who has to clear each item." },
 };
 // The console's main navigation can drive the section. Without it the workspace keeps its own section tabs.
 export function APSystemWorkspace({ onContextChange, onBusyChange, section, onSection }: { onContextChange?: (context: APSystemContext | undefined) => void; onBusyChange?: (busy: boolean) => void; section?: APWorkspaceSection; onSection?: (section: APWorkspaceSection) => void }) {

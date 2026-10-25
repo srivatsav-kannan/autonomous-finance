@@ -190,7 +190,7 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
             ))}
           </Fragment>)}
         </nav>
-        <div className="sidebar-footer"><span className="operator-avatar" aria-hidden="true">HF</span><div>Human finance lead<span>You make the decisions. Agents do the work.</span></div></div>
+        <div className="sidebar-footer"><span className="operator-avatar" aria-hidden="true">HF</span><div>Human finance lead<span>You make the decisions, and the agents do the work.</span></div></div>
       </aside>
       <div className="workspace">
         <header className="workspace-top">
