@@ -1,3 +1,4 @@
+import { CHART } from "../../../src/core/accounts";
 import type { QueryCtx } from "../../_generated/server";
 import type { Doc, Id } from "../../_generated/dataModel";
 import type { BankScope } from "../../../src/integrations/contracts";
@@ -207,17 +208,17 @@ export async function loadApprovedCloseExport(
           "Original correction journal is unavailable",
         );
       originalEntryId = original._id;
-      const line = original.lines.find(
-        (l) =>
-          l.account === payload.fromAccount &&
-          (l.dims?.store ?? null) === payload.store,
-      );
-      if (!line)
+      const costLines = original.lines.filter((l) => {
+        const a = CHART.find((a) => a.code === l.account);
+        return a && !a.cash && ["asset", "expense"].includes(a.type);
+      });
+      const suppliers = new Set(costLines.map((l) => l.dims?.vendor ?? null));
+      if (suppliers.size !== 1)
         deny(
           "close_export_original",
-          "Original correction allocation is unavailable",
+          "Original correction supplier is ambiguous",
         );
-      supplierId = line.dims?.vendor ?? null;
+      supplierId = [...suppliers][0]!;
       kind = "cost_reclassification";
       const bill = (
         await ctx.db

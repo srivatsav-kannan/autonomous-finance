@@ -1,3 +1,4 @@
+import { readCostState, correctedCostShares } from "./costState";
 import type { QueryCtx, MutationCtx } from "../../_generated/server";
 import type { Doc, Id } from "../../_generated/dataModel";
 import type { BankScope } from "../../../src/integrations/contracts";
@@ -214,6 +215,7 @@ export async function evaluateCredit(
   input: APIntake,
   plan: CreditPlan,
   creditCaseId: Id<"apCaseRecords">,
+  accountingDate = input.candidate?.invoiceDate ?? "",
 ) {
   const c = input.candidate;
   if (!c || c.kind !== "credit_note" || c.currency !== "USD")
@@ -229,9 +231,10 @@ export async function evaluateCredit(
     );
   const bill = await ctx.db.get(original.billId);
   assertRowScope(bill, scope);
-  const reclassifications = await ctx.db.query("apCloseActions").withIndex("by_run",q=>q.eq("scope.runId",scope.runId)).collect();
-  if (reclassifications.some(a=>a.kind==="adjustment"&&a.status==="approved"&&a.payload.originalEntryId===bill!.entryId))
-    deny("credit_classification_changed", "Original cost was reclassified after recognition; the linked credit needs a reviewed correction allocation before posting, rather than reversing the obsolete cost account");
+  if (!bill!.entryId) deny("original_allocation_required", "Original recognized journal is required for credit allocation");
+  const costState = await readCostState(ctx, scope, bill!.entryId!);
+  if (costState.corrections.length && !plan.correction)
+    deny("credit_classification_changed", "Original cost was reclassified; an explicit current correction allocation is required");
   if (bill!.reservedVersionId)
     deny(
       "credit_reserved_bill",
@@ -464,6 +467,9 @@ export async function evaluateCredit(
       "credit_total",
       "Credit source and original-supported allocations must reconcile exactly",
     );
+  const finalAllocations = plan.correction
+    ? await correctedCostShares(ctx, scope, costState, allocations, plan.correction, accountingDate)
+    : allocations;
   await assertConsumptions(ctx, scope, creditCaseId, returnConsumptions, input);
-  return { original, bill: bill!, approved, allocations, amountCents, returnConsumptions };
+  return { original, bill: bill!, approved, allocations: finalAllocations, amountCents, returnConsumptions };
 }

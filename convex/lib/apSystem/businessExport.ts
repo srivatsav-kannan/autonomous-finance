@@ -11,7 +11,7 @@ export type RecognizedBusinessExport = {
   kind: "invoice" | "credit";
   caseId: string; billId: string; journalId: string; supplierId: string;
   reference: string; date: string; amountCents: number;
-  allocations: {account: string; amountCents: number}[];
+  allocations: {account: string; amountCents: number; store: string | null}[];
   approvalId: string; sourceRevision: number; sourceSnapshotHash: string;
   creditId: string | null;
 };
@@ -38,14 +38,14 @@ export async function loadRecognizedBusinessExport(ctx: QueryCtx, scope: BankSco
   if (request.acceptance && bill && candidate.kind === "invoice") {
     if (bill.vendor !== candidate.supplierId || bill.approvedCents !== approval.amountCents || bill.originalCents !== candidate.totalCents || journal.source.kind !== "bill" || journal.source.ref !== bill._id) deny("recognition_mismatch", "Original bill/approval/journal differ");
     expected = acceptanceJournal(request.acceptance, candidate.supplierId);
-    allocations = expected.filter((l)=>l.account !== "2000").map((l)=>({account:l.account,amountCents:l.debit-l.credit}));
+    allocations = expected.filter((l)=>l.account !== "2000").map((l)=>({account:l.account,amountCents:l.debit-l.credit,store:l.dims.store??null}));
   } else if (request.credit && credit && candidate.kind === "credit_note") {
     const link = await ctx.db.query("apCreditLinks").withIndex("by_credit", (q)=>q.eq("scope.runId",scope.runId).eq("creditId",credit._id)).unique();
     if (!link || link.entryId !== entryId || link.approvalId !== approval._id || credit.vendor !== candidate.supplierId || credit.amountCents !== approval.amountCents || link.amountCents !== credit.amountCents || journal.source.kind !== "vendor_credit" || journal.source.ref !== row._id) deny("credit_recognition_mismatch", "Credit original-allocation linkage differs from its journal");
     const cost = link.allocations as CreditAllocation[];
     expected = cost.map((a)=>({account:a.account,debit:a.side === "debit" ? a.amountCents : 0,credit:a.side === "credit" ? a.amountCents : 0,dims:{vendor:candidate.supplierId!,...(a.store?{store:a.store}:{})}}));
     expected.push({account:"2000",debit:credit.amountCents,credit:0,dims:{vendor:candidate.supplierId}});
-    allocations = cost.map((a)=>({account:a.account,amountCents:a.side === "credit" ? a.amountCents : -a.amountCents}));
+    allocations = cost.map((a)=>({account:a.account,amountCents:a.side === "credit" ? a.amountCents : -a.amountCents,store:a.store}));
     originalBillId = link.originalBillId;
   } else deny("recognition_kind_mismatch", "Recognition kind does not match its original approved plan");
   const financial = (lines: {account:string;debit:number;credit:number;dims?:unknown}[]) => lines.map(({account,debit,credit,dims})=>({account,debit,credit,dims}));

@@ -1,3 +1,5 @@
+import { readCostState, correctedCostShares } from "./costState";
+import type { CostCorrection } from "../../../src/ap-system/cost-contracts";
 import type { QueryCtx, MutationCtx } from "../../_generated/server";
 import type { Doc, Id } from "../../_generated/dataModel";
 import type { BankScope } from "../../../src/integrations/contracts";
@@ -230,6 +232,8 @@ export async function accrualReversalPlan(
   scope: BankScope,
   id: string,
   quantity: string,
+  correction?: CostCorrection,
+  accountingDate?: string,
 ) {
   const accrualId = ctx.db.normalizeId("apAccruals", id);
   const row = accrualId ? await ctx.db.get(accrualId) : null;
@@ -256,14 +260,66 @@ export async function accrualReversalPlan(
     a.allocations.map(
       (x, i) =>
         x.amountCents -
-        prior.reduce((n, p) => n + (p.allocations[i]?.amountCents ?? 0), 0),
+        prior.reduce(
+          (n, p) =>
+            n +
+            p.allocations.reduce(
+              (
+                v: number,
+                a: { amountCents: number; originalAllocationIndex?: number },
+                j: number,
+              ) =>
+                v +
+                ((a.originalAllocationIndex ?? j) === i ? a.amountCents : 0),
+              0,
+            ),
+          0,
+        ),
     ),
   );
-  const allocations = a.allocations.map((x, i) => ({
+  let allocations = a.allocations.map((x, i) => ({
     ...x,
     amountCents: amounts[i]!,
+    originalAllocationIndex: i,
   }));
-  return { row, a, amountCents, allocations, quantity };
+  const state = await readCostState(ctx, scope, row.entryId);
+  if (state.corrections.length && !correction)
+    deny(
+      "accrual_classification_changed",
+      "Corrected accrual requires explicit current reversal allocations",
+    );
+  if (correction) {
+    const corrected = await correctedCostShares(
+      ctx,
+      scope,
+      state,
+      allocations.map((x, i) => ({
+        ...x,
+        originalLineId: "accrual",
+        allocationIndex: i,
+        side: "credit" as const,
+      })),
+      correction,
+      accountingDate ?? "",
+    );
+    allocations = corrected.map((x) => ({
+      ...a.allocations[x.allocationIndex]!,
+      account: x.account,
+      store: x.store,
+      treatment: x.treatment as (typeof a.allocations)[number]["treatment"],
+      period: x.period,
+      amountCents: x.amountCents,
+      originalAllocationIndex: x.allocationIndex,
+    }));
+  }
+  return {
+    row,
+    a,
+    amountCents,
+    allocations,
+    quantity,
+    costSnapshotHash: state.snapshotHash,
+  };
 }
 export async function postAccrualReversal(
   ctx: MutationCtx,
@@ -424,6 +480,8 @@ export async function validateInvoiceAccruals(
       scope,
       app.accrualId,
       app.quantity,
+      app.correction,
+      accountingDate,
     );
     const matching = [...pools].filter(([, p]) => matches(plan.row, p));
     if (

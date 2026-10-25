@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { costCorrectionSchema } from "./cost-contracts";
 
 export const AP_BUSINESS_VERSION = "ap-business-v1" as const;
 const id = z.string().trim().min(1).max(240);
@@ -173,6 +174,7 @@ export const businessAcceptanceSchema = z.object({
   ),
 });
 export const creditPlanSchema = z.object({
+  correction: costCorrectionSchema.optional(),
   originalCaseId: id,
   originalApprovalId: id,
   freightCents: cents.default(0),
@@ -215,7 +217,13 @@ export const domainRequestSchema = z
       )
       .optional(),
     accrualApplications: z
-      .array(z.object({ accrualId: id, quantity: qty }))
+      .array(
+        z.object({
+          accrualId: id,
+          quantity: qty,
+          correction: costCorrectionSchema.optional(),
+        }),
+      )
       .optional(),
     acceptance: businessAcceptanceSchema.optional(),
     credit: creditPlanSchema.optional(),

@@ -1,3 +1,4 @@
+import { readCostState } from "./lib/apSystem/costState";
 import { loadApprovedCloseExport } from "./lib/apSystem/closeExport";
 import { mutation, query } from "./_generated/server";
 import type { QueryCtx } from "./_generated/server";
@@ -74,11 +75,17 @@ async function evaluateAction(
       scope,
       action.accrualId,
       action.quantity,
+      action.correction,
+      action.date,
     );
     if (action.date < plan.row.date)
       deny("accrual_reversal_date", "Reversal cannot precede original accrual");
     amountCents = plan.amountCents;
-    context = { accrualId: plan.row._id, reversed: plan.row.reversedCents };
+    context = {
+      accrualId: plan.row._id,
+      reversed: plan.row.reversedCents,
+      costSnapshotHash: plan.costSnapshotHash,
+    };
   }
   if (action.kind === "adjustment") {
     await closeEvidence(ctx, scope, action.evidence);
@@ -89,10 +96,7 @@ async function evaluateAction(
       original.runId !== scope.runId ||
       original.status !== "posted" ||
       action.date < original.date ||
-      action.fromAccount === action.toAccount ||
-      !original.lines.some(
-        (l) => l.account === action.fromAccount && l.debit > 0,
-      )
+      action.fromAccount === action.toAccount
     )
       deny(
         "adjustment_original",
@@ -113,88 +117,23 @@ async function evaluateAction(
     }
     if (action.store !== null && !policy.value.stores.includes(action.store))
       deny("adjustment_store", "Store is outside coding policy");
-    if (["ap_accrual", "ap_accrual_reversal"].includes(original.source.kind))
+    const state = await readCostState(ctx, scope, original._id);
+    if (action.date < state.latestDate)
       deny(
-        "adjustment_accrual_hold",
-        "Accrual cost classification must be resolved through its exact approved reversal and a corrected accrual; a separate reclassification would break invoice reversal allocations",
+        "cost_correction_date",
+        "Reclassification cannot predate included cost corrections or consumption",
       );
-    const originalBill = (
-      await ctx.db
-        .query("demoBills")
-        .withIndex("by_run", (q) => q.eq("scope.runId", scope.runId))
-        .collect()
-    ).find((b) => b.entryId === original._id);
-    const credits = originalBill
-      ? await ctx.db
-          .query("apCreditLinks")
-          .withIndex("by_original", (q) =>
-            q
-              .eq("scope.runId", scope.runId)
-              .eq("originalBillId", originalBill._id),
-          )
-          .collect()
-      : [];
-    const creditedCost = credits
-      .flatMap(
-        (c) =>
-          c.allocations as {
-            account: string;
-            store: string | null;
-            amountCents: number;
-            side: "debit" | "credit";
-          }[],
-      )
-      .filter(
-        (a) => a.account === action.fromAccount && a.store === action.store,
-      )
-      .reduce(
-        (n, a) => n + (a.side === "credit" ? a.amountCents : -a.amountCents),
-        0,
-      );
-    const originalLines = original.lines.filter(
-      (l) =>
-        l.account === action.fromAccount &&
-        (l.dims?.store ?? null) === action.store,
-    );
-    if (
-      new Set(originalLines.map((l) => l.dims?.vendor ?? null)).size > 1 ||
-      originalLines.some((l) =>
-        Object.keys(l.dims ?? {}).some((k) => !["vendor", "store"].includes(k)),
-      )
-    )
-      deny(
-        "adjustment_dimension_hold",
-        "Original allocation has ambiguous supplier or unsupported dimensions; correction must not silently change them",
-      );
-    const available = original.lines
-      .filter(
-        (l) =>
-          l.account === action.fromAccount &&
-          (l.dims?.store ?? null) === action.store,
-      )
-      .reduce((n, l) => n + l.debit - l.credit, 0);
-    const prior = (
-      await ctx.db
-        .query("apCloseActions")
-        .withIndex("by_run", (q) => q.eq("scope.runId", scope.runId))
-        .collect()
-    )
-      .filter(
-        (r) =>
-          r.status === "approved" &&
-          r.kind === "adjustment" &&
-          r.payload.originalEntryId === original._id &&
-          r.payload.fromAccount === action.fromAccount &&
-          r.payload.store === action.store,
-      )
-      .reduce((n, r) => n + r.amountCents, 0);
-    if (prior + creditedCost + action.amountCents > available)
+    const available =
+      state.positions.find(
+        (p) => p.account === action.fromAccount && p.store === action.store,
+      )?.balanceCents ?? 0;
+    if (action.amountCents > available)
       deny(
         "adjustment_exceeds_original",
-        "Cumulative reclassification exceeds original supported allocation",
+        "Reclassification exceeds current remaining corrected cost",
       );
     amountCents = action.amountCents;
-    context = { hash: original.hash, prior, creditedCost };
+    context = { costSnapshotHash: state.snapshotHash };
   }
   if (action.kind === "disposition") {
     await closeEvidence(ctx, scope, action.evidence);
@@ -713,6 +652,8 @@ export const vote = mutation({
         args.scope,
         action.accrualId,
         action.quantity,
+        action.correction,
+        action.date,
       );
       entryId = await postAccrualReversal(
         ctx,
@@ -728,15 +669,9 @@ export const vote = mutation({
       const original = await ctx.db.get(
         ctx.db.normalizeId("journalEntries", action.originalEntryId)!,
       );
-      const originalLine = original!.lines.find(
-        (l) =>
-          l.account === action.fromAccount &&
-          (l.dims?.store ?? null) === action.store,
-      )!;
+      const state = await readCostState(ctx, args.scope, original!._id);
       const dims = {
-        ...(originalLine.dims?.vendor
-          ? { vendor: originalLine.dims.vendor }
-          : {}),
+        ...(state.supplierId ? { vendor: state.supplierId } : {}),
         ...(action.store ? { store: action.store } : {}),
       };
       const posted = await appendDemoEntry(ctx, {
@@ -873,5 +808,15 @@ export const accountingExport = query({
         closeExportRequestSchema.parse(args.input),
       ),
     };
+  },
+});
+
+/** Safe current cost projection; no private source bytes or agent credentials. */
+export const costState = query({
+  args: { scope: scopeValidator, originalEntryId: v.string() },
+  handler: async (ctx, args) => {
+    await requirePaymentHuman(ctx, args.scope);
+    await requireBusinessPolicy(ctx, args.scope);
+    return readCostState(ctx, args.scope, args.originalEntryId);
   },
 });

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { costCorrectionSchema } from "./cost-contracts";
 import { sourceBindingSchema, allocationSchema } from "./contracts";
 const id = z.string().trim().min(1).max(240),
   cents = z.number().int().safe().nonnegative(),
@@ -76,7 +77,11 @@ export const accrualSchema = z.object({
   quote: id,
   reason: id,
 });
-export const accrualApplicationSchema = z.object({ accrualId: id, quantity });
+export const accrualApplicationSchema = z.object({
+  accrualId: id,
+  quantity,
+  correction: costCorrectionSchema.optional(),
+});
 export const openingReviewSchema = z.object({
   evidence,
   cashBalances: z.array(z.object({ account: id, balanceCents: signed })),
@@ -97,6 +102,7 @@ export const closeActionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("accrual"), accrual: accrualSchema }),
   z.object({
     kind: z.literal("reverse_accrual"),
+    correction: costCorrectionSchema.optional(),
     accrualId: id,
     quantity,
     date,

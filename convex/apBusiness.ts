@@ -209,6 +209,7 @@ async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
       amountCents: result.amountCents,
       varianceRequired:
         result.varianceRequired ||
+        !!request.accrualApplications?.some((a) => a.correction) ||
         !!(
           request.accountingDate &&
           request.accountingDate !== input.candidate!.invoiceDate
@@ -253,6 +254,7 @@ async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
     input,
     request.credit!,
     row._id,
+    request.accountingDate ?? input.candidate.invoiceDate,
   );
   return {
     row,
@@ -261,6 +263,7 @@ async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
     supplier,
     amountCents: credit.amountCents,
     varianceRequired:
+      !!request.credit!.correction ||
       request.credit!.lines.some((l) => l.basis !== "quantity_return") ||
       !!(
         request.accountingDate &&
