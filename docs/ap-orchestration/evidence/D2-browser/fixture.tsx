@@ -18,6 +18,12 @@ configureAPSession({mode:"local"});
 window.fetch=async(input,init)=>{
  const url=new URL(String(input),location.href),path=url.pathname.replace('/api/ap-system','');
  const reply=(value:unknown,status=200)=>Promise.resolve(new Response(JSON.stringify(value),{status,headers:{"Content-Type":"application/json"}}));
+ if(path.startsWith("/close/accounting/")){
+  const selection=JSON.parse(String(init?.body??"{}"));
+  if(path.endsWith("/status"))return reply({externalWritesAllowed:false,configuration:"configured",grant:"authorization_required",mappings:"configured",exportId:"accrual:synthetic-accrual-journal",receipts:[],holds:[],complete:true,externalVerification:"not_checked"});
+  if(path.endsWith("/preview")){const plan=correctionPlanFixture();plan.links={...plan.links,caseId:null,billId:null,correctionId:undefined,closeExportId:"accrual:synthetic-accrual-journal",closeJournalId:"synthetic-accrual-journal",closeActionId:selection.request?.actionId};plan.payload={TxnDate:"2026-10-18",Line:[{Amount:20,JournalEntryLineDetail:{PostingType:"Debit",AccountRef:{value:"synthetic-cost"}}},{Amount:20,JournalEntryLineDetail:{PostingType:"Credit",AccountRef:{value:"synthetic-accrued-liability"}}}]};return reply({plan,planHash:"8".repeat(64),externalWrites:0});}
+  return reply({error:{code:"fixture_no_external_write",reason:"Synthetic fixture external writes and readback are disabled."}},403);
+ }
  if(init?.method==="POST"){action=`Synthetic only: ${path}. No backend or external request sent.`;window.dispatchEvent(new Event("fixture-action"));if(path==="/payment-runs")return reply({runId:run.runId,snapshotHash:run.snapshotHash});if(path.endsWith("/authorize")){run.items.forEach(i=>i.payment.status="queued");return reply({commandIds:["synthetic-command-a","synthetic-command-b"]});}if(path.endsWith("/cancel")){run.items.forEach(i=>i.payment.status="cancelled");return reply({ok:true});}if(path.startsWith("/business/")||path.startsWith("/close/")||path.includes("/corrections/"))return reply({ok:true});if(correctionMode&&path.endsWith("/accounting/preview"))return reply({plan:correctionPlanFixture(path.split("/")[2]),planHash:"f".repeat(64),externalWrites:0});return reply({error:{code:"fixture_read_only",reason:"This fixture does not simulate accounting or bank writes."}},409);}
  if(path.startsWith("/close/"))return reply(closeUIFixture());
  if(path==="/cases")return reply(cases);

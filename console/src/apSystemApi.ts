@@ -2,6 +2,8 @@ import {closeOperationSchemas,periodSchema,type CloseOperation,type CloseInputs,
 import {accountingCorrectionRequestSchema,domainVoteSchema,type CorrectionView,type CorrectionVote} from "../../src/ap-system/correction-operations";
 import type {AccountingCorrectionRequest} from "../../src/ap-system/quickbooks/corrections";
 import type {QBOPreview,QBOSubmit,QBOVerify} from "../../src/ap-system/quickbooks/runtime";
+import {closeExportRequestSchema,type CloseExportRequest} from "../../src/ap-system/close-contracts";
+import type {QBOCloseStatus,QBOClosePreview,QBOCloseSubmit,QBOCloseVerify} from "../../src/ap-system/quickbooks/close-runtime";
 import { ZodError } from "zod";
 import { domainOperationSchemas, type DomainOperation, type DomainInputs, type GovernanceView, type BusinessProposal } from "../../src/ap-system/domain-operations";
 import { caseDetailSchema, type APCaseDetail, type BillApprovalRequest, type ReviewRequest, type SourceBinding, type SourceDocument } from "../../src/ap-system/contracts";
@@ -76,6 +78,10 @@ export function accountingSelection(value?:APAccountingSelection|string):APAccou
  return input;
 }
 export const apSystemApi = {
+  closeAccountingStatus:(selection:CloseExportRequest,signal?:AbortSignal)=>request<QBOCloseStatus>("/close/accounting/status",{request:closeExportRequestSchema.strict().parse(selection)},signal),
+  closeAccountingPreview:(selection:CloseExportRequest)=>request<QBOClosePreview>("/close/accounting/preview",{request:closeExportRequestSchema.strict().parse(selection)}),
+  closeAccountingSubmit:(selection:CloseExportRequest,expectedPlanHash:string)=>request<QBOCloseSubmit>("/close/accounting/submit",{request:closeExportRequestSchema.strict().parse(selection),expectedPlanHash}),
+  closeAccountingVerify:(selection:CloseExportRequest)=>request<QBOCloseVerify>("/close/accounting/verify",{request:closeExportRequestSchema.strict().parse(selection)}),
   corrections:(caseId:string,signal?:AbortSignal)=>request<CorrectionView>(`/cases/${encodeURIComponent(caseId)}/corrections`,undefined,signal),
   proposeCorrection:(input:AccountingCorrectionRequest)=>request<unknown>(`/cases/${encodeURIComponent(input.caseId)}/corrections/propose`,accountingCorrectionRequestSchema.parse(input)),
   voteCorrection:(caseId:string,input:CorrectionVote)=>request<unknown>(`/cases/${encodeURIComponent(caseId)}/corrections/vote`,domainVoteSchema.strict().parse(input)),

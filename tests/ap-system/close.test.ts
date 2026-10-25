@@ -1062,6 +1062,10 @@ describe("B4 authoritative accounting exports", () => {
       approval: { id: p.proposalId, kind: "business", hash: p.proposalHash },
       journal: { date: "2026-10-31" },
     });
+    const projected=await f.view();
+    expect(projected.accrualApplications).toEqual([{applicationId:app._id,accrualId:app.accrualId,caseId:f.detail.caseId,actionId:null,entryId:app.entryId,date:"2026-10-31",quantity:"2",amountCents:7700,approvalId:p.proposalId,authorityStatus:"current"}]);
+    expect(JSON.stringify(projected.accrualApplications)).not.toContain("allocations");
+    const reread=await f.view();expect(reread.snapshotHash).toBe(projected.snapshotHash);expect(reread.reconciliationHash).toBe(projected.reconciliationHash);
     expect(
       await f.t.run((ctx) => ctx.db.query("journalEntries").collect()),
     ).toHaveLength(3);

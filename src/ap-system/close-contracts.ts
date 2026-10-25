@@ -231,6 +231,8 @@ export type PeriodView = {
     entryId: string;
     expectedInvoiceCaseId: string | null;
   }[];
+  /** Immutable applications posted in this accounting month; export rechecks current authority. */
+  accrualApplications?: {applicationId:string;accrualId:string;caseId:string|null;actionId:string|null;entryId:string;date:string;quantity:string;amountCents:number;approvalId:string|null;authorityStatus:"current"|"unavailable"}[];
   history: {
     actionId: string;
     kind: string;

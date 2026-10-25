@@ -766,8 +766,18 @@ export const view = query({
   handler: async (ctx, args) => {
     await requirePaymentHuman(ctx, args.scope);
     const period = periodSchema.parse(args.period);
+    // Discovery only: do not change the reconciliation/close hash or grant export authority.
+    const applicationRows = (await ctx.db.query("apAccrualApplications")
+      .withIndex("by_run", q => q.eq("scope.runId",args.scope.runId)).collect())
+      .filter(row => canonical(row.scope) === canonical(args.scope) && row.date.slice(0,7) === period);
+    const accrualApplications = await Promise.all(applicationRows.map(async row => {
+      let approvalId:string|null=null,authorityStatus:"current"|"unavailable"="unavailable";
+      try {const current=await loadApprovedCloseExport(ctx,args.scope,{accrualApplicationId:row._id});approvalId=current.approval.id;authorityStatus="current";} catch {/* A saved receipt alone never establishes current authority. */}
+      return {applicationId:row._id,accrualId:row.accrualId,caseId:row.caseId??null,actionId:row.actionId??null,entryId:row.entryId,date:row.date,quantity:row.quantity,amountCents:row.amountCents,approvalId,authorityStatus};
+    }));
     return {
       ...(await readPeriodView(ctx, args.scope, period)),
+      accrualApplications,
       actions: await ctx.db
         .query("apCloseActions")
         .withIndex("by_run", (q) => q.eq("scope.runId", args.scope.runId))
