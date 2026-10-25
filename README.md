@@ -1,5 +1,7 @@
 # Autonomous Finance
 
+AP teammates: start with [TEAMMATE-HANDOFF.md](TEAMMATE-HANDOFF.md) for the complete branch/file map, verified sandbox evidence and private setup requirements.
+
 AI agents run the finance department of a restaurant chain modeled on Sweetgreen: accounts payable, payments, cash, revenue, payroll, leases and the month-end close. A human CFO only makes the management decisions, like approving a large payment or signing off on the close.
 
 Built at Cal Hacks 13.0.
