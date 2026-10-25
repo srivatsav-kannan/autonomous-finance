@@ -1,3 +1,5 @@
+import {contactUIFixture,withContactUIEvidence,contactUISourceText} from "../../../../tests/ap-system-contact-ui.fixture";
+import type {GovernanceView} from "../../../../src/ap-system/domain-operations";
 import {timingUIFixture} from "../../../../tests/ap-system-timing-ui.fixture";
 import {costUIFixture} from "../../../../tests/ap-system-cost-ui.fixture";
 import {useState,useEffect,type CSSProperties} from "react";
@@ -13,7 +15,12 @@ import "../../../../console/src/apSystem.css";
 import tokens from "../../../../console/src/tokens.css?raw";
 import "./fixture.css";
 const fixtureMode=new URLSearchParams(location.search).get("apFixture"),creditMode=fixtureMode==="credit-allocation"||fixtureMode==="credit-review",correctionMode=creditMode||fixtureMode==="corrections"||fixtureMode==="correction-review";
-const cases=caseDetailSchema.array().parse(raw.cases),run=structuredClone(raw.run);
+const contactMode=fixtureMode?.startsWith("contacts")??false;
+const parsedCases=caseDetailSchema.array().parse(raw.cases),cases=contactMode?withContactUIEvidence(parsedCases):parsedCases,run=structuredClone(raw.run);
+const governance=structuredClone(raw.governance) as unknown as GovernanceView;
+if(contactMode)governance.policies.forEach(p=>p.policy.supplierContactEscalationGroup=p.policy.varianceApprovalGroup);
+const contacts=contactMode?contactUIFixture(governance,cases):{changes:[],contacts:[],suppliers:[],controllerProposalAvailable:true};
+if(contactMode&&["contacts-escalation","contacts-decision","contacts-rejected"].includes(fixtureMode!)){const c=contacts.changes[0]!;c.verification={method:"independent_reestablishment",performedAt:c.createdAt+60000,evidence:c.proposal.oldChannel.evidence,mode:"simulated",reason:"Synthetic verification example; no real communication",subject:"synthetic-verifier",seatId:"synthetic-verifier",recordedAt:c.createdAt+60000};if(fixtureMode==="contacts-decision")c.escalation={...c.verification,subject:"synthetic-escalator",seatId:"synthetic-escalator",reason:"Synthetic escalation example",performedAt:c.createdAt+120000,recordedAt:c.createdAt+120000};if(fixtureMode==="contacts-rejected"){c.status="rejected";c.decision={subject:"synthetic-approver",seatId:"synthetic-approver",outcome:"rejected",reason:"Synthetic rejection keeps the hold",recordedAt:c.createdAt+180000};}}
 if(creditMode){const c=cases.find(c=>c.caseId==="synthetic-approved")!;if(c.domain)c.domain.creditApplications=[2500,2775].map((amountCents,i)=>({applicationId:`synthetic-application-${i===0?"a":"b"}`,billId:c.links.billId!,creditId:`synthetic-credit-${i}`,amountCents,actor:"synthetic-human",at:1792886400000}));}
 let action="No fixture action yet.";
 // This fixture owns its entire mocked transport. It never forwards requests.
@@ -21,6 +28,9 @@ configureAPSession({mode:"local"});
 window.fetch=async(input,init)=>{
  const url=new URL(String(input),location.href),path=url.pathname.replace('/api/ap-system','');
  const reply=(value:unknown,status=200)=>Promise.resolve(new Response(JSON.stringify(value),{status,headers:{"Content-Type":"application/json"}}));
+ if(path.startsWith("/sources/synthetic-contact-evidence/"))return new Response(contactUISourceText,{headers:{"Content-Type":"text/plain"}});
+ if(path==="/supplier-contacts"&&init?.method!=="POST")return reply(contacts);
+ if(path.startsWith("/supplier-contacts/")){action=`Synthetic fixture only: ${path}. No backend or supplier communication.`;window.dispatchEvent(new Event("fixture-action"));return reply({error:{code:"fixture_review_stage",reason:"This presentation fixture keeps immutable stage examples. Use contacts-escalation, contacts-decision or contacts-rejected to inspect another stage; no decision was recorded."}},409);}
  if(path.startsWith("/close/accounting/")){
   const selection=JSON.parse(String(init?.body??"{}"));
   if(path.endsWith("/status"))return reply({externalWritesAllowed:false,configuration:"configured",grant:"authorization_required",mappings:"configured",exportId:"accrual:synthetic-accrual-journal",receipts:[],holds:[],complete:true,externalVerification:"not_checked"});
@@ -32,7 +42,7 @@ window.fetch=async(input,init)=>{
  if(path.startsWith("/close/"))return reply(closeUIFixture());
  if(path==="/cases")return reply(cases);
  if(path==="/metrics")return reply(timingUIFixture(cases));
- if(path==="/business")return reply({...raw.governance,policies:raw.governance.policies.map(p=>({...p,policy:{...p.policy,accounts:[...p.policy.accounts,{account:"6000",treatment:"expense"},{account:"1200",treatment:"inventory"}]}}))});
+ if(path==="/business")return reply({...governance,policies:governance.policies.map(p=>({...p,policy:{...p.policy,accounts:[...p.policy.accounts,{account:"6000",treatment:"expense"},{account:"1200",treatment:"inventory"}]}}))});
  if(path==="/payment-runs")return reply([{runId:run.runId,snapshotHash:run.snapshotHash,caseIds:run.items.map(i=>i.caseId),executionDate:run.executionDate,createdAt:run.createdAt}]);
  if(path===`/payment-runs/${run.runId}`)return reply(run);
  if(path.includes("/credit-applications/"))return reply(creditApplicationUIFixture(cases.find(c=>c.caseId===path.split("/")[2])?.links.billId??"missing"));

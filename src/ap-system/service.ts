@@ -1,3 +1,5 @@
+import {contactChangeOperationSchemas} from "./supplier-contact-contracts";
+import type {SupplierContactOperations} from "./supplier-contact-operations";
 import {createQBOCloseBridge} from "./quickbooks/close-runtime";
 import type {ConvexHttpClient} from "convex/browser";
 import {makeFunctionReference} from "convex/server";
@@ -27,6 +29,15 @@ export function createAPWorkspaceService(options:{
   prepare:input=>agent.mutation(makeFunctionReference<"mutation">("apPaymentRuns:prepare"),{scope,...options.paymentsCredential,...input}),
   authorize:input=>human.mutation(makeFunctionReference<"mutation">("apPaymentRuns:authorize"),{scope,...input}),
   cancel:input=>human.mutation(makeFunctionReference<"mutation">("apPaymentRuns:cancel"),{scope,...input}),
+ };
+ const supplierContacts:SupplierContactOperations={
+  view:async()=>({...await human.query(makeFunctionReference<"query">("apSupplierContacts:view"),{scope}),controllerProposalAvailable:!!options.controllerCredential}),
+  execute:async(operation,input)=>{
+   const parsed=contactChangeOperationSchemas[operation].parse(input);
+   const credential=operation==="propose"?options.controllerCredential:undefined;
+   if(operation==="propose"&&!credential)throw new APHttpError("controller_unavailable",503,"A separate scoped controller agent is required to propose a supplier contact change.");
+   return (credential?agent:human).mutation(makeFunctionReference<"mutation">(`apSupplierContacts:${operation}`),{scope,...(credential??{}),...(operation==="decide"?{input:parsed}:parsed)});
+  },
  };
  const domain:DomainOperations={
   view:async()=>({...await human.query(makeFunctionReference<"query">("apBusinessConfig:view"),{scope}),controllerProposalAvailable:!!options.controllerCredential}),
@@ -63,7 +74,7 @@ export function createAPWorkspaceService(options:{
   vote:async(caseId,input)=>{const parsed=domainVoteSchema.strict().parse(input);if(!(await correctionRows(caseId)).some(p=>p._id===parsed.proposalId&&p.caseId===caseId))throw new APHttpError("case_mismatch",409,"This correction proposal is not linked to the selected case.");return human.mutation(makeFunctionReference<"mutation">("apAccountingCorrections:vote"),{scope,input:parsed});},
  };
  return{
-  paymentRuns,domain,close,corrections,
+  paymentRuns,domain,close,corrections,supplierContacts,
   operationalTimings:()=>human.query(makeFunctionReference<"query">("apOperationalMetrics:current"),{scope}),
   closeAccounting:{status:closeQbo.status,preview:closeQbo.preview,submit:(request,hash)=>{requireExternal();return closeQbo.submit(request,hash);},verify:request=>{requireExternal();return closeQbo.verify(request);}},
   accounting:{status:async caseId=>({...await qbo.status(caseId),externalWritesAllowed}),preview:qbo.preview,submit:(request,hash)=>{requireExternal();return qbo.submit(request,hash);},verify:request=>{requireExternal();return qbo.verify(request);}},

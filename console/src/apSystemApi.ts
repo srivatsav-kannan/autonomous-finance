@@ -1,3 +1,5 @@
+import {contactChangeOperationSchemas,type ContactChangeOperation,type ContactChangeInputs} from "../../src/ap-system/supplier-contact-contracts";
+import type {SupplierContactWorkspaceView} from "../../src/ap-system/supplier-contact-operations";
 import type {OperationalTimings} from "../../src/ap-system/operational-timing";
 import type {CostState} from "../../src/ap-system/cost-contracts";
 import {closeOperationSchemas,periodSchema,type CloseOperation,type CloseInputs,type CloseView} from "../../src/ap-system/close-operations";
@@ -80,6 +82,8 @@ export function accountingSelection(value?:APAccountingSelection|string):APAccou
  return input;
 }
 export const apSystemApi = {
+  supplierContacts:(signal?:AbortSignal)=>request<SupplierContactWorkspaceView>("/supplier-contacts",undefined,signal),
+  contactChange:<K extends ContactChangeOperation>(operation:K,input:ContactChangeInputs[K])=>request<unknown>(`/supplier-contacts/${operation}`,contactChangeOperationSchemas[operation].parse(input)),
   operationalTimings:(signal?:AbortSignal)=>request<OperationalTimings>("/metrics",undefined,signal),
   creditApplication:(caseId:string,applicationId:string,signal?:AbortSignal)=>request<CreditApplication>(`/cases/${encodeURIComponent(caseId)}/credit-applications/${encodeURIComponent(applicationId)}`,undefined,signal),
   costState:(originalEntryId:string,signal?:AbortSignal)=>request<CostState>(`/close/cost-state/${encodeURIComponent(originalEntryId)}`,undefined,signal),

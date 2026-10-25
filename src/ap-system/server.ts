@@ -1,3 +1,5 @@
+import {contactChangeOperationSchemas,type ContactChangeOperation} from "./supplier-contact-contracts";
+import type {SupplierContactOperations} from "./supplier-contact-operations";
 import type {OperationalTimings} from "./operational-timing";
 import {closeExportRequestSchema} from "./close-contracts";
 import type {QBOCloseBridge} from "./quickbooks/close-runtime";
@@ -39,6 +41,7 @@ export interface APWorkspaceService {
  closeAccounting?:QBOCloseBridge;
  corrections?:CorrectionOperations;
  operationalTimings?():Promise<OperationalTimings>;
+ supplierContacts?:SupplierContactOperations;
  runtime():unknown;
 }
 export type APExternalAuthentication = {
@@ -119,6 +122,15 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
    if(req.method==="GET"&&url.pathname===PREFIX+"/metrics"){
     if(!service.operationalTimings)throw new APHttpError("capability_unavailable",503,"Operational event timings are unavailable on this service.");
     return send(res,await service.operationalTimings());
+   }
+   const contacts=/^\/api\/ap-system\/supplier-contacts(?:\/([a-z]+))?$/.exec(url.pathname);
+   if(contacts){
+    if(!service.supplierContacts)throw new APHttpError("capability_unavailable",503,"Supplier contact change review is unavailable on this service.");
+    if(req.method==="GET"&&!contacts[1])return send(res,await service.supplierContacts.view());
+    if(req.method==="POST"&&contacts[1]&&Object.hasOwn(contactChangeOperationSchemas,contacts[1])){
+     const operation=contacts[1] as ContactChangeOperation;
+     return send(res,await service.supplierContacts.execute(operation,contactChangeOperationSchemas[operation].parse(await json(req))));
+    }
    }
    const creditApplication=/^\/api\/ap-system\/cases\/([^/]+)\/credit-applications\/([^/]+)$/.exec(url.pathname);
    if(req.method==="GET"&&creditApplication){
