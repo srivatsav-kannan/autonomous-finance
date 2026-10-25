@@ -1,0 +1,530 @@
+{
+  "dataset": {
+    "dataset": "mercor/apex-accounting-harbor",
+    "revision": "1662b7e4c3b04b8717f2f723df823e7b6cbe2118",
+    "license": "CC-BY-4.0",
+    "world": "worlds/world-9--(world_0645ad7c997c415e8c43f8de7cee2008)",
+    "label": "Synthetic company dataset authored for an accounting benchmark (Mercor/Ramp APEX-Accounting). Not a real customer's books and not Sweetgreen data."
+  },
+  "rows": [
+    {
+      "file": "Avila_AVILA-202403-A1.pdf",
+      "sha256": "c974e400eacb221d0a07fae70bd00a3a1f34574b9119c427fae3940f1025c4ff",
+      "parsed": true,
+      "invoiceNumber": "AVILA-202403-A1",
+      "supplierPrinted": "Marcus Avila, Esq.",
+      "vendorMasterName": "Marcus Avila, Esq.",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00327",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "17.5"
+      ],
+      "rateCents": [
+        20000
+      ],
+      "totalCents": 350000,
+      "arithmeticExact": true,
+      "bankCandidates": [
+        "OBT-000200"
+      ]
+    },
+    {
+      "file": "Avila_AVILA-202405-A2.pdf",
+      "sha256": "ef587e4f5464e78f55b7921ed569e160674c431b4cd10d4aa98adfc70bd312e3",
+      "parsed": true,
+      "invoiceNumber": "AVILA-202405-A2",
+      "supplierPrinted": "Marcus Avila, Esq.",
+      "vendorMasterName": "Marcus Avila, Esq.",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00328",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "19"
+      ],
+      "rateCents": [
+        20000
+      ],
+      "totalCents": 380000,
+      "arithmeticExact": true,
+      "bankCandidates": [
+        "OBT-000342"
+      ]
+    },
+    {
+      "file": "Avila_AVILA-202407-A3.pdf",
+      "sha256": "d5df446359870524acd9368f36893598f23ffea565e05fdd090a10d9022684d2",
+      "parsed": true,
+      "invoiceNumber": "AVILA-202407-A3",
+      "supplierPrinted": "Marcus Avila, Esq.",
+      "vendorMasterName": "Marcus Avila, Esq.",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00329",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "16"
+      ],
+      "rateCents": [
+        20000
+      ],
+      "totalCents": 320000,
+      "arithmeticExact": true,
+      "bankCandidates": [
+        "OBT-000476"
+      ]
+    },
+    {
+      "file": "Avila_AVILA-202409-A4.pdf",
+      "sha256": "41b05248e09ec72540714d30634bc64240a71f48f1f65deaedd05c0e35fe8903",
+      "parsed": true,
+      "invoiceNumber": "AVILA-202409-A4",
+      "supplierPrinted": "Marcus Avila, Esq.",
+      "vendorMasterName": "Marcus Avila, Esq.",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00330",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "17.5"
+      ],
+      "rateCents": [
+        20000
+      ],
+      "totalCents": 350000,
+      "arithmeticExact": true,
+      "bankCandidates": [
+        "OBT-000691"
+      ]
+    },
+    {
+      "file": "Avila_AVILA-202410-A5.pdf",
+      "sha256": "5eeb4ff816ab1e92f1419b12438b49a1508032a664383b501e44d3dec19bc79a",
+      "parsed": true,
+      "invoiceNumber": "AVILA-202410-A5",
+      "supplierPrinted": "Marcus Avila, Esq.",
+      "vendorMasterName": "Marcus Avila, Esq.",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00331",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "15"
+      ],
+      "rateCents": [
+        20000
+      ],
+      "totalCents": 300000,
+      "arithmeticExact": true,
+      "bankCandidates": [
+        "OBT-000773"
+      ]
+    },
+    {
+      "file": "Avila_AVILA-202412-A6.pdf",
+      "sha256": "affe956edfd5d94a895ef35404bd149904199eeda2c593bd172c59bb13c9d9bc",
+      "parsed": true,
+      "invoiceNumber": "AVILA-202412-A6",
+      "supplierPrinted": "Marcus Avila, Esq.",
+      "vendorMasterName": "Marcus Avila, Esq.",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00332",
+      "ledgerStatus": "Open",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "15"
+      ],
+      "rateCents": [
+        20000
+      ],
+      "totalCents": 300000,
+      "arithmeticExact": true,
+      "bankCandidates": []
+    },
+    {
+      "file": "Kao_KAO-202401-001.pdf",
+      "sha256": "ed7a603ad6de2a84d154e4dcd3e0685e48c2eedf4ab6e9ff95a9ae99fa4dcb6f",
+      "parsed": true,
+      "invoiceNumber": "KAO-202401-001",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00315",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000060"
+      ]
+    },
+    {
+      "file": "Kao_KAO-202402-002.pdf",
+      "sha256": "9772cc49fb6755055ace5305ed0131199234d10e314888b7796c207703375c84",
+      "parsed": true,
+      "invoiceNumber": "KAO-202402-002",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00316",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000116"
+      ]
+    },
+    {
+      "file": "Kao_KAO-202403-003.pdf",
+      "sha256": "2483bfd237fcaec218efa9892d59d15539e271e1b7819a2a851f3e3088417f1c",
+      "parsed": true,
+      "invoiceNumber": "KAO-202403-003",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00317",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000190"
+      ]
+    },
+    {
+      "file": "Kao_KAO-202404-004.pdf",
+      "sha256": "d5e3bc27ed8bffb8e7f25031d55ccd0e8ce452738afcd0e8cfacbc62f6ecfe32",
+      "parsed": true,
+      "invoiceNumber": "KAO-202404-004",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00318",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000248"
+      ]
+    },
+    {
+      "file": "Kao_KAO-202405-005.pdf",
+      "sha256": "8e69b92c75123b4fd599ba1b32d3281ddf1f6f81b3e55d15f25291d7f6527bb5",
+      "parsed": true,
+      "invoiceNumber": "KAO-202405-005",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00319",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000337"
+      ]
+    },
+    {
+      "file": "Kao_KAO-202406-006.pdf",
+      "sha256": "29a741e4f224e02e11cb366a7cb3a481693289578413bd5a8e6ab827e2b246e7",
+      "parsed": true,
+      "invoiceNumber": "KAO-202406-006",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00320",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000408"
+      ]
+    },
+    {
+      "file": "Kao_KAO-202407-007.pdf",
+      "sha256": "53e0ab4ed8f31cd4c632580f73e9857636a896d251c3469799556be564ca7204",
+      "parsed": true,
+      "invoiceNumber": "KAO-202407-007",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00321",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000482"
+      ]
+    },
+    {
+      "file": "Kao_KAO-202408-008.pdf",
+      "sha256": "923ae4d47cb932fd75740a89b436d2b3ba250791650859242e3ed6011e9c3029",
+      "parsed": true,
+      "invoiceNumber": "KAO-202408-008",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00322",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000557"
+      ]
+    },
+    {
+      "file": "Kao_KAO-202409-009.pdf",
+      "sha256": "d123d7733527c7a087fa630cf004cb6ef79f962ca813aa844d126b6bdf1ac589",
+      "parsed": true,
+      "invoiceNumber": "KAO-202409-009",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00323",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000663"
+      ]
+    },
+    {
+      "file": "Kao_KAO-202410-010.pdf",
+      "sha256": "7d5a3f8428a5e8d6d00efe7790163682a1689c45adecf2561b11102f9a19a225",
+      "parsed": true,
+      "invoiceNumber": "KAO-202410-010",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00324",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000744"
+      ]
+    },
+    {
+      "file": "Kao_KAO-202411-011.pdf",
+      "sha256": "0fd7d96dc724c7524de4584b8a21904076d763573f653e297d1771ae9c4d7a86",
+      "parsed": true,
+      "invoiceNumber": "KAO-202411-011",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00325",
+      "ledgerStatus": "Open",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": []
+    },
+    {
+      "file": "Kao_KAO-202412-012.pdf",
+      "sha256": "551d3c9a4f7dee01a3e620a4a5f17e5cee2ee32ca6302993d8d248d0f5ca7db7",
+      "parsed": true,
+      "invoiceNumber": "KAO-202412-012",
+      "supplierPrinted": "Jennifer Kao Law PLLC",
+      "vendorMasterName": "Jennifer Kao Law PLLC",
+      "supplierNameMatchesMaster": true,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00326",
+      "ledgerStatus": "Open",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "24.2"
+      ],
+      "rateCents": [
+        16500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": []
+    },
+    {
+      "file": "Westfield_WLS-2024-Q2-1.pdf",
+      "sha256": "458fbb26c975f3ede3295b8022668f7fb72b6113c75c68969ef39d8ecd82f435",
+      "parsed": true,
+      "invoiceNumber": "WLS-2024-Q2-1",
+      "supplierPrinted": "Westfield Legal Services",
+      "vendorMasterName": "Westfield Legal Services LLC",
+      "supplierNameMatchesMaster": false,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00333",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "27.6"
+      ],
+      "rateCents": [
+        14500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000285"
+      ]
+    },
+    {
+      "file": "Westfield_WLS-2024-Q3-2.pdf",
+      "sha256": "591586c91ecabfca5f555680edcc819eddac8964a7a98c10265a16a8721dffdf",
+      "parsed": true,
+      "invoiceNumber": "WLS-2024-Q3-2",
+      "supplierPrinted": "Westfield Legal Services",
+      "vendorMasterName": "Westfield Legal Services LLC",
+      "supplierNameMatchesMaster": false,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00334",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "27.6"
+      ],
+      "rateCents": [
+        14500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000602"
+      ]
+    },
+    {
+      "file": "Westfield_WLS-2024-Q4-3.pdf",
+      "sha256": "38f5c1fc71d1d6ac99206e366c8ccc5536a6d889d4b9fee30d2509dd9ae6cb9e",
+      "parsed": true,
+      "invoiceNumber": "WLS-2024-Q4-3",
+      "supplierPrinted": "Westfield Legal Services",
+      "vendorMasterName": "Westfield Legal Services LLC",
+      "supplierNameMatchesMaster": false,
+      "ledgerRows": 1,
+      "billId": "BILL-2024-00335",
+      "ledgerStatus": "Paid",
+      "totalMatchesLedger": true,
+      "dateMatchesLedger": true,
+      "hours": [
+        "27.6"
+      ],
+      "rateCents": [
+        14500
+      ],
+      "totalCents": 400000,
+      "arithmeticExact": false,
+      "bankCandidates": [
+        "OBT-000909"
+      ]
+    }
+  ]
+}
