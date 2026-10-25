@@ -69,13 +69,16 @@ We think agents shouldn't use tools built for humans. If agents are going to run
 
 Autonomous Finance runs accounts payable for a restaurant chain modeled on Sweetgreen. Agents do the work. People make the decisions that need a person: approving a bill, releasing a payment, settling a dispute.
 
-**One invoice, from PDF to reconciled payment (`/ap-system`):**
+It all runs in one console: the CFO's inbox, invoices, payments, bank and cash, the ledger, the agents and their memory, the connectors, and every result we measured with the file it came from.
+
+**One invoice, from PDF to reconciled payment:**
 - An invoice arrives as a PDF, along with its purchase order and delivery receipt. Each field we extract links back to where it appears in the original, so a reviewer can check it against the source.
 - Approving the fields, approving the bill and releasing the payment are three separate decisions. Approving a bill records what we owe. It doesn't pay anything.
 - If an invoice bills for more than was ordered or delivered, the case is held and a person decides. The agent doesn't quietly pay less. If only part of an invoice is accepted, the rest stays visible as disputed.
 - Payments go out through Increase, a bank API. If the bank accepts a payment and our worker crashes before recording it, a new worker asks the bank about the original payment instead of sending a second one. The result is one transfer and one entry in the books.
 - The approved bill and the settled payment are written into QuickBooks, so the company's accountants see them in the tool they already use. Paying a bill reduces what we owe and our cash. It doesn't record the expense a second time.
 - We ran one synthetic $678.60 invoice through the real QuickBooks and Increase sandboxes (their test versions): QuickBooks Bill 145, BillPayment 146 linked to it, and one Increase transfer matched to its bank debit.
+- A second synthetic invoice, for $77, went through the whole flow in the sandboxes with the case worker. It waited for a missing receipt, picked up again when the receipt arrived, and settled through Increase, with QuickBooks Bill 147 and BillPayment 148 and the bank debit matched.
 
 **The agents, and the rest of the department:**
 - In our simulated Sweetgreen (calibrated to its FY2025 10-K: $679.5M revenue, 281 restaurants), invoices arrive in different formats. For a format nobody has seen, the model reads it once and an agent writes a parser for it. The controller agent tests the parser before it's used, and after that the format is read by code with no model call.

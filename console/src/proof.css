@@ -27,5 +27,9 @@
 .ap-decisions { margin-top: 32px; }
 .ap-decisions tr.clickable { cursor: pointer; }
 .nav-label + button { margin-top: 0; }
-.ap-decisions td[data-label="Why"] { min-width: 320px; }
 .ap-decisions td[data-label="Invoice"] { white-space: nowrap; }
+.ap-decisions .decision-table th:first-child { width: 20%; }
+.ap-decisions .decision-table th:nth-child(2) { width: 17%; }
+.ap-decisions .decision-table th:nth-child(3) { width: 15%; }
+.ap-decisions .decision-table th:nth-child(4) { width: 11%; }
+.ap-decisions .decision-table th:nth-child(5) { width: 37%; }
