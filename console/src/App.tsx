@@ -6,6 +6,7 @@ import { registerWebMcpTools } from "./webmcp";
 import { gateway } from "./gateway";
 import { Icon } from "./Icon";
 import { ReviewDrawer } from "./ReviewDrawer";
+import { AskEffectSummary } from "./AskEffect";
 import { Ledger } from "./Ledger";
 import { Bank } from "./Bank";
 import { EvidenceRecord } from "./EvidenceRecord";
@@ -297,7 +298,7 @@ function AskDetail({ runId, ask, onAnswered }: { runId: string; ask: Doc<"asks">
     </div>
     <footer className="drawer-footer">
       {result && <p className={`feedback ${failed ? "error" : ""}`} role={failed ? "alert" : "status"}>{result}</p>}
-      {!answered ? <><p className="action-hint">Your response will be sent to {seatName(ask.from)}.</p><div className="ask-actions" aria-busy={busy}>{ask.options.map((o, i) => <button type="button" key={o.id} disabled={busy} aria-busy={busy} className={i === 0 ? "primary" : ""} onClick={() => void choose(o.id)}>{o.label}</button>)}</div></> : <p className="response-confirmed" ref={confirmation} tabIndex={-1}><Icon name="check" />{ask.options.find((o) => o.id === (ask.answer?.optionId ?? submitted))?.label ?? "Response recorded"}</p>}
+      {!answered ? <><AskEffectSummary effect={ask.effect} /><p className="action-hint">Your response will be sent to {seatName(ask.from)}.</p><div className="ask-actions" aria-busy={busy}>{ask.options.map((o, i) => <button type="button" key={o.id} disabled={busy} aria-busy={busy} className={i === 0 ? "primary" : ""} onClick={() => void choose(o.id)}>{o.label}</button>)}</div></> : <p className="response-confirmed" ref={confirmation} tabIndex={-1}><Icon name="check" />{ask.options.find((o) => o.id === (ask.answer?.optionId ?? submitted))?.label ?? "Response recorded"}</p>}
     </footer>
   </article>;
 }

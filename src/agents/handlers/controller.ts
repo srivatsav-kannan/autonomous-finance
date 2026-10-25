@@ -175,8 +175,7 @@ export const approvePayment: Handler = async (rt, task) => {
     body: `${intent.billIds.length} approved bill(s), remit to ${intent.remitTo.bank} ****${intent.remitTo.accountLast4} (verified ${vendorRec?.vendor.remitTo.verifiedOn}). ` +
       `Controller ${withinMine ? "approved" : "is over its limit"}${cfoAvailable ? "; the CFO agent is the other approver" : ""}. ` +
       (intent.requiresHuman ? "Policy requires a human at this amount." : "No second agent can approve this amount, so a human must."),
-    options: [{ id: "approve", label: "Approve payment" }, { id: "reject", label: "Reject" }],
-    paymentIntentId: intentId,
+    effect: { kind: "payment", paymentIntentId: intentId },
     taskId: task._id,
   });
   return { outcome: "asked", summary: "human approval required", waiting: true };

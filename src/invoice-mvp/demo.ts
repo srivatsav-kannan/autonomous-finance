@@ -4,7 +4,8 @@ import type { SourceInput } from "./contracts";
 export function demoBatch(stage: "initial" | "late" = "initial"): { label: string; documents: SourceInput[] } {
   const invoice = "INVOICE\nCustomer ID: demo-acorn\nCustomer: Acorn Design\nDocument Number: AC-100\nCurrency: USD\nTotal: USD 1000.00\nStatus: issued";
   const source = (externalId: string, name: string, text: string): SourceInput => ({ externalId, name, mimeType: "text/plain", text });
-  if (stage === "late") return { label: "Late corrected Birch invoice", documents: [source("demo-revision", "Birch corrected.txt", "INVOICE\nCustomer ID: demo-birch\nCustomer: Birch Studio\nDocument Number: BI-20\nCurrency: USD\nTotal: USD 450.00\nStatus: issued")] };
+  // The importer explicitly versions demo-revision. It replaces a recorded invoice, so a human reviews it.
+  if (stage === "late") return { label: "Late corrected Birch invoice", documents: [{ ...source("demo-revision", "Birch corrected.txt", "INVOICE\nCustomer ID: demo-birch\nCustomer: Birch Studio\nDocument Number: BI-20\nCurrency: USD\nTotal: USD 450.00\nStatus: issued"), newVersion: true }] };
   return { label: "Synthetic invoice review demo", documents: [
     { ...source("demo-customer-acorn", "Acorn customer.csv", "customer_id,legal_name\ndemo-acorn,Acorn Design"), mimeType: "text/csv" },
     { ...source("demo-customer-birch", "Birch customer.csv", "customer_id,legal_name\ndemo-birch,Birch Studio"), mimeType: "text/csv" },

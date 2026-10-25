@@ -18,11 +18,12 @@ async function fixture() {
     runId: k.runId, type: "payments.approve", role: "controller", status: "waiting", priority: 2, payload: { intentId },
     idempotencyKey: `approve:${intentId}`, createdBy: "payments", attempts: 1, createdAt: 0, updatedAt: 0,
   });
-  const askId = await k.h.seed("asks", {
-    runId: k.runId, from: "controller", to: "human_cfo", severity: "decision", title: "Approve $100.00 to Vendor 1", body: "evidence",
-    evidence: [], options: [{ id: "approve", label: "Approve payment" }, { id: "reject", label: "Reject" }],
-    paymentIntentId: intentId, taskId, status: "open", createdAt: 0,
+  const created = await controller.client.mutation(api.asks.createAsk, {
+    ...controller.auth, to: "human_cfo", severity: "decision", title: "Approve $100.00 to Vendor 1", body: "evidence",
+    evidence: [], effect: { kind: "payment", paymentIntentId: intentId }, taskId,
   });
+  if (!created.ok) throw new Error(created.error);
+  const askId = created.askId;
   const intent = () => k.h.ctx.db.get(intentId);
   const ask = () => k.h.ctx.db.get(askId);
   return { k, human, controller, intentId, taskId, askId, intent, ask };
