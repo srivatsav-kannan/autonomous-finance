@@ -202,6 +202,7 @@ export class Team {
         const n = seats.length + 1;
         const seatId = `${role.replace("_", "-")}-${n}`;
         if (this.stopped) return;
+        const minted = !this.tokens[seatId];
         const token = this.tokens[seatId] ?? newToken();
         // Save before sending: a lost spawn response must retain the same credential.
         this.tokens[seatId] = token;
@@ -211,6 +212,15 @@ export class Team {
           ...cfo.kernel.auth, requestId: `spawn:${seatId}:${hashToken(token)}`, newSeatId: seatId, role, name, tokenHash: hashToken(token), reportsTo: "controller", effort: "medium",
           reason: `Automatic staffing for ${role}`,
         }), this.scheduling.signal);
+        if (!r.ok && r.code === "exists") {
+          // Another worker or an earlier run owns this seat; a credential minted here is not its token.
+          if (minted) {
+            delete this.tokens[seatId];
+            fs.writeFileSync(this.tokensFile, JSON.stringify(this.tokens, null, 2), { mode: 0o600 });
+          }
+          this.log(`cfo-agent skipped ${seatId}: seat already exists`);
+          continue;
+        }
         checkWorkerResult(r, "seats.spawnSeat");
         if (!r.ok) continue;
         this.log(`+ cfo-agent spawned ${seatId} (${queued} queued)`);

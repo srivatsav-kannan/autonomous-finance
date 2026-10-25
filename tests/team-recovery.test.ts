@@ -189,6 +189,20 @@ describe("shared worker control-plane recovery", () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
+  it("skips automatic staffing when the seat already exists and keeps no minted token for it", async () => {
+    const f = await fixture();
+    const base = f.h.all("seats")[0]!;
+    await f.h.seed("seats", { ...base, _id: undefined, _creationTime: undefined, seatId: "cfo-agent", role: "cfo_agent" } as any);
+    await f.h.seed("seats", { ...base, _id: undefined, _creationTime: undefined, seatId: "ap-clerk-2", status: "retired", tokenHash: "someone-else" } as any);
+    (f.team as any).tokens["cfo-agent"] = f.auth.token;
+    for (let i = 0; i < 12; i++) await f.seed();
+    const write = vi.spyOn(fs, "writeFileSync").mockImplementation(() => {});
+    await f.team.refreshSeats();
+    await expect(f.team.staff()).resolves.toBeUndefined();
+    expect((f.team as any).tokens["ap-clerk-2"]).toBeUndefined();
+    expect(JSON.parse(String(write.mock.calls.at(-1)![1]))).not.toHaveProperty("ap-clerk-2");
+  });
+
   it.each(["bad_token", "http_auth", "config"])("fails clearly without transport retry on %s", async (mode) => {
     const f = await fixture();
     await f.seed();
