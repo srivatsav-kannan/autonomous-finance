@@ -78,7 +78,7 @@ describe("service import validation and authority separation", () => {
   it("persists visible evidence-missing fallback after a processing failure", async () => {
     const backend = new TestBackend(), service = new InvoiceService(backend);
     await service.ingestBatch({ label: "failure", documents: [demoBatch().documents[2]!] });
-    vi.spyOn(backend, "workspace").mockRejectedValueOnce(new Error("synthetic failure"));
+    vi.spyOn(backend, "workspace").mockResolvedValueOnce(await backend.workspace()).mockRejectedValueOnce(new Error("synthetic failure"));
     const result = await service.processPending();
     expect(result.errors).toHaveLength(1);
     expect([...backend.details.values()][0]!.case.status).toBe("evidence_missing");

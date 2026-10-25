@@ -8,6 +8,7 @@ import { ConvexInvoiceBackend } from "./backend";
 import { InvoiceService } from "./service";
 import { demoBatch } from "./demo";
 import { ZERO_USAGE, type InvestigatorModel } from "./model";
+import { extractionFixtures } from "../../tests/fixtures/invoice-extraction";
 
 /** Real application + backend handlers in the repository DB harness. Not a deployed Convex test. */
 async function setup() {
@@ -25,6 +26,41 @@ async function setup() {
   return { h, backend, service: new InvoiceService(backend) };
 }
 describe("actual service and backend handlers on public synthetic data", () => {
+  it("extracts new layouts through the service, keeps approval explicit, and records signed credits exactly once", async () => {
+    const { backend, service } = await setup();
+    const source = extractionFixtures.find((f) => f.id === "letterhead")!.source;
+    const credit = extractionFixtures.find((f) => f.id === "credit-minus")!.source;
+    const mock: InvestigatorModel = { mode: "mock_model", model: "must-not-be-called", reservation: () => ZERO_USAGE, next: async () => { throw new Error("Complete printed candidates do not require a model call"); } };
+    const processing = new InvoiceService(backend, mock);
+    await service.ingestBatch({ label: "Public extraction fixtures", documents: [source, { ...credit, text: credit.text.replace("AW-701", "CM-701") }, { externalId: "registry", name: "customers.csv", mimeType: "text/csv", text: "customer_id,legal_name,aliases\nalpha,Alpha Workshops LLC,Alpha Studio" }] });
+    const result = await processing.processPending();
+    expect(result.errors).toEqual([]);
+    expect(result.processed.every((r) => r.modelCalls === 0 && r.mode === "deterministic")).toBe(true);
+    let workspace = await service.workspace();
+    expect(workspace.progress).toMatchObject({ needsReview: 2, recorded: 0, excluded: 1 });
+    expect(workspace.customerTotals[0]!.netCents).toBe(0);
+    const invoiceCase = workspace.cases.find((c) => c.externalId === source.externalId)!;
+    const proposal = (await service.caseDetail(invoiceCase.caseId)).currentProposal!;
+    expect(proposal.conclusion).toMatchObject({ customerId: "alpha", documentNumber: "AW-701", amountCents: 104525 });
+    const decision = { caseId: invoiceCase.caseId, proposalId: proposal.proposalId, evidenceVersion: invoiceCase.evidenceVersion, action: "accept" as const, idempotencyKey: "approve-printed-invoice", note: "Verified the printed fields against the original source." };
+    await service.decide(decision); await new InvoiceService(backend).decide(decision);
+    expect((await service.workspace()).customerTotals[0]!.netCents).toBe(104525);
+    const creditCase = workspace.cases.find((c) => c.externalId === credit.externalId)!;
+    const creditDetail = await service.caseDetail(creditCase.caseId);
+    expect(creditDetail.currentProposal!.conclusion).toMatchObject({ treatment: "include_credit", amountCents: 104525 });
+    await service.decide({ caseId: creditCase.caseId, proposalId: creditDetail.currentProposal!.proposalId, evidenceVersion: creditCase.evidenceVersion, action: "accept", idempotencyKey: "approve-printed-credit" });
+    workspace = await service.workspace();
+    expect(workspace.customerTotals[0]).toMatchObject({ grossCents: 104525, creditCents: 104525, netCents: 0, validInvoiceCount: 1 });
+    expect(workspace.customerTotals[0]!.contributions).toHaveLength(2);
+  });
+  it("leaves contradictory totals and customer identities unresolved at the actual backend boundary", async () => {
+    const { service } = await setup();
+    await service.ingestBatch({ label: "Conflicting public extraction fixtures", documents: [...extractionFixtures.filter((f) => ["conflicting-totals", "id-name-disagree"].includes(f.id)).map((f) => f.source), { externalId: "registry", name: "customers.csv", mimeType: "text/csv", text: "customer_id,legal_name\nalpha,Alpha Workshops LLC\nbeta,Beta Research" }] });
+    expect((await service.processPending()).errors).toEqual([]);
+    const workspace = await service.workspace();
+    expect(workspace.progress).toMatchObject({ evidenceMissing: 2, recorded: 0 });
+    expect(workspace.customerTotals.every((c) => c.netCents === 0)).toBe(true);
+  });
   it("runs demo, preserves duplicate trace, records exact totals, resumes a decision and late revision", async () => {
     const { backend, service } = await setup();
     await service.ingestBatch(demoBatch());

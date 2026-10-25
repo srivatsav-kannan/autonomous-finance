@@ -61,12 +61,17 @@ export class InvoiceService {
   private async process(maxCases: number): Promise<ProcessResult> {
     const results: InvestigationResult[] = [], errors: ProcessResult["errors"] = [];
     const pendingCases = await this.backend.pendingCases();
+    const registered = (await this.backend.workspace()).customerTotals;
     // CRM sources are dependencies, regardless of filename/order within a batch.
     const prepared = await Promise.all(pendingCases.map(async (pending) => {
-      try { const detail = await this.backend.caseDetail(pending.caseId); const parsed = parseSupportedSource(detail.source, { documentId: detail.source.documentId, version: detail.source.version, contentHash: detail.source.contentHash }); return { pending, isCustomer: parsed.customers.length > 0, fact: { caseId: pending.caseId, status: pending.status, source: { documentId: detail.source.documentId, version: detail.source.version, contentHash: detail.source.contentHash }, conclusion: parsed.conclusion } }; }
+      try { const detail = await this.backend.caseDetail(pending.caseId); const parsed = parseSupportedSource(detail.source, { documentId: detail.source.documentId, version: detail.source.version, contentHash: detail.source.contentHash }, registered); return { pending, detail, parsed, isCustomer: parsed.customers.length > 0, fact: { caseId: pending.caseId, status: pending.status, source: { documentId: detail.source.documentId, version: detail.source.version, contentHash: detail.source.contentHash }, conclusion: parsed.conclusion } }; }
       catch { return { pending, isCustomer: false, fact: undefined }; }
     }));
     prepared.sort((a, b) => Number(b.isCustomer) - Number(a.isCustomer));
+    // Resolve aliases against this batch's registry as well as persisted records. Never pick one of conflicting identities.
+    const identities = [...registered.map(({ customerId, legalName, aliases }) => ({ customerId, legalName, aliases })), ...prepared.flatMap((p) => p.parsed?.customers.map((c) => ({ customerId: c.customerId, legalName: c.customerName, aliases: c.aliases })) ?? [])];
+    const customers = identities.filter((identity, index) => identities.findIndex((other) => JSON.stringify(other) === JSON.stringify(identity)) === index);
+    for (const p of prepared) if (p.fact && p.detail) p.fact.conclusion = parseSupportedSource(p.detail.source, p.fact.source, customers).conclusion;
     const facts = prepared.flatMap((p): RelatedFact[] => p.fact ? [p.fact] : []);
     for (const { pending, isCustomer, fact } of prepared.slice(0, maxCases)) {
       try {
@@ -74,7 +79,9 @@ export class InvoiceService {
         await this.backend.beginInvestigation(pending.caseId);
         const detail = await this.backend.caseDetail(pending.caseId);
         if (["recorded", "excluded", "superseded", "duplicate", "needs_review", "evidence_missing"].includes(detail.case.status)) continue;
-        const needsJudgment = !fact || fact.conclusion.treatment === "needs_evidence" || fact.conclusion.contradictions.length > 0 || facts.some((other) => other.caseId !== pending.caseId && fact.conclusion.documentNumber && other.conclusion.documentNumber === fact.conclusion.documentNumber && other.conclusion.customerId === fact.conclusion.customerId);
+        // Complete printed candidates can go straight to human review, with all warnings intact.
+        // Reserve optional model investigation for gaps, not routine extraction or reviewable candidates.
+        const needsJudgment = !fact || fact.conclusion.treatment === "needs_evidence";
         results.push(await investigate(this.backend, detail, isCustomer || !needsJudgment ? undefined : this.model, 10, facts));
       } catch (e) {
         errors.push({ caseId: pending.caseId, code: e instanceof InvoiceError ? e.code : "investigation_failed", message: e instanceof InvoiceError ? e.message : "Investigation failed; pending work remains durable for retry." });
