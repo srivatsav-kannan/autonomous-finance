@@ -10,6 +10,10 @@ import { sourceChanges, sourceKey, sourceSnapshots, textDiff, valueDiff } from "
 
 export function APTraceability({ detail, children }: { detail: APCaseDetail; children: ReactNode }) {
   const events = useMemo(() => chronologicalEvents(detail.timeline), [detail.timeline]);
+  const [query, setQuery] = useState("");
+  const [kind, setKind] = useState("all");
+  const visibleEvents = events.filter(event => (kind === "all" || event.kind === kind) &&
+    [event.summary, event.actor, apLabel(event.kind), ...event.references].join(" ").toLowerCase().includes(query.trim().toLowerCase()));
   const snapshots = useMemo(() => sourceSnapshots(detail), [detail]);
   const [beforeId, setBeforeId] = useState(snapshots[0]?.id ?? "current");
   const [afterId, setAfterId] = useState("current");
@@ -38,9 +42,15 @@ export function APTraceability({ detail, children }: { detail: APCaseDetail; chi
   };
   const copyLink = async () => { try { const url = new URL(location.href); url.searchParams.set("case",detail.caseId); url.searchParams.set("apView","traceability"); await navigator.clipboard.writeText(url.href); setCopied("Trace link copied."); } catch { setCopied("Copy the address from your browser to share this trace."); } };
   return <section className="aps-trace" aria-label="Case traceability">
-    <div className="aps-section-heading"><div><h3>Activity log</h3><p className="aps-caption">{events.length} recorded events, oldest first. Open an event to inspect its evidence.</p></div><div className="aps-heading-actions"><button onClick={() => void copyLink()}>Copy trace link</button><button onClick={exportTrace} disabled={!payments || (!proposals && !error)}>Export trace JSON</button></div></div>
+    <div className="aps-section-heading"><div><h3>Activity log</h3><p className="aps-caption">{events.length} events, oldest first. Expand for evidence.</p></div><div className="aps-heading-actions"><button onClick={() => void copyLink()}>Copy trace link</button><button onClick={exportTrace} disabled={!payments || (!proposals && !error)}>Export trace JSON</button></div></div>
     {copied && <p role="status" className="aps-caption">{copied}</p>}
-    {events.length ? <ol className="apt-log" aria-label="Recorded case activity">{events.map(event => <li key={event.eventId}><TraceEvent event={event} sources={detail.sources}/></li>)}</ol> : <p className="apt-empty">No activity has been recorded for this case.</p>}
+    <div className="apt-toolbar">
+      <input type="search" aria-label="Search activity" placeholder="Search activity, actor or record ID" value={query} onChange={event => setQuery(event.target.value)}/>
+      <select aria-label="Filter activity type" value={kind} onChange={event => setKind(event.target.value)}><option value="all">All activity</option>{[...new Set(events.map(event => event.kind))].map(value => <option key={value} value={value}>{apLabel(value)}</option>)}</select>
+      <span className="aps-caption" role="status">{visibleEvents.length} of {events.length}</span>
+    </div>
+    {events.length ? <ol className="apt-log" aria-label="Recorded case activity">{visibleEvents.map(event => <li key={event.eventId}><TraceEvent event={event} sources={detail.sources}/></li>)}</ol> : <p className="apt-empty">No activity has been recorded for this case.</p>}
+    {events.length > 0 && visibleEvents.length === 0 && <p className="apt-empty">No matching activity. Change the search or activity type.</p>}
     <div className="apt-inspectors" aria-label="Supporting records">
     <details id="trace-sources" className="apt-inspector"><summary><span>Source changes</span><span>{detail.sources.length} versions</span></summary><div className="apt-inspector-body"><p className="aps-caption">Snapshots are taken from recorded review decisions and the current case. Case revisions and document revisions are separate.</p>
       <div className="aps-compare-controls"><label>Before<select aria-label="Before source snapshot" value={before.id} onChange={e=>setBeforeId(e.target.value)}>{snapshots.map(s=><option key={s.id} value={s.id}>{s.label}</option>)}</select></label><label>After<select aria-label="After source snapshot" value={after.id} onChange={e=>setAfterId(e.target.value)}>{snapshots.map(s=><option key={s.id} value={s.id}>{s.label}</option>)}</select></label></div>
@@ -68,9 +78,11 @@ function TraceEvent({ event, sources }: { event: APCaseDetail["timeline"][number
     <summary>
       <time dateTime={validTime ? date.toISOString() : undefined}>{validTime ? <><span>{date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</span><span>{date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span></> : "Time unavailable"}</time>
       <span className="apt-event-content"><span className="apt-event-kind">{apLabel(event.kind)}</span><span className="apt-event-summary">{event.summary}</span></span>
-      <span className="apt-event-actor">{event.actor}</span><span className="apt-event-toggle" aria-hidden="true">+</span>
+      <span className="apt-event-actor" title={event.actor}>{event.actor}</span><span className="apt-event-toggle" aria-hidden="true">+</span>
     </summary>
     <div className="apt-event-body">
+      <p className="apt-event-message">{event.summary}</p>
+      <div className="apt-event-meta"><p><span>Actor</span><span>{event.actor}</span></p><p><span>Event ID</span><code>{event.eventId}</code></p></div>
       {event.agentTransition && <TransitionDiff transition={event.agentTransition}/>}
       {event.references.length > 0 && <div className="apt-references"><h4>Linked record IDs</h4><ul>{event.references.map((reference, index) => <li key={`${reference}:${index}`}><code>{reference}</code></li>)}</ul></div>}
       {linkedSources.map(source => <LinkedOriginal key={sourceKey(source)} source={source}/>)}
