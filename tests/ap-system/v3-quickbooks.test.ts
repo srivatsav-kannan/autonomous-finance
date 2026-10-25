@@ -299,7 +299,7 @@ describe("V3 independent credential-free QBO boundaries", () => {
         billAmounts: [{ billId: f.billId, amountCents: 5000 }],
         credits: selected,
       });
-      await f.human.mutation(api.demoPayments.approveAndQueue, {
+      await f.payer.mutation(api.demoPayments.approveAndQueue, {
         scope: f.scope,
         ...r,
       });
@@ -371,7 +371,7 @@ describe("V3 independent credential-free QBO boundaries", () => {
       billIds: [f.billId],
       credits: [],
     });
-    await f.human.mutation(api.demoPayments.approveAndQueue, {
+    await f.payer.mutation(api.demoPayments.approveAndQueue, {
       scope: f.scope,
       ...r,
     });

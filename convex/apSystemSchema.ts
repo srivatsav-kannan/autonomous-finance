@@ -10,7 +10,7 @@ export const apSystemTables = {
     status:v.union(v.literal("queued"),v.literal("leased"),v.literal("waiting"),v.literal("complete"),v.literal("escalated"),v.literal("paused")),
     role:v.union(v.literal("ap_clerk"),v.literal("payments")), stage:v.string(), owner:v.string(), reason:v.string(), requirements:v.array(v.string()),
     fingerprint:v.optional(v.string()), attemptFingerprint:v.optional(v.string()), nextCheckAt:v.number(), waitSince:v.optional(v.number()), deadlineAt:v.optional(v.number()),
-    generation:v.number(), attempts:v.number(), transitions:v.number(), leaseOwner:v.optional(v.string()), leaseUntil:v.optional(v.number()),
+    generation:v.number(), attempts:v.number(), transitions:v.number(), leaseOwner:v.optional(v.string()), leaseStartedAt:v.optional(v.number()), leaseUntil:v.optional(v.number()),
     claimRequestId:v.optional(v.string()), lastCompletedGeneration:v.optional(v.number()), lastCompletedBy:v.optional(v.string()),
     createdAt:v.number(), updatedAt:v.number(),
   }).index("by_case",["scope.runId","caseId"]).index("by_due",["scope.runId","nextCheckAt"]),
@@ -243,6 +243,7 @@ export const apSystemTables = {
     .index("by_case", ["scope.runId", "caseId"])
     .index("by_credit", ["scope.runId", "creditId"]),
   apCaseRecords: defineTable({
+    historicalPayment:v.optional(v.any()),
     scope: scopeValidator,
     obligationKey: v.optional(v.string()),
     primaryHash: v.string(),

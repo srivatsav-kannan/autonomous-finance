@@ -11,9 +11,10 @@ const servers:ReturnType<typeof createAPSystemServer>[]=[];
 afterEach(async()=>{for(const s of servers.splice(0)){s.closeAllConnections();await new Promise<void>(r=>s.close(()=>r()));}});
 const options=()=>({scope,convexUrl:"http://127.0.0.1:3254",actors,serviceForActor:vi.fn((_actor:string)=>service()),authorizeActor:vi.fn(async(_actor:string)=>{})});
 describe("isolated local multi-human authentication adapter",()=>{
- it("hard-rejects external scope, I1 and sandbox deployment URLs and duplicate simulated principals",()=>{
-  for(const delta of [{convexUrl:"http://127.0.0.1:3250"},{convexUrl:"http://127.0.0.1:3252"},{convexUrl:"http://localhost:3254"},{scope:{...scope,provider:"increase" as const,environment:"sandbox" as const}},{actors:[actors[0]!,{...actors[1]!,subject:actors[0]!.subject}]}])expect(()=>createAPLocalSimulationAuthentication({...options(),...delta})).toThrow();
+ it("hard-rejects external scope and sandbox deployment URLs and duplicate simulated principals",()=>{
+  for(const delta of [{convexUrl:"http://127.0.0.1:3252"},{convexUrl:"http://localhost:3254"},{scope:{...scope,provider:"increase" as const,environment:"sandbox" as const}},{actors:[actors[0]!,{...actors[1]!,subject:actors[0]!.subject}]}])expect(()=>createAPLocalSimulationAuthentication({...options(),...delta})).toThrow();
  });
+ it("accepts explicit simulated actors on the first-wave local backend",()=>{expect(createAPLocalSimulationAuthentication({...options(),convexUrl:"http://127.0.0.1:3250"}).publicConfig).toMatchObject({mode:"local_simulation"});});
  it("selects only explicit actors, checks every current binding and exposes names without subjects",async()=>{
   const o=options(),auth=createAPLocalSimulationAuthentication(o);
   expect(auth.publicConfig).toEqual({mode:"local_simulation",actors:actors.map(({id,name})=>({id,name}))});expect(JSON.stringify(auth.publicConfig)).not.toContain("https://");

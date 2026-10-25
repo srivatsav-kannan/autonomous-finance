@@ -7,6 +7,7 @@ import {
   intakeSchema,
   decisionSchema,
   agentTransitionSchema,
+  historicalPaymentSchema,
   type APCaseDetail,
   type SourceDocument,
   type SourceBinding,
@@ -147,8 +148,10 @@ export async function projectCase(
       resolution: null,
     });
   const approved = bill?.approvedCents ?? business?.credit?.amountCents ?? null;
+  if(row.historicalPayment)exceptions.push({exceptionId:`${row._id}:historical-source-paid`,code:"historical_source_paid",reason:"Imported evidence records this invoice as already paid. Historical reference only; no new payable, bank transfer or settlement is created.",ownerRole:"controller",permittedActions:["inspect_historical_evidence"],requiredEvidence:["imported_ledger_and_bank_evidence"],blocking:true,status:"open",resolution:null});
   return {
     ...(business ? { domain: business.domain } : {}),
+    ...(row.historicalPayment ? {historicalPayment:historicalPaymentSchema.parse(row.historicalPayment)} : {}),
     contractVersion: AP_CONTRACT_VERSION,
     caseId: row._id,
     runId: row.scope.runId,

@@ -825,7 +825,7 @@ describe("B4 adversarial period boundaries", () => {
         idempotencyKey: "late-bank",
       },
     );
-    await f.human.mutation(api.demoPayments.approveAndQueue, {
+    await f.payer.mutation(api.demoPayments.approveAndQueue, {
       scope: f.scope,
       versionId: prepared.versionId,
       snapshotHash: prepared.snapshotHash,

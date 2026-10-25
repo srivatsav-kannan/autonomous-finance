@@ -1,3 +1,4 @@
+import {apModelConfigSchema,createAPModelStep} from "../src/agents/ap-case-model";
 import "../src/core/env";
 import { readFileSync } from "node:fs";
 import { ConvexHttpClient } from "convex/browser";
@@ -12,6 +13,8 @@ const credential = z
 const configSchema = z
   .object({
     convexUrl: z.string().url(),
+    mode:z.enum(["deterministic","model"]).default("deterministic"),
+    model:apModelConfigSchema.optional(),
     scope: z.unknown(),
     apCredential: credential,
     paymentsCredential: credential,
@@ -46,7 +49,7 @@ const client = new ConvexHttpClient(config.convexUrl, { fetch: workerFetch });
 const worker = new APCaseAgentWorker(client, scope, [
   config.apCredential,
   config.paymentsCredential,
-]);
+],config.mode==="model" ? createAPModelStep({client,scope,config:apModelConfigSchema.parse(config.model)}) : undefined);
 const stop = new AbortController();
 process.once("SIGINT", () => stop.abort());
 process.once("SIGTERM", () => stop.abort());

@@ -86,6 +86,18 @@ export const cents = (amount: string | undefined) => {
 /** GL amounts are stored as floats in the workbook; compare to the cent. */
 export const glCents = (amount: string | undefined) => (amount?.trim() ? Math.round(Number(amount) * 100) : 0);
 
+/** Fail closed unless a single printed transaction binds reference, date, payee and one debit amount.
+ * Layouts with multiple money columns require a reviewed adapter; a page-level search is never proof. */
+export function statementPaymentMatches(text:string, expected:{reference:string;date:string;payee:string;amountCents:number}) {
+  const escape=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  const ref=new RegExp(`(?<![A-Za-z0-9_-])${escape(expected.reference)}(?![A-Za-z0-9_-])`);
+  const [year,month,day]=expected.date.split("-");
+  const dates=[expected.date,`${month}/${day}/${year}`,`${Number(month)}/${Number(day)}/${year}`];
+  const rows=text.split(/\r?\n/).filter(line=>ref.test(line));
+  if(rows.length!==1)return false;
+  const line=rows[0]!, money=[...line.matchAll(/\$([0-9]+(?:,[0-9]{3})*\.[0-9]{2})\b/g)];
+  return dates.some(date=>new RegExp(`(?<![0-9/-])${escape(date)}(?![0-9/-])`).test(line))&&line.normalize("NFC").includes(expected.payee.normalize("NFC"))&&money.length===1&&cents(money[0]![1]!.replaceAll(",",""))===expected.amountCents;
+}
 /** Checks a source-paid bill against the bank export, GL detail, AP aging and bank statement text. Read-only. */
 export function historicalPaymentChecks(world: ApexWorld, input: { billId: string; bankTransactionId: string; reference: string; statementText: string }) {
   const bill = world.apLedger.filter(r => r.bill_id === input.billId);
@@ -106,7 +118,7 @@ export function historicalPaymentChecks(world: ApexWorld, input: { billId: strin
     { check: "GL has one AP credit for the bill", passed: glBill.length === 1 && glCents(glBill[0]!.Credit) === (b ? cents(b.bill_amount) : -1) },
     { check: "GL payment entry debits AP and credits operating cash by the bill amount", passed: glPayment.some(r => r["Account #"] === "2000" && glCents(r.Debit) === (b ? cents(b.bill_amount) : -1)) && glPayment.some(r => r["Account #"] === "1000" && glCents(r.Credit) === (b ? cents(b.bill_amount) : -1)) },
     { check: "Bill is absent from the Dec 31, 2024 AP aging open bills", passed: !world.openBills.some(r => r["Bill ID"] === input.billId) },
-    { check: "Monthly bank statement prints the reference and amount", passed: input.statementText.includes(input.reference) && !!b && input.statementText.includes(`$${(cents(b.bill_amount) / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`) },
+    { check: "Exactly one statement transaction binds reference, date, payee and debit amount", passed: !!b && !!t && statementPaymentMatches(input.statementText,{reference:input.reference,date:t.txn_date!,payee:b.vendor_name!,amountCents:cents(b.bill_amount)}) },
   ];
   return {
     billId: input.billId, bankTransactionId: input.bankTransactionId, reference: input.reference, checks,

@@ -208,6 +208,7 @@ export const claim = mutation({
         role,
         attemptFingerprint: f.fingerprint,
         leaseOwner: seat.seatId,
+        leaseStartedAt: now,
         leaseUntil: now + LEASE_MS,
         nextCheckAt: now + LEASE_MS,
         generation,
@@ -436,4 +437,18 @@ export const control = mutation({
     );
     return { ok: true };
   },
+});
+
+/** Model inference can renew only its current lease, for at most five minutes from claim. */
+export const renew = mutation({
+  args:{...agent,caseId:v.string(),generation:v.number()},
+  handler:async(ctx,args)=>{
+    const {seat}=await requirePaymentSeat(ctx,args,["ap_clerk","payments"]);
+    const row=await caseRow(ctx,args.scope,args.caseId);
+    const w=await ctx.db.query("apCaseWork").withIndex("by_case",q=>q.eq("scope.runId",args.scope.runId).eq("caseId",row._id)).unique();
+    const now=Date.now();
+    if(!w||w.status!=="leased"||w.leaseOwner!==seat.seatId||w.generation!==args.generation||(w.leaseUntil??0)<=now||w.leaseStartedAt===undefined||now>=w.leaseStartedAt+300_000)throw Error("Stale or exhausted agent lease");
+    const leaseUntil=Math.min(now+LEASE_MS,w.leaseStartedAt+300_000);
+    await ctx.db.patch(w._id,{leaseUntil,nextCheckAt:leaseUntil});return {leaseUntil};
+  }
 });

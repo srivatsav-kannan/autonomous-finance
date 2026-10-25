@@ -116,7 +116,7 @@ export const exceptionSchema = z.object({
 });
 export const decisionSchema = z.object({
   decisionId:id, kind:z.enum(["field_review","bill_approval","exception_resolution","payment_authorization"]),
-  actor:id, actorKind:z.enum(["human","agent"]), authority:id, at:z.number(),
+  actor:id, actorSeatId:id.optional(), actorKind:z.enum(["human","agent"]), authority:id, at:z.number(),
   candidateRevision:z.number().int().positive(), sourceBindings:z.array(sourceBindingSchema), snapshotHash:hash,
   policyVersion:id, outcome:z.enum(["approved","rejected","needs_evidence"]), reason:id, evidenceIds:z.array(id),
 });
@@ -151,8 +151,14 @@ export const agentTransitionSchema = z.object({
   before:agentTransitionStateSchema, after:agentTransitionStateSchema,
 });
 export type APAgentTransition = z.infer<typeof agentTransitionSchema>;
+export const historicalPaymentSchema = z.object({
+  version:z.literal("source-paid-v1"), dataset:id, datasetRevision:id,
+  sourceBillId:id, bankTransactionId:id, reference:id, paidAt:date, amountCents:centsSchema.positive(),
+  invoiceSource:sourceBindingSchema, evidenceHashes:z.array(hash).min(2), reason:id,
+}).strict();
 export const caseDetailSchema = z.object({
   domain:domainCaseProjectionSchema.optional(),
+  historicalPayment:historicalPaymentSchema.optional(),
   contractVersion:z.literal(AP_CONTRACT_VERSION), caseId:id, runId:id, organizationId:id,
   revision:z.number().int().positive(), candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), sources:z.array(sourceDocumentSchema),
   currentSourceBindings:z.array(sourceBindingSchema).min(1),

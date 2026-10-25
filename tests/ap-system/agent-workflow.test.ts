@@ -56,7 +56,7 @@ async function setup() {
     (await f.t.mutation(refs.ingest, { ...f.ap, input })).caseId as string;
   async function review(caseId: string) {
     const d = await f.get(caseId);
-    await f.human.mutation(refs.review, {
+    await f.fieldReviewer.mutation(refs.review, {
       scope: f.scope,
       input: f.request(d, `review-${d.revision}`),
     });
@@ -186,7 +186,7 @@ describe("new AP case agent integration", () => {
         },
       );
       expect(await dispatch.tick()).toEqual({ dispatched: false });
-      await f.human.mutation(authorize, args);
+      await f.payer.mutation(authorize, args);
       await f.tick();
       expect(await f.work(id)).toMatchObject({ stage: "bank_settlement" });
       const sent = await dispatch.tick();
@@ -424,7 +424,7 @@ describe("new AP case agent integration", () => {
     expect((await f.state()).events).toHaveLength(s.events.length);
     const d = await f.get(id),
       p = s.versions[0]!;
-    await f.human.mutation(authorize, {
+    await f.payer.mutation(authorize, {
       scope: f.scope,
       caseId: id,
       expectedRevision: d.revision,

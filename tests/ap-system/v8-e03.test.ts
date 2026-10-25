@@ -93,10 +93,10 @@ describe('V8 independent E03 authority and recovery',()=>{
  });
  it('blocks authorization of a preexisting unapproved request while retaining its reservation and immutable snapshot',async()=>{
   const f=await fixture(),b=await f.recognize(),p=await f.request(b.billId),before=await f.snapshot();await f.proposeChange();
-  await expect(f.humans.finance!.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p})).rejects.toThrow();const after=await f.snapshot();expect(after.versions).toEqual(before.versions);expect(after.commands).toHaveLength(0);expect(after.journals).toEqual(before.journals);
+  await expect(f.payer.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p})).rejects.toThrow();const after=await f.snapshot();expect(after.versions).toEqual(before.versions);expect(after.commands).toHaveLength(0);expect(after.journals).toEqual(before.journals);
  });
  it('holds a queued unsent payment without sending, then releases it only after fresh retain-current approval',async()=>{
-  const f=await fixture(),b=await f.recognize(),p=await f.request(b.billId);await f.humans.finance!.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p});const before=await f.snapshot(),c=await f.proposeChange();expect((await f.snapshot()).commands).toEqual(before.commands);
+  const f=await fixture(),b=await f.recognize(),p=await f.request(b.billId);await f.payer.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p});const before=await f.snapshot(),c=await f.proposeChange();expect((await f.snapshot()).commands).toEqual(before.commands);
   const bank=openFakeBank({path:':memory:',scope:f.scope,seed:'v8-unsent',startTime:new Date(epoch).toISOString()});
   try{await worker(f,bank).tick();expect(bank.harness.inspect().transfers).toHaveLength(0);let state=await f.snapshot();expect(state.versions[0]).toMatchObject({reservations:'reserved',status:'queued'});expect(state.commands[0]).toMatchObject({attemptCount:0,execution:'exception'});
    await f.decide(c,'rejected');await expect(f.active()).rejects.toThrow(/review_pending/);const restore=await f.proposeChange({...f.proposal,resolution:'retain_current',newContactId:f.supplier.contactId,supersedesChangeId:c.changeId},'v8-restore');await expect(f.decide(restore)).rejects.toThrow();await f.verify(restore);await f.decide(restore);
@@ -105,7 +105,7 @@ describe('V8 independent E03 authority and recovery',()=>{
   }finally{bank.close();}
  });
  it('recovers an accepted lost-response transfer after contact replacement with exactly one original operation and settlement',async()=>{
-  const f=await fixture(),b=await f.recognize(),p=await f.request(b.billId);await f.humans.finance!.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p});
+  const f=await fixture(),b=await f.recognize(),p=await f.request(b.billId);await f.payer.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p});
   const bank=openFakeBank({path:':memory:',scope:f.scope,seed:'v8-possible-send',startTime:new Date(epoch).toISOString(),faults:[{operation:'createTransfer',call:1,kind:'accept_then_lost_response'}]});
   try{const w=worker(f,bank),evidence=new ReconcilePaymentEvidence(createConvexPaymentEvidence(f.t as unknown as KernelTransport,f.scope,'test-evidence'),bank.provider,f.scope,Date.now);await w.tick();const before=await f.snapshot();expect(before.commands[0]).toMatchObject({attemptCount:1});expect(bank.harness.inspect().transfers).toHaveLength(1);
    await f.replace();let after=await f.snapshot();expect(after.commands).toEqual(before.commands);expect(after.versions).toEqual(before.versions);expect(after.bills).toEqual(before.bills);expect(after.journals).toEqual(before.journals);await expect(f.request(b.billId,'v8-no-replacement')).rejects.toThrow();

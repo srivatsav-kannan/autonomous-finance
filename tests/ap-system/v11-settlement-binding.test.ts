@@ -43,7 +43,7 @@ it.each(['department', 'credit amount', 'recognition journal'])('rejects a rehas
   if (change === 'recognition journal') snapshot.accountingBinding!.bills[0]!.recognitionEntryId = snapshot.accountingBinding!.credits[0]!.recognitionEntryId;
   const snapshotHash = digest(snapshot);
   await f.t.run(ctx => ctx.db.patch(version._id, {snapshot, snapshotHash}));
-  await expect(f.humans.finance!.mutation(api.demoPayments.approveAndQueue, {scope: f.scope, versionId: version._id, snapshotHash})).rejects.toThrow();
+  await expect(f.payer.mutation(api.demoPayments.approveAndQueue, {scope: f.scope, versionId: version._id, snapshotHash})).rejects.toThrow();
   const state = await f.state(); expect(state.commands).toHaveLength(0); expect(state.attempts).toHaveLength(0); expect(f.bank.harness.inspect().transfers).toHaveLength(0);
 });
 

@@ -30,7 +30,7 @@ export async function fixture(mode: 'bound'|'null'|'legacy' = 'bound') {
   async function pay(gross=4100,applied=1350) {
     const suffix=`v12-${++serial}`;
     const request=await f.t.mutation(api.demoPayments.requestPayment,{scope:f.scope,seatId:'payments',token:'token-payments',requestKey:suffix,billIds:[f.original.billId as Id<'demoBills'>],billAmounts:[{billId:f.original.billId as Id<'demoBills'>,amountCents:gross}],credits:applied?[{creditId:credit.creditId,amountCents:applied}]:[]});
-    const approved=await f.humans.finance!.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...request});
+    const approved=await f.payer.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...request});
     const claim=await f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:'test-dispatch',paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:'v12-independent',leaseToken:`independent-lease-${suffix}`});
     if(!claim) throw Error('independent fixture expected a claim');
     const post=async(returning=false)=>{

@@ -1,14 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { makeFunctionReference } from "convex/server";
-import { api, demoFixture } from "./demo-fixture";
+import { api } from "./demo-fixture";
+import {fixture as accountingFixture,packet,refs} from "./ap-system/accounting-fixture";
+import type {Id} from "../convex/_generated/dataModel";
 const request=makeFunctionReference<"mutation">("apCasePayments:request");
 const authorize=makeFunctionReference<"mutation">("apCasePayments:authorize");
 const detail=makeFunctionReference<"query">("apCasePayments:detail");
 afterEach(()=>vi.unstubAllEnvs());
 async function fixture(){
- const f=await demoFixture(); const billId=await f.bill(67860);
- const caseId=await f.t.run(ctx=>ctx.db.insert("apCaseRecords",{scope:f.scope,primaryHash:"a".repeat(64),currentRevision:1,snapshotHash:"b".repeat(64),intake:{},createdBy:"ap_clerk",documentStatus:"reviewed",businessStatus:"approved",fieldReviewId:"review-1",billId,acceptedCents:67860,identityMode:"simulated_human",createdAt:1,updatedAt:1}));
- return {...f,billId,caseId,binding:{scope:f.scope,caseId,expectedRevision:1,snapshotHash:"b".repeat(64)}};
+ const f=await accountingFixture();let invoice=0;
+ const bill=async()=>{const d=await f.reviewed(packet(`handoff-${++invoice}`));const b=await f.human.mutation(refs.approve,{scope:f.scope,input:{...f.request(d,`approve-${invoice}`),acceptedCents:7700}});return {d,billId:b.billId as Id<"demoBills">};};
+ const {d,billId}=await bill(),caseId=d.caseId as Id<"apCaseRecords">;
+ return {...f,human:f.payer,bill:async()=>(await bill()).billId,payments:{scope:f.scope,seatId:"payments",token:"token-payments"},dispatcherToken:"test-dispatch",billId,caseId,binding:{scope:f.scope,caseId,expectedRevision:d.revision,snapshotHash:d.snapshotHash}};
 }
 describe("case payment handoff to existing durable engine (component)",()=>{
  it("prepares once and leaves command empty until independent human authorization",async()=>{
@@ -20,7 +23,7 @@ describe("case payment handoff to existing durable engine (component)",()=>{
   await expect(f.t.mutation(authorize,auth)).rejects.toThrow(/human required/);
   const command=await f.human.mutation(authorize,auth);expect(await f.human.mutation(authorize,auth)).toEqual(command);
   const view=await f.human.query(detail,{scope:f.scope,versionId:prepared.versionId});
-  expect(view.snapshot.amountCents).toBe(67860);expect(view.command.idempotencyKey).toBe(`demo:${prepared.versionId}`);
+  expect(view.snapshot.amountCents).toBe(7700);expect(view.command.idempotencyKey).toBe(`demo:${prepared.versionId}`);
   expect(JSON.stringify(view)).not.toContain("leaseToken");
   expect(await f.t.run(ctx=>ctx.db.query("journalEntries").collect())).toHaveLength(1); // recognition only
  });

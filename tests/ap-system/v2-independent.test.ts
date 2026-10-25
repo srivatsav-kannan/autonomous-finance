@@ -313,7 +313,7 @@ async function fixture() {
     return f.get(result.caseId);
   };
   const review = async (d: APCaseDetail, key = "field-review") => {
-    await f.human.mutation(refs.review, {
+    await f.fieldReviewer.mutation(refs.review, {
       scope: f.scope,
       input: f.request(d, key),
     });
@@ -347,7 +347,7 @@ async function fixture() {
     d: APCaseDetail,
     p: { versionId: string; snapshotHash: string },
   ) =>
-    f.human.mutation(authorizePayment, {
+    f.payer.mutation(authorizePayment, {
       ...bind(d),
       versionId: p.versionId,
       paymentSnapshotHash: p.snapshotHash,
@@ -626,7 +626,7 @@ describe("V2 independent actual AP mutations through FakeBank recovery", () => {
       /human/,
     );
     await expect(
-      f.human.mutation(authorizePayment, {
+      f.payer.mutation(authorizePayment, {
         ...args,
         paymentSnapshotHash: "a".repeat(64),
       }),
@@ -635,7 +635,7 @@ describe("V2 independent actual AP mutations through FakeBank recovery", () => {
     const other = await f.ingest(originalPacket(true));
     await f.t.run((ctx) =>
       ctx.db.patch(other.caseId as Id<"apCaseRecords">, {
-        createdBy: "human_cfo",
+        createdBy: "human-field-reviewer",
       }),
     );
     await expect(f.review(other, "self-review")).rejects.toThrow(/creator/);

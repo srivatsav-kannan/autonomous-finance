@@ -20,6 +20,7 @@ export type EvidenceRef = { readonly decisionPath: string; readonly knowledgeCom
 export type CreditAllocation = { creditId: string; amountCents: number };
 
 export type PaymentSnapshot = {
+  releasePolicyHash?: string;
   accountingBinding?: PaymentAccountingBinding;
   scope: BankScope;
   bills: { billId: string; version: number; amountCents: number }[];

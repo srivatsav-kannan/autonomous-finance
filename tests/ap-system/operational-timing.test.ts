@@ -14,11 +14,11 @@ const epoch=Date.parse("2026-10-25T12:00:00Z"),time=(elapsed:number)=>vi.setSyst
 afterEach(()=>{vi.useRealTimers();vi.unstubAllEnvs();});
 it("reads actual retained review/post/authorization/recovery events and changes no economic state",async()=>{
  vi.useFakeTimers();time(0);const f=await fixture(),ingested=await f.t.mutation(refs.ingest,{...f.ap,input:packet()});const d=await f.get(ingested.caseId);const retainedAt=(await f.t.run(ctx=>ctx.db.query("apCaseRevisions").first()))!.at;
- time(10_000);await f.human.mutation(refs.review,{scope:f.scope,input:f.request(d)});
+ time(10_000);await f.fieldReviewer.mutation(refs.review,{scope:f.scope,input:f.request(d)});
  time(30_000);await f.human.mutation(refs.approve,{scope:f.scope,input:{...f.request(d,"approve"),acceptedCents:7700}});
  const binding={scope:f.scope,caseId:d.caseId,expectedRevision:d.revision,snapshotHash:d.snapshotHash};
  time(40_000);const p=await f.t.mutation(request,{...binding,seatId:"payments",token:"token-payments",idempotencyKey:"metrics",amountCents:2000});
- time(50_000);await f.human.mutation(authorize,{...binding,versionId:p.versionId,paymentSnapshotHash:p.snapshotHash});
+ time(50_000);await f.payer.mutation(authorize,{...binding,versionId:p.versionId,paymentSnapshotHash:p.snapshotHash});
  const bank=openFakeBank({path:":memory:",scope:f.scope,seed:"timing-only",startTime:new Date(epoch).toISOString(),faults:[{operation:"createTransfer",call:1,kind:"accept_then_lost_response"}]});
  try{const transport=f.t as unknown as KernelTransport;let n=0;const worker=new ExecutePaymentEffect(createConvexPaymentKernel(transport,f.scope,"test-dispatch"),bank.provider,"timing-worker",{now:Date.now,newLeaseToken:()=>`timing-test-lease-${++n}`,startHeartbeat:()=>()=>{}}),reconcile=new ReconcilePaymentEvidence(createConvexPaymentEvidence(transport,f.scope,"test-evidence"),bank.provider,f.scope,Date.now);
  time(60_000);await worker.tick();time(90_000);
@@ -38,7 +38,7 @@ it("measures a sequential business route until its final independent vote",async
 
 it("binds grouped proposal timing to its frozen source revision and stops an unsent queue at cancellation",async()=>{
  vi.useFakeTimers();time(0);const f=await fixture(),created=await f.t.mutation(refs.ingest,{...f.ap,input:packet()});const d=await f.get(created.caseId);
- time(10_000);await f.human.mutation(refs.review,{scope:f.scope,input:f.request(d)});time(20_000);await f.human.mutation(refs.approve,{scope:f.scope,input:{...f.request(d,"approve"),acceptedCents:7700}});
+ time(10_000);await f.fieldReviewer.mutation(refs.review,{scope:f.scope,input:f.request(d)});time(20_000);await f.human.mutation(refs.approve,{scope:f.scope,input:{...f.request(d,"approve"),acceptedCents:7700}});
  time(30_000);const run=await f.t.mutation(makeFunctionReference<"mutation">("apPaymentRuns:prepare"),{scope:f.scope,seatId:"payments",token:"token-payments",requestKey:"timing-run",selection:[{caseId:d.caseId,expectedRevision:d.revision,snapshotHash:d.snapshotHash,amountCents:2000}],executionDate:"2026-11-01"});
  time(40_000);let result=await f.human.query(current,{scope:f.scope}) as OperationalTimings;let wait=result.cases[0]!.samples.find(s=>s.paymentVersionId&&s.metric==="human_wait")!;
  expect(wait).toMatchObject({state:"ongoing",elapsedMs:10_000,revision:1,snapshotHash:d.snapshotHash,paymentRunIds:[run.runId]});

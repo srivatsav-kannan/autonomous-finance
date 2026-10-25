@@ -47,7 +47,7 @@ const prepare = (f: F, key: string) =>
     idempotencyKey: key,
   });
 const authorize = (f: F, p: any) =>
-  f.human.mutation(api.demoPayments.approveAndQueue, {
+  f.payer.mutation(api.demoPayments.approveAndQueue, {
     scope: f.scope,
     versionId: p.versionId,
     snapshotHash: p.snapshotHash,

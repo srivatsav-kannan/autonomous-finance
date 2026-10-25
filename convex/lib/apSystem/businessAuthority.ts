@@ -14,6 +14,16 @@ import { deny } from "./shared";
 import { approvedPhysicalReview } from "./physicalLines";
 import { contactChangeProposalSchema, contactOriginSchema, type ContactChangeReview } from "../../../src/ap-system/supplier-contact-contracts";
 import { independentContactEvidence } from "./supplierContactEvidence";
+import { decisionSchema } from "../../../src/ap-system/contracts";
+export async function currentFieldReviewer(ctx: QueryCtx, scope: BankScope, row: Doc<"apCaseRecords">) {
+  const records = await ctx.db.query("apCaseDecisions").withIndex("by_case",q=>q.eq("scope.runId",scope.runId).eq("caseId",row._id)).collect();
+  const field = records.map(r=>decisionSchema.parse(r.decision)).find(d=>d.decisionId===row.fieldReviewId);
+  if (!field || field.outcome !== "approved" || field.candidateRevision !== row.currentRevision || field.snapshotHash !== row.snapshotHash || !field.actorSeatId)
+    deny("field_review_identity_required", "Current field review must retain its original authenticated human seat");
+  const seat = await assertHumanSubject(ctx,scope,field.actor);
+  if (seat.seatId !== field.actorSeatId) deny("field_review_identity_changed", "Field-review identity changed; review the current evidence again");
+  return seat.seatId;
+}
 export type BusinessVote = {
   subject: string;
   principal: string;
@@ -253,6 +263,9 @@ export async function assertApprovalCurrent(
   const identities=[...(request.acceptance?.lines.flatMap(l=>[l.agreement?.identity,...l.receipts.map(r=>r.identity)])??[]),...(request.credit?.lines.flatMap(l=>l.returnClaims?.map(r=>r.identity)??[])??[])].filter(x=>!!x);
   for(const identity of identities) await approvedPhysicalReview(ctx,scope,identity!.reviewId);
   await assertApprovalVotes(ctx, scope, policy.value, approval);
+  const reviewer = await currentFieldReviewer(ctx, scope, row);
+  if ((approval.votes as BusinessVote[]).some(v => v.subjectSeatId === reviewer || v.principalSeatId === reviewer))
+    deny("approval_segregation", "Field reviewer cannot supply retained business approval");
   return { policy, supplier, request };
 }
 /** Resolve every retained identity again: subject aliases cannot fill two seats,

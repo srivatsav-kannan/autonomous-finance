@@ -233,6 +233,8 @@ export async function fixture() {
     tokenIdentifier: "https://ap-demo.invalid|reviewer",
   };
   const human = t.withIdentity(identity);
+  const fieldReviewer = t.withIdentity({...identity,subject:"field-reviewer",tokenIdentifier:"https://ap-demo.invalid|field-reviewer"});
+  const payer = t.withIdentity({...identity,subject:"payer",tokenIdentifier:"https://ap-demo.invalid|payer"});
   await t.mutation(api.admin.createRun, {
     secret: "test-admin",
     runId: scope.runId,
@@ -241,11 +243,11 @@ export async function fixture() {
     simDate: "2026-10-19",
     periods: ["2026-10"],
     seats: await Promise.all(
-      ["ap_clerk", "controller", "payments", "human_cfo"].map(async (role) => ({
+      ["ap_clerk", "controller", "payments", "human_cfo", "human-field-reviewer", "human-payer"].map(async (role) => ({
         seatId: role,
-        role,
+        role: role.startsWith("human") ? "human_cfo" : role,
         name: role,
-        kind: role === "human_cfo" ? ("human" as const) : ("agent" as const),
+        kind: role.startsWith("human") ? ("human" as const) : ("agent" as const),
         tokenHash: await sha256Hex(`token-${role}`),
       })),
     ),
@@ -261,7 +263,8 @@ export async function fixture() {
     },
     policyVersion: AP_POLICY_VERSION,
     controllerLimitCents: 1_000_000,
-    humanSubjects: [{ subject: identity.tokenIdentifier, seatId: "human_cfo" }],
+    humanSubjects: [{ subject: identity.tokenIdentifier, seatId: "human_cfo" }, {subject:"https://ap-demo.invalid|field-reviewer",seatId:"human-field-reviewer"}, {subject:"https://ap-demo.invalid|payer",seatId:"human-payer"}],
+    paymentAuthorizers: [{subject:"https://ap-demo.invalid|payer",maxCents:1_000_000}],
   });
   const ap = { scope, seatId: "ap_clerk", token: "token-ap_clerk" };
   const get = (caseId: string) =>
@@ -280,8 +283,8 @@ export async function fixture() {
   async function reviewed(input = packet()) {
     const r = await t.mutation(refs.ingest, { ...ap, input });
     const d = await get(r.caseId);
-    await human.mutation(refs.review, { scope, input: request(d) });
+    await fieldReviewer.mutation(refs.review, { scope, input: request(d, `review-${d.caseId}-${d.revision}`) });
     return get(r.caseId);
   }
-  return { t, human, scope, ap, get, request, reviewed, identity };
+  return { t, human, fieldReviewer, payer, scope, ap, get, request, reviewed, identity };
 }

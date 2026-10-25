@@ -17,7 +17,7 @@ afterEach(()=>{vi.useRealTimers();vi.unstubAllEnvs();});
 async function setup(newSupplier=false){vi.useFakeTimers();vi.setSystemTime(start);const input=packet();if(newSupplier){input.candidate!.supplierId="another-approved-supplier";input.purchasingEvidence.forEach(p=>p.supplierId="another-approved-supplier");}const f=await businessFixture({input});await f.recognize(f.detail,acceptance(input,"1"));return f;}
 type F=Awaited<ReturnType<typeof setup>>;
 const prepare=(f:F,key="payment",more:Record<string,unknown>={})=>f.t.mutation(request,{scope:f.scope,seatId:"payments",token:"token-payments",caseId:f.detail.caseId,expectedRevision:f.detail.revision,snapshotHash:f.detail.snapshotHash,idempotencyKey:key,...more}) as Promise<{versionId:Id<"demoVersions">;snapshotHash:string}>;
-const authorize=(f:F,p:{versionId:Id<"demoVersions">;snapshotHash:string})=>f.human.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p});
+const authorize=(f:F,p:{versionId:Id<"demoVersions">;snapshotHash:string})=>f.payer.mutation(api.demoPayments.approveAndQueue,{scope:f.scope,...p});
 const claim=(f:F,key="business-payment-lease-1")=>f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:"test-dispatch",paymentExecutorVersion:PAYMENT_EXECUTOR_VERSION,workerId:"business-test",leaseToken:key});
 async function retire(f:F,name:string){await f.t.run(async ctx=>{const seat=await ctx.db.query("seats").withIndex("by_run_seat",q=>q.eq("runId",f.scope.runId).eq("seatId",`human-${name}`)).unique();await ctx.db.patch(seat!._id,{status:"retired"});});}
 describe("B3 authority integrated with the original durable payment engine",()=>{

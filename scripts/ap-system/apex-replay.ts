@@ -244,7 +244,7 @@ async function governance() {
   const contractBinding = d.currentSourceBindings.find(b => d.sources.find(s => s.sourceId === b.sourceId)?.kind === "contract");
   assert.ok(contractBinding, "Run case1-evidence first: governance needs the SIMULATED agreement as non-invoice evidence");
   const subject = (id: string) => ACTORS.find(a => a.id === id)!.subject;
-  const policy: BusinessPolicy = { version: POLICY_VERSION, groups: [{ groupId: "verify", members: [subject("verifier")] }, { groupId: "govern", members: [subject("governor")] }, { groupId: "matter-owner", members: [subject("matter-owner")] }, { groupId: "finance", members: [subject("finance")] }], supplierVerificationGroup: "verify", supplierApprovalGroup: "govern", varianceApprovalGroup: "finance", bands: [{ upToCents: Number.MAX_SAFE_INTEGER, steps: [{ groupId: "matter-owner", quorum: 1, escalateAfterMs: 86_400_000, escalationGroupId: null }, { groupId: "finance", quorum: 1, escalateAfterMs: 86_400_000, escalationGroupId: null }] }], accounts: [{ account: CODING.account, treatment: CODING.treatment }], stores: [], taxCodes: [{ code: "NONE", mode: "none" }], maxPriceVarianceBps: 0, maxDelegationMs: 86_400_000 };
+  const policy: BusinessPolicy = { version: POLICY_VERSION, paymentBands:[{upToCents:5_000_000,groupId:"pay"}], groups: [{groupId:"pay",members:[subject("treasury")]},{ groupId: "verify", members: [subject("verifier")] }, { groupId: "govern", members: [subject("governor")] }, { groupId: "matter-owner", members: [subject("matter-owner")] }, { groupId: "finance", members: [subject("finance")] }], supplierVerificationGroup: "verify", supplierApprovalGroup: "govern", varianceApprovalGroup: "finance", bands: [{ upToCents: Number.MAX_SAFE_INTEGER, steps: [{ groupId: "matter-owner", quorum: 1, escalateAfterMs: 86_400_000, escalationGroupId: null }, { groupId: "finance", quorum: 1, escalateAfterMs: 86_400_000, escalationGroupId: null }] }], accounts: [{ account: CODING.account, treatment: CODING.treatment }], stores: [], taxCodes: [{ code: "NONE", mode: "none" }], maxPriceVarianceBps: 0, maxDelegationMs: 86_400_000 };
   let view = await ok(governor, "/business");
   let p = view.policies.find((x: any) => x.version === POLICY_VERSION);
   if (!p) { await ok(controller, "/business/proposePolicy", { idempotencyKey: "apex107-policy-v1", policy }); view = await ok(governor, "/business"); p = view.policies.find((x: any) => x.version === POLICY_VERSION); }
@@ -277,6 +277,10 @@ async function case1Hold() {
   const governor = await session("ap-reviewer");
   const d = await detail(governor, caseIdFor("case1"));
   const r = await governor("/business/propose", { caseId: d.caseId, ...bind(d), idempotencyKey: "apex107-case1-propose-without-evidence", policyVersion: POLICY_VERSION, supplierRevision: 1, acceptance: acceptanceFor(d, false) });
+  assert.equal(r.status,409,"Missing evidence must return a policy hold");
+  assert.equal(r.body?.error?.code,"business_policy_hold");
+  assert.match(r.body?.error?.reason??"",/missing_contract/);
+  assert.match(r.body?.error?.reason??"",/missing_receipt/);
   const after = await detail(governor, d.caseId);
   const proposals = (await ok(governor, "/business/proposals")).filter((p: any) => p.caseId === d.caseId);
   assert.equal(after.journals.length, 0, "Missing evidence must not recognize a bill");
@@ -363,8 +367,11 @@ async function case2() {
   assert.ok(comparison.allMatch, "Parsed case 2 fields differ from the APEX ledger");
   if (!d.decisions.some(x => x.kind === "field_review")) await fieldReview(reviewer, d, "apex107-case2-fields-r1");
   d = await detail(reviewer, d.caseId);
-  // The importer never proposes approval or payment for a source-paid invoice. The backend independently refuses payment without an approved bill.
-  const sourcePaidGuard = { sourceStatus: c.sourceStatus, importerAction: "historical_reference_only", proposed: false };
+  const invoice=d.sources.find(s=>s.kind==="invoice")!;
+  await agent.mutation(m("apCases:recordHistoricalPayment"),{scope:SCOPE,seatId:"apex107-ap",token:saved.ap,caseId:d.caseId,...bind(d),proof:{version:"source-paid-v1",dataset:APEX_SOURCE.dataset,datasetRevision:APEX_SOURCE.revision,sourceBillId:c.billId,bankTransactionId:c.bankTransactionId,reference:c.reference,paidAt:historical.bank!.date,amountCents:c.amountCents,invoiceSource:{sourceId:invoice.sourceId,revision:invoice.revision,sha256:invoice.sha256},evidenceHashes:[world.hashes[APEX_FILES.apLedger],world.hashes[APEX_FILES.bank],world.hashes[`${APEX_FILES.statements}/${c.statement}`]],reason:"Source ledger, bank export, GL, aging and single statement transaction checked; historical reference only"}});
+  d=await detail(reviewer,d.caseId);
+  assert.ok(d.historicalPayment,"Durable source-paid classification required");
+  const sourcePaidGuard = { sourceStatus: c.sourceStatus, importerAction: "historical_reference_only", retained:d.historicalPayment, proposed: false };
   const paymentRefused = await refused(treasury, `/cases/${d.caseId}/payments`, { ...bind(d), idempotencyKey: "apex107-case2-second-payment-attempt", executionDate: "2026-10-25" });
   const b = bank(); let snapshot; try { snapshot = b.harness.inspect(); } finally { b.close(); }
   assert.ok(!snapshot.transfers.some(t => t.amountCents === c.amountCents), "No FakeBank transfer may exist for the source-paid case");

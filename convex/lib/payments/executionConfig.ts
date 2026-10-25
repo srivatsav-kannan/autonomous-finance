@@ -1,3 +1,4 @@
+import { assertPaymentRelease } from "../apSystem/paymentRelease";
 import { assertFrozenPaymentAccounting, assertPaymentAccountingBinding } from "../apSystem/paymentAccountingBinding";
 import { assertGovernedCredits } from "../apSystem/governedCredits";
 import type { Doc, Id } from "../../_generated/dataModel";
@@ -52,7 +53,10 @@ export async function assertDispatchAuthority(ctx: MutationCtx, config: PaymentE
   for (const approval of version.approvals.filter(a => a.kind === "human" && a.snapshotHash === version.snapshotHash)) {
     if (!config.humanSubjects.some(binding => binding.seatId === approval.seatId && binding.subject === approval.subject)) continue;
     const seat = await ctx.db.query("seats").withIndex("by_run_seat", q => q.eq("runId", config.scope.runId).eq("seatId", approval.seatId)).unique();
-    if (seat?.kind === "human" && seat.role === "human_cfo" && seat.status === "active" && seat.seatId !== version.requestedBy) return { notBefore: version.snapshot.schedule ? Math.max(0, Date.parse(`${version.snapshot.schedule.executionDate}T00:00:00.000Z`)) : 0 };
+    if (seat?.kind === "human" && seat.role === "human_cfo" && seat.status === "active" && seat.seatId !== version.requestedBy) {
+      await assertPaymentRelease(ctx, config.scope, version.snapshot, approval.subject);
+      return { notBefore: version.snapshot.schedule ? Math.max(0, Date.parse(`${version.snapshot.schedule.executionDate}T00:00:00.000Z`)) : 0 };
+    }
   }
   throw new Error("Active authenticated human approval required before first dispatch");
 }

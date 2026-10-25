@@ -14,6 +14,7 @@ import {
   type APAgentCredential,
 } from "./ap-case-tools";
 
+export type APCaseStep = (context:{tools:ReturnType<typeof createAPCaseAgentTools>;lease:{caseId:string;generation:number};credential:APAgentCredential})=>Promise<Record<string,unknown>>;
 /** Uses the existing worker RPC retry policy. Durable ownership/waits live exclusively in Convex. */
 export class APCaseAgentWorker {
   private readonly control = new ControlPlane();
@@ -21,6 +22,7 @@ export class APCaseAgentWorker {
     private readonly client: KernelTransport,
     private readonly scope: BankScope,
     private readonly credentials: APAgentCredential[],
+    private readonly step?: APCaseStep,
   ) {}
   async tick() {
     const outcomes = [];
@@ -36,7 +38,7 @@ export class APCaseAgentWorker {
       const tools = createAPCaseAgentTools(this.client, this.scope, credential);
       // Retrying this exact fenced mutation can recover a lost response without a new effect.
       try {
-        const result = await this.control.call("apCaseAgent.advance", () =>
+        const result = this.step ? await this.step({tools,lease:{caseId:lease.caseId,generation:lease.generation},credential}) : await this.control.call("apCaseAgent.advance", () =>
           tools.advance_case({
             caseId: lease.caseId,
             generation: lease.generation,

@@ -50,6 +50,7 @@ import {
   requireBusinessPolicy,
   currentSupplier,
   resolveVotePrincipal,
+  currentFieldReviewer,
   assertApprovalCurrent,
   assertApprovalVotes,
   assertIndependentVotes,
@@ -66,6 +67,7 @@ type Ctx = Parameters<typeof requireBusinessPolicy>[0];
 type Scope = Parameters<typeof requireBusinessPolicy>[1];
 async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
   const row = await caseRow(ctx, scope, request.caseId);
+  if(row.historicalPayment)deny("historical_source_paid","Imported source-paid invoices cannot be recognized or paid again");
   if (
     row.currentRevision !== request.expectedRevision ||
     row.snapshotHash !== request.snapshotHash ||
@@ -430,6 +432,9 @@ export const vote = mutation({
         "self_approval",
         "The request/case creator cannot approve through a delegated principal",
       );
+    const fieldReviewer = await currentFieldReviewer(ctx, args.scope, result.row);
+    if (fieldReviewer === subjectSeatId || fieldReviewer === principalSeatId)
+      deny("approval_segregation", "The field reviewer cannot approve business recognition, including through delegation");
     const votes = proposal.votes as BusinessVote[];
     if (
       votes.some(
@@ -704,6 +709,7 @@ export const vote = mutation({
       decisionId: `${proposal._id}:approved`,
       kind: "bill_approval",
       actor: subject,
+      actorSeatId: seat.seatId,
       actorKind: "human",
       authority: "configured_sequential_business_groups",
       at: Date.now(),

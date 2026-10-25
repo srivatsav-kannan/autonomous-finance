@@ -139,7 +139,7 @@ it("runs the actual CLI over HTTP, survives SIGKILL after claim and resumes from
       ]),
     );
     const d = await f.get(id);
-    await f.human.mutation(refs.review, {
+    await f.fieldReviewer.mutation(refs.review, {
       scope: f.scope,
       input: f.request(d),
     });

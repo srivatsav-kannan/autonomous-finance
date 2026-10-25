@@ -512,8 +512,7 @@ describe("E03 governed trusted contact replacement", () => {
       billIds: [b.billId],
       credits: [],
     });
-    const command = await f.humans.finance!.mutation(
-      api.demoPayments.approveAndQueue,
+    const command = await f.payer.mutation(api.demoPayments.approveAndQueue,
       { scope: f.scope, ...payment },
     );
     const before = await f.t.run((ctx) => ctx.db.get(command.commandId)),
@@ -559,8 +558,7 @@ describe("E03 governed trusted contact replacement", () => {
       billIds: [b.billId],
       credits: [],
     });
-    const command = await f.humans.finance!.mutation(
-      api.demoPayments.approveAndQueue,
+    const command = await f.payer.mutation(api.demoPayments.approveAndQueue,
       { scope: f.scope, ...payment },
     );
     await f.t.mutation(api.demoPayments.claim, {
@@ -696,7 +694,7 @@ describe("E03 governed trusted contact replacement", () => {
       billIds: [b.billId],
       credits: [],
     });
-    await f.humans.finance!.mutation(api.demoPayments.approveAndQueue, {
+    await f.payer.mutation(api.demoPayments.approveAndQueue, {
       scope: f.scope,
       ...payment,
     });
