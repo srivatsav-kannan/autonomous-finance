@@ -39,3 +39,7 @@ Original route: GET /api/ap-system/sources/:sourceId/revisions/:revision?sha256=
 ## Transport addendum (Master, 2026-10-25)
 
 GET /api/ap-system/sources/:sourceId/revisions/:revision/pages/:page?sha256=<hash> returns a verified page PNG rendered after the frozen display transform, with X-AP-Source-SHA256, X-AP-Source-Revision and X-AP-Page headers. A missing renderer is explicit, never fabricated geometry. POST /api/ap-system/intake accepts multipart FormData (repeated documents files, kinds JSON array aligned with files, idempotencyKey, optional explicitRevisionOf). Limit 10 documents and 8 MiB total original bytes (backend chunks retained originals into 200 KiB pieces). GET /cases establishes a per-run local session; writes require allowed Origin, scoped HttpOnly cookie and X-AP-System-Session:1. Runtime attestation is GET /api/ap-system/runtime.
+
+### Current versus historical sources (integration addendum)
+
+`APCaseDetail.currentSourceBindings` is the exact current intake document binding set, including supporting documents. `sources` retains historical/delivery originals. Review requests use only `currentSourceBindings`, the current candidate evidence IDs (or extraction evidence IDs if there is no candidate), and the current revision/snapshot. Historical source visibility must not silently invalidate or broaden current review. The authenticated `apCases:source` endpoint returns the complete `SourceDocument` with rehydrated original bytes; HTTP projections redact private references.

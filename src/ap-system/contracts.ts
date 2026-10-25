@@ -130,6 +130,7 @@ export const statesSchema = z.object({
 export const caseDetailSchema = z.object({
   contractVersion:z.literal(AP_CONTRACT_VERSION), caseId:id, runId:id, organizationId:id,
   revision:z.number().int().positive(), candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), sources:z.array(sourceDocumentSchema),
+  currentSourceBindings:z.array(sourceBindingSchema).min(1),
   purchasingEvidence:z.array(purchasingEvidenceSchema), decisions:z.array(decisionSchema), exceptions:z.array(exceptionSchema),
   amounts:amountsSchema, states:statesSchema, policyVersion:id, snapshotHash:hash,
   scope:z.object({organizationId:id,runId:id,provider:z.enum(["fake","increase"]),environment:z.enum(["local","sandbox"]),accountId:id}),

@@ -22,8 +22,8 @@ export function regionPolygon(frame: CoordinateFrame, region: EvidenceRegion): s
   return [[region.x,region.y],[region.x+region.width,region.y],[region.x+region.width,region.y+region.height],[region.x,region.y+region.height]].map(([x,y]) => point(frame,x!,y!).join(",")).join(" ");
 }
 export function reviewPayload(detail: APCaseDetail, reason: string, outcome: ReviewRequest["outcome"], idempotencyKey: string): ReviewRequest {
-  const sources = detail.sources;
-  return { caseId:detail.caseId, expectedRevision:detail.revision, sourceBindings:sources.map(({sourceId,revision,sha256})=>({sourceId,revision,sha256})), snapshotHash:detail.snapshotHash, idempotencyKey, outcome, reason:reason.trim(), evidenceIds:evidenceForCase(detail).map(e=>e.evidenceId) };
+  const sources = detail.currentSourceBindings;
+  return { caseId:detail.caseId, expectedRevision:detail.revision, sourceBindings:sources.map(({sourceId,revision,sha256})=>({sourceId,revision,sha256})), snapshotHash:detail.snapshotHash, idempotencyKey, outcome, reason:reason.trim(), evidenceIds:(detail.candidate?.evidence ?? detail.extraction.evidence).map(e=>e.evidenceId) };
 }
 export function caseNeedsAttention(detail: APCaseDetail) {
   return detail.exceptions.some(e=>e.blocking && e.status === "open") || ["failed","review_required"].includes(detail.states.document) || detail.states.business === "held" || detail.states.accounting === "repair_required" || ["unknown","exception","rejected","returned"].includes(detail.states.execution);

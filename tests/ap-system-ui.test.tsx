@@ -30,6 +30,17 @@ describe("AP case workspace evidence boundaries",()=>{
     expect(payload).toMatchObject({caseId:f.caseId,expectedRevision:1,snapshotHash:f.snapshotHash,sourceBindings:f.candidate!.sources,reason:"Checked original",idempotencyKey:"stable-key"});
     expect(payload.evidenceIds).toEqual(["supplier","line_description","total"]);
   });
+  it("reviews current supporting documents without rebinding historical sources",()=>{
+    const f=apUIFixture(), invoice=f.sources[0]!;
+    const receipt={...invoice,sourceId:"supporting-receipt",kind:"receipt" as const};
+    f.sources.push(receipt,{...invoice,revision:2});
+    f.currentSourceBindings=[{sourceId:invoice.sourceId,revision:2,sha256:invoice.sha256},{sourceId:receipt.sourceId,revision:1,sha256:receipt.sha256}];
+    f.extraction.evidence=[uiEvidence("extra-diagnostic","unresolved","review separately")];
+    const request=reviewPayload(f,"Current originals inspected","approved","current-key");
+    expect(request.sourceBindings).toEqual(f.currentSourceBindings);
+    expect(request.sourceBindings).not.toContainEqual({sourceId:invoice.sourceId,revision:1,sha256:invoice.sha256});
+    expect(request.evidenceIds).not.toContain("extra-diagnostic");
+  });
   it("shows separate accounting and payment dimensions and no invented journal",()=>{
     const f=apUIFixture();f.states.document="reviewed";f.states.business="approved";f.states.accounting="recognized";f.states.authorization="awaiting_approval";
     const html=renderToStaticMarkup(<APCaseStatus detail={f}/>)+renderToStaticMarkup(<APAccounting detail={f}/>);
