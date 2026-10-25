@@ -980,7 +980,7 @@
     "accounting_transaction_writes": 0,
     "mapping_hash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff"
   },
-  "last_updated_at": "2026-10-25T11:11:06.488606+00:00",
+  "last_updated_at": "2026-10-25T11:13:35.062941+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",
@@ -990,23 +990,19 @@
     "next_action": "User reviews the prepared synthetic INV-1001 fields and bill in the normal browser; actual payment authorization remains separate. No JWT requested/extracted or simulated identity used."
   },
   "verification_checkpoint": {
-    "code": "7a67840",
-    "full_suite_source": "341f472",
-    "tests": {
-      "total": 1868,
-      "passed": 1864,
+    "review_commit": "35b97ee8de7702e578a798910cf0c2b78e4fb7a2",
+    "integration_commit": "d05326b",
+    "tree": "a478898887c846caa71ea82e2ba47e54e55376df",
+    "full_suite": {
+      "passed": 1886,
       "skipped": 4,
       "failed": 0,
-      "workers": 4,
-      "report": "docs/ap-orchestration/evidence/FINAL-engineering-checkpoint-results.json"
+      "total": 1890,
+      "files": 201,
+      "workers": 4
     },
-    "initial_failure": "1a5dc70:1834 passed,4 skipped,2 five-second timeouts. The same two files replayed32/32 unchanged; final suite retained all prior assertion identities. No timeout/assertion changed.",
-    "later_changes": "a9ead60 practitioner docs;7a67840 receipt guidance only.15 focused current-root UI/transport checks pass after copy change.",
-    "application_typecheck": "PASS on7a67840",
-    "backend_typecheck": "PASS on7a67840",
-    "tests_typecheck": "PASS on7a67840",
-    "build": "PASS on7a67840; existing871.99kB bundle advisory",
-    "design": "0 FAIL,0 WARN,1 ANSWERED on7a67840"
+    "report": "docs/ap-orchestration/evidence/FINAL-review-checkpoint.md",
+    "limits": "Real operator, QBO transaction, Increase execution and practitioner acceptance remain pending."
   },
   "ui_acceptance_scope": {
     "target": "laptop desktop web browser",
