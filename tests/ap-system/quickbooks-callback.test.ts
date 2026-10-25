@@ -71,7 +71,8 @@ it("loopback callback binds browser session and CSRF, consumes grant once and re
     const page = await send("/");
     expect(page.status).toBe(200);
     expect(page.headers["cache-control"]).toBe("no-store");
-    expect(page.headers["referrer-policy"]).toBe("no-referrer");
+    expect(page.headers["referrer-policy"]).toBe("same-origin");
+    expect(page.headers["content-security-policy"]).toBe("default-src 'none'; form-action 'self'; frame-ancestors 'none'");
     const cookie = page.headers["set-cookie"][0].split(";")[0];
     expect(page.headers["set-cookie"][0]).toContain("HttpOnly; SameSite=Lax");
     const csrf = /name="csrf" value="([a-f0-9]+)"/.exec(page.body)![1];
@@ -89,6 +90,10 @@ it("loopback callback binds browser session and CSRF, consumes grant once and re
         )
       ).status,
     ).toBe(400);
+    for (const origin of ["null", ""]) {
+      expect((await send("/connect", "POST", {"Content-Type":"application/x-www-form-urlencoded", Cookie:cookie, ...(origin ? {Origin:origin} : {})}, `csrf=${csrf}`)).status).toBe(400);
+    }
+    expect((await send("/connect", "POST", {"Content-Type":"application/x-www-form-urlencoded",Cookie:cookie,Origin:"http://localhost:8824"}, `csrf=${"0".repeat(64)}`)).status).toBe(400);
     const connected = await send(
       "/connect",
       "POST",
@@ -99,14 +104,22 @@ it("loopback callback binds browser session and CSRF, consumes grant once and re
       },
       `csrf=${csrf}`,
     );
-    expect(connected.status).toBe(303);
-    const state = new URL(connected.headers.location).searchParams.get("state");
+    expect(connected.status).toBe(200);
+    expect(connected.headers.location).toBeUndefined();
+    expect(connected.headers["referrer-policy"]).toBe("no-referrer");
+    expect(connected.headers["content-security-policy"]).toBe(page.headers["content-security-policy"]);
+    const authorization = new URL(/href="([^"]+)"/.exec(connected.body)![1]!.replaceAll("&amp;","&"));
+    expect(authorization.origin+authorization.pathname).toBe("https://appcenter.intuit.com/connect/oauth2");
+    expect(authorization.searchParams.get("scope")).toBe("com.intuit.quickbooks.accounting");
+    expect(authorization.searchParams.get("redirect_uri")).toBe(CALLBACK);
+    const state = authorization.searchParams.get("state");
     const path = `/api/quickbooks/callback?state=${state}&code=private-code&realmId=123`;
     expect((await send(path)).status).toBe(400);
     expect(calls).toBe(0);
     const result = await send(path, "GET", { Cookie: cookie });
     expect(result.status).toBe(303);
     expect(result.headers.location).toBe("/connected");
+    expect(result.headers["referrer-policy"]).toBe("no-referrer");
     expect(result.body).not.toContain("private-");
     expect((await send(path, "GET", { Cookie: cookie })).status).toBe(400);
     expect(calls).toBe(1);

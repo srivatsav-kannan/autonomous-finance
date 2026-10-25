@@ -31,7 +31,7 @@
     "openai": "Existing evaluation-worktree key reused in ignored var/ap-environment/providers.env; authentication and one gpt-6.1-sol Responses request verified 2026-10-25. Config import verified in main-browser-recovery; application workflow not run.",
     "llamaparse": "Existing Default-project key reused. Five agentic_plus parse jobs verified 2026-10-25 across three rounds. Clean PDF passes selected content/native grounding. Genuine scan content passes; native description bbox still absent with raw word output, whose OCR has two transcription mismatches. Local Tesseract 5.5.2 eng PSM 6 uniquely matched both description lines and passed original-image overlay review; this is derived geometry on one sample, not a native box or completed adapter. See LLAMAPARSE-GROUNDING.md and prior reports. App adapter/fallback packaging, broader formats and integration acceptance remain pending.",
     "increase": "Sandbox API/resources available. User selected Auth0 development tenant for real browser login; tenant/app/owner binding not configured. Independent human payment authorization remains required. No outbound transfer yet.",
-    "erp_selection_and_access": "QuickBooks Online US sandbox selected by user; official Accounting API + OAuth 2.0. No account or authorization yet. Credential-free implementation and setup guide authorized; external workflow remains BLOCKED until access.",
+    "erp_selection_and_access": "Intuit Development app and US sandbox configured by owner setup chat; exact callback saved. Master reproduced and fixed actual Chrome Origin:null blocker; reached configured company consent screen. Awaiting user Connect, then only authorized read-only CompanyInfo/Account/Vendor validation. No external accounting writes yet.",
     "domain_review": "No practitioner currently available. User directs engineering, automated and independent agent verification to continue; prepare practitioner packet, retain external sign-off as pending."
   },
   "tasks": [
@@ -548,7 +548,8 @@
     "increase_frontend_reserved_port": 5192,
     "increase_backend_reserved_port": 3252,
     "increase_backend_site_reserved_port": 3253,
-    "increase_ap_server_reserved_port": 8825
+    "increase_ap_server_reserved_port": 8825,
+    "qbo_callback_exec_session": 90258
   },
   "contracts": {
     "version": "ap-evidence-v1",
@@ -580,11 +581,11 @@
     "environment": "sandbox",
     "protocol": "Accounting API + OAuth 2.0",
     "credential_storage": "server-only private configuration",
-    "status": "protocol_implemented_broader_business_sync_and_external_acceptance_pending",
+    "status": "real_oauth_consent_pending",
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true
   },
-  "last_updated_at": "2026-10-25T09:26:47.138699+00:00",
+  "last_updated_at": "2026-10-25T09:31:20.109361+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",

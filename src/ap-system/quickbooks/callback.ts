@@ -34,6 +34,9 @@ export function callbackServer(oauth: OAuth) {
       if (url.origin !== ORIGIN || (req.url?.length ?? 0) > 4096)
         throw new QboError("invalid_callback_request");
       if (req.method === "GET" && url.pathname === "/") {
+        // A no-referrer form POST emits Origin:null in Chrome. Same-origin
+        // retains the local Origin check and sends no referrer to Intuit.
+        res.setHeader("Referrer-Policy", "same-origin");
         const session = cookie(req) || randomBytes(32).toString("hex");
         res.setHeader(
           "Set-Cookie",
@@ -66,8 +69,12 @@ export function callbackServer(oauth: OAuth) {
           !timingSafeEqual(Buffer.from(token), Buffer.from(csrf(session)))
         )
           throw new QboError("oauth_csrf_rejected");
-        res.writeHead(303, { Location: await oauth.begin(session) });
-        res.end();
+        const authorization = await oauth.begin(session);
+        // Keep form-action self: a cross-origin 303 following this POST is
+        // blocked by Chrome. A normal top-level link is not a form redirect.
+        const escaped = authorization.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.end(`<h1>Continue to Intuit</h1><p>The sandbox connection requests QuickBooks accounting access only. No payment is initiated.</p><p><a href="${escaped}" rel="noreferrer">Continue to Intuit authorization</a></p><p>Choose the configured US sandbox company and review its consent screen.</p>`);
         return;
       }
       if (req.method === "GET" && url.pathname === new URL(CALLBACK).pathname) {
