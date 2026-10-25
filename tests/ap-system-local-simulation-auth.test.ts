@@ -38,3 +38,9 @@ describe("isolated local multi-human authentication adapter",()=>{
   o.authorizeActor.mockRejectedValueOnce(new Error("role revoked"));expect((await fetch(base+"/cases/c",{headers:{...headers,cookie:nextCookie}})).status).toBe(403);
  });
 });
+
+it("limits the guidance backend to a named fake/local guidance run",()=>{
+ expect(()=>createAPLocalSimulationAuthentication({...options(),convexUrl:"http://127.0.0.1:3260"})).toThrow();
+ expect(createAPLocalSimulationAuthentication({...options(),convexUrl:"http://127.0.0.1:3260",scope:{...scope,runId:"ap97-b3-guidance-test"}}).publicConfig.mode).toBe("local_simulation");
+ expect(()=>createAPLocalSimulationAuthentication({...options(),convexUrl:"http://127.0.0.1:3260",scope:{...scope,runId:"ap97-b3-guidance-test",provider:"increase",environment:"sandbox"}})).toThrow();
+});

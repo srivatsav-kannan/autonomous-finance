@@ -1,0 +1,27 @@
+{
+  "results": [
+    {
+      "key": "B",
+      "caseId": "kh77h1gxbc75v89h309t76c8ch8gym3g",
+      "guidanceId": "k970nbdw007dcbg8v1v93r6x218gz08g",
+      "restartExact": true,
+      "recheckExact": true,
+      "bills": 0,
+      "journals": 0,
+      "payments": 0,
+      "commands": 0
+    },
+    {
+      "key": "C",
+      "caseId": "kh72sw1qsz72ekas0z0rb4sw5s8gymct",
+      "guidanceId": "k975xgxttyzbjmzrkyaxnryqwd8gysw3",
+      "restartExact": true,
+      "recheckExact": true,
+      "bills": 0,
+      "journals": 0,
+      "payments": 0,
+      "commands": 0
+    }
+  ],
+  "totalCases": 2
+}

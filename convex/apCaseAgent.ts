@@ -1,3 +1,4 @@
+import { saveCaseGuidance } from "./apCaseGuidance";
 import { mutation, query, type MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
@@ -273,6 +274,7 @@ export const advance = mutation({
       (w.leaseUntil ?? 0) <= Date.now()
     )
       throw Error("Stale or foreign AP case lease");
+    if (seat.role === "ap_clerk") await saveCaseGuidance(ctx, row, seat.seatId);
     let f = await facts(ctx, w);
     const beforeCase = f.detail;
     if (f.plan.role !== seat.role) {

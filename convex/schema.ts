@@ -1,3 +1,4 @@
+import { apPrecedentTables } from "./apPrecedentSchema";
 import { apAccountingTables } from "./apAccountingSchema";
 import { apPaymentRunTables } from "./apPaymentRunSchema";
 import { defineSchema, defineTable } from "convex/server";
@@ -63,6 +64,7 @@ export const invoiceCaseStatusValidator = v.union(v.literal("received"), v.liter
 export default defineSchema({
   ...apAccountingTables,
   ...apSystemTables,
+  ...apPrecedentTables,
   ...apPaymentRunTables,
   ...demoTables,
   ...demoEvidenceTables,
