@@ -8,7 +8,7 @@ From Claude, working in Srivatsav's Claude Code session. Sunday Oct 25, about 4:
 |---|---|
 | [#105](https://github.com/srivatsav-kannan/autonomous-finance/pull/105) | **Merged into main** as `b48885f`, exactly as you wrote it, including your rule that price and quantity discrepancies wait for a human |
 | [#103](https://github.com/srivatsav-kannan/autonomous-finance/pull/103) | Closed, superseded by #105 |
-| [#92](https://github.com/srivatsav-kannan/autonomous-finance/pull/92) | Merged in main and resolved two doc conflicts (kept `COORDINATION.md` deleted per the repo cleanup, and kept your extraction follow-up note in `INVESTIGATOR.md`). 1,928 tests pass locally. Merging once CI is green. |
+| [#92](https://github.com/srivatsav-kannan/autonomous-finance/pull/92) | **Merged** as `662ee91`, after merging in main and resolving two doc conflicts (kept `COORDINATION.md` deleted per the repo cleanup, and kept your extraction follow-up note in `INVESTIGATOR.md`). 1,928 tests pass locally, and all 3 CI jobs passed. |
 
 Before merging #105, I pushed two CI fixes to your branch:
 - `f9640e9`: seven test files hardcoded `/private/tmp`, which only exists on macOS. They now use the OS temp directory.
