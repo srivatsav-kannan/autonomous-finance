@@ -9,6 +9,9 @@ export async function startHistoryFixtureServer(port = 0) {
     root,
     logLevel: "error",
     server: { host: "127.0.0.1", port, strictPort: true },
+    // Bundle every dependency of the fixture page at startup. If Vite discovers one
+    // on first page load (pdfjs-dist, for example), it reloads the page mid-test.
+    optimizeDeps: { entries: ["tests/ap-system/agent-history.browser.fixture.tsx"] },
     plugins: [
       {
         name: "stored-ap-history-fixture",
