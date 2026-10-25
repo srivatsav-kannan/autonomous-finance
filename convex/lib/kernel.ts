@@ -1,5 +1,5 @@
 import type { MutationCtx, QueryCtx } from "../_generated/server";
-import type { Doc } from "../_generated/dataModel";
+import type { Doc, Id } from "../_generated/dataModel";
 import { ROLE_CAPABILITIES, type Capabilities, type Role } from "../../src/core/roles";
 
 // Kernel results are values, not exceptions: a blocked operation must still be able to
@@ -73,12 +73,14 @@ export async function recordViolation(
   seatId: string,
   operation: string,
   failure: Fail,
+  evidence?: { sourceDocumentId: string; relatedBillId: Id<"bills"> },
 ): Promise<Fail> {
   await ctx.db.insert("violations", {
     runId,
     seatId,
     operation,
     reason: `${failure.code}: ${failure.error}`,
+    ...evidence,
     at: Date.now(),
   });
   await ctx.db.insert("activity", {

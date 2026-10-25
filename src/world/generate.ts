@@ -53,6 +53,8 @@ export interface Decoy {
 }
 
 export interface WorldTruth {
+  /** Versioned, private accounting oracle; absent in scenarios saved before this contract. */
+  accounting?: AccountingTruth;
   revenueCents: { in_store: number; digital: number; marketplace: number };
   salesTaxCents: number;
   giftCardsSoldCents: number;
@@ -63,6 +65,16 @@ export interface WorldTruth {
   legitRentCents: number;
   invoices: number;
   events: number;
+}
+
+export interface AccountingTruth {
+  version: 1;
+  start: string;
+  end: string;
+  /** Debit minus credit, before agent-initiated payments. Never derived from company books. */
+  netByAccount: Record<string, number>;
+  obligations: { documentExternalId: string; vendor: string; invoiceNumber: string; amountCents: number; expenseAccount: string }[];
+  duplicateDocuments: { documentExternalId: string; originalDocumentExternalId: string }[];
 }
 
 export interface WorldOptions {
@@ -117,6 +129,18 @@ export function generateWorld(opts: WorldOptions) {
   };
   const days = Array.from({ length: opts.days }, (_, i) => addDays(opts.start, i));
   const end = days[days.length - 1]!;
+  const accounting: AccountingTruth = {
+    version: 1, start: opts.start, end, netByAccount: {}, obligations: [], duplicateDocuments: [],
+  };
+  truth.accounting = accounting;
+  const accountDelta = (code: string, cents: number) => {
+    accounting.netByAccount[code] = (accounting.netByAccount[code] ?? 0) + cents;
+  };
+  const obligation = (documentExternalId: string, vendor: string, invoiceNumber: string, amountCents: number, expenseAccount: string) => {
+    accounting.obligations.push({ documentExternalId, vendor, invoiceNumber, amountCents, expenseAccount });
+    accountDelta(expenseAccount, amountCents);
+    accountDelta("2000", -amountCents);
+  };
   const seq: Record<string, number> = {};
   const plant = opts.plantErrors;
 
@@ -166,6 +190,7 @@ export function generateWorld(opts: WorldOptions) {
       const cam = overCap ? cap + 64_000 : cap - rng.int(5_000, 40_000);
       const inv = `LSE-${s.id.slice(0, 6).toUpperCase()}-${month.replace("-", "")}`;
       truth.legitRentCents += baseRentCents(si) + Math.min(cam, cap);
+      obligation(`doc-${inv}`, landlordId, inv, baseRentCents(si) + Math.min(cam, cap), "5200");
       events.push({
         type: "document.received",
         externalId: `doc-${inv}`,
@@ -230,6 +255,13 @@ export function generateWorld(opts: WorldOptions) {
 
       // Card settlement lands next day, net of fees.
       const collections = inStore + digital + tax - gcRedeemed + gcSold;
+      accountDelta("1100", collections);
+      accountDelta("1110", marketplace);
+      accountDelta("4000", -inStore);
+      accountDelta("4010", -digital);
+      accountDelta("4020", -marketplace);
+      accountDelta("2300", -tax);
+      accountDelta("2200", gcRedeemed - gcSold);
       const contractedFee = applyRate(collections, CARD_PROCESSOR.contractedRateBps / 10_000) + txns * CARD_PROCESSOR.perTxnCents;
       const overcharge = plant && s.id === errStore.id && di >= 2 && di <= 5;
       const fee = overcharge ? applyRate(collections, 295 / 10_000) + txns * CARD_PROCESSOR.perTxnCents : contractedFee;
@@ -237,6 +269,9 @@ export function generateWorld(opts: WorldOptions) {
       truth.cardFeesContractedCents += contractedFee;
       const settleOn = addDays(date, 1);
       if (settleOn <= end) {
+        accountDelta("1020", collections - fee);
+        accountDelta("5400", fee);
+        accountDelta("1100", -collections);
         const txnId = `dep-${s.id}-${date}`;
         events.push({
           type: "bank.transaction",
@@ -299,6 +334,13 @@ export function generateWorld(opts: WorldOptions) {
         }
 
         const total = lines.reduce((sum, l) => sum + l.amountCents, 0);
+        // Economic cost comes from contracted prices and goods actually received,
+        // before invoice inflation, duplicate deliveries or the company's decisions.
+        // The later short-shipment credit acknowledges the same reduction; it is
+        // not a second reduction of another invoice's expense or payable.
+        const economicTotal = v.catalog.reduce((sum, item) =>
+          sum + item.unitCents * received.find((r) => r.sku === item.sku)!.qtyReceived, 0);
+        obligation(`doc-${v.id}-${num}`, v.id, num, economicTotal, v.expenseAccount);
         const doc: InvoiceDoc = {
           vendorName: v.legalName, vendorEmail: v.contact.email, invoiceNumber: num, invoiceDate: date,
           dueDate: addDays(date, v.termsNetDays), storeId: s.id, storeName: s.name, deliveryId, lines, totalCents: total,
@@ -326,6 +368,7 @@ export function generateWorld(opts: WorldOptions) {
         // Planted: exact duplicate resent through the portal two days later with a reformatted number.
         if (plant && v.id === "norcal-dairy" && s.id === errStore.id && addDays(date, 2) <= end && !errors.some((e) => e.type === "duplicate_exact")) {
           const dupNum = num.replace("NCD", "NCD-");
+          accounting.duplicateDocuments.push({ documentExternalId: `doc-${v.id}-${dupNum}-portal`, originalDocumentExternalId: `doc-${v.id}-${num}` });
           events.push({ type: "document.received", externalId: `doc-${v.id}-${dupNum}-portal`, occurredOn: addDays(date, 2),
             payload: { kind: "invoice", channel: "portal", from: v.contact.email, subject: `Invoice ${dupNum} (portal resend)`, text: renderInvoice({ ...doc, invoiceNumber: dupNum }, layout) } });
           errors.push({ id: `e-dup-${num}`, type: "duplicate_exact", occurredOn: addDays(date, 2), subject: { kind: "invoice", vendor: v.id, ref: dupNum, documentExternalId: `doc-${v.id}-${dupNum}-portal` }, amountAtRiskCents: total, expected: "reject", detail: `${dupNum} is ${num} resent` });
@@ -333,6 +376,7 @@ export function generateWorld(opts: WorldOptions) {
         // Planted: look-alike re-bill of the same delivery under a new number.
         if (plant && v.id === "hydra-beverages" && s.id === errStore2.id && di >= 7 && addDays(date, 3) <= end && !errors.some((e) => e.type === "duplicate_lookalike")) {
           const reNum = `${num}-R`;
+          accounting.duplicateDocuments.push({ documentExternalId: `doc-${v.id}-${reNum}`, originalDocumentExternalId: `doc-${v.id}-${num}` });
           events.push({ type: "document.received", externalId: `doc-${v.id}-${reNum}`, occurredOn: addDays(date, 3),
             payload: { kind: "invoice", channel: "email", from: v.contact.email, subject: `Invoice ${reNum}`, text: renderInvoice({ ...doc, invoiceNumber: reNum, invoiceDate: addDays(date, 3), dueDate: addDays(date, 3 + v.termsNetDays) }, layout) } });
           errors.push({ id: `e-lookalike-${num}`, type: "duplicate_lookalike", occurredOn: addDays(date, 3), subject: { kind: "invoice", vendor: v.id, ref: reNum, documentExternalId: `doc-${v.id}-${reNum}` }, amountAtRiskCents: total, expected: "reject", detail: `${reNum} re-bills delivery ${deliveryId}` });
@@ -381,6 +425,8 @@ export function generateWorld(opts: WorldOptions) {
     }
     // Planted: an unexplained debit on the operating account.
     if (plant && di === Math.min(9, days.length - 1)) {
+      accountDelta("1000", -124_000);
+      accountDelta("6900", 124_000);
       events.push({ type: "bank.transaction", externalId: `opr-zenith-${date}`, occurredOn: date,
         payload: { account: "operating", txnId: `opr-zenith-${date}`, date, amountCents: -124_000, description: "ACH DEBIT ZENITH MERCHANT SVCS 8841" } });
       errors.push({ id: "e-zenith", type: "unexplained_debit", occurredOn: date, subject: { kind: "bank_txn", ref: `opr-zenith-${date}` }, amountAtRiskCents: 124_000, expected: "flag", detail: "no matching payment, vendor or contract" });
@@ -410,6 +456,12 @@ export function generateWorld(opts: WorldOptions) {
         }
         const reportId = `payout-${p.id}-w${week + 1}`;
         const net = lines.reduce((s2, l) => s2 + l.netCents, 0);
+        const expenses = lines.reduce((sum, l) => sum + l.commissionCents + l.refundsCents, 0) + (explained ? 1_200 : 0);
+        accountDelta("1020", net);
+        accountDelta("5410", expenses);
+        // An unexplained short payment remains a receivable while disputed; an
+        // itemized refund is an expense. A balancing journal alone cannot decide it.
+        accountDelta("1110", -(net + expenses));
         events.push({ type: "payout.report", externalId: reportId, occurredOn: date,
           payload: { platform: p.id, reportId, periodStart: days[week * 7], periodEnd: date, lines, netCents: net,
             notes: explained ? [{ store: lines[0]!.store, adjustmentCents: -1_200, reason: "Customer refund: missing item, order DD-77812" }] : [] } });
@@ -440,6 +492,8 @@ export function generateWorld(opts: WorldOptions) {
         const gross = lines.reduce((sum, e) => sum + e.grossCents, 0);
         const legit = lines.filter((e) => !(isGhostRun && e.id === ghost.id)).reduce((sum, e) => sum + e.grossCents, 0);
         truth.legitPayrollGrossCents += legit;
+        accountDelta("5100", legit);
+        accountDelta("2100", -legit);
         const regId = `payroll-${s.id}-${date}`;
         events.push({ type: "payroll.register", externalId: regId, occurredOn: date, payload: { registerId: regId, store: s.id, period, payDate: date, employees: lines, grossCents: gross } });
         if (isGhostRun) {

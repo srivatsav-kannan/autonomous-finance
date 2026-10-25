@@ -5,6 +5,7 @@ import { MemoryStore } from "../memory/store";
 import type { Vendor } from "../memory/schemas";
 import type { Decoy, PlantedError, WorldTruth } from "../world/generate";
 import { memoryDir, runDir } from "../world/scenario";
+import { evaluateBooks, type BooksStatus } from "./books";
 
 const norm = (n: string) => n.toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/^(INV|INVOICE|NO)/, "").replace(/^0+/, "");
 
@@ -14,10 +15,11 @@ export interface ScoreReport {
   decoys: { id: string; type: string; correct: boolean; how: string }[];
   falseAlarms: { ref: string; why: string }[];
   books: { metric: string; expected: number; actual: number; diff: number }[];
+  booksStatus: BooksStatus;
   controls: { metric: string; value: number; target: string; ok: boolean }[];
   humans: { asksToHumans: number; decisionsAsked: number; perHundredEvents: number };
   cost: { tasks: number; llmTurns: number; deterministicShare: number; costUsd: number; costPerTaskUsd: number };
-  coverage: { invoiceDocuments: number; billsRecorded: number; unreadable: number; parsersLearned: number };
+  coverage: { invoiceDocuments: number; billsRecorded: number; unreadable: number; parsersLearned: number; unresolvedDocuments: number };
   summary: { caught: number; planted: number; recall: number; dollarsAtRisk: number; dollarsCaught: number; decoysCorrect: number; decoys: number; falseAlarmCount: number };
 }
 
@@ -154,7 +156,7 @@ export async function scoreRun(runId: string): Promise<ScoreReport> {
     .map((b) => ({ ref: `${b.vendor}/${b.invoiceNumber}`, why: b.exceptions.join("; ") }));
 
   const net = (code: string) => tb.find((a) => a.code === code)?.net ?? 0;
-  const books = [
+  const legacyBooks = [
     { metric: "Revenue - in-store", expected: truth.revenueCents.in_store, actual: -net("4000") },
     { metric: "Revenue - digital", expected: truth.revenueCents.digital, actual: -net("4010") },
     { metric: "Revenue - marketplace", expected: truth.revenueCents.marketplace, actual: -net("4020") },
@@ -163,6 +165,22 @@ export async function scoreRun(runId: string): Promise<ScoreReport> {
     { metric: "Payroll expense (legit only)", expected: truth.legitPayrollGrossCents, actual: net("5100") },
     { metric: "Rent & CAM expense (lease terms)", expected: truth.legitRentCents, actual: net("5200") },
   ].map((r) => ({ ...r, diff: r.actual - r.expected }));
+  let outgoingPayments: unknown = [];
+  let bankReadError: string | undefined;
+  try {
+    const file = path.join(dir, "bank-outbox.json");
+    // WorldBank creates this file on its first successful send. No file means
+    // zero transfers; a settled kernel intent without a receipt still fails.
+    if (fs.existsSync(file)) outgoingPayments = JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch {
+    bankReadError = "unreadable simulator bank receipts";
+  }
+  const accounting = evaluateBooks({ truth, bills, intents, documents, trialBalance: tb, blockedDocuments, outgoingPayments, bankReadError });
+  const books = accounting.books.length ? accounting.books : legacyBooks;
+  const booksStatus: BooksStatus = accounting.books.length ? accounting.booksStatus : {
+    status: legacyBooks.some((b) => b.diff !== 0) ? "failed" : "incomplete",
+    reasons: [...accounting.booksStatus.reasons, ...legacyBooks.filter((b) => b.diff !== 0).map((b) => `${b.metric}: differs by ${b.diff} cents`)],
+  };
 
   const paidBills = new Map<string, number>();
   for (const i of intents.filter((x) => x.status === "settled")) for (const b of i.billIds) paidBills.set(b, (paidBills.get(b) ?? 0) + 1);
@@ -188,9 +206,10 @@ export async function scoreRun(runId: string): Promise<ScoreReport> {
     decoys,
     falseAlarms,
     books,
+    booksStatus,
     controls,
     humans: { asksToHumans: toHumans.length, decisionsAsked: toHumans.filter((a) => a.severity !== "info").length, perHundredEvents: Math.round((toHumans.length / Math.max(1, truth.events)) * 1000) / 10 },
-    coverage: { invoiceDocuments, billsRecorded: bills.length, unreadable, parsersLearned },
+    coverage: { invoiceDocuments, billsRecorded: bills.length, unreadable, parsersLearned, unresolvedDocuments: accounting.unresolvedDocuments.length },
     cost: { tasks: runs.length, llmTurns: llm.length, deterministicShare: runs.length ? 1 - llm.length / runs.length : 1, costUsd, costPerTaskUsd: runs.length ? costUsd / runs.length : 0 },
     summary: {
       caught: caught.length,
@@ -212,6 +231,9 @@ export function formatReport(r: ScoreReport): string {
     "",
     `**Caught ${r.summary.caught}/${r.summary.planted} planted errors (${Math.round(r.summary.recall * 100)}%), ${$(r.summary.dollarsCaught)} of ${$(r.summary.dollarsAtRisk)} at risk. Decoys handled correctly: ${r.summary.decoysCorrect}/${r.summary.decoys}. False alarms: ${r.summary.falseAlarmCount}.**`,
     "",
+    `**Book correctness: ${(r.booksStatus?.status ?? "incomplete").toUpperCase()}.**`,
+    ...(r.booksStatus?.reasons ?? ["This saved report predates complete accounting checks."]).map((reason) => `- ${reason}`),
+    "",
     "| Planted error | Caught | $ at risk | How |",
     "|---|---|---|---|",
     ...r.errors.map((e) => `| ${e.type} | ${e.caught ? "yes" : "**no**"} | ${$(e.amountAtRiskCents)} | ${e.how} |`),
@@ -228,7 +250,7 @@ export function formatReport(r: ScoreReport): string {
     "|---|---|---|",
     ...r.controls.map((c) => `| ${c.metric} | ${c.value} | ${c.target} ${c.ok ? "" : "**FAIL**"} |`),
     "",
-    `Coverage: ${r.coverage.billsRecorded} bills recorded from ${r.coverage.invoiceDocuments} invoice documents; ${r.coverage.unreadable} unreadable; ${r.coverage.parsersLearned} parser(s) learned by agents.`,
+    `Coverage: ${r.coverage.billsRecorded} bills recorded from ${r.coverage.invoiceDocuments} invoice documents; ${r.coverage.unreadable} unreadable; ${r.coverage.unresolvedDocuments ?? "unknown"} unresolved document(s); ${r.coverage.parsersLearned} parser(s) learned by agents.`,
     `Humans: ${r.humans.asksToHumans} messages to the human CFO (${r.humans.decisionsAsked} decisions), ${r.humans.perHundredEvents} per 100 events.`,
     `Cost: ${r.cost.tasks} agent tasks, ${r.cost.llmTurns} used Claude (${Math.round(r.cost.deterministicShare * 100)}% deterministic), $${r.cost.costUsd.toFixed(2)} total.`,
     ...(r.falseAlarms.length ? ["", "False alarms:", ...r.falseAlarms.map((f) => `- ${f.ref}: ${f.why}`)] : []),

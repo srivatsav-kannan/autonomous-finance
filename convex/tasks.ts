@@ -1,4 +1,5 @@
 import { assertLegacyRun } from "./lib/demoAuth";
+import { workerRequest } from "./lib/workerRequest";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
@@ -6,6 +7,7 @@ import type { Role } from "../src/core/roles";
 import { authSeat, fail, logActivity, recordViolation, requireAdmin } from "./lib/kernel";
 
 const seatArgs = { runId: v.string(), seatId: v.string(), token: v.string() };
+const requestArgs = { requestId: v.optional(v.string()) };
 const LEASE_MS = 120_000;
 const MAX_ATTEMPTS = 4;
 // attempts increases on every claim, including when the same seat reclaims a task.
@@ -105,104 +107,112 @@ export const adminCreateTask = mutation({
  * Expired leases (a crashed worker) are reclaimed here.
  */
 export const claimTask = mutation({
-  args: { ...seatArgs },
+  args: { ...seatArgs, ...requestArgs },
   handler: async (ctx, args) => {
     await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "tasks.claimTask", auth);
-    const now = Date.now();
-    const role = auth.seat.role;
+    return await workerRequest(ctx, args, "tasks.claimTask", async () => {
+      const now = Date.now();
+      const role = auth.seat.role;
 
-    const expired = await ctx.db
-      .query("tasks")
-      .withIndex("by_run_role_status", (q) => q.eq("runId", args.runId).eq("role", role).eq("status", "leased"))
-      .filter((q) => q.lte(q.field("leaseExpiresAt"), now))
-      .first();
-    const candidate =
-      expired ??
-      (await ctx.db
+      const expired = await ctx.db
         .query("tasks")
-        .withIndex("by_run_role_status", (q) => q.eq("runId", args.runId).eq("role", role).eq("status", "queued"))
-        .filter((q) => q.or(q.eq(q.field("notBefore"), undefined), q.lte(q.field("notBefore"), now)))
-        .first());
-    if (!candidate) return { ok: true as const, task: null };
+        .withIndex("by_run_role_status", (q) => q.eq("runId", args.runId).eq("role", role).eq("status", "leased"))
+        .filter((q) => q.lte(q.field("leaseExpiresAt"), now))
+        .first();
+      const candidate =
+        expired ??
+        (await ctx.db
+          .query("tasks")
+          .withIndex("by_run_role_status", (q) => q.eq("runId", args.runId).eq("role", role).eq("status", "queued"))
+          .filter((q) => q.or(q.eq(q.field("notBefore"), undefined), q.lte(q.field("notBefore"), now)))
+          .first());
+      if (!candidate) return { ok: true as const, task: null };
 
-    if (candidate.attempts >= MAX_ATTEMPTS) {
+      if (candidate.attempts >= MAX_ATTEMPTS) {
+        await ctx.db.patch(candidate._id, {
+          status: "failed", error: candidate.error ?? "too many attempts", updatedAt: now,
+          leaseOwner: undefined, leaseExpiresAt: undefined,
+        });
+        return { ok: true as const, task: null };
+      }
       await ctx.db.patch(candidate._id, {
-        status: "failed", error: candidate.error ?? "too many attempts", updatedAt: now,
-        leaseOwner: undefined, leaseExpiresAt: undefined,
+        status: "leased",
+        leaseOwner: args.seatId,
+        leaseExpiresAt: now + LEASE_MS,
+        attempts: candidate.attempts + 1,
+        updatedAt: now,
       });
-      return { ok: true as const, task: null };
-    }
-    await ctx.db.patch(candidate._id, {
-      status: "leased",
-      leaseOwner: args.seatId,
-      leaseExpiresAt: now + LEASE_MS,
-      attempts: candidate.attempts + 1,
-      updatedAt: now,
+      const task = await ctx.db.get(candidate._id);
+      return { ok: true as const, task, reclaimed: Boolean(expired) };
     });
-    const task = await ctx.db.get(candidate._id);
-    return { ok: true as const, task, reclaimed: Boolean(expired) };
   },
 });
 
 export const completeTask = mutation({
-  args: { ...leaseArgs, result: v.optional(v.any()) },
+  args: { ...leaseArgs, ...requestArgs, result: v.optional(v.any()) },
   handler: async (ctx, args) => {
     await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "tasks.completeTask", auth);
-    const task = await ctx.db.get(args.taskId);
-    if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
-    const now = Date.now();
-    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
-    if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.completeTask", denied);
-    await ctx.db.patch(task._id, {
-      status: "done", result: args.result, updatedAt: now,
-      leaseOwner: undefined, leaseExpiresAt: undefined, error: undefined, notBefore: undefined,
+    return await workerRequest(ctx, args, "tasks.completeTask", async () => {
+      const task = await ctx.db.get(args.taskId);
+      if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
+      const now = Date.now();
+      const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
+      if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.completeTask", denied);
+      await ctx.db.patch(task._id, {
+        status: "done", result: args.result, updatedAt: now,
+        leaseOwner: undefined, leaseExpiresAt: undefined, error: undefined, notBefore: undefined,
+      });
+      return { ok: true as const };
     });
-    return { ok: true as const };
   },
 });
 
 export const failTask = mutation({
-  args: { ...leaseArgs, error: v.string(), retryInMs: v.optional(v.number()) },
+  args: { ...leaseArgs, ...requestArgs, error: v.string(), retryInMs: v.optional(v.number()) },
   handler: async (ctx, args) => {
     await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "tasks.failTask", auth);
-    const task = await ctx.db.get(args.taskId);
-    if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
-    const now = Date.now();
-    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
-    if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.failTask", denied);
-    const giveUp = task.attempts >= MAX_ATTEMPTS || args.retryInMs === undefined;
-    await ctx.db.patch(task._id, {
-      status: giveUp ? "failed" : "queued",
-      error: args.error,
-      notBefore: giveUp ? undefined : now + (args.retryInMs ?? 0),
-      leaseOwner: undefined,
-      leaseExpiresAt: undefined,
-      updatedAt: now,
+    return await workerRequest(ctx, args, "tasks.failTask", async () => {
+      const task = await ctx.db.get(args.taskId);
+      if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
+      const now = Date.now();
+      const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
+      if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.failTask", denied);
+      const giveUp = task.attempts >= MAX_ATTEMPTS || args.retryInMs === undefined;
+      await ctx.db.patch(task._id, {
+        status: giveUp ? "failed" : "queued",
+        error: args.error,
+        notBefore: giveUp ? undefined : now + (args.retryInMs ?? 0),
+        leaseOwner: undefined,
+        leaseExpiresAt: undefined,
+        updatedAt: now,
+      });
+      return { ok: true as const, status: giveUp ? "failed" : "queued" };
     });
-    return { ok: true as const, status: giveUp ? "failed" : "queued" };
   },
 });
 
 /** Park a task until an ask is answered (the ask's answer re-queues it). */
 export const waitTask = mutation({
-  args: { ...leaseArgs, reason: v.string() },
+  args: { ...leaseArgs, ...requestArgs, reason: v.string() },
   handler: async (ctx, args) => {
     await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "tasks.waitTask", auth);
-    const task = await ctx.db.get(args.taskId);
-    if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
-    const now = Date.now();
-    const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
-    if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.waitTask", denied);
-    await ctx.db.patch(task._id, { status: "waiting", error: args.reason, leaseOwner: undefined, leaseExpiresAt: undefined, updatedAt: now });
-    return { ok: true as const };
+    return await workerRequest(ctx, args, "tasks.waitTask", async () => {
+      const task = await ctx.db.get(args.taskId);
+      if (!task || task.runId !== args.runId) return fail("not_found", "task not found");
+      const now = Date.now();
+      const denied = leaseFailure(task, args.seatId, auth.seat.role, args.leaseAttempt, now);
+      if (denied) return await recordViolation(ctx, args.runId, args.seatId, "tasks.waitTask", denied);
+      await ctx.db.patch(task._id, { status: "waiting", error: args.reason, leaseOwner: undefined, leaseExpiresAt: undefined, updatedAt: now });
+      return { ok: true as const };
+    });
   },
 });
 
@@ -245,5 +255,27 @@ export const get = query({
     await assertLegacyRun(ctx, args.runId);
     const t = await ctx.db.get(args.taskId);
     return t && t.runId === args.runId ? t : null;
+  },
+});
+
+/** Generalizes payment retry waits to all roles, including recovery of expired leases. */
+export const drainState = query({
+  args: { runId: v.string(), roles: v.array(v.string()) },
+  handler: async (ctx, args) => {
+    let pending = 0;
+    let unstaffed = 0;
+    let nextDueAt: number | null = null;
+    for (const status of ["queued", "leased"] as const) {
+      const tasks = await ctx.db.query("tasks")
+        .withIndex("by_run_status", (q) => q.eq("runId", args.runId).eq("status", status)).collect();
+      for (const task of tasks) {
+        pending++;
+        if (!args.roles.includes(task.role)) { unstaffed++; continue; }
+        const due = status === "queued" ? task.notBefore ?? 0 : task.leaseExpiresAt ?? 0;
+        nextDueAt = nextDueAt === null ? due : Math.min(nextDueAt, due);
+      }
+    }
+    // Human-waiting and terminal tasks do not prevent an executable-work drain.
+    return { pending, unstaffed, nextDueAt };
   },
 });

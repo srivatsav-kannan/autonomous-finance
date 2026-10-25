@@ -126,6 +126,11 @@ export function openFakeBank(options: FakeBankOptions): {
     db.prepare("INSERT INTO transactions(id,posted,value) VALUES (?,?,?)").run(entry.id, posted ? 1 : 0, JSON.stringify(entry));
     return entry;
   }
+  function completeHold(transactionId: string): void {
+    const hold = decode<BankTransaction>(db.prepare("SELECT value FROM transactions WHERE id = ?").get(transactionId) as Row | undefined);
+    if (!hold || hold.status !== "pending") return;
+    db.prepare("UPDATE transactions SET value = ? WHERE id = ?").run(JSON.stringify({ ...hold, status: "complete", completedAt: now() }), transactionId);
+  }
   function event(transferId: string): void {
     const notice: BankEvent = { id: id("evt"), scope, transferId, resourceType: "ach_transfer", createdAt: now() };
     db.prepare("INSERT INTO events(id,value) VALUES (?,?)").run(notice.id, JSON.stringify(notice));
@@ -252,6 +257,7 @@ export function openFakeBank(options: FakeBankOptions): {
       if (target === "settled" && transfer.status !== "pending") fail("Only pending transfers can settle");
       if (target === "rejected" && transfer.status !== "pending") fail("Only pending transfers can be rejected");
       if (target === "returned" && transfer.status !== "settled") fail("A return requires an original posted debit");
+      if (target !== "returned" && transfer.pendingTransactionId) completeHold(transfer.pendingTransactionId);
       if (target === "settled") transfer.originalTransactionId = transaction(transfer, "debit", true).id;
       if (target === "returned") transfer.returnTransactionId = transaction(transfer, "return", true).id;
       if (target === "rejected") transfer.rejectionReason = reason ?? "rejected_by_bank";
