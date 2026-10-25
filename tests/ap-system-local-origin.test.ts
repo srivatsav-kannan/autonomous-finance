@@ -13,4 +13,12 @@ describe("isolated local rehearsal origin", () => {
   it("rejects external or mismatched identities and scopes", () => {
     for (const bad of [null, {}, {...runtime, identityMode: "auth0"}, {...runtime, runId: "other"}, {...runtime, scope: undefined}, ...Object.entries({runId:"other",provider:"increase",environment:"sandbox",organizationId:"other",accountId:"other"}).map(([key,value])=>({...runtime,scope:{...runtime.scope,[key]:value}}))]) expect(isLocalSimulationOrigin(bad, "http://127.0.0.1:5195", true)).toBe(false);
   });
+  it("admits the issue #107 replay only on its own origin, run and scope", () => {
+    const apex = { identityMode: "simulated_human", runId: "apex107-replay-20261025", scope: { runId: "apex107-replay-20261025", provider: "fake", environment: "local", organizationId: "apex107-synthetic-sterling-marsh", accountId: "apex107-usd-operating" } };
+    expect(isLocalSimulationOrigin(apex, "http://127.0.0.1:5197", true)).toBe(true);
+    expect(isLocalSimulationOrigin(apex, "http://127.0.0.1:5197", false)).toBe(false);
+    expect(isLocalSimulationOrigin(apex, "http://127.0.0.1:5195", true)).toBe(false);
+    expect(isLocalSimulationOrigin(runtime, "http://127.0.0.1:5197", true)).toBe(false);
+    for (const [key, value] of Object.entries({ provider: "increase", environment: "sandbox", organizationId: "other", accountId: "other" })) expect(isLocalSimulationOrigin({ ...apex, scope: { ...apex.scope, [key]: value } }, "http://127.0.0.1:5197", true)).toBe(false);
+  });
 });

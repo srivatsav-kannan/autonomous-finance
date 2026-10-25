@@ -1,0 +1,536 @@
+{
+  "issue": 107,
+  "runId": "apex107-replay-20261025",
+  "recordedAt": "2026-10-25T12:33:49.384Z",
+  "sourceCommit": "0dce4edb44cc29c2fcbc9f3c24956c42dbb092e7",
+  "versions": {
+    "code": "0dce4edb44cc29c2fcbc9f3c24956c42dbb092e7",
+    "apContract": "ap-evidence-v1",
+    "legacyPolicy": "golden-state-ap-v1",
+    "businessPolicy": "apex107-simulated-services-policy-v1",
+    "paymentExecutor": "scoped-ap-v2",
+    "parser": {
+      "provider": "local-poppler-pdftotext",
+      "poppler": "26.07.0",
+      "implementation": "apex-text-layer-v1"
+    },
+    "convexBackend": "precompiled-2026-10-10-72ce13c"
+  },
+  "data": {
+    "dataset": "mercor/apex-accounting-harbor",
+    "revision": "1662b7e4c3b04b8717f2f723df823e7b6cbe2118",
+    "license": "CC-BY-4.0",
+    "world": "worlds/world-9--(world_0645ad7c997c415e8c43f8de7cee2008)",
+    "label": "Synthetic company dataset authored for an accounting benchmark (Mercor/Ramp APEX-Accounting). Not a real customer's books and not Sweetgreen data.",
+    "files": {
+      "filesystem/contract_attorney_invoices/Avila_AVILA-202403-A1.pdf": "c974e400eacb221d0a07fae70bd00a3a1f34574b9119c427fae3940f1025c4ff",
+      "filesystem/contract_attorney_invoices/Avila_AVILA-202412-A6.pdf": "affe956edfd5d94a895ef35404bd149904199eeda2c593bd172c59bb13c9d9bc",
+      "filesystem/operating_bank_statements/2024-04_operating_bank_statement.pdf": "9a19d0cbb7cc596e9640e41b0798be0cd3af2102f054d83c2df0234dc6773027",
+      "apps_data/quickbooks/ap_bill_ledger_2024.csv": "39fb13f4ab2eebf3d00f8e38a3a5e34d37cc75bcdfddfcb18285f1ab970123d9",
+      "apps_data/quickbooks/operating_bank_transactions_2024.csv": "e4c8fb3d93b35adce1bf8f9d99d8f668b0fb5a3983646f29634c9d4115bcb546",
+      "apps_data/quickbooks/vendor_master_list.xlsx": "391220a48f1f19cd3ba99a5fc55d52aea7273ec973880c45595248e64ed7da60",
+      "filesystem/qbo_general_ledger_detail_2024.xlsx": "b4a3c89af55251d38c1de84143b9280861ed18b7e950c19ad801979aa804b862",
+      "filesystem/ap_aging_2024_12_31.xlsx": "663317bc2377cb9362b5ea3d2fe11020c890afd7e546a36fee386911e7552293"
+    }
+  },
+  "providerModes": {
+    "bank": "FakeBank (local, explicitly simulated settlement)",
+    "identity": "simulated local actors",
+    "parser": "local text layer, zero paid parser calls",
+    "models": "none (AGENT_LLM=off)",
+    "increase": "blocked: needs JJ's sandbox credentials",
+    "quickbooks": "blocked: needs JJ's sandbox credentials",
+    "auth0": "blocked: needs JJ's sandbox credentials"
+  },
+  "case1": {
+    "caseId": "kd77s8m4wbstqzca03c56ny02h8gyj7q",
+    "invoice": "AVILA-202412-A6",
+    "billId": "BILL-2024-00332",
+    "revision": 2,
+    "states": {
+      "document": "reviewed",
+      "business": "approved",
+      "accounting": "recognized",
+      "authorization": "authorized",
+      "execution": "settled",
+      "reconciliation": "matched"
+    },
+    "amounts": {
+      "invoicedCents": 300000,
+      "acceptedCents": 300000,
+      "disputedCents": 0,
+      "creditedCents": 0,
+      "instructedCents": 300000,
+      "settledCents": 300000,
+      "outstandingCents": 0
+    },
+    "links": {
+      "billId": "p573axbtcjxn0wwgdh85jen2098gzt2m",
+      "billVersion": 2,
+      "recognitionJournalId": "s977bcrk0kw8bet2zxhktfv4958gzf6p",
+      "paymentVersionIds": [
+        "qd7brvtjqjvb0wpnrpkr5hb75s8gz5rv"
+      ],
+      "commandIds": [
+        "p97595hbttppgbhm23c59gwhhd8gzqfd"
+      ],
+      "bankTransactionIds": [
+        "txn_dd08aeb9b37d8b6ad8c2842d"
+      ],
+      "settlementJournalIds": [
+        "s97dadap94ww87ws3bj203a2n98gzvd9"
+      ],
+      "externalAccountingIds": [],
+      "duplicateOfCaseId": null
+    },
+    "journals": [
+      {
+        "entryId": "s977bcrk0kw8bet2zxhktfv4958gzf6p",
+        "kind": "recognition",
+        "date": "2024-12-10",
+        "lines": [
+          {
+            "account": "6000",
+            "debit": 300000,
+            "credit": 0
+          },
+          {
+            "account": "2000",
+            "debit": 0,
+            "credit": 300000
+          }
+        ],
+        "bankTransactionId": null
+      },
+      {
+        "entryId": "s97dadap94ww87ws3bj203a2n98gzvd9",
+        "kind": "settlement",
+        "date": "2026-10-25",
+        "lines": [
+          {
+            "account": "2000",
+            "debit": 300000,
+            "credit": 0
+          },
+          {
+            "account": "1000",
+            "debit": 0,
+            "credit": 300000
+          }
+        ],
+        "bankTransactionId": "txn_dd08aeb9b37d8b6ad8c2842d"
+      }
+    ],
+    "payments": [
+      {
+        "versionId": "qd7brvtjqjvb0wpnrpkr5hb75s8gz5rv",
+        "commandId": "p97595hbttppgbhm23c59gwhhd8gzqfd",
+        "amountCents": 300000,
+        "status": "settled",
+        "beneficiaryVersion": "apex-v041:r1",
+        "providerTransferId": "transfer_95d01fdc1fdbec4999933e81",
+        "authorizedBy": [
+          "https://ap-demo.invalid|apex107-treasury"
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "name": "Avila_AVILA-202412-A6.pdf",
+        "kind": "invoice",
+        "revision": 1,
+        "sha256": "affe956edfd5d94a895ef35404bd149904199eeda2c593bd172c59bb13c9d9bc"
+      },
+      {
+        "name": "Avila_AVILA-202412-A6.pdf",
+        "kind": "invoice",
+        "revision": 2,
+        "sha256": "affe956edfd5d94a895ef35404bd149904199eeda2c593bd172c59bb13c9d9bc"
+      },
+      {
+        "name": "SIMULATED-agreement-avila-M-2024-0013.pdf",
+        "kind": "contract",
+        "revision": 1,
+        "sha256": "a39c676a34b00eccce0b3927564aa5d4279f2e88589df2022b24830512dfcd54"
+      },
+      {
+        "name": "SIMULATED-service-acceptance-AVILA-202412-A6.pdf",
+        "kind": "receipt",
+        "revision": 1,
+        "sha256": "6db87061f1245186ad18e9deda688352fd803cf4a2b18d8bfeca2e6ed828ca8e"
+      }
+    ],
+    "decisions": [
+      {
+        "kind": "field_review",
+        "actor": "https://ap-demo.invalid|apex107-ap-reviewer",
+        "actorKind": "human",
+        "outcome": "approved",
+        "candidateRevision": 1
+      },
+      {
+        "kind": "field_review",
+        "actor": "https://ap-demo.invalid|apex107-ap-reviewer",
+        "actorKind": "human",
+        "outcome": "approved",
+        "candidateRevision": 2
+      },
+      {
+        "kind": "bill_approval",
+        "actor": "https://ap-demo.invalid|apex107-finance",
+        "actorKind": "human",
+        "outcome": "approved",
+        "candidateRevision": 2
+      }
+    ],
+    "localIds": {
+      "versionId": "qd7brvtjqjvb0wpnrpkr5hb75s8gz5rv",
+      "commandId": "p97595hbttppgbhm23c59gwhhd8gzqfd",
+      "fakeBankTransferIds": [
+        "transfer_95d01fdc1fdbec4999933e81"
+      ],
+      "fakeBankTransactionIds": [
+        "pending_7897d22e0913fb70ea65fec5",
+        "txn_dd08aeb9b37d8b6ad8c2842d"
+      ]
+    }
+  },
+  "case2": {
+    "caseId": "kd74aqdbgd9y46dd9papakfrt18gyw6w",
+    "invoice": "AVILA-202403-A1",
+    "billId": "BILL-2024-00327",
+    "states": {
+      "document": "reviewed",
+      "business": "held",
+      "accounting": "unposted",
+      "authorization": "not_requested",
+      "execution": "not_started",
+      "reconciliation": "unmatched"
+    },
+    "amounts": {
+      "invoicedCents": 350000,
+      "acceptedCents": null,
+      "disputedCents": null,
+      "creditedCents": 0,
+      "instructedCents": 0,
+      "settledCents": 0,
+      "outstandingCents": null
+    },
+    "journals": 0,
+    "payments": 0,
+    "historicalSourceOutcome": {
+      "billId": "BILL-2024-00327",
+      "bankTransactionId": "OBT-000200",
+      "reference": "CHK-2024327",
+      "checks": [
+        {
+          "check": "Exactly one AP ledger row for the bill",
+          "passed": true
+        },
+        {
+          "check": "Exactly one bank row for the candidate transaction",
+          "passed": true
+        },
+        {
+          "check": "Ledger status is Paid with zero outstanding",
+          "passed": true
+        },
+        {
+          "check": "Bank row is an AP payment to the same payee",
+          "passed": true
+        },
+        {
+          "check": "Bank amount out equals bill amount and amount paid",
+          "passed": true
+        },
+        {
+          "check": "Bank date equals ledger payment date",
+          "passed": true
+        },
+        {
+          "check": "Bank reference equals the expected reference",
+          "passed": true
+        },
+        {
+          "check": "Bank row offsets AP (2000)",
+          "passed": true
+        },
+        {
+          "check": "GL has one AP credit for the bill",
+          "passed": true
+        },
+        {
+          "check": "GL payment entry debits AP and credits operating cash by the bill amount",
+          "passed": true
+        },
+        {
+          "check": "Bill is absent from the Dec 31, 2024 AP aging open bills",
+          "passed": true
+        },
+        {
+          "check": "Monthly bank statement prints the reference and amount",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "ledger": {
+        "vendorId": "V-041",
+        "vendor": "Marcus Avila, Esq.",
+        "invoiceNumber": "AVILA-202403-A1",
+        "billDate": "2024-03-20",
+        "dueDate": "2024-04-19",
+        "amount": "3500.0",
+        "status": "Paid",
+        "paymentDate": "2024-04-19",
+        "amountPaid": "3500.0",
+        "outstanding": "0.0",
+        "glAccount": "5000 Contract Attorney Fees - Matter Direct",
+        "matter": "M-2024-0004"
+      },
+      "bank": {
+        "transactionId": "OBT-000200",
+        "date": "2024-04-19",
+        "clearDate": "2024-04-19",
+        "type": "ap_payment",
+        "payee": "Marcus Avila, Esq.",
+        "reference": "CHK-2024327",
+        "amountOut": "3500.0",
+        "glOffset": "2000 AP",
+        "source": "AP Payment"
+      },
+      "glEntries": [
+        {
+          "account": "2000",
+          "date": "2024-03-20",
+          "je": "JE-BILL-2024-00327",
+          "debit": "",
+          "credit": "3500"
+        },
+        {
+          "account": "1000",
+          "date": "2024-04-19",
+          "je": "JE-OB-000200",
+          "debit": "",
+          "credit": "3500"
+        },
+        {
+          "account": "2000",
+          "date": "2024-04-19",
+          "je": "JE-OB-000200",
+          "debit": "3500",
+          "credit": ""
+        }
+      ],
+      "sameVendorSameAmountPayments": [
+        {
+          "transactionId": "OBT-000200",
+          "date": "2024-04-19",
+          "reference": "CHK-2024327"
+        },
+        {
+          "transactionId": "OBT-000691",
+          "date": "2024-10-25",
+          "reference": "CHK-2024330"
+        }
+      ],
+      "limits": "These are field matches inside one synthetic dataset. They are consistent with one payment of this bill. They do not independently prove the invoice-to-bank link."
+    },
+    "paymentRefused": {
+      "status": 409,
+      "code": "backend_rejected",
+      "reason": "The backend rejected this action or is unavailable. Refresh the case and review its current evidence."
+    }
+  },
+  "reimport": {
+    "phase": "reimport",
+    "runId": "apex107-replay-20261025",
+    "sourceCommit": "0dce4edb44cc29c2fcbc9f3c24956c42dbb092e7",
+    "recordedAt": "2026-10-25T12:33:23.200Z",
+    "replays": [
+      {
+        "case": "case1",
+        "expectedCaseId": "kd77s8m4wbstqzca03c56ny02h8gyj7q",
+        "sameKey": {
+          "status": 201,
+          "caseId": "kd77s8m4wbstqzca03c56ny02h8gyj7q",
+          "error": null
+        },
+        "newKeyRenamed": {
+          "status": 409,
+          "caseId": null,
+          "error": "explicit_revision_required"
+        }
+      },
+      {
+        "case": "case2",
+        "expectedCaseId": "kd74aqdbgd9y46dd9papakfrt18gyw6w",
+        "sameKey": {
+          "status": 201,
+          "caseId": "kd74aqdbgd9y46dd9papakfrt18gyw6w",
+          "error": null
+        },
+        "newKeyRenamed": {
+          "status": 201,
+          "caseId": "kd74aqdbgd9y46dd9papakfrt18gyw6w",
+          "error": null
+        }
+      }
+    ],
+    "resubmitPayment": {
+      "status": 200,
+      "body": {
+        "snapshotHash": "f59f650171796ebeef0c555019b81af6993047d6cc0b3ae715629aa8405b56ed",
+        "versionId": "qd7brvtjqjvb0wpnrpkr5hb75s8gz5rv"
+      }
+    },
+    "secondPayment": {
+      "status": 409,
+      "error": {
+        "code": "backend_rejected",
+        "reason": "The backend rejected this action or is unavailable. Refresh the case and review its current evidence."
+      }
+    },
+    "before": {
+      "cases": 2,
+      "bills": 1,
+      "paymentVersions": 1,
+      "commands": 1,
+      "journals": 2,
+      "bankTransactionsPosted": 1,
+      "fakeBankTransfers": 1,
+      "fakeBankCreateCalls": 1,
+      "perCase": [
+        {
+          "caseId": "kd77s8m4wbstqzca03c56ny02h8gyj7q",
+          "revision": 2,
+          "journals": 2,
+          "payments": 1,
+          "states": {
+            "document": "reviewed",
+            "business": "approved",
+            "accounting": "recognized",
+            "authorization": "authorized",
+            "execution": "settled",
+            "reconciliation": "matched"
+          }
+        },
+        {
+          "caseId": "kd74aqdbgd9y46dd9papakfrt18gyw6w",
+          "revision": 1,
+          "journals": 0,
+          "payments": 0,
+          "states": {
+            "document": "reviewed",
+            "business": "held",
+            "accounting": "unposted",
+            "authorization": "not_requested",
+            "execution": "not_started",
+            "reconciliation": "unmatched"
+          }
+        }
+      ]
+    },
+    "after": {
+      "cases": 2,
+      "bills": 1,
+      "paymentVersions": 1,
+      "commands": 1,
+      "journals": 2,
+      "bankTransactionsPosted": 1,
+      "fakeBankTransfers": 1,
+      "fakeBankCreateCalls": 1,
+      "perCase": [
+        {
+          "caseId": "kd77s8m4wbstqzca03c56ny02h8gyj7q",
+          "revision": 2,
+          "journals": 2,
+          "payments": 1,
+          "states": {
+            "document": "reviewed",
+            "business": "approved",
+            "accounting": "recognized",
+            "authorization": "authorized",
+            "execution": "settled",
+            "reconciliation": "matched"
+          }
+        },
+        {
+          "caseId": "kd74aqdbgd9y46dd9papakfrt18gyw6w",
+          "revision": 1,
+          "journals": 0,
+          "payments": 0,
+          "states": {
+            "document": "reviewed",
+            "business": "held",
+            "accounting": "unposted",
+            "authorization": "not_requested",
+            "execution": "not_started",
+            "reconciliation": "unmatched"
+          }
+        }
+      ]
+    }
+  },
+  "finalCounts": {
+    "cases": 2,
+    "bills": 1,
+    "paymentVersions": 1,
+    "commands": 1,
+    "journals": 2,
+    "bankTransactionsPosted": 1,
+    "fakeBankTransfers": 1,
+    "fakeBankCreateCalls": 1,
+    "perCase": [
+      {
+        "caseId": "kd77s8m4wbstqzca03c56ny02h8gyj7q",
+        "revision": 2,
+        "journals": 2,
+        "payments": 1,
+        "states": {
+          "document": "reviewed",
+          "business": "approved",
+          "accounting": "recognized",
+          "authorization": "authorized",
+          "execution": "settled",
+          "reconciliation": "matched"
+        }
+      },
+      {
+        "caseId": "kd74aqdbgd9y46dd9papakfrt18gyw6w",
+        "revision": 1,
+        "journals": 0,
+        "payments": 0,
+        "states": {
+          "document": "reviewed",
+          "business": "held",
+          "accounting": "unposted",
+          "authorization": "not_requested",
+          "execution": "not_started",
+          "reconciliation": "unmatched"
+        }
+      }
+    ]
+  },
+  "inventory": {
+    "phase": "inventory",
+    "runId": "apex107-replay-20261025",
+    "sourceCommit": "0dce4edb44cc29c2fcbc9f3c24956c42dbb092e7",
+    "recordedAt": "2026-10-25T12:30:05.935Z",
+    "invoices": 21,
+    "parsed": 21,
+    "ledgerMatched": 21,
+    "paid": 18,
+    "open": 3,
+    "paidWithOneBankCandidate": 18,
+    "arithmeticExact": 6,
+    "supplierNameMatchesMaster": 18,
+    "dataset": {
+      "dataset": "mercor/apex-accounting-harbor",
+      "revision": "1662b7e4c3b04b8717f2f723df823e7b6cbe2118",
+      "license": "CC-BY-4.0",
+      "world": "worlds/world-9--(world_0645ad7c997c415e8c43f8de7cee2008)",
+      "label": "Synthetic company dataset authored for an accounting benchmark (Mercor/Ramp APEX-Accounting). Not a real customer's books and not Sweetgreen data."
+    }
+  },
+  "externalIds": "none: no external provider was called"
+}
