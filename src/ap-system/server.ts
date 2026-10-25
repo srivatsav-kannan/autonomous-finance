@@ -3,10 +3,12 @@ import {createHash,randomBytes,timingSafeEqual} from "node:crypto";
 import {readFile,realpath} from "node:fs/promises";
 import path from "node:path";
 import {z} from "zod";
+import {ConvexError} from "convex/values";
 import {billApprovalRequestSchema,reviewRequestSchema,type APCaseDetail,type APIntake,type SourceDocument,type CoordinateFrame} from "./contracts";
 
 const PREFIX="/api/ap-system";
-const MAX_BYTES=25*1024*1024;
+const MAX_ORIGINAL_BYTES=8*1024*1024;
+const MAX_BYTES=MAX_ORIGINAL_BYTES+64*1024;
 export class APHttpError extends Error {constructor(readonly code:string,readonly status:number,reason:string){super(reason);}}
 export type UploadDocument={bytes:Uint8Array;name:string;mimeType:string;kind:SourceDocument["kind"]};
 export interface APWorkspaceService {
@@ -31,7 +33,7 @@ export function publicCase(detail:APCaseDetail):APCaseDetail {
  for(const e of [...(copy.candidate?.evidence??[]),...copy.extraction.evidence])e.grounding.processor=privateProcessor(e.grounding.processor) as typeof e.grounding.processor;
  return copy;
 }
-async function bodyBytes(req:IncomingMessage){let n=0;const parts:Buffer[]=[];for await(const data of req){const b=Buffer.from(data);n+=b.length;if(n>MAX_BYTES)throw new APHttpError("body_too_large",413,"Upload exceeds 25 MiB.");parts.push(b);}return Buffer.concat(parts);}
+async function bodyBytes(req:IncomingMessage){let n=0;const parts:Buffer[]=[];for await(const data of req){const b=Buffer.from(data);n+=b.length;if(n>MAX_BYTES)throw new APHttpError("body_too_large",413,"Upload exceeds the 8 MiB original-file limit.");parts.push(b);}return Buffer.concat(parts);}
 async function json(req:IncomingMessage){if(!/^application\/json(?:;|$)/i.test(req.headers["content-type"]??""))throw new APHttpError("json_required",415,"Use application/json.");try{return JSON.parse((await bodyBytes(req)).toString("utf8"));}catch(e){if(e instanceof APHttpError)throw e;throw new APHttpError("invalid_json",400,"Request is not valid JSON.");}}
 function send(res:ServerResponse,value:unknown,status=200){res.statusCode=status;res.setHeader("Content-Type","application/json; charset=utf-8");res.end(JSON.stringify(value));}
 const binding=z.object({expectedRevision:z.number().int().positive(),snapshotHash:z.string().regex(/^[a-f0-9]{64}$/)});
@@ -88,6 +90,7 @@ export function createAPSystemServer(service:APWorkspaceService,options:{port:nu
     let form:FormData;try{form=await new Response(await bodyBytes(req),{headers:{"Content-Type":type}}).formData();}catch(e){if(e instanceof APHttpError)throw e;throw new APHttpError("invalid_upload",400,"Malformed upload.");}
     const files=form.getAll("documents");if(!files.length||files.length>10||files.some(f=>typeof f==="string"))throw new APHttpError("invalid_upload",400,"Supply one to ten original documents.");
     const kinds=z.array(kind).parse(JSON.parse(String(form.get("kinds"))));if(kinds.length!==files.length)throw new APHttpError("invalid_upload",400,"Every document must have a kind.");
+    if((files as File[]).reduce((n,f)=>n+f.size,0)>MAX_ORIGINAL_BYTES)throw new APHttpError("body_too_large",413,"Original files exceed 8 MiB total.");
     const uploads=await Promise.all((files as File[]).map(async(f,i)=>({bytes:new Uint8Array(await f.arrayBuffer()),name:f.name,mimeType:f.type||"application/octet-stream",kind:kinds[i]!})));
     const idempotencyKey=z.string().trim().min(1).max(200).parse(form.get("idempotencyKey"));
     const explicitRevisionOf=form.get("explicitRevisionOf")?z.string().min(1).parse(form.get("explicitRevisionOf")):null;
@@ -108,10 +111,11 @@ export function createAPSystemServer(service:APWorkspaceService,options:{port:nu
    throw new APHttpError("not_found",404,"Unknown AP route.");
   }catch(e){
    if(res.headersSent){res.end();return;}
+   const business=e instanceof ConvexError ? z.object({code:z.string().max(100),reason:z.string().max(2000)}).safeParse(e.data) : null;
    const status=e instanceof APHttpError?e.status:e instanceof z.ZodError?400:409;
    // Convex error messages contain stable business reasons; redact provider/transport error bodies.
-   const reason=e instanceof APHttpError?e.message:e instanceof z.ZodError?"Request does not match the AP contract.":"The backend rejected this action or is unavailable. Refresh the case and review its current evidence.";
-   send(res,{error:{code:e instanceof APHttpError?e.code:e instanceof z.ZodError?"invalid_request":"backend_rejected",reason}},status);
+   const reason=business?.success?business.data.reason:e instanceof APHttpError?e.message:e instanceof z.ZodError?"Request does not match the AP contract.":"The backend rejected this action or is unavailable. Refresh the case and review its current evidence.";
+   send(res,{error:{code:business?.success?business.data.code:e instanceof APHttpError?e.code:e instanceof z.ZodError?"invalid_request":"backend_rejected",reason}},status);
   }
  });
  server.requestTimeout=180_000;server.headersTimeout=10_000;return server;

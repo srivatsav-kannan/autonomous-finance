@@ -11,6 +11,8 @@ export async function assertReservedObligations(ctx: MutationCtx, version: Doc<"
   if (version.reservations !== "reserved") throw new Error("Payment must own reserved obligations");
   for (const item of version.snapshot.bills) {
     const bill = await ctx.db.get(item.billId); assertRowScope(bill, version.scope);
+    const linkedCase = await ctx.db.query("apCaseRecords").withIndex("by_bill", q => q.eq("scope.runId", version.scope.runId).eq("billId", item.billId)).unique();
+    if (linkedCase && (linkedCase.businessStatus !== "approved" || linkedCase.documentStatus !== "reviewed" || !linkedCase.fieldReviewId)) throw new Error("AP case authority changed; review required before first submission");
     if (!bill || bill.reservedVersionId !== version._id || bill.version !== item.version || bill.flags.length ||
         bill.status !== "approved" || bill.vendor !== config.beneficiary.vendor || bill.approvedCents! - bill.paidCents !== item.amountCents) {
       throw new Error("Stale bill or conflicting reservation");

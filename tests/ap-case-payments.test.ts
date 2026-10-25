@@ -34,6 +34,13 @@ describe("case payment handoff to existing durable engine (component)",()=>{
   await expect(f.human.mutation(authorize,{...f.binding,versionId:prepared.versionId,paymentSnapshotHash:prepared.snapshotHash})).rejects.toThrow(/unapproved/);
   expect(await f.t.run(ctx=>ctx.db.query("demoCommands").collect())).toHaveLength(0);
  });
+ it("checks current case authority at first submission without rewriting a possible send",async()=>{
+  const f=await fixture();const prepared=await f.t.mutation(request,{...f.payments,...f.binding,idempotencyKey:"prepare"});
+  await f.human.mutation(authorize,{...f.binding,versionId:prepared.versionId,paymentSnapshotHash:prepared.snapshotHash});
+  await f.t.run(ctx=>ctx.db.patch(f.caseId,{documentStatus:"review_required"}));
+  await expect(f.t.mutation(api.demoPayments.claim,{scope:f.scope,token:f.dispatcherToken,paymentExecutorVersion:"scoped-ap-v2",workerId:"first-dispatch",leaseToken:"case-stale-lease"})).resolves.toBeNull();
+  const command=await f.t.run(ctx=>ctx.db.query("demoCommands").first());expect(command).toMatchObject({attemptCount:0,execution:"exception"});
+ });
  it("refuses a payment from another bill even within the same run",async()=>{
   const f=await fixture();const otherBill=await f.bill();
   const other=await f.t.mutation(api.demoPayments.requestPayment,{...f.payments,requestKey:"other",billIds:[otherBill],credits:[]});
