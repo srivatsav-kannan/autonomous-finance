@@ -1,7 +1,7 @@
 {
   "schema": "ap-live-rollout-evidence-v1",
   "generatedAt": "2026-10-25T13:50:41.587394+00:00",
-  "status": "blocked_not_full_flow_passed",
+  "status": "partial_runtime_restored_full_flow_not_passed",
   "scope": {
     "environment": "existing local Auth0 / Increase sandbox",
     "runId": "ap97-auth0-live-20261025",
@@ -137,7 +137,7 @@
     "schemaChange": "adds apCaseWork and apCaseWorkEvents to existing base schema",
     "runtimeEvidenceRead": true,
     "databaseHashRead": true,
-    "runtimeEvidenceScope": "saved scoped business-case query responses from isolated recovery copy; not full agent queue or provider validation",
+    "runtimeEvidenceScope": "saved repaired-backend scoped query readbacks, copy-repair audit and runtime manifest; not fresh provider validation",
     "priorCase": {
       "execution": "settled",
       "reconciliation": "matched",
@@ -161,7 +161,53 @@
         "agent_field_review",
         "field_review",
         "agent_bill_approval"
+      ],
+      "workStage": "bill_approval",
+      "workStatus": "waiting",
+      "workRequirements": [
+        "current_bill_approval"
       ]
+    },
+    "caseListReadSucceeded": true,
+    "originalPdfsVerified": [
+      {
+        "sourceId": "source-agent-20261025-01-invoice",
+        "bytes": 2345,
+        "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+        "matches": true
+      },
+      {
+        "sourceId": "source-agent-20261025-01-purchase_order",
+        "bytes": 2421,
+        "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+        "matches": true
+      },
+      {
+        "sourceId": "source-agent-20261025-01-contract",
+        "bytes": 2419,
+        "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+        "matches": true
+      },
+      {
+        "sourceId": "source-agent-20261025-01-receipt",
+        "bytes": 2475,
+        "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+        "matches": true
+      }
+    ],
+    "postWorkerRestart": {
+      "checkedAt": "2026-10-25T14:21:51.491978+00:00",
+      "waitingAfterWorkerRestart": true,
+      "workStage": "bill_approval",
+      "authorization": "not_requested",
+      "paymentCount": 0,
+      "journalCount": 0,
+      "originalMalformedDatabaseUnchanged": true,
+      "flowPassed": false,
+      "source": {
+        "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/post-restart-checkpoint.json",
+        "sha256": "a5fac8fa79cc5f81927353349bae44b49bde02e4bcfc9ffc7fab84d0fa82a9e7"
+      }
     }
   },
   "evidenceGap": {
@@ -177,7 +223,7 @@
       "03-current.json",
       "old-case-preserved.json"
     ],
-    "detail": "Original temporary checkpoints/fixtures remain absent. Saved scoped queries from a recovery copy now independently corroborate prior wait/resume/review timeline and old-case settled/matched state. The work queue itself remains unreadable due to a dangling index reference. No claim of full database recovery or full provider-flow pass."
+    "detail": "Original temporary checkpoints remain absent. Durable recovered readbacks independently corroborate wait/resume/field-review history and unchanged old-case settled/matched state; current repaired readback confirms a waiting bill-approval work item. Four PDF original hashes match. Full .recover completeness for entirely lost records and new-case external payment/accounting flow remain unproven."
   },
   "limits": [
     "Synthetic native PDF; no new LlamaParse extraction validation.",
@@ -190,29 +236,31 @@
     "code": "local_backend_sqlite_malformed",
     "severity": "blocks_live_validation",
     "observedBy": "parent agent direct readback",
-    "detail": "Original Convex SQLite database is malformed. A recovery copy passes SQLite integrity (parent observation) and a separate backend starts at port 3262. Saved scoped queries independently show both business cases, but apCaseAgent:inspect still fails with a dangling index reference. Original database has not been replaced; full database recovery is not established.",
+    "detail": "Original malformed database remains preserved and unreplaced. Targeted copy-only repair removed five orphan index versions; all 1,672 surviving documents, persistence globals and unaffected index hashes are unchanged. Latest dangling index references are zero. Saved scoped queries now read agent work state and both cases; four PDF original hashes match. Repaired recovery copy serves existing sandbox ports 3252/3253. SQLite .recover completeness for completely missing records cannot be proved.",
     "cause": "unknown",
-    "recoveryStatus": "partial_business_projection_recovered_agent_queue_still_blocked",
+    "recoveryStatus": "repaired_copy_serving_3252_3253",
     "originalDatabase": {
       "path": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/.convex/local/default/convex_local_backend.sqlite3",
       "sizeBytes": 4370432,
       "sha256": "e568e28a5f5c27e901c568d4a652d38f7e47202f88920f20b6f71f35a71b6af6",
       "hashObservedAt": "2026-10-25T13:50:41.587394+00:00"
     },
-    "unresolvedError": {
+    "recoveryBackendPort": 3252,
+    "originalDatabaseReplaced": false,
+    "recoveryBackendStatus": "running_repaired_copy",
+    "status": "targeted_dangling_index_blocker_resolved_full_recovery_unproven",
+    "recoverySitePort": 3253,
+    "historicalError": {
       "timestamp": "2026-10-25T13:50:30.238586Z",
       "error": "Dangling index reference for IndexKeyBytes([16, 97, 112, 57, 55, 45, 97, 117, 116, 104, 48, 45, 108, 105, 118, 101, 45, 50, 48, 50, 54, 49, 48, 50, 53, 0, 16, 107, 100, 55, 48, 100, 106, 99, 56, 119, 100, 97, 109, 55, 54, 115, 55, 100, 120, 122, 48, 106, 120, 100, 103, 118, 57, 56, 103, 122, 109, 113, 52, 0, 13, 194, 122, 23, 48, 20, 140, 135, 10, 16, 116, 53, 55, 54, 49, 101, 55, 57, 114, 109, 112, 48, 107, 57, 57, 97, 102, 102, 102, 122, 51, 49, 57, 103, 99, 115, 56, 103, 122, 98, 119, 115, 0]) Timestamp(1792931146672960000)",
       "logSha256": "884f37b83595a5f21259228db44ec86488117555b252d0f7f796cd3e4973a834",
       "logPath": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/candidate-backend.log"
-    },
-    "recoveryBackendPort": 3262,
-    "originalDatabaseReplaced": false,
-    "recoveryBackendStatus": "stopped_after_readbacks"
+    }
   },
-  "updatedAt": "2026-10-25T13:53:54.581487+00:00",
+  "updatedAt": "2026-10-25T14:22:44.031022+00:00",
   "durableRecoveredCheckpoint": {
     "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/recovered-business-checkpoint.json",
-    "sha256": "4437bb96362ae0f3518d4d1848e49bd7f94017fd20807947a39fdf3044dae565"
+    "sha256": "f98d3d8a701a4b2fd76db63414e1ee685525feda2f33c4f17a23d1fcc6667c5f"
   },
   "freshValidation": {
     "observedAtApprox": "2026-10-25T13:54:00Z",
@@ -228,5 +276,52 @@
       }
     ],
     "ci": "skipped_by_user"
+  },
+  "currentRemainingGate": "new_case_waiting_for_bill_approval_then_separate_payment_authorization_and_external_flow",
+  "copyRepairAudit": {
+    "removedIndexRows": 5,
+    "documentsBefore": 1672,
+    "documentsAfter": 1672,
+    "businessDocumentsUnchanged": true,
+    "latestDanglingIndexReferences": 0,
+    "originalDatabaseUnchanged": true,
+    "independentDatabaseAgentReview": "passed_parent_reported",
+    "officialConvexRepair": false,
+    "recoveryCompletenessProven": false,
+    "sourceArtifacts": [
+      {
+        "path": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/repair-audit.json",
+        "sha256": "9bd1c2a6d845e8537860917571b61ef3b5c3b11dc563a83d38c4a9106cd82389"
+      },
+      {
+        "path": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/repaired-readback-summary-3252.json",
+        "sha256": "d3ca313c24efc1a0de58770a02d20e828638b2e5032f4cc614eceb1147043de5"
+      },
+      {
+        "path": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks/var/agent-rollout-20261025/recovery/active-recovery-runtime.json",
+        "sha256": "c2acde8bb314579a2d116df97fe78ce0d48ba608c6c3c202b5cbbf6ec5f59ad0"
+      }
+    ]
+  },
+  "parentReportedCurrentChecks": {
+    "apAgentOnceResult": [],
+    "browserRestoration": "completed_normal_Auth0_login",
+    "ci": "skipped_by_user",
+    "claudeIndependentReview": "not_performed",
+    "browserCaseView": "Chrome5192 originals,17 fields and review controls rendered",
+    "apWorker": "resident_worker_running_after_once_returned_empty",
+    "nextUserAction": "bill_approval_77_USD_via_authenticated_UI",
+    "screenshot": {
+      "path": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/agent-live-20261025/recovered-ap-page.png",
+      "exists": true,
+      "sha256": "1e88cae1a1d5429306c075157fec6c48b3a76c1afcc47b7a28a3b0936d96cbd6"
+    }
+  },
+  "remainingIssue108Handoff": "ISSUE-108-REMAINING.md",
+  "issue108Acceptance": {
+    "qboBillAndBillPaymentReadbacks": "required_for_new_case",
+    "linkedProviderIds": "QBO and Increase IDs required",
+    "apex107Adapter": "consume shared packet/importer contract",
+    "fullFlowPassed": false
   }
 }

@@ -1,0 +1,39 @@
+{
+  "repairKind": "forensic copy-only removal of five orphan index versions; not official Convex repair",
+  "sourceSha256": "0b74cc536f020385a485fc44612d96c6294326a2797b69cf0cbb3f482eff0555",
+  "repairedSha256": "ec7e13940e75e4ec8081a3bafd51410c416b7574924845527b4a423e6ca386d7",
+  "removedIndexRows": 5,
+  "before": {
+    "documents": {
+      "rows": 1672,
+      "sha256": "330eb4d0d356f5b7579208b0d1f5e283d9057db76adc09d5f32cfce163c5c0bf"
+    },
+    "persistence_globals": {
+      "rows": 10,
+      "sha256": "2e4d3a02ae535a2393bd6b03b975d5f69997bad33e443ae8d7fee5db08866559"
+    },
+    "unaffected_indexes": {
+      "rows": 1863,
+      "sha256": "7eda5b6de562f88d850da9681ad6d9bbde510a19cb216899dace1f277db2d4e4"
+    },
+    "dangling_latest_index_references": 4
+  },
+  "after": {
+    "documents": {
+      "rows": 1672,
+      "sha256": "330eb4d0d356f5b7579208b0d1f5e283d9057db76adc09d5f32cfce163c5c0bf"
+    },
+    "persistence_globals": {
+      "rows": 10,
+      "sha256": "2e4d3a02ae535a2393bd6b03b975d5f69997bad33e443ae8d7fee5db08866559"
+    },
+    "unaffected_indexes": {
+      "rows": 1863,
+      "sha256": "7eda5b6de562f88d850da9681ad6d9bbde510a19cb216899dace1f277db2d4e4"
+    },
+    "dangling_latest_index_references": 0
+  },
+  "businessDocumentsUnchanged": true,
+  "originalCandidateUnchanged": true,
+  "limitation": "Cannot prove sqlite recovery omitted no completely lost records. No document, approval, payment or journal was created or changed."
+}
