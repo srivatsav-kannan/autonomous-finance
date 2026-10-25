@@ -1,0 +1,170 @@
+/* Existing finance workbench tokens; scoped history disclosure and comparisons. */
+.aph-history {
+  min-width: 0;
+}
+.aph-history .aps-timeline > li {
+  padding-block: var(--space-xs);
+}
+.aph-operation > summary {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  min-height: 44px;
+  padding: var(--space-sm) var(--space-xs);
+  cursor: pointer;
+  list-style: none;
+}
+.aph-operation > summary::-webkit-details-marker {
+  display: none;
+}
+.aph-operation > summary::before {
+  content: "+";
+  color: var(--accent);
+  font-size: var(--text-lg);
+  width: 1em;
+  flex-shrink: 0;
+}
+.aph-operation[open] > summary::before {
+  content: "−";
+}
+.aph-operation > summary:hover {
+  background: var(--bg);
+}
+.aph-summary {
+  min-width: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-xs) var(--space-md);
+  font-size: var(--text-sm);
+}
+.aph-summary time,
+.aph-summary-reason,
+.aph-summary-meta {
+  grid-column: 1 / -1;
+}
+.aph-summary-reason,
+.aph-summary-meta {
+  overflow-wrap: anywhere;
+}
+.aph-summary-reason {
+  color: var(--ink);
+}
+.aph-summary-meta {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+.aph-outcome {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+.aph-operation-body {
+  padding: var(--space-xs) var(--space-xs) var(--space-md);
+}
+.aph-history .aph-scope {
+  border: 1px solid var(--line);
+  padding: var(--space-sm);
+  background: var(--bg);
+}
+.aph-history .aph-observed {
+  line-height: 1.6;
+}
+.aph-comparison {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin-block: var(--space-md);
+  font-size: var(--text-sm);
+}
+.aph-comparison caption {
+  text-align: left;
+  font-weight: 600;
+  color: var(--ink);
+  padding-bottom: var(--space-sm);
+}
+.aph-comparison :is(th, td) {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  font-variant-numeric: tabular-nums;
+}
+.aph-comparison thead th {
+  color: var(--muted);
+  font-weight: 500;
+  background: var(--bg);
+}
+.aph-comparison th:first-child {
+  width: 28%;
+}
+.aph-comparison tbody th {
+  font-weight: 500;
+}
+.aph-secondary {
+  border-top: 1px solid var(--line);
+  padding-block: var(--space-xs);
+}
+.aph-secondary > summary {
+  min-height: 44px;
+  padding-block: var(--space-sm);
+  cursor: pointer;
+  font-size: var(--text-sm);
+}
+.aph-references {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.aph-references > li {
+  display: grid;
+  gap: var(--space-xs);
+  padding-block: var(--space-sm);
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+  font-size: var(--text-sm);
+}
+.aph-references :is(a, button) {
+  justify-self: start;
+  min-height: 44px;
+  padding-block: var(--space-sm);
+  white-space: normal;
+  text-align: left;
+}
+.aph-references span {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+.aph-history :is(summary, a, button):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.aph-history .aph-empty {
+  padding-block: var(--space-lg);
+  color: var(--muted);
+}
+@media (max-width: 700px) {
+  .aph-comparison thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .aph-comparison :is(tbody, tr, th, td) {
+    display: block;
+    width: 100%;
+  }
+  .aph-comparison th:first-child {
+    width: 100%;
+    background: var(--bg);
+  }
+  .aph-comparison td::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--muted);
+    font-size: var(--text-xs);
+    margin-bottom: var(--space-xs);
+  }
+}
