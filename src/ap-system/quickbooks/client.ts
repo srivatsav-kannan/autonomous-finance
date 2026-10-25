@@ -10,6 +10,7 @@ const entities = new Set([
   "Vendor",
   "Account",
   "CompanyInfo",
+  "Class",
 ]);
 export function matches(expected: unknown, actual: unknown): boolean {
   if (Array.isArray(expected))
@@ -42,7 +43,7 @@ export class QboClient {
     query?: string,
   ) {
     if (
-      !/^(bill|billpayment|vendorcredit|journalentry|vendor|account|companyinfo)(\/\d{1,32})?$/.test(
+      !/^(bill|billpayment|vendorcredit|journalentry|vendor|account|class|companyinfo)(\/\d{1,32})?$/.test(
         path,
       ) &&
       path !== "query"
@@ -147,6 +148,11 @@ export class QboClient {
         (a.CurrencyRef && a.CurrencyRef.value !== "USD")
       )
         throw new QboError("account_mapping_conflict");
+    }
+    for (const cls of Object.values(m.classes ?? {})) {
+      const actual = await this.get("Class", cls.id);
+      if (actual.Active !== true || actual.Name !== cls.name)
+        throw new QboError("class_mapping_conflict");
     }
     return { realmId: m.realmId, country: "US", mappingHash: hash(m) };
   }

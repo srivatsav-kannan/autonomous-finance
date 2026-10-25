@@ -21,6 +21,12 @@ export function validateMappings(m: Mappings, realm: string) {
     m.accounts[m.bankAccount]!.type !== "Bank"
   )
     throw new QboError("invalid_account_mappings");
+  const classes = Object.values(m.classes ?? {});
+  if (
+    classes.some((c) => !c.name || !/^\d{1,32}$/.test(c.id)) ||
+    new Set(classes.map((c) => c.id)).size !== classes.length
+  )
+    throw new QboError("class_mapping_conflict");
   const ids = Object.values(m.accounts).map((a) => a.id);
   if (
     new Set(ids).size !== ids.length ||

@@ -401,6 +401,7 @@ export class QuickBooksDispatcher {
       !request.correctionId
     )
       return { plan: base, deps };
+    if (!base.links.billId) throw new QboError("external_bill_required");
     const bill = await originalBill(base.links.billId);
     const items: AppliedCredit[] =
       e.creditApplication?.credits ?? e.settlement?.credits ?? [];

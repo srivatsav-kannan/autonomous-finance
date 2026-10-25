@@ -24,7 +24,7 @@ The [official BillPayment reference](https://developer.intuit.com/app/developer/
 
 These documents support the schema representation. They do **not** prove acceptance of this exact operation by an actual sandbox. No credentials, grants, provider API calls, bank calls, browser actions or persistent backend writes were used in this work. Real QBO acceptance remains NOT_RUN. Existing grant/token state was untouched.
 
-Explicit remaining holds: bank returns without an already successful original external BillPayment; partial/multiple returns, missing/unposted/closed return evidence, unresolved late transfers; credit-only application to restored payables (needs a separate allocation authority); changed policy/supplier requiring recertification; B4 cost/accrual adjustments pending its authoritative export. These are not silently labeled fully synchronized. No update, void or delete API was added.
+Explicit remaining holds: bank returns without an already successful original external BillPayment; partial/multiple returns, missing/unposted/closed return evidence, unresolved late transfers; credit-only application to restored payables (needs a separate allocation authority); changed policy/supplier requiring recertification; B4 runtime composition pending the separate approved close-journal bridge. These are not silently labeled fully synchronized. No update, void or delete API was added.
 
 ## Local evidence
 

@@ -113,13 +113,19 @@ export type Mappings = {
   country: "US";
   vendors: Record<string, { id: string; displayName: string }>;
   accounts: Record<string, { id: string; name: string; type: string }>;
+  classes?: Record<string, { id: string; name: string }>;
   apAccount: string;
   bankAccount: string;
 };
 export type Entity = "Bill" | "BillPayment" | "VendorCredit" | "JournalEntry";
 export type LocalLinks = {
-  caseId: string;
-  billId: string;
+  caseId: string | null;
+  billId: string | null;
+  closeExportId?: string;
+  closeJournalId?: string;
+  closeActionId?: string | null;
+  accrualApplicationId?: string | null;
+  originalJournalId?: string | null;
   recognitionJournalId: string;
   paymentVersionId: string | null;
   commandId: string | null;
