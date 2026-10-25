@@ -17,3 +17,5 @@ Root correction `4ff9be5` excludes only canceled, provably never-attempted comma
 ![Actual isolated case after settlement](I2/settled-case.jpg)
 
 The source/policy/payment journey used actual HTTP/backend persistence and browser actions. Automated identities and FakeBank settlement remain explicitly simulated. QuickBooks accounting transactions and real Auth0/Increase authorization remain separate pending acceptance.
+
+The later [actual period readback](I2-close-readback.json) keeps AP GL and subledger at$185.60 with zero difference. Six owned blockers remain. No period close, opening balance review, statement review or extra financial posting was created to bypass missing evidence. See [browser/close evidence](D2-browser-final.md).

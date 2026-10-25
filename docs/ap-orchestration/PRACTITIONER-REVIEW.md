@@ -22,7 +22,7 @@ All supplier contacts, source documents, local identities and FakeBank effects i
 | Bill approved and recognized | One linked payable and balanced journal | A separate exact payment proposal and independent human authorization are still required. |
 | Material source revision | Invalidate affected review; preserve history | Cancel/release provably unsent operations; possible prior sends retain original request/key and reservations pending bank resolution. |
 | Repeat/renamed invoice delivery | Associate to existing obligation | Retain delivery provenance; no second bill or economic posting. Changed facts require explicit revision. |
-| Suggested vendor bank change | Never substitute into payment from invoice text | Trusted independent verification and authorized destination configuration; current configured beneficiary is immutable for the run. |
+| Suggested vendor bank change | Never substitute into payment from invoice text | Trusted independent verification and authorized destination configuration; the legacy/B1 beneficiary is immutable for its run; B3 uses independently verified, immutable supplier revisions and preserves any possible prior send. |
 | Vendor notification | No delivery claim from a memory note | Actual communication evidence is needed; this implementation has not sent a supplier communication. |
 
 The first-wave Golden State policy accepts only the full validated amount; zero unexplained price/quantity variance is the versioned company choice. These limits require business review, not implicit adoption from a cited external policy. B3 now provides explicit expanded policies; its implemented rules and synthetic evidence follow below and still require practitioner review.
@@ -41,7 +41,7 @@ The first-wave Golden State policy accepts only the full validated amount; zero 
 
 For the clean case, expected recognition is **Dr expense5000 $678.60 / Cr AP2000 $678.60**. The actual journal retains four expense lines ($192.50, $171.00, $206.70, $108.40) and one AP credit. Expected settlement is **Dr AP2000 $678.60 / Cr cash1000 $678.60**. Payment does not recognize expense again. I1 observed one transfer, one posted bank debit, one recognition entry and one settlement entry; outstanding AP is$0.00 after two worker cycles.
 
-This immediate expense treatment is the deliberately limited first policy. Inventory, fixed assets, prepayments, tax treatment, posting-period selection and corrections need explicit reviewed policy; they are not inferred merely from the word invoice. B3/B4 must expand this packet with exact supported treatments and exceptions.
+This immediate expense treatment is the deliberately limited first policy. Inventory, fixed assets, prepayments, tax treatment, posting-period selection and corrections need explicit reviewed policy; they are not inferred merely from the word invoice. The expanded casebook below now supplies exact supported B3/B4 treatments and exceptions; practitioner judgment remains pending.
 
 ## Expanded business policy cases awaiting practitioner review
 
@@ -97,8 +97,17 @@ A later practitioner must record their own judgment. Neither the expected outcom
 
 [Original-source integration evidence](evidence/I2-business-flow.md) records a $678.60 invoice, explicit acceptance of $285.60, disputed remainder $393.00, three sequential simulated-human votes (two owners then finance), and separately authorized $100.00 cash. Recognition is Dr5000 $285.60 / Cr2000 $285.60; settlement is Dr2000 $100.00 / Cr1000 $100.00; approved AP remaining is $185.60. One FakeBank transfer and posted debit remain after worker replay. A previously authorized future-date payment produced zero transfers before its initiation date and was canceled before any attempt. This is local integration evidence, not real Auth0/Increase/practitioner acceptance.
 
-[B4 corrected-cost cases](evidence/B4-cost-corrections.md) retain the original journal and require explicit signed replacement shares, immutable cost-state hash and current independent approval for credits or accrual reversals after reclassification. The practitioner should assess the policy and exact account/store postings; independent follow-up review is still pending.
+[B4 corrected-cost cases](evidence/B4-cost-corrections.md) retain the original journal and require explicit signed replacement shares, immutable cost-state hash and current independent approval for credits or accrual reversals after reclassification. The practitioner should assess the policy and exact account/store postings; the backend is independently checked in V5 extension, and V6 UI capacity/date findings have targeted repairs pending independent replay.
 
 ## Selected external sandbox mappings
 
 [Live mapping evidence](evidence/C4-live-mappings.json) contains the exact selected sandbox IDs, mapping hash and replay. AP2000 uses existing Accounts Payable (A/P)33. Dedicated AP97 accounts map cash1000,produceexpense5000,accruedliabilities2010,inventory1200,prepayments1300,fixedassets1500; store sf-hayes-valley maps Class739762. Synthetic supplier Golden State maps Vendor200000001. Eight reference records were created and independently read back; replay createdzero. No balances or accounting transactions were posted. The practitioner must review the business semantics of these mappings separately from API identity/type matching.
+
+## Expanded handoff package
+
+- [Practitioner casebook](PRACTITIONER-CASEBOOK.md): 14 review cases with source facts, control decisions, exact accounting and evidence classes.
+- [Expected postings](PRACTITIONER-EXPECTED-POSTINGS.json): 13 scenarios and 35 balanced EXPECTED_ONLY entries, separate from observed results.
+- [Unfilled review record](PRACTITIONER-RECORD-TEMPLATE.md): for an actual practitioner to record scope, findings and judgment.
+- [Engineering audit](PRACTITIONER-ENGINEERING-AUDIT.md): revision-bound remaining engineering work, separate from identity/provider/practitioner prerequisites. Lifecycle metrics and new supplier/layout evaluation are now in progress; broader accounting policies and repair paths remain open.
+
+The packet's preparation checks resolved48 links, verified5 original hashes and balanced35 expected entries. These are document checks, not business approval.

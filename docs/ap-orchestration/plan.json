@@ -323,7 +323,7 @@
         "docs/ap-orchestration/evidence/B4-cost-corrections.md"
       ],
       "blocker": null,
-      "next_action": "V4 repair independently replayed; actual I2 partial recognition/quorum/partial cash completed locally. New corrected-cost credits require V6 follow-up and UI integration.",
+      "next_action": "Corrected-cost backend independently verified in V5 extension; V6 UI capacity/date findings repaired at2154234 pending unchanged independent replay. Broader trusted-contact/physical-line/dimension policies remain explicit engineering follow-ups.",
       "source_sha": "4f7d76d"
     },
     {
@@ -334,18 +334,18 @@
         "V2"
       ],
       "acceptance": "Frozen business UTC initiation date distinct from retry clock; explicit gross/credit/cash allocations, one operation identity per payment and atomic run preparation/authorization/cancellation; preserve possible-send recovery and verify through FakeBank independently.",
-      "status": "in_progress",
+      "status": "accepted",
       "session_id": "01a1722e-2f26-7130-bfe6-9480c7d2883f",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
       "branch": "codex/ap-system-integration",
-      "commit": "d650b33",
+      "commit": "4ff9be5",
       "evidence": [
         "docs/ap-orchestration/evidence/C3-scheduling.md",
         "tests/ap-system/payment-scheduling.test.ts",
         "tests/ap-system/payment-runs.test.ts"
       ],
       "blocker": null,
-      "next_action": "I2 actual source workflow verifies future-date no-send, canceled never-attempted proposal and separate $100 authorization/settlement against $285.60 approved portion. V3 independent tests retained; broader UI acceptance continues.",
+      "next_action": "Current bounded scheduling/partial-payment/run controls independently verified in V3; actual I2 future-date no-send and partial cash path verified. Broader currency support remains a separate engineering task.",
       "source_sha": "4f7d76d"
     },
     {
@@ -378,7 +378,7 @@
         "docs/ap-orchestration/evidence/C4-store-dimensions.md"
       ],
       "blocker": "Real Auth0 tenant/login required for authenticated accounting transaction submission.",
-      "next_action": "Live mapping hash verified; reference replay created0duplicates. Local restoredcredit/B4/ClassRef paths complete, independent extension and real authenticated Bill/Payment readback pending.",
+      "next_action": "V5 QBO Class/restore/query repairs independently verified, including unexpected JournalEntry Class readback. Live mappings verified; real Auth0-backed accounting transactions remain NOT_RUN. 1000-row conservative capacity bound retained.",
       "source_sha": "4f7d76d"
     },
     {
@@ -402,7 +402,7 @@
         "tests/ap-system/close-capacity.test.ts"
       ],
       "blocker": null,
-      "next_action": "Core close and immutable export integrated. V5 receipt-capacity fix7481337 passed unchanged independent probes; explicit corrected-cost credit/reversal follow-up0794406 and UI require new independent review.",
+      "next_action": "V5 receipt capacity and corrected-cost/close-authority controls independently replayed. Root actual I2 period view has AP GL=subledger18560 and6 honest blockers; no unsupported close or opening-balance approval was fabricated.",
       "source_sha": "8dce6f4"
     },
     {
@@ -426,7 +426,7 @@
         "docs/ap-orchestration/evidence/I2/settled-case.jpg"
       ],
       "blocker": null,
-      "next_action": "Period-QBO UI integrated with action/application receipt selectors. Corrected-cost editor and final browser verification underway.",
+      "next_action": "Period QBO/restored-credit/cost browser checks completed within declared synthetic scope; V6 cost/date repairs integrated2154234. Persisted lifecycle/age metrics now being implemented; actual I2 operational view remains separate evidence.",
       "source_sha": "6114a03"
     },
     {
@@ -495,7 +495,7 @@
         "tests/ap-system-auth-ui.test.tsx"
       ],
       "blocker": "Awaiting user development-tenant login and SPA Domain/Client ID.",
-      "next_action": "Official SDK/Convex request identity implemented and independent V4 local negative checks passed. User will register/login Auth0; real signature/JWKS/login/user-click payment acceptance pending."
+      "next_action": "Normal SDK/Convex login and explicit private prepare/bind bootstrap integratedc135f6c; independent offline bootstrap extension passing. User is registering/login Auth0; no identity enrolled or payment authorized."
     },
     {
       "id": "V3",
@@ -544,6 +544,70 @@
       ],
       "blocker": null,
       "next_action": "Independent immutable-baseline repair replay passed:15 original V4+13 owner regressions+13 current V3 QBO=41/41; historical baseline preserved. V5/V6 cover subsequent work."
+    },
+    {
+      "id": "V5",
+      "owner": "independent-verifier",
+      "title": "Independently verify receipt capacity, corrected costs, period authority and QBO dimensions",
+      "status": "accepted",
+      "commit": "07c4cbb",
+      "evidence": [
+        "docs/ap-orchestration/evidence/V5-repair.md",
+        "docs/ap-orchestration/evidence/V5-extension.md",
+        "docs/ap-orchestration/evidence/V5-qbo-repair.md"
+      ],
+      "acceptance": "Preserve original failing baselines and replay unchanged financial assertions against targeted repairs; distinguish independent local tests from external/provider/practitioner acceptance.",
+      "next_action": "Accepted bounded evidence:84 distinct repair checks,64 extension checks,47 QBO repair checks. Counts overlap across checkpoints and must not be summed as unique coverage.",
+      "depends_on": [],
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "blocker": null
+    },
+    {
+      "id": "V6",
+      "owner": "independent-verifier",
+      "title": "Independently verify corrected-cost UI, grouped credit and Auth0 operator bootstrap",
+      "status": "in_progress",
+      "commit": "f429d26",
+      "evidence": [
+        "docs/ap-orchestration/evidence/V6-cost-baseline.md"
+      ],
+      "acceptance": "Verify signed account/store capacity, explicit posting date, context invalidation, current human grouped-credit reads and safe explicit bootstrap/recovery.",
+      "next_action": "F1/F2 baseline retained; UI fixes integrated2154234, unchanged replay pending. Bootstrap and grouped-credit independent extension underway.",
+      "depends_on": [],
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "blocker": null
+    },
+    {
+      "id": "A4",
+      "owner": "A",
+      "title": "Add held-out supplier/layout input evaluation and verify packaged OCR runtime",
+      "status": "in_progress",
+      "acceptance": "New provenance-recorded originals and frozen independent expectations, actual parser content/geometry denominators including unresolved cases, repeatability; packaged target OCR verified separately.",
+      "next_action": "Two new synthetic PDF suppliers/layouts plus scan variants being prepared, expected files segregated from runtime. Docker CLI exists but no daemon; target build/run remains NOT_RUN.",
+      "blocker": null,
+      "depends_on": [],
+      "session_id": null,
+      "worktree": null,
+      "branch": null
+    },
+    {
+      "id": "B5",
+      "owner": "B",
+      "title": "Complete broader accounting policies and remaining supported business repair paths",
+      "status": "pending",
+      "acceptance": "Explicit policies and tests before enabling additional currency/tax/dimensions; governed trusted-contact replacement and stable repeated physical-line identity; preserve exact capacity and authority through journals/payment/export.",
+      "next_action": "Retain E01-E04 from PRACTITIONER-ENGINEERING-AUDIT.md as engineering work. Safe unsupported holds do not establish positive processing or close the roadmap.",
+      "blocker": null,
+      "depends_on": [
+        "B3"
+      ],
+      "session_id": null,
+      "worktree": null,
+      "branch": null
     }
   ],
   "registry": {
@@ -608,7 +672,7 @@
       "identity": "five_distinct_simulated_humans",
       "case_id": "k175gds0dypbgeknejs2henw5h8gysw8",
       "state": "partial_approval_cash10000_settled_matched_outstanding18560",
-      "code": "4ff9be5"
+      "code": "3278dfb"
     },
     "auth0_isolated": {
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-live-auth0/calhacks",
@@ -617,7 +681,14 @@
       "backend_site_port": 3253,
       "backend_exec_session": 70466,
       "state": "fresh_backend_no_identity_provider_yet",
-      "human_run_binding": "not_created"
+      "human_run_binding": "not_created",
+      "bootstrap_code": "c135f6c"
+    },
+    "synthetic_ui": {
+      "port": 5194,
+      "exec_session": 68565,
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
+      "state": "synthetic_fixture_no_backend_or_provider_actions"
     }
   },
   "contracts": {
@@ -663,7 +734,7 @@
     "accounting_transaction_writes": 0,
     "mapping_hash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff"
   },
-  "last_updated_at": "2026-10-25T10:10:12.285012+00:00",
+  "last_updated_at": "2026-10-25T10:20:22.477769+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",
@@ -673,13 +744,19 @@
     "next_action": "User will register/login Auth0 and report Dashboard availability; no JWT requested."
   },
   "verification_checkpoint": {
-    "commit": "d55ba85",
-    "passed": 1341,
-    "skipped": 4,
-    "failed": 0,
-    "typechecks": "app_backend_tests_pass",
-    "console_build": "pass_existing_large_chunk_warning",
-    "design_check": "0_fail_0_warn",
-    "later_changes": "003ebcd_period_UI_and3c834ae_ClassRef_require_updated_full_run"
+    "code": "1cd4cc5",
+    "tests": {
+      "total": 1387,
+      "passed": 1383,
+      "skipped": 4,
+      "failed": 0,
+      "report": "/private/tmp/ap97-integration-1cd4cc5.json"
+    },
+    "application_typecheck": "PASS",
+    "backend_typecheck": "PASS",
+    "tests_typecheck": "FAIL missing explicit store in newly integrated UI fixture; repaired2154234, final rerun pending",
+    "build": "PASS",
+    "design": "0 FAIL,0 WARN,1 ANSWERED",
+    "later_changes": "V6 independent tests and cost/date fix2154234; metrics and held-out work continue"
   }
 }
