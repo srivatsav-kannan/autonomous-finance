@@ -20,6 +20,7 @@ import {
 } from "./grounding";
 import { localOcr, type OcrOptions } from "./ocr";
 import { sha256 } from "./storage";
+import { sourceReadings } from "./source-readings";
 export type TrustedContext = {
   documents?: SourceDocument[];
   purchasingEvidence?: PurchasingEvidence[];
@@ -225,11 +226,16 @@ export async function extractCandidate(
   // Tax allocation is explicit: non-zero header tax needs reviewed line allocation; no invented split.
   if ((amounts.taxCents ?? 0) !== 0)
     reasons.push("line_tax_allocation_requires_review");
-  if (reasons.length)
+  if (reasons.length) {
+    // Retain provider readings even when this layout cannot become an AP candidate.
+    // Keep raw currency/date strings in their own namespace; they are not USD cents.
+    for (const reading of sourceReadings(output))
+      await add(reading.path, reading.value, reading.value, reading.page, reading.hint);
     return {
       candidate: null,
       extraction: { status: "incomplete", evidence, reasons },
     };
+  }
   const value = {
     candidateId: "candidate-" + source.sourceId,
     revision: source.revision,

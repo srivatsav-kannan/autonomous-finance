@@ -5,6 +5,7 @@ import { parseDocument, combineUploads } from "./index";
 import { providerGrounding, groundText } from "./grounding";
 import type { SourceDocument } from "../contracts";
 import type { ProviderOutput } from "./provider";
+import { fieldEvidenceSchema } from "../contracts";
 const load = async (name = "invoice") =>
   JSON.parse(
     await readFile(
@@ -203,4 +204,48 @@ it("does not substitute remaining balance or total due for the original document
   );
   expect(r.candidate).toBe(null);
   expect(r.extraction.reasons).toContain("missing_or_ambiguous_totalCents");
+});
+
+it("retains the real Larkfield PDF's source fields and exact cell locations without creating a USD payable", async () => {
+  const output = await load("larkfield");
+  const result = await extractCandidate(source(output.sourceSha256), output, "/tmp", context, false);
+  const evidence = result.extraction.evidence;
+  const value = (path: string) => evidence.find(field => field.fieldPath === `source.${path}`);
+  expect(result.candidate).toBeNull();
+  expect(result.extraction.status).toBe("incomplete");
+  expect(result.extraction.reasons).toContain("unsupported_or_missing_currency");
+  expect(evidence).toHaveLength(39);
+  const expected = {
+    documentHeading: "Larkfield Stationers", billTo: "Example Traders (fictional)",
+    invoiceNumber: "INV-2026-0142", invoiceDate: "18 September 2026", dueDate: "18 October 2026",
+    orderReference: "PO-77310", subtotal: "₹14,702.00", tax: "₹2,646.36", totalDue: "₹17,348.36",
+  };
+  for (const [path, text] of Object.entries(expected)) expect(value(path)?.normalizedValue).toBe(text);
+  const rows = [
+    ["1", "A4 copier paper, 75 gsm, ream of 500", "20", "₹285.00", "₹5,700.00"],
+    ["2", "Ballpoint pens, blue, box of 50", "4", "₹420.00", "₹1,680.00"],
+    ["3", "Lever-arch files, A4, pack of 10", "3", "₹899.00", "₹2,697.00"],
+    ["4", "Whiteboard markers, assorted, pack of 4", "6", "₹160.00", "₹960.00"],
+    ["5", "Desk organiser, mesh, black", "5", "₹349.00", "₹1,745.00"],
+    ["6", "Sticky notes, 76 x 76 mm, pack of 12", "8", "₹240.00", "₹1,920.00"],
+  ];
+  rows.forEach((row, i) => ["rowNumber", "description", "quantity", "unitPrice", "amount"].forEach((column, j) => {
+    const field = value(`table-1.row-${i + 1}.${column}`)!;
+    expect(field.normalizedValue).toBe(row[j]);
+    expect(field.grounding.status).toBe("native");
+    expect(field.grounding.page).toBe(1);
+    expect(fieldEvidenceSchema.safeParse(field).success).toBe(true);
+  }));
+  expect(evidence.every(field => typeof field.normalizedValue === "string")).toBe(true);
+  expect(evidence.every(field => field.source.sha256 === output.sourceSha256)).toBe(true);
+});
+
+it("keeps source text but hides precise locations when Larkfield geometry is missing", async () => {
+  const output = await load("larkfield");
+  output.grounded = [];
+  output.rawWords = [];
+  const result = await extractCandidate(source(output.sourceSha256), output, "/tmp", context, false);
+  expect(result.candidate).toBeNull();
+  expect(result.extraction.evidence).toHaveLength(39);
+  expect(result.extraction.evidence.every(field => field.grounding.status === "unresolved" && !field.grounding.regions.length)).toBe(true);
 });

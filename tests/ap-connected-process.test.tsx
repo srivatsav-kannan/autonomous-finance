@@ -4,19 +4,37 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { historyFixture } from "./ap-system/agent-history.fixture";
 import type { APCaseDetail } from "../src/ap-system/contracts";
 import { APConnectedProcess, connectedProcessFacts } from "../console/src/APConnectedProcess";
+import { apFieldLabel, apFieldValue } from "../console/src/apSystemView";
 
 const hash = "a".repeat(64);
 function detail(overrides: Partial<APCaseDetail> = {}) {
   return {
     sources: [], currentSourceBindings: [], timeline: [], exceptions: [],
     identityMode: "authenticated_human", scope: { provider: "increase", environment: "sandbox" },
-    extraction: { status: "failed" },
+    extraction: { status: "failed", evidence: [], reasons: [] },
     states: { document: "failed", business: "unreviewed", accounting: "unposted", authorization: "not_requested", execution: "not_started", reconciliation: "unmatched" },
     ...overrides,
   } as unknown as APCaseDetail;
 }
 
 describe("connected processing evidence", () => {
+  it("separates successful source reading from a held AP mapping and preserves the printed currency", () => {
+    const field = { evidenceId: "source-total", fieldPath: "source.totalDue", normalizedValue: "₹17,348.36" };
+    const data = detail({
+      sources: [{ sourceId: "invoice", revision: 2, sha256: hash, pageStatus: [{ page: 1, status: "complete" }], parser: { provider: "llamaparse" } }] as APCaseDetail["sources"],
+      currentSourceBindings: [{ sourceId: "invoice", revision: 2, sha256: hash }],
+      extraction: { status: "incomplete", evidence: [field], reasons: ["unsupported_or_missing_currency"] } as APCaseDetail["extraction"],
+    });
+    const render = () => renderToStaticMarkup(createElement(APConnectedProcess, { detail: data, onView: () => {} }));
+    expect(render()).toContain("PDF parsing");
+    expect(render()).toContain("Source values available");
+    expect(render()).toContain("AP mapping");
+    expect(render()).toContain("Needs review");
+    expect(apFieldValue(field)).toBe("₹17,348.36");
+    expect(apFieldLabel(field.fieldPath)).toBe("Total due");
+    data.sources[0]!.pageStatus[0]!.status = "failed";
+    expect(render()).not.toContain("Source values available");
+  });
   it("shows the parser for current byte-bound source revisions only", () => {
     const data = detail({
       currentSourceBindings: [{ sourceId: "invoice", revision: 2, sha256: hash }],

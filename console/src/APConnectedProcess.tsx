@@ -1,6 +1,6 @@
 import type { APCaseDetail } from "../../src/ap-system/contracts";
 import { agentTransitionSchema } from "../../src/ap-system/contracts";
-import { apLabel } from "./apSystemView";
+import { apLabel, evidenceForCase } from "./apSystemView";
 import "./apConnectedProcess.css";
 
 type View = "evidence" | "traceability" | "history";
@@ -33,8 +33,11 @@ function recordedTime(value: number) {
 export function APConnectedProcess({ detail, onView }: { detail: APCaseDetail; onView: (view: View) => void }) {
   const facts = connectedProcessFacts(detail);
   const work = detail.agentProgress ?? facts.latestWork;
+  const sourceCount = evidenceForCase(detail).filter(field => field.fieldPath.startsWith("source.")).length;
+  const sourceParsed = sourceCount > 0 && facts.sources.length > 0 && facts.sources.every(source => source.pageStatus.every(page => page.status === "complete"));
   const stages = [
-    { label: "Extraction", status: detail.extraction.status, done: detail.extraction.status === "complete" },
+    ...(sourceParsed ? [{ label: "PDF parsing", status: "source_values_available", done: true }] : []),
+    { label: sourceParsed ? "AP mapping" : "Extraction", status: sourceParsed ? "needs_review" : detail.extraction.status, done: detail.extraction.status === "complete" },
     { label: "Source review", status: detail.states.document, done: detail.states.document === "reviewed" },
     { label: "Bill approval", status: detail.states.business, done: detail.states.business === "approved" },
     { label: "Accounting", status: detail.states.accounting, done: ["recognized", "corrected"].includes(detail.states.accounting) },

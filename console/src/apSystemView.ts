@@ -3,6 +3,12 @@ export const apMoney = (value: number | null) => value === null || !Number.isFin
 export const apLabel = (value: string) => value.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
 const fieldNames: Record<string, string> = { extractedSupplierName: "Supplier name", totalCents: "Total amount", subtotalCents: "Subtotal", sku: "SKU" };
 export function apFieldLabel(path: string): string {
+  if (path.startsWith("source.")) {
+    const value = path.slice(7);
+    const cell = /^table-(\d+)\.row-(\d+)\.(.+)$/.exec(value);
+    if (cell) return `Table ${cell[1]} / Row ${cell[2]} / ${apFieldLabel(cell[3]!)}`;
+    return apFieldLabel(value);
+  }
   const parts = path.split(".");
   const name = parts.pop() ?? path;
   const label = fieldNames[name] ?? apLabel(name.replace(/Cents$/, "").replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_/g, " ").toLowerCase());
@@ -22,6 +28,14 @@ export function sourceForEvidence(detail: APCaseDetail, evidence: FieldEvidence)
 export function evidenceForCase(detail: APCaseDetail): FieldEvidence[] {
   const entries = [...(detail.candidate?.evidence ?? []), ...detail.extraction.evidence];
   return [...new Map(entries.map(e => [e.evidenceId, e])).values()];
+}
+/** Display-only source text; conflicting occurrences cannot supply a case heading. */
+export function sourceReadingValue(detail: APCaseDetail, name: string): string | undefined {
+  const path = `source.${name}`;
+  const values = evidenceForCase(detail).filter(field => field.fieldPath === path || field.fieldPath.startsWith(`${path}.occurrence-`));
+  if (!values.length || values.some(field => field.contentStatus !== "supported" || typeof field.normalizedValue !== "string")) return undefined;
+  const unique = new Set(values.map(field => String(field.normalizedValue)));
+  return unique.size === 1 ? [...unique][0] : undefined;
 }
 const point = (frame: CoordinateFrame, x: number, y: number): [number, number] => {
   const [a,b,c,d,e,f] = frame.transform; return [a*x+c*y+e,b*x+d*y+f];

@@ -1,25 +1,42 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { APCaseDetail, FieldEvidence, SourceDocument } from "../../src/ap-system/contracts";
-import { apError, downloadOriginal, loadPage, loadOriginal } from "./apSystemApi";
+import { apError, apSystemApi, downloadOriginal, loadPage, loadOriginal } from "./apSystemApi";
 import { apFieldLabel, apFieldValue, apLabel, displayedFrame, evidenceForCase, regionPolygon, sourceForEvidence } from "./apSystemView";
 
 const PdfViewer = lazy(() => import("./PdfViewer"));
 
-export function APSystemEvidence({ detail }: { detail: APCaseDetail }) {
+export function APSystemEvidence({ detail, busy = false, onBusy, onChanged }: { detail: APCaseDetail; busy?: boolean; onBusy?: (value: boolean) => void; onChanged?: () => void }) {
   const fields = useMemo(() => evidenceForCase(detail), [detail]);
+  const sourceReadings = fields.filter(field => field.fieldPath.startsWith("source."));
   const [selectedId, setSelectedId] = useState(fields[0]?.evidenceId ?? "");
   const [query, setQuery] = useState("");
   const [sourceId, setSourceId] = useState("");
   const [mode, setMode] = useState<"original" | "citation">("original");
+  const [reprocessing, setReprocessing] = useState(false);
+  const [reprocessError, setReprocessError] = useState<string>();
+  const requestKey = useRef<{ revision: number; key: string } | undefined>(undefined);
   const selected = fields.find(e=>e.evidenceId===selectedId) ?? fields[0];
   const visibleFields = fields.filter(e=>`${apFieldLabel(e.fieldPath)} ${apFieldValue(e)} ${e.fieldPath}`.toLowerCase().includes(query.trim().toLowerCase()));
   const pageKey = selected ? `${detail.caseId}:${selected.source.sourceId}:${selected.source.revision}:${selected.source.sha256}:${selected.grounding.page}:${JSON.stringify(selected.grounding.frame)}` : "";
   const sources = detail.sources.filter(s => detail.currentSourceBindings.some(b => b.sourceId === s.sourceId && b.revision === s.revision && b.sha256 === s.sha256));
   const selectedSource = sources.find(s => `${s.sourceId}:${s.revision}` === sourceId) ?? (selected ? sourceForEvidence(detail, selected) : sources[0]);
   const selectField = (id: string) => { setSelectedId(id); setSourceId(""); };
+  const reprocess = async () => {
+    setReprocessError(undefined); setReprocessing(true); onBusy?.(true);
+    if (requestKey.current?.revision !== detail.revision) requestKey.current = { revision: detail.revision, key: crypto.randomUUID() };
+    try {
+      const files = await Promise.all(sources.map(async source => ({ file: new File([await loadOriginal(source, AbortSignal.timeout(30_000))], source.name, { type: source.mimeType }), kind: source.kind })));
+      const result = await apSystemApi.intake(files, requestKey.current!.key, detail.caseId);
+      if (result.caseId !== detail.caseId) throw new Error("The re-read returned a different case. Refresh before continuing.");
+      onChanged?.();
+    } catch (error) { setReprocessError(apError(error)); }
+    finally { setReprocessing(false); onBusy?.(false); }
+  };
   return <div className="aps-evidence-grid">
     <div className="aps-field-list" aria-label="Extracted fields">
       <h3>Source fields</h3>
+      {onChanged && detail.extraction.status !== "complete" && !detail.links.recognitionJournalId && <div><button type="button" disabled={busy || reprocessing || !sources.length} onClick={() => void reprocess()}>{reprocessing ? "Re-reading originals…" : "Re-read original documents"}</button><p className="aps-caption">Creates a new revision from the stored originals using the current mapper. Review is required again; no bill or payment is approved.</p>{reprocessing && <p role="status">Reading the retained parser result and saving the new source fields…</p>}{reprocessError && <p role="alert" className="aps-error">{reprocessError}</p>}</div>}
+      {sourceReadings.length > 0 && <div className="aps-notice" role="status"><strong>{sourceReadings.length} source values extracted</strong><p>Values are preserved as printed. AP mapping needs review before bill approval.</p></div>}
       <p className="aps-caption">{fields.length} fields. Select one to inspect its original evidence.</p>
       {fields.length === 0 ? <p className="aps-empty">No field evidence is available. The original files remain below.</p> : <>
         <label className="aps-field-search">Find a field<input type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Name or value" /></label>
