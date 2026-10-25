@@ -265,14 +265,19 @@
         "I1"
       ],
       "acceptance": "Missing/contradictory evidence, revisions, duplicates, stale/self approval, lost bank response and interrupted posting have expected outcomes. Add mismatched/duplicate/missing OCR text, wrong page/frame, stale geometry and interrupted fallback/retry cases; no wrong binding or duplicate economic effect.",
-      "status": "in_progress",
+      "status": "accepted",
       "session_id": "/root/verifier",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks",
       "branch": "codex/ap-system-verification-v2",
-      "commit": null,
-      "evidence": [],
+      "commit": "4f7d76d",
+      "evidence": [
+        "docs/ap-orchestration/evidence/V2.md",
+        "docs/ap-orchestration/evidence/V2-results.json",
+        "tests/ap-system/v2-independent.test.ts"
+      ],
       "blocker": null,
-      "next_action": "Independent negative/revision/recovery evaluation at I1 acceptance commit"
+      "next_action": "15 independent integrated tests re-run successfully after A3/D merge; proceed B3/C3/C4; external identity/provider/practitioner gates separate",
+      "source_sha": "190201f"
     },
     {
       "id": "C2",
@@ -301,14 +306,15 @@
         "V2"
       ],
       "acceptance": "Supported-capability cases are independently evaluated with exact accounting and explicit unsupported paths.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "/root/accounting",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-accounting/calhacks",
+      "branch": "codex/ap-system-domain",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": null
+      "next_action": "Implement and verify authorized roadmap scope",
+      "source_sha": "4f7d76d"
     },
     {
       "id": "C3",
@@ -318,14 +324,15 @@
         "V2"
       ],
       "acceptance": "Due-date scheduling is distinct from retries, preserves payment authorization and durable execution controls, and is verified without requiring an external ERP connector.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "01a1722e-2f26-7130-bfe6-9480c7d2883f",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
+      "branch": "codex/ap-system-integration",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": null
+      "next_action": "Implement and verify authorized roadmap scope",
+      "source_sha": "4f7d76d"
     },
     {
       "id": "C4",
@@ -336,14 +343,15 @@
       ],
       "external_gate": "erp_selection_and_access",
       "acceptance": "Selected provider access and idempotent external sync are verified with external record IDs and reconciliation evidence; internal journals alone do not satisfy external sync.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "/root/p0_inventory",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-evidence/calhacks",
+      "branch": "codex/ap-system-qbo",
       "commit": null,
       "evidence": [],
-      "blocker": null,
-      "next_action": null
+      "blocker": "External live acceptance awaits owner Intuit registration and OAuth grant; credential-independent engineering is not blocked.",
+      "next_action": "Credential-independent implementation and adversarial verification; external live evidence remains separately pending",
+      "source_sha": "4f7d76d"
     },
     {
       "id": "B4",
@@ -521,7 +529,7 @@
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true
   },
-  "last_updated_at": "2026-10-25T09:05:17.269820+00:00",
+  "last_updated_at": "2026-10-25T09:08:18.583546+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",
