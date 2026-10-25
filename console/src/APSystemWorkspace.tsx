@@ -70,9 +70,9 @@ export function APSystemWorkspace({ onContextChange, onBusyChange }: { onContext
           <div className="aps-tabs" role="group" aria-label="Case sections">{VIEWS.map(v=><button type="button" key={v} disabled={busy} onClick={()=>setView(v)} aria-pressed={view===v} className={view===v ? "is-selected" : ""}>{v === "evidence" ? "Source & fields" : apLabel(v)}</button>)}</div>
           {view === "evidence" && <><APSystemEvidence detail={detail}/><APOriginals detail={detail}/></>}
           {view === "matching" && <APMatching detail={detail}/>}
-          {view === "accounting" && <APAccounting key={`${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
+          {view === "accounting" && <APAccounting key={`accounting:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
           {view === "history" && <APHistory detail={detail}/>}
-          <APActions key={`${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>
+          <APActions key={`review:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>
         </>}
       </div>
     </div>
