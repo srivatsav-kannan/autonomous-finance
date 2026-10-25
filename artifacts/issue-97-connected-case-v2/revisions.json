@@ -1,0 +1,41 @@
+{
+  "mode": "built-in image_gen edit",
+  "changes": [
+    {
+      "slug": "01-decision-inbox",
+      "day": 1,
+      "prompt": "Edit only the listed labels and top-bar control in this existing UI screenshot. Preserve the exact composition, all case identifiers, amounts, statuses, content, typography sizes, sidebar, role and Design concept badge. Replace the wide search field at the very top with a compact scenario selector reading exactly 'Scenario: Connected AP case' with a down-chevron, followed by a plain small label 'Simulation day 1'. Keep this in the same top-bar area occupied by the search field, so no content below it moves. This is the selected synthetic scenario and relative simulation day, not a real-world calendar date. The existing 'Back to inbox' or 'Inbox' at far left and 'Signed in:' at right must remain.  All other pixels and words remain unchanged.",
+      "reference": "/Users/junjiexiong/Desktop/calhacks/artifacts/issue-97-connected-case-v2/01-decision-inbox.png"
+    },
+    {
+      "slug": "02-evidence-hold",
+      "day": 1,
+      "prompt": "Edit only the listed labels and top-bar control in this existing UI screenshot. Preserve the exact composition, all case identifiers, amounts, statuses, content, typography sizes, sidebar, role and Design concept badge. Replace the wide search field at the very top with a compact scenario selector reading exactly 'Scenario: Connected AP case' with a down-chevron, followed by a plain small label 'Simulation day 1'. Keep this in the same top-bar area occupied by the search field, so no content below it moves. This is the selected synthetic scenario and relative simulation day, not a real-world calendar date. The existing 'Back to inbox' or 'Inbox' at far left and 'Signed in:' at right must remain. Also change the primary button label 'Request receipt' to 'Follow up on receipt'. Change the bottom history-strip label 'Latest: invoice added / Evidence revision 1' to 'Current hold: receipt missing / Evidence revision 1'. These maintain continuity with the previous queue's recorded receipt request. All other pixels and words remain unchanged.",
+      "reference": "/Users/junjiexiong/Desktop/calhacks/artifacts/issue-97-connected-case-v2/02-evidence-hold.png"
+    },
+    {
+      "slug": "03-receipt-change-bill-review",
+      "day": 2,
+      "prompt": "Edit only the listed labels and top-bar control in this existing UI screenshot. Preserve the exact composition, all case identifiers, amounts, statuses, content, typography sizes, sidebar, role and Design concept badge. Replace the wide search field at the very top with a compact scenario selector reading exactly 'Scenario: Connected AP case' with a down-chevron, followed by a plain small label 'Simulation day 2'. Keep this in the same top-bar area occupied by the search field, so no content below it moves. This is the selected synthetic scenario and relative simulation day, not a real-world calendar date. The existing 'Back to inbox' or 'Inbox' at far left and 'Signed in:' at right must remain. Also change 'Earlier missing-receipt hold retained' to 'Earlier hold retained in history'. Change the four blue document links Invoice v1, Receipt v1, Contract, Open receipt to the same dark green link color #1f6f4a as View history. Keep their underline. All other pixels and words remain unchanged.",
+      "reference": "/Users/junjiexiong/Desktop/calhacks/artifacts/issue-97-connected-case-v2/03-receipt-change-bill-review.png"
+    },
+    {
+      "slug": "04-payment-authorization",
+      "day": 2,
+      "prompt": "Edit only the listed labels and top-bar control in this existing UI screenshot. Preserve the exact composition, all case identifiers, amounts, statuses, content, typography sizes, sidebar, role and Design concept badge. Replace the wide search field at the very top with a compact scenario selector reading exactly 'Scenario: Connected AP case' with a down-chevron, followed by a plain small label 'Simulation day 2'. Keep this in the same top-bar area occupied by the search field, so no content below it moves. This is the selected synthetic scenario and relative simulation day, not a real-world calendar date. The existing 'Back to inbox' or 'Inbox' at far left and 'Signed in:' at right must remain. Also change the secondary button 'Prepare later' to 'Decide later', because the proposal is already prepared. All other pixels and words remain unchanged.",
+      "reference": "/Users/junjiexiong/Desktop/calhacks/artifacts/issue-97-connected-case-v2/04-payment-authorization.png"
+    },
+    {
+      "slug": "05-original-payment-recovery",
+      "day": 3,
+      "prompt": "Edit only the listed labels and top-bar control in this existing UI screenshot. Preserve the exact composition, all case identifiers, amounts, statuses, content, typography sizes, sidebar, role and Design concept badge. Replace the wide search field at the very top with a compact scenario selector reading exactly 'Scenario: Connected AP case' with a down-chevron, followed by a plain small label 'Simulation day 3'. Keep this in the same top-bar area occupied by the search field, so no content below it moves. This is the selected synthetic scenario and relative simulation day, not a real-world calendar date. The existing 'Back to inbox' or 'Inbox' at far left and 'Signed in:' at right must remain.  All other pixels and words remain unchanged.",
+      "reference": "/Users/junjiexiong/Desktop/calhacks/artifacts/issue-97-connected-case-v2/05-original-payment-recovery.png"
+    },
+    {
+      "slug": "06-settlement-accounting-repair",
+      "day": 3,
+      "prompt": "Edit only the listed labels and top-bar control in this existing UI screenshot. Preserve the exact composition, all case identifiers, amounts, statuses, content, typography sizes, sidebar, role and Design concept badge. Replace the wide search field at the very top with a compact scenario selector reading exactly 'Scenario: Connected AP case' with a down-chevron, followed by a plain small label 'Simulation day 3'. Keep this in the same top-bar area occupied by the search field, so no content below it moves. This is the selected synthetic scenario and relative simulation day, not a real-world calendar date. The existing 'Back to inbox' or 'Inbox' at far left and 'Signed in:' at right must remain.  All other pixels and words remain unchanged.",
+      "reference": "/Users/junjiexiong/Desktop/calhacks/artifacts/issue-97-connected-case-v2/06-settlement-accounting-repair.png"
+    }
+  ]
+}
