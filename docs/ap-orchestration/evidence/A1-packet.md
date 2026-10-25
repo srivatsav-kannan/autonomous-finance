@@ -11,3 +11,9 @@ Commands completed:
 - pdftoppm -scale-to 1100 -png -singlefile for every PDF, then all five PNGs visually inspected. Headers, totals, table columns and footers are legible without clipping/overlap. Fontconfig emitted a missing-default-config warning; actual rasterized output rendered correctly.
 
 Clean amount is 67860 cents; quantity discrepancy is 71710 cents. Four catalog prices and Net14 terms are reused. The one-case engineering packet is not an unseen-layout benchmark. V1 independent review, LlamaParse/A2, business gates, bank execution and integrated acceptance are not established by A1.
+
+## V1 nomenclature amendment, 2026-10-25
+
+Master relayed independent V1 verification that original packet amounts and hashes pass. V1 independently derived the quantity discrepancy from the original invoice (Kale 6), PO (Kale 5) and receipt (Kale 5), and identified that the initial abstract `quantity_variance` label does not match B1's explicit `po_mismatch` and `receipt_mismatch` codes. The evaluation key and its exporter now name both holds. This is a recorded post-freeze code-name correction, not a change of financial expectations based on parser output. `frozenBeforeProvider` records the initial frozen financial oracle; `postFreezeAmendments` makes this later nomenclature change explicit.
+
+Original PDFs, frozen facts, 71710 invoiced cents, null accepted amount, zero transfers and no implicit short-pay are unchanged. Runtime ingestion does not read the evaluator key. Independent V1 must confirm the amended labels before Master marks V1 accepted.

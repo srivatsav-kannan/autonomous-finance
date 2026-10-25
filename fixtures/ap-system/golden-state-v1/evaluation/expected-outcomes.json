@@ -128,7 +128,8 @@
       "receivedKaleQuantity": "5",
       "invoicedKaleQuantity": "6",
       "expectedHoldCodes": [
-        "quantity_variance"
+        "po_mismatch",
+        "receipt_mismatch"
       ],
       "expectedAcceptedCents": null,
       "expectedTransferCount": 0
@@ -141,5 +142,21 @@
       "mustNotMergeByFilename": true
     }
   },
-  "rationale": "Full original amount is recognized only after complete source review, matching, explicit coding and separate business approval. Payment requires independent authorization. A discrepancy does not authorize short-pay. Receipt missing is a hold. Settlement reverses AP rather than repeating expense."
+  "rationale": "Full original amount is recognized only after complete source review, matching, explicit coding and separate business approval. Payment requires independent authorization. A discrepancy does not authorize short-pay. Receipt missing is a hold. Settlement reverses AP rather than repeating expense.",
+  "postFreezeAmendments": [
+    {
+      "kind": "exception_code_nomenclature",
+      "date": "2026-10-25",
+      "reviewBasis": "Independent V1 original-source derivation relayed by Master: invoiced Kale quantity 6 differs from original PO quantity 5 and receipt quantity 5.",
+      "originalHoldCodes": [
+        "quantity_variance"
+      ],
+      "correctedHoldCodes": [
+        "po_mismatch",
+        "receipt_mismatch"
+      ],
+      "financialExpectationsUnchanged": true,
+      "runtimeParserOutputUsed": false
+    }
+  ]
 }
