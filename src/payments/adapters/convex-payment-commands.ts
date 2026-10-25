@@ -20,8 +20,6 @@ export function createConvexPaymentCommands(client: KernelTransport, binding: Ba
   return {
     requestPayment: ({ commandId, command }) => client.mutation(api.demoPayments.requestPayment, {
       ...agent(), requestKey: commandId, billIds: command.billIds as Id<"demoBills">[],
-      ...(command.executionDate !== undefined ? { executionDate: command.executionDate } : {}),
-      ...(command.billAmounts !== undefined ? { billAmounts: command.billAmounts.map(b => ({ ...b, billId: b.billId as Id<"demoBills"> })) } : {}),
       credits: command.credits.map(credit => ({ ...credit, creditId: credit.creditId as Id<"demoCredits"> })),
     }),
     approveWithinPolicy: ({ command }) => client.mutation(api.demoPayments.approveWithinPolicy, {

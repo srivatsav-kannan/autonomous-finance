@@ -1,5 +1,0 @@
-.auth-fixture { min-height: 100dvh; padding: var(--space-lg); background: var(--panel); color: var(--ink); }
-.auth-fixture-controls { border-bottom: 1px solid var(--line); padding-bottom: var(--space-md); color: var(--muted); font-size: var(--text-sm); }
-.auth-fixture-controls p { margin-block: var(--space-xs); }
-.auth-fixture-controls label { display: inline-flex; align-items: center; gap: var(--space-xs); margin: var(--space-xs) var(--space-md) 0 0; }
-.auth-fixture-controls select { min-height: 44px; }

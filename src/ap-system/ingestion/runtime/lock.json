@@ -1,9 +1,0 @@
-{
-  "engine": "tesseract", "version": "5.5.2",
-  "sourceUrl": "https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.5.2.tar.gz",
-  "sourceSha256": "6235ea0dae45ea137f59c09320406f5888383741924d98855bd2ce0d16b54f21",
-  "traineddata": {"language":"eng","repository":"https://github.com/tesseract-ocr/tessdata_fast","revision":"87416418657359cb625c412a48b6e1d6d41c29bd","sha256":"7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2","license":"Apache-2.0"},
-  "psm":6, "dpi":144, "perProcessTimeoutMs":20000, "maxPages":8,
-  "baseOsDependencies":"Debian bookworm packages resolved at image build; record image digest before deployment",
-  "readiness":"Runtime source/traineddata pinned; image build and deployment verification tracked separately"
-}

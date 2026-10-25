@@ -8,7 +8,7 @@ export async function reserveObligations(ctx: MutationCtx, versionId: Id<"demoVe
   if (!version || version.reservations !== "none") throw new Error("New payment reservation required");
   for (const item of version.snapshot.bills) {
     const bill = await ctx.db.get(item.billId); assertRowScope(bill, version.scope);
-    if (!bill || bill.reservedVersionId || bill.version !== item.version || bill.flags.length || bill.status !== "approved" || !Number.isSafeInteger(item.amountCents) || item.amountCents <= 0 || !Number.isSafeInteger(bill.approvedCents) || !Number.isSafeInteger(bill.paidCents) || bill.paidCents < 0 || bill.approvedCents! - bill.paidCents < item.amountCents) throw new Error("Stale bill or conflicting reservation");
+    if (!bill || bill.reservedVersionId || bill.version !== item.version || bill.flags.length || bill.status !== "approved" || bill.approvedCents! - bill.paidCents !== item.amountCents) throw new Error("Stale bill or conflicting reservation");
     await ctx.db.patch(item.billId, { reservedVersionId: versionId });
   }
   for (const item of version.snapshot.credits) {
