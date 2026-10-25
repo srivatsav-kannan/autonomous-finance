@@ -1,3 +1,4 @@
+import { assertLegacyRun } from "./lib/demoAuth";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { authSeat, fail, logActivity, recordViolation } from "./lib/kernel";
@@ -23,6 +24,7 @@ export const createAsk = mutation({
     dedupeKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "asks.createAsk", auth);
     if (!auth.seat.caps.asks) return await recordViolation(ctx, args.runId, args.seatId, "asks.createAsk", fail("forbidden", "seat may not ask"));
@@ -49,6 +51,7 @@ export const createAsk = mutation({
 export const answerAsk = mutation({
   args: { ...seatArgs, askId: v.id("asks"), optionId: v.string(), note: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const auth = await authSeat(ctx, args.runId, args.seatId, args.token);
     if (!auth.ok) return await recordViolation(ctx, args.runId, args.seatId, "asks.answerAsk", auth);
     const ask = await ctx.db.get(args.askId);
@@ -82,6 +85,7 @@ export const answerAsk = mutation({
 export const list = query({
   args: { runId: v.string(), status: v.optional(v.string()), to: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const rows = await ctx.db
       .query("asks")
       .withIndex("by_run_status", (q) => q.eq("runId", args.runId))
@@ -94,6 +98,7 @@ export const list = query({
 export const forTask = query({
   args: { runId: v.string(), taskId: v.id("tasks") },
   handler: async (ctx, args) => {
+    await assertLegacyRun(ctx, args.runId);
     const rows = await ctx.db
       .query("asks")
       .withIndex("by_run_status", (q) => q.eq("runId", args.runId))

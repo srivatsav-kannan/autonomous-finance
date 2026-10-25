@@ -20,7 +20,11 @@
     "smoke": "tsx scripts/smoke-kernel.ts && tsx scripts/smoke-memory.ts",
     "build:console": "vite build --config console/vite.config.ts",
     "design:check": "node .agents/skills/hallmark/scripts/sloplint.mjs console --genre modern-minimal --scope app",
-    "design:review": "npm run design:check -- --render"
+    "design:review": "npm run design:check -- --render",
+    "test:bank": "vitest run src/integrations/banking/fake.test.ts",
+    "test:payments": "vitest run tests/demo-*.test.ts",
+    "typecheck:backend": "tsc --noEmit -p convex/tsconfig.json",
+    "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",
@@ -39,6 +43,10 @@
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "convex-test": "0.0.65"
+  },
+  "engines": {
+    "node": ">=24.6.0"
   }
 }
