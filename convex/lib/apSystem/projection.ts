@@ -177,10 +177,16 @@ export async function projectCase(
       instructedCents: versions
         .filter((v) => ["queued", "settled", "returned"].includes(v.status))
         .reduce(
-          (sum, v) =>
-            sum +
-            (v.snapshot.bills.find((b) => b.billId === bill?._id)
-              ?.amountCents ?? 0),
+          (sum, v) => {
+            let remainingCredits = v.snapshot.credits.reduce((n, c) => n + c.amountCents, 0);
+            let cash = 0;
+            for (const item of v.snapshot.bills) {
+              const credit = Math.min(remainingCredits, item.amountCents);
+              remainingCredits -= credit;
+              if (item.billId === bill?._id) cash = item.amountCents - credit;
+            }
+            return sum + cash;
+          },
           0,
         ),
       settledCents: business?.domain.cashSettledCents ?? bill?.paidCents ?? 0,

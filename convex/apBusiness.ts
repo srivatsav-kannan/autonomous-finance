@@ -192,7 +192,7 @@ async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
     );
   const supplierNames = [supplier.value.legalName, ...supplier.value.aliases].map((s) => s.toLowerCase().replace(/[^a-z0-9]/g, ""));
   if (!supplierNames.includes(input.candidate.extractedSupplierName.toLowerCase().replace(/[^a-z0-9]/g, ""))) deny("credit_supplier_mismatch", "Credit source name differs from verified supplier aliases");
-  const credit = await evaluateCredit(ctx, scope, input, request.credit!);
+  const credit = await evaluateCredit(ctx, scope, input, request.credit!, row._id);
   return {
     row,
     input,
@@ -577,6 +577,7 @@ export const vote = mutation({
         entryId,
         createdAt: Date.now(),
       });
+      await saveConsumptions(ctx, args.scope, result.row._id, credit.bill._id, proposal._id, credit.returnConsumptions);
       await ctx.db.patch(result.row._id, {
         creditId,
         acceptedCents: credit.amountCents,

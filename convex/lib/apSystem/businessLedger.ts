@@ -141,7 +141,7 @@ export async function saveConsumptions(
       q.eq("scope.runId", scope.runId).eq("billId", billId),
     )
     .collect();
-  if (existing.length) return;
+  if (existing.some((r) => r.caseId === caseId)) return;
   for (const c of claims)
     await ctx.db.insert("apReceiptConsumptions", {
       scope,
@@ -192,6 +192,7 @@ export async function evaluateCredit(
   scope: BankScope,
   input: APIntake,
   plan: CreditPlan,
+  creditCaseId: Id<"apCaseRecords">,
 ) {
   const c = input.candidate;
   if (!c || c.kind !== "credit_note" || c.currency !== "USD")
@@ -248,6 +249,7 @@ export async function evaluateCredit(
     .collect();
   const previous = links.map((l) => creditPlanSchema.parse(l.plan));
   const allocations: CreditAllocation[] = [];
+  const returnConsumptions: Consumption[] = [];
   if (
     new Set(plan.lines.map((l) => l.creditLineId)).size !== plan.lines.length ||
     new Set(plan.lines.map((l) => l.originalLineId)).size !==
@@ -318,12 +320,15 @@ export async function evaluateCredit(
           quantityMicros(creditLine.quantity.decimal) ||
         returned + quantityMicros(item.quantity) >
           quantityMicros(accepted.quantity) ||
-        !item.returnEvidence.length
+        !item.returnEvidence.length ||
+        lineCents(item.quantity, originalLine.unitPriceCents) !== item.netCents
       )
         deny(
           "return_quantity",
           "Returned quantities need retained return evidence and cannot exceed accepted units",
         );
+      let supportedReturnUnits = 0n;
+      if (new Set(item.returnEvidence.map(businessSourceKey)).size !== item.returnEvidence.length) deny("return_evidence", "Return originals cannot be counted twice");
       for (const b of item.returnEvidence) {
         const doc = input.documents.find(
           (d) => businessSourceKey(d) === businessSourceKey(b),
@@ -333,7 +338,12 @@ export async function evaluateCredit(
             "return_evidence",
             "Return evidence must bind an uploaded receipt/correction original",
           );
+        const support = input.purchasingEvidence.filter((p) => businessSourceKey(p.source) === businessSourceKey(b) && p.supplierId === c.supplierId && p.kind === "receipt" && p.acceptedBy && p.acceptedAt && Number.isFinite(Date.parse(p.acceptedAt))).flatMap((p) => p.lines).filter((l) => l.invoiceLineId === item.creditLineId && l.sku === originalLine.sku && l.quantity.unit === originalLine.quantity.unit);
+        if (support.length !== 1) deny("return_line_evidence", "Every return original must explicitly support one matching credit SKU/unit line with receiver/date attestation");
+        supportedReturnUnits += quantityMicros(support[0]!.quantity.decimal);
+        returnConsumptions.push({source:b,lineId:support[0]!.lineId,quantity:item.returnEvidence.length === 1 ? item.quantity : support[0]!.quantity.decimal,capacity:support[0]!.quantity.decimal,invoiceLineId:item.creditLineId,sku:support[0]!.sku,unit:support[0]!.quantity.unit,kind:"return"});
       }
+      if (supportedReturnUnits < quantityMicros(item.quantity) || (item.returnEvidence.length > 1 && supportedReturnUnits !== quantityMicros(item.quantity))) deny("return_line_evidence", "Documented return lines do not support the credited return quantity");
     } else if (quantityMicros(item.quantity) !== 0n)
       deny(
         "credit_quantity",
@@ -430,5 +440,6 @@ export async function evaluateCredit(
       "credit_total",
       "Credit source and original-supported allocations must reconcile exactly",
     );
-  return { original, bill: bill!, approved, allocations, amountCents };
+  await assertConsumptions(ctx, scope, creditCaseId, returnConsumptions);
+  return { original, bill: bill!, approved, allocations, amountCents, returnConsumptions };
 }
