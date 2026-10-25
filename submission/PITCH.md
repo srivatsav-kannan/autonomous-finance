@@ -48,9 +48,11 @@ Based on the [current AP narrative](../docs/DEMO.md) and [issue #97](https://git
 >
 > Back in our AP case, settlement reduces the payable and cash; it doesn't expense the purchase again. The AP subledger and general ledger agree. Unresolved close requirements remain visible. The audit trail connects the bank result to the approval and original evidence.
 >
-> Our next step is a shared workflow where agents request missing evidence, resume the same case, and propose reusable rules from reviewed corrections. Those rules must be approved and tested before reuse.
+> In our simulator, agents can already propose and test reusable parser rules. Next, with customer permission, traces could improve extraction, tool choices and case knowledge, and support post-training open-weight models. Our core business is workflow software, with a potential second revenue stream from curated datasets and training environments.
 >
 > That's Autonomous Finance: for every payment, a clear answer to what we owe, why we owe it, who authorized it, and what happened next.
+
+*For the final roadmap paragraph, show the architecture diagram. Allow about 25 seconds; the component details below are for questions, not the timed script.*
 
 ## The amount card — I2 only
 
@@ -86,17 +88,42 @@ For an optional live crash demonstration outside this script, follow the [isolat
 | --- | --- | --- |
 | **Srivatsav** | Who is this for? | “Finance teams handling supplier invoices across locations, where evidence, approvals and payment outcomes need to stay connected.” |
 | **Srivatsav** | What is new here? | “The obligation stays connected across documents, review, authorization, bank execution and accounting. We can explain both why work moved forward and why it stopped. Shared work and reviewed learning are the next layer.” |
-| **Srivatsav** | Is this production-ready or self-learning today? | “We have verified supported local AP paths and are completing external integration and broader evaluation. Autonomous follow-up, historical onboarding and correction-to-rule learning have separate acceptance work.” |
+| **Srivatsav** | Is this production-ready or self-learning today? | “We have verified specific AP and sandbox paths, with open control and coverage gaps. The simulator has bounded parser-rule adaptation, and the AP workspace retains evidence and resumes work. Automatic model training and measured model improvement remain future work.” |
 | **Arav** | What if the model is wrong? | “Fields stay reviewable against their sources. Backend checks enforce the supported arithmetic, authority, version and payment boundaries. Business correctness also needs explicit policy and review.” |
 | **Arav** | Do you guarantee exactly once? | “We verify the outcome under a specified failure: one intended transfer, one posted bank debit and one settlement effect. That is a tested invariant, not a universal network guarantee.” |
 | **Arav** | Why not automatically short-pay a discrepancy? | “A proposed adjustment isn't authority. The company must have an applicable policy or an authorized decision, and the disputed amount and original evidence remain visible.” |
 | **JJ** | How good is the parser? | “On two new synthetic supplier layouts in native and scan versions, the repaired adapter recovered all 104 checked fields across four files. Source locations passed for 102, with two explicitly unresolved. This used cached real provider results; it isn't a broad production benchmark.” |
 | **JJ** | Are Auth0, QuickBooks and Increase live? | “A separate synthetic $678.60 case completed through Auth0, QuickBooks and Increase sandbox APIs, with one transfer and linked accounting records. We rechecked the records and repaired a QuickBooks readback difference. This uses simulated money; signed webhooks and a fresh complete flow on the updated branch remain unverified.” |
 | **JJ** | What does it cost? | “We're prioritizing correct outcomes and useful automation. The old simulator's cost numbers don't estimate this document, review and payment workflow.” |
+| **JJ** | Which parts could improve from experience? | “Our extraction layer, the agent's tool choices, approved case knowledge and the harness's prompts and context selection. We'd evaluate each update against held-out cases and financial controls before deployment.” |
+| **JJ** | Can the traces train open-weight models? | “They are a starting point. We would need authorized, curated observation-action-result sequences, human corrections and reliable outcome labels. The current trace export is an audit record, not a complete training dataset.” |
+| **Srivatsav** | How would this make money? | “Workflow software is the core business model. Customer-authorized, curated datasets and finance training or evaluation environments could become a second revenue line. We have not demonstrated licensing revenue.” |
+| **JJ** | Is this recursive self-improvement? | “That's not demonstrated today. Our roadmap is a supervised loop: collect evidence, review, train or update, evaluate, and deploy an approved version. Model improvement does not expand payment authority.” |
 
 The external-integration answer follows the [sandbox acceptance report](SANDBOX-ACCEPTANCE.md). The [independent model review](review-105/REVIEW.md) still leaves F1–F3 high control/lifecycle findings open; do not imply separate buttons guarantee separate human approvers or that I2's disputed remainder can already be released. The sandbox case is separate from I2 and the crash/recovery test.
 
 The local walkthrough follows the evidence snapshot in [DEMO.md](../docs/DEMO.md). Before changing it, check the [capability matrix](../docs/ap-orchestration/CAPABILITIES.md) and the named provider's actual transaction evidence. Configuration or login alone does not prove accounting synchronization or payment execution.
+
+## What can improve from experience
+
+Team reference only. Bounded parser-rule adaptation is implemented in the simulator's agent runtime. It is separate from the current LlamaParse/AP workspace demo and does not update model weights. The other learning paths below remain future work.
+
+| Component | Today | Proposed improvement |
+| --- | --- | --- |
+| Reusable parser rules | In the simulator, an agent generates a declarative parser specification, retries failed checks, and proposes it. The controller agent reruns stored tests before merging; the runtime reloads approved parsers. | Validate against independently reviewed examples and unseen layouts before broader reuse. Passing the stored sample alone does not establish general accuracy. |
+| Document extraction | LlamaParse plus our extraction and source-grounding adapter. | Use reviewed field corrections to improve our normalization, layout handling and source matching, or train a replacement extraction model. This does not imply we can fine-tune LlamaParse itself. |
+| Agent decisions | Bounded tools inspect and advance cases, with explicit waits and escalations. | Train tool selection and escalation on curated trajectories, including cases where the correct action is to stop. |
+| Reusable case knowledge | Versioned company memory and retained case evidence provide context. | Turn reviewed resolutions into scoped precedents; retrieve and test them on similar cases before approved reuse. |
+| Harness | Configured prompts, context, tool definitions and retry behavior. | Propose prompt or context-selection changes, compare them on fixed evaluations, and deploy only reviewed improvements. |
+| Evaluation coverage | Existing fixtures and regression tests check supported behavior. | Convert reviewed failures into new test cases while keeping a separate held-out set to measure improvement. |
+
+The intended broader loop is **record → review and curate → train or revise → evaluate → approve and deploy**. More history or a successful retry alone is not evidence of learning. Check correct obligations, authorized actions and appropriate holds as well as settlement and balanced accounting.
+
+Auth0 permissions, approval requirements, payment authority and ledger invariants remain explicitly governed. An agent cannot relax them to improve its success score.
+
+The [current trace export](../console/src/APTraceability.tsx) contains case records, source provenance, decisions and available snapshots; it omits model prompts and some historical candidates. Training would require a separate data pipeline with permission for the intended use, sensitive-data removal, quality labels and provenance checks. Dataset licensing remains a potential business line, not an existing sale or blanket right to resell customer records.
+
+The implemented parser path is in [parser proposals](../src/agents/handlers/integrations.ts), [controller checks](../src/agents/handlers/controller.ts) and [runtime reloads](../src/agents/runtime.ts). Its expected sample output can come from model extraction plus arithmetic checks, so do not describe those labels as independently verified human ground truth.
 
 ## Organizer logistics — retained from the previous pitch
 
