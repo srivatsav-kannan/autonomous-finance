@@ -45,7 +45,7 @@ Old links still work: `/ap-system` and `?view=ap-system` open Invoices, and `/ap
 ## Known gaps
 
 - **New PDF uploads need a LlamaParse key.** There's no key on this laptop. The cases from the APEX replay were read from their PDFs by the free local parser (poppler), and they're what the demo shows. With `LLAMA_CLOUD_API_KEY` in `.env.local`, any invoice PDF works.
-- **The demo's AP cases come from the APEX replay's own database** (gateway 8847, Convex 3460), reached through the console's proxy (`AP_SYSTEM_GATEWAY_URL`). The APEX replay script resets deployment-wide settings, so it can't load into the shared database yet.
+- **The demo's AP cases come from the APEX replay's own database** (gateway 8847, Convex 3460), reached through the console's proxy (`AP_SYSTEM_GATEWAY_URL`). The APEX replay script resets deployment-wide settings, so it can't load into the shared database yet. That backend runs #111's code, not #116's. So on those cases, Policy & suppliers says payment release is disabled until payment groups and limits are set, and #116's payment-release rules aren't what's checking them. Don't show Policy or Payments from that data in the demo.
 - **Still open from the review:** F3 and F5 to F11. No live model loop for the AP case worker (it's deterministic). Signed webhooks, returns and credits are unverified.
 
 ## Demo (5 minutes per judge: about 3 to show, 2 for questions)
