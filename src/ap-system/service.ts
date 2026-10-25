@@ -4,7 +4,7 @@ import type {BankScope} from "../payments/contracts";
 import {createAPCasePayments} from "./payment";
 import {caseDetailSchema,intakeSchema,type APIntake,type SourceDocument} from "./contracts";
 import type {APWorkspaceService} from "./server";
-/** Per-run server composition. Agent credentials never reach the browser or human client. */
+/** Per-run composition with a request-owned human client in external mode. Agent credentials never reach the browser or human client. */
 export function createAPWorkspaceService(options:{
  agent:ConvexHttpClient;human:ConvexHttpClient;scope:BankScope;
  apCredential:{seatId:string;token:string};paymentsCredential:{seatId:string;token:string};
@@ -19,6 +19,7 @@ export function createAPWorkspaceService(options:{
   review:input=>human.mutation(makeFunctionReference<"mutation">("apCases:reviewFields"),{scope,input}),
   approve:input=>human.mutation(makeFunctionReference<"mutation">("apCases:approveBill"),{scope,input}),
   requestPayment:input=>payments.request(input),authorizePayment:input=>payments.authorize(input),paymentDetail:versionId=>payments.detail(versionId),
+  cancelPayment:input=>human.mutation(makeFunctionReference<"mutation">("apCasePayments:cancel"),{scope,...input}),
   source:async(sourceId,revision,sha256)=>human.query(makeFunctionReference<"query">("apCases:source"),{scope,sourceId,revision,sha256}) as Promise<SourceDocument>,
   renderPage:options.renderPage,runtime:options.runtime,
  };

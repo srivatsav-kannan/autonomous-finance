@@ -3,10 +3,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { APSystemWorkspace, APCaseStatus, APActions, APMatching, APAccounting } from "../console/src/APSystemWorkspace";
 import { APSystemEvidence, EvidencePage } from "../console/src/APSystemEvidence";
 import { apFieldLabel, apFieldValue, apMoney, displayedFrame, regionPolygon, reviewPayload, sourceForEvidence, paymentBelongsToCase } from "../console/src/apSystemView";
+import { configureAPSession } from "../console/src/apAuthSession";
 import { apPageUrl, apSystemApi, loadPage } from "../console/src/apSystemApi";
 import { apUIFixture, uiEvidence } from "./ap-system-ui.fixture";
 
-afterEach(()=>vi.unstubAllGlobals());
+afterEach(()=>{configureAPSession(null);vi.unstubAllGlobals();});
 describe("AP case workspace evidence boundaries",()=>{
   it("keeps direct-link detail and upload gated while the initial session is loading",()=>{
     vi.stubGlobal("window",{location:{search:"?case=cold-session-case"}});
@@ -90,6 +91,7 @@ describe("AP case workspace evidence boundaries",()=>{
     expect(html).toContain("Page 2 missing");expect(html).toContain("Incomplete extraction cannot be approved");expect(html).toMatch(/disabled="">Approve bill<\/button>/);
   });
   it("rejects a raster returned for the wrong original hash",async()=>{
+    configureAPSession({mode:"local"});
     const f=apUIFixture(),s=f.sources[0]!;
     vi.stubGlobal("fetch",vi.fn().mockResolvedValue(new Response("raster",{headers:{"Content-Type":"image/png","X-AP-Source-SHA256":"wrong","X-AP-Source-Revision":"1","X-AP-Page":"1"}})));
     await expect(loadPage(s,1,new AbortController().signal)).rejects.toThrow(/does not match/);
@@ -103,10 +105,12 @@ describe("AP case workspace evidence boundaries",()=>{
     expect(paymentBelongsToCase(f,{...snapshot,bills:[{billId:"unrelated-bill",version:1,amountCents:10550}]})).toBe(false);
   });
   it("uses the distinct authorize endpoint and both snapshots",async()=>{
+    configureAPSession({mode:"local"});
     const fetcher=vi.fn().mockResolvedValue(new Response(JSON.stringify({commandId:"effect"}),{headers:{"Content-Type":"application/json"}}));vi.stubGlobal("fetch",fetcher);
     const input={expectedRevision:3,snapshotHash:"case-hash",paymentSnapshotHash:"payment-hash"};
     await apSystemApi.authorizePayment("case /1","version /2",input);
     expect(fetcher.mock.calls[0]![0]).toBe("/api/ap-system/cases/case%20%2F1/payments/version%20%2F2/authorize");
-    expect(fetcher.mock.calls[0]![1]).toMatchObject({method:"POST",credentials:"same-origin",body:JSON.stringify(input),headers:{"X-AP-System-Session":"1"}});
+    expect(fetcher.mock.calls[0]![1]).toMatchObject({method:"POST",credentials:"same-origin",body:JSON.stringify(input)});
+    expect(new Headers(fetcher.mock.calls[0]![1].headers).get("X-AP-System-Session")).toBe("1");
   });
 });

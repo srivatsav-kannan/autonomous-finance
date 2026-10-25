@@ -14,6 +14,7 @@ import { FinanceFlow } from "./FinanceFlow";
 import { useUrlState } from "./useUrlState";
 import { InvoiceWorkspace, type InvoiceContext } from "./InvoiceWorkspace";
 import { modeLabel } from "./invoiceFormat";
+import { APAuthGate } from "./APAuthGate";
 import { APSystemWorkspace, type APSystemContext } from "./APSystemWorkspace";
 
 const $ = (cents: number) => (cents < 0 ? "-" : "") + "$" + (Math.abs(cents) / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -157,7 +158,7 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
           {!isInvoice && !isAP && simulationAvailable && !connected && <p className="connection-note" role="status">Connecting to the finance backend. Check that it is running if this continues.</p>}
           {!isInvoice && !isAP && simulationAvailable && runId && tab !== "bank" && tab !== "flow" && <Kpis runId={runId} />}
           <main className="main" id="main" tabIndex={-1} key={isAP ? "ap-system" : isInvoice ? "invoices" : runId}>
-            {isAP ? <APSystemWorkspace onContextChange={setAPContext} onBusyChange={setInvoiceBusy} /> : isInvoice ? <InvoiceWorkspace onContextChange={setInvoiceContext} onBusyChange={setInvoiceBusy} /> : !simulationAvailable ? <div className="empty"><h2>Connect the simulation backend</h2><p>Start the local backend and restart the console with <code>VITE_CONVEX_URL</code> configured. Invoices use their own gateway and remain available.</p><button onClick={() => navigate("invoices")}>Open invoices</button></div> : !runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div> : <>
+            {isAP ? <APAuthGate><APSystemWorkspace onContextChange={setAPContext} onBusyChange={setInvoiceBusy} /></APAuthGate> : isInvoice ? <InvoiceWorkspace onContextChange={setInvoiceContext} onBusyChange={setInvoiceBusy} /> : !simulationAvailable ? <div className="empty"><h2>Connect the simulation backend</h2><p>Start the local backend and restart the console with <code>VITE_CONVEX_URL</code> configured. Invoices use their own gateway and remain available.</p><button onClick={() => navigate("invoices")}>Open invoices</button></div> : !runId ? runs === undefined ? <Loading label="Loading scenarios…" /> : <div className="empty"><strong>No scenarios yet.</strong>Run <code>npm run world</code> to start a simulation.</div> : <>
               {tab === "inbox" && <Inbox runId={runId} />}
               {tab === "bank" && <Bank runId={runId} onReview={(askId) => { navigate("inbox"); const url = new URL(location.href); url.searchParams.set("ask", askId); history.replaceState(null, "", url); }} />}
               {tab === "flow" && <FinanceFlow runId={runId} onNavigate={navigate} />}
