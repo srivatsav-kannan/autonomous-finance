@@ -464,15 +464,17 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
         (c) => c.init.method === "POST" && c.url.pathname.endsWith("/bill"),
       ),
     ).toHaveLength(0);
-    const g = await protocol((_u, i) =>
-      json({
-        Bill: {
-          ...p.payload,
-          Id: "92",
-          SyncToken: i.method === "POST" ? "0" : "1",
-        },
-      }),
-    ); // preflight query has no result
+    const g = await protocol((url, i) =>
+      url.pathname.endsWith("/query")
+        ? json({ QueryResponse: {} })
+        : json({
+            Bill: {
+              ...p.payload,
+              Id: "92",
+              SyncToken: i.method === "POST" ? "0" : "1",
+            },
+          }),
+    ); // A successful empty preflight uses Intuit's explicit empty query envelope.
     await g.journal.execute(p, mappings, undefined, authorization(p));
     await expect(
       g.journal.execute(p, mappings, undefined, authorization(p)),
