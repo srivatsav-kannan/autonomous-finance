@@ -15,6 +15,8 @@ Status as of Oct 24, 2026, 7:30 PM PT. This is the record of every eval run so f
 | Same, Claude off | Yes (ablation) | 13/13 errors, 3/3 decoys, 43/64 invoices | Claude on reads 21 more invoices | $0 | done | [run](runs/eval-regress-off-s7-mvmr5s8a.md) |
 | Unseen seeds 11, 23, 42 | Yes | same as seed 7 on every seed | same as seed 7 | $0.12–0.13 each | done | [11](runs/eval-unseen-s11-mvm3xv56.md), [23](runs/eval-unseen-s23-mvm3zmlb.md), [42](runs/eval-unseen-s42-mvm41ecs.md) |
 | Control tests | Yes, kernel + memory | 20/20 hold on current main plus #72 | none | $0 | done | [control-tests.json](control-tests.json) (added by #72) |
+| Spreadsheet tools vs kernel, part A (no model) | Yes, kernel vs an .xlsx workbook | 1 vs 5.78 tool calls per operation; 0.12 vs 1.12 ms median in memory, 7.67 ms saving the file; bad operations stopped 18/18 vs 0/18 (workbook checks flagged 8 afterwards) | same stream, same 18 bad operations | $0 | done | [spreadsheet-vs-kernel.md](spreadsheet-vs-kernel.md) |
+| Spreadsheet tools vs kernel, part B (agent in the loop) | Yes, same model, two tool sets | not run yet | | est. ~$1.67, hard cap `--confirm-usd` | built, not yet run | `npm run eval:sheets-agent -- --dry-run` |
 | Head-to-head | Yes, vs plain Claude | ours 13/13 and 3/3; plain Claude 12/13 and 2/3 (one decoy was unfair to it, see below) | $0.15 vs $7.80; 87 s vs 42 min | $7.80 | done, 1 seed | [run](runs/baseline-s7-mvm30964.md) |
 | Eight-task APEX + DABstep (#68) | Yes: full team vs generalist vs rules | not run yet | published APEX best about 56% | capped by an approved budget | waiting on #67 | [EXTERNAL_EVALS.md](../EXTERNAL_EVALS.md) |
 | FinBalance | No, Claude only | 69.2% of balance sheets exact | GPT-5: 46.5% (paper) | $26.78 | done (178 of 710 records) | [finbalance.md](finbalance.md) |
@@ -77,6 +79,45 @@ History:
 - The first three are fixed in #72.
 - The fourth, payee checks, now lives in the scoped payment module (#49, #61), so its registry cases were dropped from this suite.
 - #72 also fixes the reversal-chain hole JJ found in review.
+
+### Spreadsheet tools vs the kernel
+
+Most AI-for-finance tools give the agent a spreadsheet. This asks what our typed kernel buys over that, for the same agent on the same work. Code: [`src/evals/spreadsheet/`](../../src/evals/spreadsheet/).
+
+**Part A, deterministic benchmark (done, $0).** One seeded world (seed 7, 3 stores, 14 days: 230 events, 156 bookkeeping operations) is applied two ways:
+- through the kernel's real mutation handlers (record bill, resolve held bill, post entry, match bank transaction), in process against `tests/helpers/kernelHarness.ts`
+- through a real .xlsx workbook (exceljs) laid out like a finance team's: Ledger, AP register, Bank, a SUMIFS trial balance and a Checks sheet with five reconciliations; the agent's only tools are `read_range`, `write_range`, `find_rows` and `recalc` (recalculate and save)
+
+Both end with identical books on the clean stream. Then 18 bad operations are injected into fresh copies of each. Results from `npm run eval:sheets-bench` (10 trials after 2 warm-ups, Apple M5 Pro, Node 26.5) are in [spreadsheet-vs-kernel.md](spreadsheet-vs-kernel.md) and [.json](spreadsheet-vs-kernel.json):
+
+| | Kernel | Spreadsheet |
+|---|---|---|
+| Tool calls per operation | 1 | 5.78 (record bill 6.88, match bank 6, post entry 4) |
+| Median / p95 per operation, in memory | 0.12 / 0.16 ms | 1.12 / 2.23 ms |
+| Median / p95 per operation, saving the file each time | (no durable commit measured) | 7.67 / 13.5 ms |
+| Per operation, first tenth vs last tenth of the stream | 0.12 vs 0.12 ms | 0.20 vs 2.23 ms in memory; 2.62 vs 13.3 ms saved |
+| Bad operations stopped before they landed | 16 of 18 refused or absorbed; the other 2 (direct edits) caught by the hash chain | 0 of 18; checks flagged 8 afterwards, 10 left no trace |
+
+What this shows:
+- The pace difference for an agent is mostly tool calls: almost 6 per operation instead of 1, and each is a model or network round trip. The in-process milliseconds are small on both sides.
+- Spreadsheet operations get slower as the books grow (whole-ledger SUMIFS, whole-file saves); kernel operations don't.
+- The kernel refused every unbalanced, duplicate, unauthorized, unevidenced and closed-period write. The workbook took them all. Its reconciliations caught the ones that move totals (unbalanced entries, a bad account, cash that doesn't match the bank, an exact duplicate). They missed what doesn't move a total: fractional cents, closed periods, a duplicate typed differently, bad line math, no source document, approval limits, self-approval, a retried posting and an edited sales entry.
+
+Weaknesses:
+- The kernel ran against an in-memory DB double with no durable commit, while the saved spreadsheet column writes a file every time. Compare compute with the in-memory column. A live Convex deployment was out of scope.
+- We wrote the spreadsheet's formula evaluator (exceljs has none), and amounts are integer cents in both paths. Both choices favor the spreadsheet.
+- The bad operations are ours, chosen to cover the kernel's invariants, so 18/18 is by construction; the informative number is how many the workbook misses.
+- One machine and one seed. Part A has no model, so it says nothing about judgment.
+
+**Part B, agent in the loop (built, not yet run).** The same model processes the same slice (seed 7, 1 store, 2 days: 11 tasks, 4 planted errors) with either the kernel tools (`record_bill`, `post_entry`, `match_bank_transaction`, `flag_exception`) or the four spreadsheet tools, with identical business instructions. It records tool calls, refused calls, model turns, tokens, wall time and cost, and scores both end states with `evaluateBooks` from `src/evals/books.ts` (the books oracle `score.ts` uses) plus the planted-error answer key. Calls go through `src/agents/llm.ts` `runTools` on the OpenAI path, so `BudgetedModelClient` and the local spend cap apply; the harness refuses the Anthropic path, which has no cap.
+
+```bash
+npm run eval:sheets-agent -- --dry-run            # plan and cost estimate, no calls
+npm run eval:sheets-agent -- --agent scripted     # $0 reference run without a model
+npm run eval:sheets-agent -- --confirm-usd 5      # paid run; needs OPENAI_API_KEY and budget approval
+```
+
+Cost estimate from the dry run (GPT-6.1 Sol at $2 / $10 per million input / output tokens, effort medium, 16 turns max per task): about 22 requests and $0.32 for the kernel tools, about 70 requests and $1.35 for the spreadsheet tools, **about $1.67 in total**. That assumes one tool call per turn, 800 output tokens per turn and no caching. If every task hit the 16-turn cap at maximum output it would be about $86, which is why a paid run requires `--confirm-usd`: the harness sets the local spend cap to the recorded spend plus that amount, and the client refuses any request whose worst-case reservation would exceed it. The scripted reference run books every operation with no judgment: 9 kernel calls vs 53 spreadsheet calls, 0 of 4 planted errors caught either way.
 
 ### Head-to-head: our system vs one plain Claude agent
 
@@ -169,6 +210,7 @@ Our application agents call Claude (`ANTHROPIC_API_KEY`). The eight-task externa
 |---|---|---|---|
 | Our system, simulated world | `npm run eval -- --seed 7 --label x` | $0.12–0.15 (Claude) | Reads invoice formats the code doesn't know and writes parsers for them (11 calls). Without a model, 21 of 64 invoices go unread. |
 | Eight-task APEX + DABstep (#68) | `npm run bench:run` with an approved policy file (see [EXTERNAL_EVALS.md](../EXTERNAL_EVALS.md)) | capped by the approved `maxCostUsd` | The full team and the generalist both need a model. `--modes rules-only --judge off` is free. |
+| Spreadsheet tools vs kernel, part B | `npm run eval:sheets-agent -- --confirm-usd 5` | est. ~$1.67, capped by `--confirm-usd` | The comparison is about how a model works with each tool set. OpenAI only, because that path has the spend cap. |
 | Live demo, and "why" answers in the console | `npm run agents`, `npm run gateway` | not measured | Same document reading as above. Each "why" question is one short tool loop. |
 | Invoice Sandbox A or B | `npx tsx evals/external/invoice-sandbox/run.ts --system a --run-id <id>` (or `--system b ... --sample <n>`) | A $1.29–1.47, B $1.55–1.68 | Claude only. Finishing the stopped fresh-seed runs: about $3.20. |
 | FinBalance | see its [harness README](../../evals/external/finbalance/README.md) | $12.54 per 178 records | Claude only. |
@@ -178,6 +220,8 @@ Our application agents call Claude (`ANTHROPIC_API_KEY`). The eight-task externa
 These run without credit:
 - `npm run controls`: the 20 control tests (with #72).
 - `npm test`: the unit tests (558 on main with #72). The `scripts/smoke-*.ts` suites need the local backend.
+- `npm run eval:sheets-bench`: spreadsheet tools vs kernel, part A (about 25 s).
+- `npm run eval:sheets-agent -- --dry-run` and `-- --agent scripted`: part B's plan, estimate and model-free reference run.
 - `AGENT_LLM=off npm run eval -- --seed 7 --label claude-off`: our system with Claude off. On seed 7 it catches 13/13 errors and reads 43/64 invoices.
 - `npm run bench:run -- --modes rules-only --repeats 1 --judge off`: the rules-only row of the eight-task eval.
 - Rescoring saved outputs:
@@ -220,6 +264,8 @@ AGENT_LLM=off npm run eval -- --seed 7 --label claude-off            # our syste
 npm run controls                                                     # control tests -> docs/evals/control-tests.json (#72)
 npm test
 npm run bench:run -- --dry-run                                       # eight-task external eval (#68); see docs/EXTERNAL_EVALS.md
+npm run eval:sheets-bench                                            # spreadsheet vs kernel, part A (no backend needed)
+npm run eval:sheets-agent -- --dry-run                               # spreadsheet vs kernel, part B plan and cost estimate
 ```
 
 Results land in `var/evals/<runId>.json` and `.md`, which are gitignored. Outside benchmarks:
