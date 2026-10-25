@@ -49,7 +49,7 @@ function initialRun() {
 
 function initialTab(): Tab {
   const value = new URLSearchParams(location.search).get("view");
-  return TABS.find((t) => t.id === value)?.id ?? (location.pathname.replace(/\/$/, "") === "/ap-system" ? "ap-system" : location.pathname.startsWith("/legacy") ? "inbox" : "invoices");
+  return TABS.find((t) => t.id === value)?.id ?? (location.pathname.startsWith("/legacy") ? "inbox" : "ap-system");
 }
 
 function Loading({ label }: { label: string }) {

@@ -19,7 +19,7 @@ describe("AP case workspace evidence boundaries",()=>{
     vi.stubGlobal("window",{location:{search:"?case=cold-session-case"}});
     const html=renderToStaticMarkup(<APSystemWorkspace/>);
     expect(html).toContain("Loading linked case evidence");
-    expect(html).toMatch(/disabled="" aria-expanded="false">Upload documents<\/button>/);
+    expect(html).toMatch(/disabled="" aria-expanded="false">Process a PDF<\/button>/);
     expect(html).not.toContain("Case unavailable");
     expect(html).not.toContain("No AP cases yet");
   });

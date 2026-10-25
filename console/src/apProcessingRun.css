@@ -1,0 +1,25 @@
+/* Hallmark · shape: app screen · genre: modern-minimal · theme: locked finance workbench · signature: live original-document processing · states: loading, idle, running, error, complete · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S5 R5 V4 · real processor results and retained case links explain each original's outcome. */
+.aps-processing { display: grid; gap: var(--space-md); padding-block: var(--space-lg); border-block: 1px solid var(--line); margin-block: var(--space-lg); min-width: 0; }
+.aps-processing-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-lg); }
+.aps-processing-heading > div { min-width: 0; }
+.aps-processing-heading p { color: var(--muted); font-size: var(--text-sm); margin-top: var(--space-xs); }
+.aps-processing-heading > button { flex-shrink: 0; }
+.aps-processing-progress { display: grid; gap: var(--space-sm); min-width: 0; }
+.aps-processing-progress p { font-size: var(--text-sm); overflow-wrap: anywhere; }
+.aps-processing-progress progress { width: 100%; height: 8px; accent-color: var(--accent); }
+.aps-processing-rows { list-style: none; padding: 0; margin: 0; max-height: 380px; overflow-y: auto; border-top: 1px solid var(--line); }
+.aps-processing-rows > li { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto; gap: var(--space-md); align-items: center; border-bottom: 1px solid var(--line); padding: var(--space-sm); font-size: var(--text-sm); }
+.aps-processing-rows > li:is([data-status="parsing"], [data-status="importing"]) { background: var(--selected); }
+.aps-processing-document, .aps-processing-result { display: grid; gap: var(--space-2xs); min-width: 0; overflow-wrap: anywhere; }
+.aps-processing-document > span { color: var(--muted); font-size: var(--text-xs); }
+.aps-processing-result details { color: var(--muted); font-size: var(--text-xs); }
+.aps-processing-result summary { min-height: 32px; display: list-item; align-content: center; cursor: pointer; }
+.aps-processing-result ul { padding-left: var(--space-md); margin: var(--space-xs) 0; }
+.aps-processing :is(button,summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.aps-processing button { min-height: 44px; }
+@media (max-width: 760px) {
+  .aps-processing-heading { align-items: stretch; flex-direction: column; gap: var(--space-sm); }
+  .aps-processing-rows > li { grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); }
+  .aps-processing-rows > li > button { justify-self: start; }
+}

@@ -86,6 +86,19 @@ export const purchasingEvidenceSchema = z.object({
   lines:z.array(z.object({lineId:id, sku:id, quantity:quantitySchema, unitPriceCents:centsSchema.nullable(), invoiceLineId:id})),
   acceptedBy:z.string().nullable(), acceptedAt:z.string().nullable(),
 });
+/** Additive v1 metadata: source-system history is never a new payment in this run. */
+export const sourceOutcomeSchema = z.object({
+  status:z.literal("historical_paid"), amountCents:centsSchema,
+  currency:z.string().regex(/^[A-Z]{3}$/), sourceReference:id,
+  evidence:z.array(sourceBindingSchema).min(1), reason:id,
+});
+export type SourceOutcome = z.infer<typeof sourceOutcomeSchema>;
+/** Read-only projection supplied by earlier deployed AP case workers. */
+export const agentProgressSchema = z.object({
+  caseId:id, owner:id, reason:id, requirements:z.array(z.string()), stage:id,
+  status:id, updatedAt:z.number(), waitSince:z.number().nullable().optional(),
+  deadlineAt:z.number().nullable().optional(),
+});
 export const intakeSchema = z.object({
   contractVersion:z.literal(AP_CONTRACT_VERSION), idempotencyKey:id, documents:z.array(sourceDocumentSchema).min(1),
   candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), purchasingEvidence:z.array(purchasingEvidenceSchema),
@@ -131,7 +144,7 @@ export const statesSchema = z.object({
   reconciliation:z.enum(["unmatched","matched","exception"]),
 });
 export const caseDetailSchema = z.object({
-  domain:domainCaseProjectionSchema.optional(),
+  domain:domainCaseProjectionSchema.optional(), sourceOutcome:sourceOutcomeSchema.optional(), agentProgress:agentProgressSchema.optional(),
   work:workViewSchema.nullable().optional(),
   contractVersion:z.literal(AP_CONTRACT_VERSION), caseId:id, runId:id, organizationId:id,
   revision:z.number().int().positive(), candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), sources:z.array(sourceDocumentSchema),

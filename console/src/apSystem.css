@@ -303,3 +303,9 @@
 .aps-trace-preview { margin-block: var(--space-md); }
 .aps-trace .aps-section { scroll-margin-top: var(--space-lg); }
 @media (max-width: 760px) { .aps-compare-controls, .aps-source-pair { grid-template-columns: minmax(0,1fr); } .aps-trace > .aps-section-heading { flex-wrap: wrap; } }
+
+.aps-corpus-status { display: flex; flex-wrap: wrap; gap: var(--space-sm) var(--space-lg); align-items: baseline; font-variant-numeric: tabular-nums; }
+.aps-corpus > ul, .aps-import-files { list-style: none; margin: var(--space-md) 0; padding: 0; }
+.aps-corpus > ul > li, .aps-import-files > li { border-top: 1px solid var(--line); padding: var(--space-md) 0; overflow-wrap: anywhere; }
+.aps-corpus > ul { max-height: 55dvh; overflow-y: auto; padding-inline: var(--space-sm); }
+.aps-import-files button { margin-left: var(--space-sm); }
