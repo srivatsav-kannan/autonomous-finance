@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-24",
+  "scope": "Hallmark integration and Ramp-inspired nine-view finance workbench",
+  "upstream": "Nutlope/hallmark@7ec868225c6caa040558c321ee0fefa0e73f83a8 (vendored files verified byte-for-byte)",
+  "checks": {
+    "typecheck": "pass",
+    "productionBuild": "pass",
+    "trackedTests": "176 passing tests: 168 existing tests in 17 tracked suites plus 8 new bank-workspace tests",
+    "staticDesign": "0 FAIL, 0 REFLEX, 0 WARN",
+    "renderedDesign": "All seven views, 35 screenshots: 0 FAIL, 0 REFLEX, 0 WARN.",
+    "browser": "Seven views and native review drawer at 320, 390, 768, 1024, 1440, 1920px in light/dark; no page overflow, clipped controls or uncaught errors.",
+    "interactions": [
+      "Real finance values and pending decisions from finance-workbench simulation",
+      "Inbox search, no-results reset, severity filters and sort",
+      "Native drawer focus containment, Escape, backdrop dismissal and opener/heading focus restoration",
+      "Real source evidence reads and visible gateway errors",
+      "Failed decision response permits retry (intercepted before any financial action)",
+      "Informational acknowledgement persisted through gateway and visible under Answered",
+      "Confirmation focus and safe restoration when completed row leaves the queue",
+      "Simulation activity disclosure retains all operational metrics",
+      "Journal and trial-balance search, filtered CSV download with formula-safe text",
+      "Inbox/ledger filter state survives refresh and browser Back, preserving scenario hash",
+      "Existing keyboard memory reads and Ask why form retained"
+    ],
+    "simulation": "Isolated finance-workbench deterministic 14-day, 3-store run: 13/13 planted errors, 3/3 decoys, zero false alarms, balanced books and verified 141-entry hash chain.",
+    "finishReview": {
+      "kind": "independent subagent",
+      "findings": 0,
+      "resolved": 0,
+      "detail": "Ship. Reviewed full inbox, all five drawer records at 320\u00d7568, light/dark and seven phone views. Additional functional test caught and fixed focus loss after a response removed its queue row."
+    },
+    "bankAndFlow": {
+      "backend": "bank.workspace deployed locally; full-run closing series equals $252,289.30 book balance; 54 bank events, 5 needs review, 9 reconciled, 39 recorded and 1 processing.",
+      "bankTests": "8 tests cover empty/malformed input, signed movements, opening balances, reversals, posted versus reconciled status, related tasks/asks, run isolation and a complete 75-row feed.",
+      "browser": "Verified account and status filtering, search/reset, date selection, refresh persistence, drawer Escape/focus restoration, real decision evidence reads, and bank-to-human-inbox deep links even with Answered selected. No financial actions taken.",
+      "responsive": "Bank and Finance flow checked at 320px through desktop in light/dark; no page overflow, clipped transaction text or browser errors.",
+      "flow": "Stage selection works by keyboard, persists in URL, and links to Bank, Team, Inbox, Ledger, Memory and Activity. Counts use existing run queries.",
+      "designLint": "Static: 0 FAIL, 0 REFLEX, 0 WARN. Rendered: 0 FAIL, 0 WARN; 39b waived for large account and stage selectors containing real records.",
+      "independentReview": "Resolved date spacing on the cash chart, wrapping/accessibility of transaction names, and access to journal decision evidence.",
+      "figma": "Native Bank & cash 14:154 and Finance flow 14:255 created; browser preview verified real data and layout. Some control surfaces render black and bank currency text lacks formatting. Figma Starter quota rejects both screenshot and write tools, so these canvas-only fixes remain pending. React app is unaffected."
+    }
+  },
+  "baseline": {
+    "floorFailures": 10,
+    "reflexFindings": 20
+  },
+  "preservation": {
+    "views": "Original seven destinations retained; Bank & cash and Finance flow added",
+    "data": "Existing Convex queries, scenario hash, gateway semantics and WebMCP tools retained",
+    "disclosures": "Full ask bodies and evidence now in review drawer; historical records under Answered; operating counts under Simulation activity",
+    "ledger": "Latest 60 entries as before, with full chain count and explicit limit; all trial balance accounts remain available"
+  },
+  "limitations": [
+    "Browser tests used local Convex and deterministic simulation, not a deployed environment.",
+    "Figma is a native editable reference snapshot, not an automatic two-way sync with React.",
+    "The journal query still returns the most recent 60 entries; CSV exports the currently filtered records.",
+    "Bank data is a complete-run simulation read model. It is not a real bank connection and would need aggregation/pagination for large production datasets.",
+    "New Figma frames remain draft references: control fill colors and bank currency formatting need correction after the Figma MCP quota permits writes."
+  ],
+  "screenshots": ".hallmark/shots/ and .hallmark/checks/ (local, ignored)",
+  "comparison": ".hallmark/compare.html (local, ignored)",
+  "designWorkspace": "https://www.figma.com/design/qUwizlNQktZ68GJjaoKUo5?node-id=2-22",
+  "designWorkspaces": {
+    "bank": "https://www.figma.com/design/qUwizlNQktZ68GJjaoKUo5?node-id=14-154",
+    "flow": "https://www.figma.com/design/qUwizlNQktZ68GJjaoKUo5?node-id=14-255"
+  }
+}

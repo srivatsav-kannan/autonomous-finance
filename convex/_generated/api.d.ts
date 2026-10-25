@@ -11,6 +11,7 @@
 import type * as admin from "../admin.js";
 import type * as ap from "../ap.js";
 import type * as asks from "../asks.js";
+import type * as bank from "../bank.js";
 import type * as invoiceCases from "../invoiceCases.js";
 import type * as ledger from "../ledger.js";
 import type * as lib_evidence from "../lib/evidence.js";
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   ap: typeof ap;
   asks: typeof asks;
+  bank: typeof bank;
   invoiceCases: typeof invoiceCases;
   ledger: typeof ledger;
   "lib/evidence": typeof lib_evidence;

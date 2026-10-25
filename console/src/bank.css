@@ -1,0 +1,80 @@
+/* Hallmark: app screen; warm finance workbench; real cash records; semantic tokens. */
+/* Critique: cash balances lead into ledger history and an auditable bank feed. */
+.bank-source { color: var(--muted); font-size: var(--text-sm); text-align: right; }
+.bank-source small { display: block; margin-top: var(--space-2xs); }
+.bank-accounts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid var(--line); margin-bottom: var(--space-lg); }
+.bank-account { display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: var(--space-xs); padding: var(--space-lg) var(--space-md); border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: var(--panel); min-width: 0; }
+.bank-account + .bank-account { border-left: 1px solid var(--line); }
+.bank-account:hover { background: var(--bg); }
+.bank-account.is-selected { border-bottom-color: var(--accent); background: var(--selected); }
+.bank-account span { display: flex; gap: var(--space-xs); align-items: center; font-size: var(--text-sm); }
+.bank-account strong { font-size: var(--text-xl); font-weight: 500; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.bank-account small { color: var(--muted); font-size: var(--text-xs); }
+.bank-account-total strong { font-weight: 600; }
+.cash-history { margin-bottom: var(--space-xl); }
+.cash-chart-heading { display: flex; align-items: start; justify-content: space-between; gap: var(--space-md); }
+.cash-chart-heading h3, .bank-feed-heading h3 { margin: 0; font-size: var(--text-lg); font-weight: 500; }
+.cash-chart-heading p { margin: var(--space-2xs) 0; font-size: var(--text-sm); color: var(--muted); }
+.cash-chart-readout { display: flex; align-items: baseline; gap: var(--space-sm); padding: var(--space-md) 0 0; }
+.cash-chart-readout strong { font-size: var(--text-2xl); font-weight: 500; font-variant-numeric: tabular-nums; }
+.cash-chart-readout span { font-size: var(--text-sm); color: var(--muted); }
+.cash-chart { display: block; width: 100%; height: 220px; overflow: visible; margin-top: var(--space-xs); }
+.cash-chart text { fill: var(--muted); font-size: 12px; }
+.cash-grid { stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.cash-line { fill: none; stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.cash-cursor { stroke: var(--field-line); stroke-width: 1; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
+.cash-point { fill: var(--accent); }
+.cash-chart-footer { position: relative; display: flex; flex-wrap: wrap; align-items: start; gap: var(--space-lg); border-bottom: 1px solid var(--line); padding-bottom: var(--space-md); }
+.cash-chart-footer p { display: flex; gap: var(--space-xs); font-size: var(--text-sm); margin: 0; }
+.cash-chart-footer p span { color: var(--muted); }
+.cash-chart-footer p strong { font-weight: 500; font-variant-numeric: tabular-nums; }
+.cash-chart-footer details { margin-left: auto; font-size: var(--text-sm); }
+.cash-chart-footer summary { min-height: 44px; cursor: pointer; }
+.cash-chart-footer details[open] { flex-basis: 100%; margin: 0; }
+.cash-chart-empty { margin: var(--space-md) 0; }
+.bank-feed-heading { display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-md); align-items: baseline; margin-bottom: var(--space-md); }
+.bank-feed-heading > span { font-size: var(--text-sm); max-width: 70ch; }
+.bank-table td { vertical-align: middle; }
+.bank-transaction-link { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); border: 0; padding: var(--space-xs) 0; width: 100%; min-width: 0; text-align: left; white-space: normal; background: transparent; border-radius: var(--radius-input); font-weight: 500; }
+.bank-transaction-link span { min-width: 0; overflow-wrap: anywhere; }
+.bank-transaction-link .icon { flex-shrink: 0; }
+.bank-transaction-link:hover { color: var(--accent); background: transparent; text-decoration: underline; }
+.bank-reference { display: block; color: var(--muted); font-size: var(--text-xs); overflow-wrap: anywhere; }
+.bank-status { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: var(--radius-input); padding: var(--space-2xs) var(--space-xs); font-size: var(--text-xs); white-space: nowrap; }
+.bank-status-needs_review, .bank-status-unmatched { color: var(--urgent); }
+.bank-status-reconciled, .bank-credit { color: var(--ok); }
+.bank-status-processing { color: var(--info); }
+.bank-detail-amount { font-size: var(--text-3xl); font-weight: 500; font-variant-numeric: tabular-nums; margin: 0 0 var(--space-lg); }
+.bank-transaction-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); margin: 0 0 var(--space-xl); }
+.bank-transaction-facts dt { color: var(--muted); font-size: var(--text-xs); margin-bottom: var(--space-xs); }
+.bank-transaction-facts dd { margin: 0; font-size: var(--text-sm); }
+.bank-transaction-facts dd { overflow-wrap: anywhere; }
+.bank-evidence { display: flex; align-items: flex-start; gap: var(--space-sm); padding: var(--space-md) 0; border-bottom: 1px solid var(--line); }
+.bank-evidence > .icon { flex: 0 0 auto; margin-top: var(--space-2xs); color: var(--muted); }
+.bank-evidence > div { min-width: 0; overflow-wrap: anywhere; }
+.bank-evidence strong { font-weight: 500; }
+.bank-evidence p { margin: var(--space-2xs) 0; }
+.bank-evidence small { color: var(--muted); }
+.bank-evidence button { margin-top: var(--space-sm); }
+@media (max-width: 1100px) { .bank-accounts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bank-account:nth-child(3) { border-left: 0; } .bank-account:nth-child(-n+2) { border-top: 1px solid var(--line); } }
+@media (max-width: 640px) {
+  .bank-source { text-align: left; }
+  .bank-accounts { grid-template-columns: minmax(0, 1fr); }
+  .bank-account { padding: var(--space-md); }
+  .bank-account + .bank-account { border-left: 0; border-top: 1px solid var(--line); }
+  .bank-account strong { font-size: var(--text-lg); }
+  .cash-chart-heading, .cash-chart-readout { flex-direction: column; gap: var(--space-xs); }
+  .cash-chart { min-height: 0; }
+  .cash-chart-footer { gap: var(--space-xs); flex-direction: column; }
+  .cash-chart-footer details { margin-left: 0; width: 100%; }
+  .bank-feed-note { display: none; }
+  .bank-filters { flex-wrap: wrap; }
+  .bank-filters .tab-item { flex: 1 1 42%; justify-content: center; }
+  .bank-transaction-link { align-items: start; }
+}
+
+.bank-data-basis { font-size: var(--text-sm); color: var(--muted); margin-bottom: var(--space-lg); }
+.bank-data-basis summary { min-height: 44px; cursor: pointer; }
+.bank-data-basis p { max-width: 75ch; }
+
+@media (max-width: 640px) { .bank-transaction-facts { grid-template-columns: minmax(0, 1fr); } }

@@ -25,6 +25,17 @@ CONVEX_AGENT_MODE=anonymous npx convex dev --local-cloud-port 3230 --local-site-
 
 Then configure a local admin secret once, initialize a workspace, start the invoice gateway on :8790 and console on :5173 as described in the guide. Privileged seat tokens stay on the server.
 
+The updated finance workbench now includes **Invoices** in its shared navigation,
+alongside Inbox, Bank & cash, Finance flow and the other six simulation views.
+Invoice import, customer evidence, human review and decision history use the same
+design system, responsive tables and review drawer. Invoice company/totals come
+from the invoice gateway; simulation scenarios and bank balances remain separate.
+The default route and `/invoices` open Invoices; `/legacy` opens the simulation inbox.
+
+Frontend checks: `npm run build:console`, `npm run design:check`, and
+`npm run design:review -- --url http://127.0.0.1:5173/?view=invoices`.
+See [design.md](design.md) for the shared design system.
+
 ## Evidence and limits
 
 At application source `d08165c1ad38bb20817ace294c55ed1c50b8c243`, the fresh browser workflow, real backend/gateway restart, and stale-approval/replay smoke pass. Combined verification passed 331 repository tests and 44 evaluator tests, TypeScript checks and the console build. The browser demo records $1,525 across two customers with four source-backed contributions and one unresolved source.
