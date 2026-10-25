@@ -9,9 +9,9 @@ This is the live implementation matrix for issue #97. A capability is not integr
 | Golden State original PDF/PO/receipt/contract | implemented, verified-local packet | A1-packet.md; five hashes, reproducible rendering; V1 outcome review pending |
 | Direct LlamaParse original ingestion | implementation/live component verification in progress | A2 report pending; no integrated claim |
 | Native/raw-word/local-OCR/unresolved grounding | implementation in progress | Preserve per-method provenance, unresolved denominator; no universal OCR reliability claim |
-| PO matching and owned exceptions | implementation in progress | B1; original amounts, missing receipt/SKU/unit and authority gates |
-| Field review → bill → payable recognition | implementation in progress | B2; exact case/source/review snapshot and atomic entries |
-| Separate payment authorization and durable engine handoff | implemented, component-verified | C1-component.json; independent acceptance and I1 still pending |
+| PO matching and owned exceptions | implemented, component-verified | B1; original amounts, missing receipt/SKU/unit and authority gates |
+| Field review → bill → payable recognition | implemented, component-verified | B2; exact case/source/review snapshot and atomic entries |
+| Separate payment authorization and durable engine handoff | implemented, component-verified | C1-component.json, V-C1.md; independent component pass, I1 pending |
 | Source session/hash validation and original serving | implemented, component-verified | ap-system-server.test.ts; integrated browser path pending |
 | Unified case workspace | implemented, component-verified | D1; actual linked runtime I1 pending |
 | Same-case PDF → FakeBank → settlement reconciliation | planned integration | I1; all upstream gates required |

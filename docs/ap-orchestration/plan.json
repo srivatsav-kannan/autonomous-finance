@@ -124,14 +124,19 @@
         "C0"
       ],
       "acceptance": "Missing receipt/price/quantity cases follow authority rules; no implicit short-pay or fabricated notification. Explicit evidence-gap policy defines which steps hold and who resolves them; geometry is not business approval.",
-      "status": "in_progress",
+      "status": "accepted",
       "session_id": "/root/accounting",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-accounting/calhacks",
       "branch": "codex/ap-system-accounting",
-      "commit": null,
-      "evidence": [],
+      "commit": "be98772",
+      "evidence": [
+        "docs/ap-orchestration/evidence/B1-policy.md",
+        "docs/ap-orchestration/evidence/B2-bridge.md",
+        "tests/ap-system/accounting-backend.test.ts",
+        "tests/ap-system/accounting-policy.test.ts"
+      ],
       "blocker": null,
-      "next_action": "Implement scoped deliverable against frozen ap-evidence-v1; report exact checks and evidence",
+      "next_action": "V1 independent originals/policy review; I1 actual upload; local capacity check pending",
       "source_sha": "ac62854"
     },
     {
@@ -142,14 +147,19 @@
         "C0"
       ],
       "acceptance": "Same case/source/review binds to bill; replay, stale review, identity and posting tests pass. Source/review version changes invalidate stale evidence bindings; derived geometry does not bypass review or authority.",
-      "status": "in_progress",
+      "status": "accepted",
       "session_id": "/root/accounting",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-accounting/calhacks",
       "branch": "codex/ap-system-accounting",
-      "commit": null,
-      "evidence": [],
+      "commit": "be98772",
+      "evidence": [
+        "docs/ap-orchestration/evidence/B1-policy.md",
+        "docs/ap-orchestration/evidence/B2-bridge.md",
+        "tests/ap-system/accounting-backend.test.ts",
+        "tests/ap-system/accounting-policy.test.ts"
+      ],
       "blocker": null,
-      "next_action": "Implement scoped deliverable against frozen ap-evidence-v1; report exact checks and evidence",
+      "next_action": "V1 independent originals/policy review; I1 actual upload; local capacity check pending",
       "source_sha": "ac62854"
     },
     {
@@ -203,14 +213,15 @@
         "B1"
       ],
       "acceptance": "Review identity/type/version recorded; policy-derived versus AP-practitioner reviewed labels remain distinct. Content expectations and grounding expectations/status are separately reviewed against originals; runtime/parser output is not the answer key. Preserve licensing and reviewer independence.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "/root/verifier",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks",
+      "branch": "codex/ap-system-verification-v1",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": null
+      "next_action": "Independent expected outcomes from original PDFs, policy and accounting; no practitioner claim",
+      "source_sha": "be98772"
     },
     {
       "id": "I1",
@@ -457,5 +468,5 @@
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true
   },
-  "last_updated_at": "2026-10-25T08:46:20.679914+00:00"
+  "last_updated_at": "2026-10-25T08:47:43.148554+00:00"
 }
