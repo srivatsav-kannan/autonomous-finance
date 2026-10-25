@@ -1,0 +1,147 @@
+[
+  {
+    "caseId": "C04",
+    "file": "tests/ap-system/business.test.ts",
+    "titleContains": "recognizes explicit partial quantity at original value"
+  },
+  {
+    "caseId": "C04",
+    "file": "tests/ap-system/business.test.ts",
+    "titleContains": "accepts non-PO contract with documented service acceptance"
+  },
+  {
+    "caseId": "C05",
+    "file": "tests/ap-system/business-credits.test.ts",
+    "titleContains": "reverses original cost/tax allocations, replays once"
+  },
+  {
+    "caseId": "C05",
+    "file": "tests/ap-system/business-credits.test.ts",
+    "titleContains": "cumulative reversals consume remaining exact allocation cents"
+  },
+  {
+    "caseId": "C06",
+    "file": "tests/ap-system/v3-payments.test.ts",
+    "titleContains": "retains the applied credit when first partial cash is returned"
+  },
+  {
+    "caseId": "C07",
+    "file": "tests/ap-system/v5-corrected-cost.test.ts",
+    "titleContains": "consumes two exact corrected credits through a multi-step cost chain"
+  },
+  {
+    "caseId": "C08",
+    "file": "tests/ap-system/cost-corrections.test.ts",
+    "titleContains": "retains signed discount reversals"
+  },
+  {
+    "caseId": "C09",
+    "file": "tests/ap-system/close.test.ts",
+    "titleContains": "recognizes accrued cost before invoice, carries it through close"
+  },
+  {
+    "caseId": "C10",
+    "file": "tests/ap-system/v5-corrected-cost.test.ts",
+    "titleContains": "recognizes the invoice after a split partial corrected accrual reversal"
+  },
+  {
+    "caseId": "C11",
+    "file": "tests/ap-system/close-capacity.test.ts",
+    "titleContains": "does not close a standalone two-unit receipt"
+  },
+  {
+    "caseId": "C12",
+    "file": "tests/ap-system/close.test.ts",
+    "titleContains": "rejects unmatched statement differences"
+  },
+  {
+    "caseId": "C12",
+    "file": "tests/ap-system/close.test.ts",
+    "titleContains": "requires the actual nonzero opening cash balance"
+  },
+  {
+    "caseId": "C12",
+    "file": "tests/ap-system/close.test.ts",
+    "titleContains": "requires complete statement movements"
+  },
+  {
+    "caseId": "C13",
+    "file": "tests/ap-system/v4-business.test.ts",
+    "titleContains": "cannot count two configured subject aliases"
+  },
+  {
+    "caseId": "C13",
+    "file": "tests/ap-system/v4-business.test.ts",
+    "titleContains": "does not approve a bank change after its verification human was retired"
+  },
+  {
+    "caseId": "C14",
+    "file": "tests/ap-system/quickbooks-business.test.ts",
+    "titleContains": "exports 3850 approved cents without rewriting"
+  },
+  {
+    "caseId": "C15",
+    "file": "tests/ap-system/tax-business.test.ts",
+    "titleContains": "conserves partial-recovery rounding across two returns"
+  },
+  {
+    "caseId": "C15",
+    "file": "tests/ap-system/tax-business.test.ts",
+    "titleContains": "reverses tax-only and then net return amounts"
+  },
+  {
+    "caseId": "C16",
+    "file": "tests/ap-system/tax-header.test.ts",
+    "titleContains": "posts supported tax and header amounts"
+  },
+  {
+    "caseId": "C16",
+    "file": "tests/ap-system/tax-header.test.ts",
+    "titleContains": "reverses distinct header shares cumulatively"
+  },
+  {
+    "caseId": "C17",
+    "file": "tests/ap-system/tax-adjustments.test.ts",
+    "titleContains": "posts a separate correction and couples later credits"
+  },
+  {
+    "caseId": "C18",
+    "file": "tests/ap-system/tax-adjustments.test.ts",
+    "titleContains": "reviews embedded remaining tax after prior credits"
+  },
+  {
+    "caseId": "C19",
+    "file": "tests/ap-system/v12-external-settlement.test.ts",
+    "titleContains": "conserves 2750 returned cash"
+  },
+  {
+    "caseId": "C20",
+    "file": "tests/ap-system/physical-accrual-regressions.test.ts",
+    "titleContains": "closes October with both physical lines accrued"
+  },
+  {
+    "caseId": "C21",
+    "file": "tests/ap-system/supplier-contact-changes.test.ts",
+    "titleContains": "requires independent reestablishment when replacement declares"
+  },
+  {
+    "caseId": "C21",
+    "file": "tests/ap-system/supplier-contact-changes.test.ts",
+    "titleContains": "preserves possibly sent command, destination, key and reservations"
+  },
+  {
+    "caseId": "C22",
+    "file": "tests/ap-system/quickbooks-tax.test.ts",
+    "titleContains": "replicates only exact noncash tax journal lines"
+  },
+  {
+    "caseId": "C22",
+    "file": "tests/ap-system/quickbooks-tax.test.ts",
+    "titleContains": "recovers a sent unknown request after policy retirement"
+  },
+  {
+    "caseId": "C02",
+    "file": "tests/ap-system/v2-independent.test.ts",
+    "titleContains": "holds quantity_conflict without creating an obligation or bank operation"
+  }
+]

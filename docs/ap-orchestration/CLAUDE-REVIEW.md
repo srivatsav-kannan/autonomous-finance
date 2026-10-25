@@ -17,7 +17,7 @@ The two phase directories have individual SHA-256 manifests. Keep phase2 unavail
 
 The package contains five original synthetic Golden State PDFs, extracted transcripts, a compiled declared company policy, 22 scenario families plus I3, actual retained I1/I2/I2-close/I3 business/journal readbacks, and append-only review templates. Actual snapshots are linked to their original runtime revisions, not presented as a fresh latest-head run. Phase2's expected-posting answer key is clearly marked EXPECTED_ONLY.
 
-C04-C22 do not have independently supplied supplier originals and complete actual journal exports in this handoff. Claude can challenge their declared policy/arithmetic and request evidence, but must not mark implementation behavior verified merely from the answer key or earlier tests. C02 has its discrepancy original but lacks a separate raw execution readback here. These are explicit packet coverage gaps for the recipient, not fabricated Claude findings or silently passed cases.
+The original packet lacked component originals/actual exports. The separately hashed [component supplement](claude-review/04-component-supplement/README.md) now adds31 actual local scenarios across C02/C04-C22,74 database journal rows,57 distinct synthetic text originals plus4 original PDFs and12 policy payloads. Reveal its source/policy directory before its results and preserve a separate frozen derivation if the first review already began. These are bounded component variants, not every alternative or real supplier evidence. C19/C22 include14 explicitly flagged source/chunk scope mismatches from protocol-fixture promotion; byte hashes are verified but scoped source API access is not. C02 now includes an original-PDF quantity-conflict database snapshot and no-transfer bank trace; candidate facts are manually constructed, not a fresh parser run. None of these records is a Claude finding or a model acceptance result.
 
 Credential files, JWTs, live identity details and raw parser caches with signed URLs are excluded. All supplied supplier documents are synthetic. No live economic action is performed by preparing/reviewing this package.
 
@@ -28,3 +28,5 @@ Credential files, JWTs, live identity details and raw parser caches with signed 
 - CI: deferred by user. PR105 run40187986581 retains regression failure; browser/recovery jobs passed. No CI fix or rerun is part of this handoff.
 - External QBO/Increase: required under prior plan; current reference/auth evidence does not replace accounting transaction or payment acceptance.
 - [Full manifest](claude-review/MANIFEST.json) links immutable bytes to the handoff.
+
+Supplement validation:31 selected existing scenarios passed;74 journal rows exactly match captured databases and balance in integer cents. Source lengths/hashes, archives and separate phase manifests were checked. No product code/test assertion or CI change was made. The initial handoff archives/manifests remain immutable.

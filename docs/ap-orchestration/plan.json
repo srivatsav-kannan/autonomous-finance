@@ -463,7 +463,8 @@
         "docs/ap-orchestration/PRACTITIONER-REVIEW.md",
         "docs/ap-orchestration/evidence/FINAL-review-checkpoint.md",
         "docs/ap-orchestration/evidence/FINAL-publication-receipt.json",
-        "docs/ap-orchestration/CLAUDE-REVIEW.md"
+        "docs/ap-orchestration/CLAUDE-REVIEW.md",
+        "docs/ap-orchestration/claude-review/04-component-supplement/CAPTURE-RECEIPT.json"
       ],
       "blocker": null,
       "next_action": "Hand off frozen two-phase packet to external recipient with Claude; await real review record and remediate findings. Retain current QBO/Increase gates; do not repair/rerun deferred CI."
@@ -988,14 +989,21 @@
     "accounting_transaction_writes": 0,
     "mapping_hash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff"
   },
-  "last_updated_at": "2026-10-25T11:20:29.118927+00:00",
+  "last_updated_at": "2026-10-25T11:23:37.869154+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",
     "status": "real_browser_login_and_explicit_scoped_binding_verified",
     "flow": "official browser login; Convex issuer/audience validation; no manual JWT sharing",
     "user_authorizes_sandbox_payment": true,
-    "next_action": "User reviews the prepared synthetic INV-1001 fields and bill in the normal browser; actual payment authorization remains separate. No JWT requested/extracted or simulated identity used."
+    "next_action": "User reviews the prepared synthetic INV-1001 fields and bill in the normal browser; actual payment authorization remains separate. No JWT requested/extracted or simulated identity used.",
+    "last_browser_check": {
+      "at": "2026-10-25T11:23:37.869154+00:00",
+      "case_id": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
+      "state": "signed_in; field_review_required; bill_held_unposted; payment_not_requested; execution_not_started",
+      "decision_reason": "empty",
+      "review_confirmation": false
+    }
   },
   "verification_checkpoint": {
     "review_commit": "35b97ee8de7702e578a798910cf0c2b78e4fb7a2",
@@ -1065,6 +1073,16 @@
     "packet": "docs/ap-orchestration/CLAUDE-REVIEW.md",
     "phase1": "not_executed",
     "phase2": "not_executed",
-    "practitioner_required": false
+    "practitioner_required": false,
+    "component_supplement": {
+      "path": "docs/ap-orchestration/claude-review/04-component-supplement/README.md",
+      "localScenarioVariants": 31,
+      "actualJournalRows": 74,
+      "sourceTextFiles": 57,
+      "originalPDFFiles": 4,
+      "policyFiles": 12,
+      "sourceChunkScopeMismatches": 14,
+      "classification": "owner-prepared actual local records including C02 original-PDF discrepancy; external Claude review pending"
+    }
   }
 }
