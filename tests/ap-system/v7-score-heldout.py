@@ -1,5 +1,5 @@
 """Independent offline scorer. Reads frozen V7 originals, never runtime answer key.
-Usage: python3 SCRIPT REPO PRIVATE_RUN_DIR OUTPUT_JSON [intake-file]
+Usage: python3 SCRIPT REPO PRIVATE_RUN_DIR OUTPUT_JSON [intake-file] [runtime-SHA]
 Provider presence is diagnostic, not candidate success. No network or writes to input.
 """
 import sys,json,pathlib,hashlib,re,html
@@ -122,7 +122,7 @@ for f in original['files']:
  expected={k:inv['supplier' if k=='extractedSupplierName' else k] for k in HEADERS}
  for line in inv['lines']:
   for k,v in line.items():expected[f"lines.{line['sku']}.{k}"]=v
- evidence=j['extraction']['evidence'];skus={e['fieldPath'].rsplit('.',1)[0]:e['normalizedValue'] for e in evidence if e['fieldPath'].endswith('.sku')}
+ evidence=j['candidate']['evidence'] if j['candidate'] is not None else j['extraction']['evidence'];skus={e['fieldPath'].rsplit('.',1)[0]:e['normalizedValue'] for e in evidence if e['fieldPath'].endswith('.sku')}
  found={}
  for e in evidence:
   key=e['fieldPath']
@@ -150,5 +150,5 @@ for f in original['files']:
   rows.append({'field':key,'expected':value,'provider':{'value':values.get(key),'correct':eq(values.get(key),value),'quote':quotes.get(key)},'candidate':{'value':candidate_values.get(key),'correct':eq(candidate_values.get(key),value)},'adapter':{'value':e['normalizedValue'] if e else None,'content':state,'evidenceId':e['evidenceId'] if e else None,'geometry': 'verified' if not errors else 'not_accepted','geometryReasons':errors,'method':e['grounding']['method'] if e else None}})
  reports.append({'document':name,'originalSha256':f['sha256'],'intakeSha256':sha(d/intake_name),'providerResultSha256':sha(pp),'providerJob':doc['parser']['jobId'],'candidatePresent':j['candidate'] is not None,'extractionStatus':j['extraction']['status'],'reasons':j['extraction']['reasons'],'denominator':len(rows),'candidateCorrect':sum(r['candidate']['correct'] for r in rows),'providerCorrect':sum(r['provider']['correct'] for r in rows),'adapterContent':dict(Counter(r['adapter']['content'] for r in rows)),'adapterGeometryVerified':sum(r['adapter']['geometry']=='verified' for r in rows),'fields':rows})
 summary={'denominator':sum(r['denominator'] for r in reports),'providerCorrect':sum(r['providerCorrect'] for r in reports),'candidateCorrect':sum(r['candidateCorrect'] for r in reports),'completeCandidates':sum(r['candidatePresent'] for r in reports),'adapterContent':dict(sum((Counter(r['adapterContent']) for r in reports),Counter())),'adapterGeometryVerified':sum(r['adapterGeometryVerified'] for r in reports)}
-result={'reviewKind':'independent agent engineering review; no practitioner sign-off','originalDerivationSha256':sha(original_path),'scorerSha256':sha(pathlib.Path(__file__)),'runtimeBaseline':'6a0294197208fc891e715ea556d1a9b5e9f40aab','intakeFilename':intake_name,'method':'Frozen original-derived fields; independently read provider labeled text and HTML tables, adapter normalized evidence, source/frame/hashed raw native regions and derived token rectangles. Provider correctness is semantic content presence, not candidate or end-to-end success. Candidate:null is a complete-document failure.','summary':summary,'documents':reports}
+result={'reviewKind':'independent agent engineering review; no practitioner sign-off','originalDerivationSha256':sha(original_path),'scorerSha256':sha(pathlib.Path(__file__)),'runtimeBaseline':sys.argv[5] if len(sys.argv)>5 else '6a0294197208fc891e715ea556d1a9b5e9f40aab','intakeFilename':intake_name,'method':'Frozen original-derived fields; independently read provider labeled text and HTML tables, adapter normalized evidence, source/frame/hashed raw native regions and derived token rectangles. Provider correctness is semantic content presence, not candidate or end-to-end success. Candidate:null is a complete-document failure.','summary':summary,'documents':reports}
 out.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(summary));print(json.dumps([{k:v for k,v in r.items() if k!='fields'} for r in reports],indent=2))
