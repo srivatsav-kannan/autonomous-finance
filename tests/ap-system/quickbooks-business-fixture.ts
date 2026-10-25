@@ -1,3 +1,4 @@
+import type { BankScope } from "../../src/integrations/contracts";
 import { makeFunctionReference } from "convex/server";
 import { createHash } from "node:crypto";
 import {
@@ -139,7 +140,12 @@ export async function creditFixture(discountCents = 0) {
 }
 /** Test-only conversion; never reads provider credentials or contacts Increase. */
 export async function promoteIncrease(
-  f: Awaited<ReturnType<typeof creditFixture>>,
+  f: Pick<
+    Awaited<ReturnType<typeof creditFixture>>,
+    "t" | "humans" | "detail" | "original" | "policy"
+  > & {
+    scope: BankScope;
+  },
 ) {
   const scope = {
     ...f.scope,
@@ -183,10 +189,16 @@ export async function promoteIncrease(
 }
 /** Synthetic immutable bank evidence, introduced only through test-owned Convex DB. */
 export async function seedSettled(
-  f: Awaited<ReturnType<typeof creditFixture>>,
+  f: Pick<
+    Awaited<ReturnType<typeof creditFixture>>,
+    "t" | "humans" | "detail" | "original" | "policy"
+  > & {
+    scope: BankScope;
+  },
   cash: number,
   gross: number,
   credits: Array<{ creditId: Id<"demoCredits">; amountCents: number }> = [],
+  suffix = "",
 ) {
   const { scope } = await promoteIncrease(f);
   const result = await f.t.run(async (ctx) => {
@@ -209,7 +221,7 @@ export async function seedSettled(
       snapshot,
       snapshotHash,
       requestedBy: "payments",
-      requestKey: `cash-${cash}`,
+      requestKey: `cash-${cash}${suffix}`,
       status: "settled",
       approvals: [
         {
@@ -251,14 +263,14 @@ export async function seedSettled(
       attemptCount: 1,
       nextAttemptAt: 0,
       firstAttemptAt: 1,
-      providerTransferId: "transfer-business",
+      providerTransferId: `transfer-business${suffix}`,
       createdAt: 1,
     });
     await ctx.db.insert("demoObservations", {
       scope,
-      transferId: "transfer-business",
+      transferId: `transfer-business${suffix}`,
       observation: {
-        id: "transfer-business",
+        id: `transfer-business${suffix}`,
         scope,
         commandId: versionId,
         requestHash: command.requestHash,
@@ -269,11 +281,11 @@ export async function seedSettled(
         status: "settled",
         createdAt: "2026-10-19T12:00:00Z",
         updatedAt: "2026-10-19T12:00:00Z",
-        originalTransactionId: "tx-business",
+        originalTransactionId: `tx-business${suffix}`,
       },
       importedAt: 1,
     });
-    const key = `${scope.organizationId}:${scope.runId}:${scope.provider}:${scope.environment}:${scope.accountId}:tx-business:debit`;
+    const key = `${scope.organizationId}:${scope.runId}:${scope.provider}:${scope.environment}:${scope.accountId}:tx-business${suffix}:debit`;
     const old = (await ctx.db.get(bill.entryId!))!;
     const { _id, _creationTime, ...base } = old;
     const entryId = await ctx.db.insert("journalEntries", {
@@ -293,9 +305,9 @@ export async function seedSettled(
       entryId,
       state: "posted",
       transaction: {
-        id: "tx-business",
+        id: `tx-business${suffix}`,
         scope,
-        transferId: "transfer-business",
+        transferId: `transfer-business${suffix}`,
         commandId: versionId,
         amountCents: -cash,
         currency: "USD",

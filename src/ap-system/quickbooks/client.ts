@@ -6,6 +6,7 @@ const entities = new Set([
   "Bill",
   "BillPayment",
   "VendorCredit",
+  "JournalEntry",
   "Vendor",
   "Account",
   "CompanyInfo",
@@ -41,7 +42,7 @@ export class QboClient {
     query?: string,
   ) {
     if (
-      !/^(bill|billpayment|vendorcredit|vendor|account|companyinfo)(\/\d{1,32})?$/.test(
+      !/^(bill|billpayment|vendorcredit|journalentry|vendor|account|companyinfo)(\/\d{1,32})?$/.test(
         path,
       ) &&
       path !== "query"
@@ -178,6 +179,59 @@ export class QboClient {
     if (String(found.SyncToken) !== op.syncToken || !matches(op.payload, found))
       throw new QboError("external_stale_or_changed");
     return found;
+  }
+  /** Bounded authoritative scan: never assume a journal's original AP principal remains unused. */
+  async journalAppliedCents(op: Operation, vendorId: string) {
+    if (
+      op.entity !== "JournalEntry" ||
+      !op.externalId ||
+      !/^\d{1,32}$/.test(vendorId)
+    )
+      throw new QboError("invalid_external_identity");
+    const data = await this.request(
+      "query",
+      "GET",
+      undefined,
+      undefined,
+      `SELECT * FROM BillPayment WHERE VendorRef = '${vendorId}' MAXRESULTS 1000`,
+    );
+    const rows = data.QueryResponse?.BillPayment ?? [];
+    if (
+      !Array.isArray(rows) ||
+      rows.length >= 1000 ||
+      new Set(rows.map((r: any) => r.Id)).size !== rows.length
+    )
+      throw new QboError("restored_balance_incomplete");
+    let total = 0n;
+    for (const row of rows) {
+      if (row.VendorRef?.value !== vendorId || !Array.isArray(row.Line))
+        throw new QboError("restored_balance_incomplete");
+      for (const line of row.Line) {
+        const links = line.LinkedTxn ?? [];
+        if (!Array.isArray(links))
+          throw new QboError("restored_balance_incomplete");
+        if (
+          links.some(
+            (l: any) =>
+              l.TxnType === "JournalEntry" && l.TxnId === op.externalId,
+          )
+        ) {
+          if (
+            links.length !== 1 ||
+            typeof line.Amount !== "number" ||
+            line.Amount < 0 ||
+            !Number.isSafeInteger(Math.round(line.Amount * 100)) ||
+            Math.abs(line.Amount * 100 - Math.round(line.Amount * 100)) >
+              0.000001
+          )
+            throw new QboError("restored_balance_conflict");
+          total += BigInt(Math.round(line.Amount * 100));
+        }
+      }
+    }
+    if (total > BigInt(Number.MAX_SAFE_INTEGER))
+      throw new QboError("restored_balance_conflict");
+    return Number(total);
   }
   async create(op: Operation) {
     const data = await this.request(

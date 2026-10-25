@@ -54,13 +54,35 @@ export function assertExport(e: AccountingExport, request: ExportRequest) {
   const d = caseDetailSchema.parse(e.detail),
     c = d.candidate;
   if (e.holds?.length) throw new QboError(e.holds[0]!.code);
-  if (request.paymentVersionId && request.creditApplicationId)
+  if (
+    [
+      request.paymentVersionId,
+      request.creditApplicationId,
+      request.correctionId,
+    ].filter(Boolean).length > 1
+  )
     throw new QboError("ambiguous_application_request");
   if (
     request.creditApplicationId &&
     !e.creditApplication?.applicationIds.includes(request.creditApplicationId)
   )
     throw new QboError("verified_credit_application_required");
+  if (
+    request.correctionId &&
+    e.correction?.correctionId !== request.correctionId
+  )
+    throw new QboError("approved_correction_required");
+  if (e.correction?.kind === "bank_return") {
+    if (
+      !request.correctionId ||
+      e.version !== "ap-qbo-export-v1" ||
+      !e.authorizedSubject ||
+      d.caseId !== request.caseId ||
+      e.correction.caseId !== d.caseId
+    )
+      throw new QboError("approved_return_correction_required");
+    return d;
+  }
   if (e.recognizedCredit) {
     const r = e.recognizedCredit;
     if (

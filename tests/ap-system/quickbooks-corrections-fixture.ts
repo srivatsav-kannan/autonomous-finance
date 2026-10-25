@@ -9,9 +9,15 @@ export const correctionRefs = {
   ),
 };
 /** Test-owned bank database evidence, not a bank simulation or real posting claim. */
-export async function returnedFixture() {
+export async function returnedFixture(
+  beforeReturn?: (
+    f: Awaited<ReturnType<typeof creditFixture>>,
+    s: Awaited<ReturnType<typeof seedSettled>>,
+  ) => Promise<void>,
+) {
   const f = await creditFixture();
   const s = await seedSettled(f, 2000, 2000);
+  await beforeReturn?.(f, s);
   const ids = await f.t.run(async (ctx) => {
     const debit = (await ctx.db.query("demoTransactions").first())!;
     const j = (await ctx.db.get(debit.entryId!))!;

@@ -79,7 +79,18 @@ export type AccountingHold = {
   relatedIds: string[];
 };
 export type SyncHold = AccountingHold & {
-  state: "held";
+  state: "held" | "resolved";
+  resolution?: {
+    verifiedAt: number;
+    authorizedSubject: string;
+    corrections: Array<{
+      correctionId: string;
+      proposalHash: string;
+      externalId: string;
+      syncToken: string;
+      responseHash: string;
+    }>;
+  };
   realmId: string;
   caseId: string;
   request: ExportRequest;
@@ -195,3 +206,20 @@ export type PaymentAllocationCorrection = PaymentAllocationEvidence &
   CorrectionApproval;
 export type AccountingCorrection =
   BankReturnCorrection | PaymentAllocationCorrection;
+
+/** Durable read-verification proof; status may inspect it without contacting QBO. */
+export type CorrectionVerification = {
+  version: "ap-qbo-correction-verification-v1";
+  state: "verified" | "failed";
+  realmId: string;
+  correctionId: string;
+  proposalHash: string;
+  mappingHash: string;
+  operationHash: string;
+  externalId: string;
+  syncToken: string;
+  checkedAt: number;
+  authorizedSubject: string;
+  responseHash: string | null;
+  error: string | null;
+};

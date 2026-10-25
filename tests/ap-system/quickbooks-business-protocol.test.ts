@@ -1,3 +1,4 @@
+import { returnedFixture } from "./quickbooks-corrections-fixture";
 import { mkdtemp, rm, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -66,7 +67,9 @@ async function protocol(load: ExportLoader) {
     body: Record<string, any>;
     requestId: string;
   }> = [];
+  let calls = 0;
   let obscureApplication = false;
+  let obscureJournal = false;
   const oauth = new OAuth(
     {
       clientId: "mock",
@@ -77,6 +80,7 @@ async function protocol(load: ExportLoader) {
     },
     store,
     async (input, init = {}) => {
+      calls++;
       const url = new URL(String(input));
       if (url.hostname === "oauth.platform.intuit.com")
         return json({
@@ -113,6 +117,21 @@ async function protocol(load: ExportLoader) {
       }
       if (path === "query") {
         const q = url.searchParams.get("query")!;
+        const vendor = q.match(
+          /^SELECT \* FROM BillPayment WHERE VendorRef = '(\d+)' MAXRESULTS 1000$/,
+        );
+        if (vendor)
+          return json({
+            QueryResponse: {
+              BillPayment: [...rows.entries()]
+                .filter(
+                  ([key, row]) =>
+                    key.startsWith("BillPayment:") &&
+                    row.VendorRef?.value === vendor[1],
+                )
+                .map(([, row]) => row),
+            },
+          });
         const [, entity, doc] = q.match(
           /^SELECT \* FROM (\w+) WHERE DocNumber = '([^']+)' MAXRESULTS 1000$/,
         )!;
@@ -129,10 +148,11 @@ async function protocol(load: ExportLoader) {
           bill: "Bill",
           vendorcredit: "VendorCredit",
           billpayment: "BillPayment",
+          journalentry: "JournalEntry",
         } as const
       )[
         (init.method === "POST" ? path : parts.at(-2)) as
-          "bill" | "billpayment" | "vendorcredit"
+          "bill" | "billpayment" | "vendorcredit" | "journalentry"
       ];
       if (init.method === "POST") {
         const body = JSON.parse(String(init.body));
@@ -142,7 +162,11 @@ async function protocol(load: ExportLoader) {
           body,
           requestId: url.searchParams.get("requestid")!,
         });
-        if (entity === "BillPayment" && obscureApplication) return json({}); // could be merged/accepted remotely: never infer success or repost
+        if (
+          (entity === "BillPayment" && obscureApplication) ||
+          (entity === "JournalEntry" && obscureJournal)
+        )
+          return json({}); // could be merged/accepted remotely: never infer success or repost
         const row = {
           ...body,
           Id: id,
@@ -180,12 +204,16 @@ async function protocol(load: ExportLoader) {
   };
   return {
     root,
+    calls: () => calls,
     rows,
     posts,
     journal,
     dispatcher,
     preview,
     submit,
+    obscureJournal: () => {
+      obscureJournal = true;
+    },
     obscure: () => {
       obscureApplication = true;
     },
@@ -213,6 +241,204 @@ async function applicationFixture() {
   return { f, c, a: a!, s, load };
 }
 describe("QBO business dispatcher HTTP protocol (mocked)", () => {
+  it("replicates approved return, resolves held evidence only after readback, and pays exact restored allocation", async () => {
+    let p!: Awaited<ReturnType<typeof protocol>>;
+    let original!: Operation;
+    const f = await returnedFixture(async (f, s) => {
+      p = await protocol(({ caseId, ...rest }) => s.load(caseId, rest));
+      await p.submit({ caseId: f.detail.caseId });
+      original = await p.submit({
+        caseId: f.detail.caseId,
+        paymentVersionId: s.versionId,
+      });
+    });
+    const req = { caseId: f.detail.caseId };
+    expect(await p.dispatcher.run(req, "submit")).toMatchObject({
+      hold: { state: "held", code: "return_accounting_remediation_required" },
+    });
+    const proposal = await f.proposeCorrection();
+    await f.voteCorrection(proposal);
+    await f.voteCorrection(proposal, "finance");
+    expect(await p.dispatcher.checkHolds(req, { verify: true })).toMatchObject([
+      { code: "return_correction_sync_required" },
+    ]);
+    const je = await p.submit({ ...req, correctionId: proposal.proposalId });
+    expect(je.entity).toBe("JournalEntry");
+    expect(je.payload.Line).toEqual([
+      {
+        Amount: 20,
+        DetailType: "JournalEntryLineDetail",
+        JournalEntryLineDetail: {
+          PostingType: "Debit",
+          AccountRef: { value: "35" },
+        },
+      },
+      {
+        Amount: 20,
+        DetailType: "JournalEntryLineDetail",
+        JournalEntryLineDetail: {
+          PostingType: "Credit",
+          AccountRef: { value: "33" },
+          Entity: { Type: "Vendor", EntityRef: { value: "5" } },
+        },
+      },
+    ]);
+    const callsBefore = p.calls();
+    expect(await p.dispatcher.checkHolds(req)).toMatchObject([
+      { code: "return_correction_sync_required" },
+    ]);
+    expect(p.calls()).toBe(callsBefore);
+    expect(await p.dispatcher.checkHolds(req, { verify: true })).toEqual([]);
+    const callsAfter = p.calls();
+    expect(await p.dispatcher.checkHolds(req)).toEqual([]);
+    expect(p.calls()).toBe(callsAfter);
+    const holdFile = (await readdir(p.root)).find((n) =>
+      n.startsWith("hold-"),
+    )!;
+    expect(await p.journal.store.read(holdFile)).toMatchObject({
+      state: "resolved",
+      resolution: {
+        corrections: [
+          {
+            correctionId: proposal.proposalId,
+            externalId: je.externalId,
+            syncToken: "0",
+          },
+        ],
+      },
+    });
+    expect(await p.journal.get(original)).toEqual(original);
+    const next = await seedSettled(f, 3000, 3000, [], "-replacement");
+    const replacement = { ...req, paymentVersionId: next.versionId };
+    expect(await p.dispatcher.run(replacement)).toMatchObject({
+      hold: { code: "restored_payable_allocation_required" },
+    });
+    const a = await f.proposeCorrection({
+      kind: "payment_allocation",
+      ...req,
+      paymentVersionId: next.versionId,
+      originalBillCents: 1000,
+      restoredPayables: [
+        { correctionId: proposal.proposalId, amountCents: 2000 },
+      ],
+      idempotencyKey: "replacement-allocation",
+      reason: "Exactly allocate existing settlement",
+    });
+    await f.voteCorrection(a);
+    await f.voteCorrection(a, "finance");
+    const payment = await p.submit({ ...req, correctionId: a.proposalId });
+    expect(payment.payload).toMatchObject({
+      TotalAmt: 30,
+      Line: [
+        { Amount: 10, LinkedTxn: [{ TxnType: "Bill" }] },
+        {
+          Amount: 20,
+          LinkedTxn: [{ TxnType: "JournalEntry", TxnId: je.externalId }],
+        },
+      ],
+    });
+    expect(payment.links.correctionId).toBe(a.proposalId);
+    expect((await p.submit(replacement)).externalId).toBe(payment.externalId);
+    expect(p.posts.map((p) => p.entity)).toEqual([
+      "Bill",
+      "BillPayment",
+      "JournalEntry",
+      "BillPayment",
+    ]);
+    p.rows.get(`JournalEntry:${je.externalId}`)!.Line[1].Amount = 19;
+    expect(await p.dispatcher.checkHolds(req, { verify: true })).toMatchObject([
+      { code: "return_correction_sync_required" },
+    ]);
+  });
+  it("never resolves ambiguous journal creation or retries with a new request ID", async () => {
+    let p!: Awaited<ReturnType<typeof protocol>>;
+    const f = await returnedFixture(async (f, s) => {
+      p = await protocol(({ caseId, ...rest }) => s.load(caseId, rest));
+      await p.submit({ caseId: f.detail.caseId });
+      await p.submit({
+        caseId: f.detail.caseId,
+        paymentVersionId: s.versionId,
+      });
+    });
+    const a = await f.proposeCorrection();
+    await f.voteCorrection(a);
+    await f.voteCorrection(a, "finance");
+    const request = { caseId: f.detail.caseId, correctionId: a.proposalId };
+    const plan = await p.preview(request);
+    p.obscureJournal();
+    await expect(p.submit(request)).rejects.toThrow(
+      "external_response_mismatch",
+    );
+    const first = (await p.journal.get(plan))!;
+    expect(first.state).toBe("unknown");
+    expect(await p.submit(request)).toMatchObject({
+      state: "unknown",
+      requestId: first.requestId,
+      attempts: 1,
+    });
+    expect(p.posts).toHaveLength(3);
+    expect(
+      await p.dispatcher.checkHolds(
+        { caseId: f.detail.caseId },
+        { verify: true },
+      ),
+    ).toMatchObject([{ code: "return_correction_sync_required" }]);
+  });
+  it("blocks externally consumed restored principal before a replacement POST", async () => {
+    let p!: Awaited<ReturnType<typeof protocol>>;
+    const f = await returnedFixture(async (f, s) => {
+      p = await protocol(({ caseId, ...rest }) => s.load(caseId, rest));
+      await p.submit({ caseId: f.detail.caseId });
+      await p.submit({
+        caseId: f.detail.caseId,
+        paymentVersionId: s.versionId,
+      });
+    });
+    const a = await f.proposeCorrection();
+    await f.voteCorrection(a);
+    await f.voteCorrection(a, "finance");
+    const je = await p.submit({
+      caseId: f.detail.caseId,
+      correctionId: a.proposalId,
+    });
+    expect(
+      await p.dispatcher.checkHolds(
+        { caseId: f.detail.caseId },
+        { verify: true },
+      ),
+    ).toEqual([]);
+    const next = await seedSettled(f, 2000, 2000, [], "-replacement");
+    const allocation = await f.proposeCorrection({
+      kind: "payment_allocation",
+      caseId: f.detail.caseId,
+      paymentVersionId: next.versionId,
+      originalBillCents: 0,
+      restoredPayables: [{ correctionId: a.proposalId, amountCents: 2000 }],
+      idempotencyKey: "allocation",
+      reason: "Explicit restored payable",
+    });
+    await f.voteCorrection(allocation);
+    await f.voteCorrection(allocation, "finance");
+    p.rows.set("BillPayment:999", {
+      Id: "999",
+      SyncToken: "0",
+      VendorRef: { value: "5" },
+      Line: [
+        {
+          Amount: 1,
+          LinkedTxn: [{ TxnId: je.externalId, TxnType: "JournalEntry" }],
+        },
+      ],
+    });
+    await expect(
+      p.submit({
+        caseId: f.detail.caseId,
+        correctionId: allocation.proposalId,
+      }),
+    ).rejects.toThrow("external_restored_balance_conflict");
+    expect(p.posts).toHaveLength(3);
+  });
+
   it("preserves original signed discount GL on Bill and linked VendorCredit through readback", async () => {
     const f = await creditFixture(100);
     const c = await f.credit();

@@ -1,3 +1,10 @@
+import { readdir } from "node:fs/promises";
+import {
+  returnPlan,
+  returnIdentity,
+  allocatedPaymentPlan,
+  assertRestoredOperation,
+} from "./correction-plans";
 import {
   PrivateStore,
   QboError,
@@ -25,6 +32,7 @@ import type {
   SyncHold,
   AppliedCredit,
   SubmissionAuthorization,
+  CorrectionVerification,
 } from "./types";
 export class SyncJournal {
   constructor(
@@ -203,9 +211,172 @@ export class QuickBooksDispatcher {
     readonly mappings: Mappings,
     readonly journal: SyncJournal,
   ) {}
+  /** Authenticated status check. A stored flag alone never releases a return hold. */
+  async checkHolds(
+    request: ExportRequest,
+    options: { verify?: boolean } = {},
+  ): Promise<AccountingHold[]> {
+    validateMappings(this.mappings, this.journal.client.oauth.config.realmId);
+    const e = await this.load(request);
+    return this.checkExportHolds(e, request, options.verify === true);
+  }
+  private async checkExportHolds(
+    e: AccountingExport,
+    request: ExportRequest,
+    verify = false,
+  ): Promise<AccountingHold[]> {
+    if (
+      e.version !== "ap-qbo-export-v1" ||
+      !e.authorizedSubject ||
+      e.detail.caseId !== request.caseId
+    )
+      throw new QboError("authenticated_case_export_required");
+    if (e.holds?.length) return e.holds;
+    if (e.correction?.kind === "bank_return") return [];
+    const required = e.requiredCorrections ?? [];
+    if (!required.length) return [];
+    const proof: NonNullable<SyncHold["resolution"]>["corrections"] = [];
+    for (const c of required) {
+      try {
+        const op = await this.journal.get({
+          realmId: this.mappings.realmId,
+          identity: returnIdentity(
+            e.detail.scope.organizationId,
+            e.detail.scope.runId,
+            c,
+          ),
+        });
+        if (!op) throw new QboError("external_correction_required");
+        assertRestoredOperation(c, op, this.mappings);
+        const file = `verification-${hash({ realmId: op.realmId, identity: op.identity })}.json`;
+        const receipt = await this.journal.store.lock(file, async () => {
+          if (!verify)
+            return this.journal.store.read<CorrectionVerification>(file);
+          const record: CorrectionVerification = {
+            version: "ap-qbo-correction-verification-v1",
+            state: "failed",
+            realmId: op.realmId,
+            correctionId: c.correctionId,
+            proposalHash: c.proposalHash,
+            mappingHash: hash(this.mappings),
+            operationHash: op.payloadHash,
+            externalId: op.externalId!,
+            syncToken: op.syncToken!,
+            checkedAt: Date.now(),
+            authorizedSubject: e.authorizedSubject,
+            responseHash: null,
+            error: null,
+          };
+          try {
+            record.responseHash = hash(await this.journal.client.verify(op));
+            record.state = "verified";
+          } catch (error) {
+            record.error = safeError(error);
+          }
+          await this.journal.store.write(file, record);
+          return record;
+        });
+        if (
+          !receipt ||
+          receipt.version !== "ap-qbo-correction-verification-v1" ||
+          receipt.state !== "verified" ||
+          receipt.realmId !== op.realmId ||
+          receipt.correctionId !== c.correctionId ||
+          receipt.proposalHash !== c.proposalHash ||
+          receipt.mappingHash !== hash(this.mappings) ||
+          receipt.operationHash !== op.payloadHash ||
+          receipt.externalId !== op.externalId ||
+          receipt.syncToken !== op.syncToken ||
+          !receipt.responseHash
+        )
+          throw new QboError("external_correction_verification_required");
+        proof.push({
+          correctionId: c.correctionId,
+          proposalHash: c.proposalHash,
+          externalId: op.externalId!,
+          syncToken: op.syncToken!,
+          responseHash: receipt.responseHash,
+        });
+      } catch (error) {
+        return [
+          {
+            code: "return_correction_sync_required",
+            owner: "controller",
+            reason: `Approved return requires successful external journal verification: ${safeError(error)}`,
+            relatedIds: [
+              c.correctionId,
+              c.returnTransactionId,
+              c.returnJournalId,
+            ],
+          },
+        ];
+      }
+    }
+    if (!verify) return [];
+    const covered = new Set(
+      required.flatMap((c) => [
+        c.correctionId,
+        c.returnTransactionId,
+        c.returnJournalId,
+        c.original.paymentVersionId,
+        c.original.commandId,
+        c.observationId,
+        c.returnTransactionRowId,
+      ]),
+    );
+    const files = (await readdir(this.journal.store.root)).filter((n) =>
+      /^hold-[a-f0-9]{64}\.json$/.test(n),
+    );
+    if (files.length > 1000)
+      throw new QboError("hold_reconciliation_incomplete");
+    for (const file of files)
+      await this.journal.store.lock(file, async () => {
+        const hold = await this.journal.store.read<SyncHold>(file);
+        if (
+          !hold ||
+          hold.realmId !== this.mappings.realmId ||
+          hold.caseId !== request.caseId ||
+          hold.state !== "held"
+        )
+          return;
+        const returns =
+          [
+            "return_accounting_remediation_required",
+            "return_correction_sync_required",
+          ].includes(hold.code) &&
+          hold.relatedIds.length > 0 &&
+          hold.relatedIds.every((id) => covered.has(id));
+        const allocation =
+          hold.code === "restored_payable_allocation_required" &&
+          e.correction?.kind === "payment_allocation" &&
+          hold.request.paymentVersionId ===
+            e.correction.settlement.paymentVersionId;
+        if (!returns && !allocation) return;
+        await this.journal.store.write(file, {
+          ...hold,
+          state: "resolved",
+          updatedAt: Date.now(),
+          resolution: {
+            verifiedAt: Date.now(),
+            authorizedSubject: e.authorizedSubject,
+            corrections: proof,
+          },
+        } satisfies SyncHold);
+      });
+    return [];
+  }
   private async resolve(e: AccountingExport, request: ExportRequest) {
     const d = assertExport(e, request);
     const deps: Operation[] = [];
+    if (e.correction?.kind === "bank_return") {
+      const c = e.correction;
+      const payment = await this.journal.get({
+        realmId: this.mappings.realmId,
+        identity: `BillPayment:${d.scope.organizationId}:${d.scope.runId}:${c.original.paymentVersionId}:${c.original.bankTransactionId}`,
+      });
+      if (!payment) throw new QboError("external_original_payment_required");
+      return { plan: returnPlan(e, this.mappings, payment), deps: [payment] };
+    }
     const originalBill = async (billId: string) => {
       const op = await this.journal.get({
         realmId: this.mappings.realmId,
@@ -224,7 +395,11 @@ export class QuickBooksDispatcher {
       };
     }
     const base = billPlan(e, this.mappings);
-    if (!request.paymentVersionId && !request.creditApplicationId)
+    if (
+      !request.paymentVersionId &&
+      !request.creditApplicationId &&
+      !request.correctionId
+    )
       return { plan: base, deps };
     const bill = await originalBill(base.links.billId);
     const items: AppliedCredit[] =
@@ -240,6 +415,27 @@ export class QuickBooksDispatcher {
         throw new QboError("external_credit_required");
       deps.push(op);
       credits.push(op);
+    }
+    if (e.correction?.kind === "payment_allocation") {
+      const restored: Operation[] = [];
+      for (const item of e.correction.restoredPayables) {
+        const op = await this.journal.get({
+          realmId: this.mappings.realmId,
+          identity: returnIdentity(
+            d.scope.organizationId,
+            d.scope.runId,
+            item.correction,
+          ),
+        });
+        if (!op) throw new QboError("external_correction_required");
+        assertRestoredOperation(item.correction, op, this.mappings);
+        restored.push(op);
+        deps.push(op);
+      }
+      return {
+        plan: allocatedPaymentPlan(e, this.mappings, bill, credits, restored),
+        deps,
+      };
     }
     return {
       plan: request.creditApplicationId
@@ -276,7 +472,12 @@ export class QuickBooksDispatcher {
               updatedAt: Date.now(),
             },
     });
-    if (e.holds?.length) return held(e.holds[0]!);
+    const currentHolds = await this.checkExportHolds(
+      e,
+      request,
+      mode === "submit",
+    );
+    if (currentHolds.length) return held(currentHolds[0]!);
     const resolved = await this.resolve(e, request);
     const { plan, deps } = resolved;
     if (approval && hash(plan) !== approval.expectedPlanHash)
@@ -305,9 +506,32 @@ export class QuickBooksDispatcher {
           for (const op of deps) {
             const external = await this.journal.client.verify(op);
             if (plan.entity === "BillPayment") {
+              if (
+                op.entity === "JournalEntry" &&
+                e.correction?.kind === "payment_allocation"
+              ) {
+                const allocation = e.correction.restoredPayables.find(
+                  (r) => r.correction.correctionId === op.links.correctionId,
+                );
+                if (!allocation)
+                  throw new QboError("restored_payable_binding_conflict");
+                const applied = await this.journal.client.journalAppliedCents(
+                  op,
+                  this.mappings.vendors[e.correction.supplierId]!.id,
+                );
+                if (
+                  BigInt(applied) + BigInt(allocation.amountCents) >
+                  BigInt(allocation.correction.amountCents)
+                )
+                  throw new QboError("external_restored_balance_conflict");
+                continue;
+              }
               const need =
                 op.entity === "Bill"
-                  ? (e.creditApplication?.amountCents ??
+                  ? ((e.correction?.kind === "payment_allocation"
+                      ? e.correction.originalBillCents
+                      : undefined) ??
+                    e.creditApplication?.amountCents ??
                     e.settlement?.grossAppliedCents ??
                     e.settlement?.amountCents)
                   : (
@@ -332,8 +556,9 @@ export class QuickBooksDispatcher {
           freshAuthority(fresh);
           if (fresh.authorizedSubject !== e.authorizedSubject)
             throw new QboError("submission_identity_changed");
-          if (fresh.holds?.length) {
-            await this.journal.recordHold(request, fresh.holds[0]!);
+          const freshHolds = await this.checkExportHolds(fresh, request, true);
+          if (freshHolds.length) {
+            await this.journal.recordHold(request, freshHolds[0]!);
             throw new QboError("accounting_hold_before_write");
           }
           const next = await this.resolve(fresh, request);

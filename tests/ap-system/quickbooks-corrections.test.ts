@@ -1,3 +1,4 @@
+import { seedSettled } from "./quickbooks-business-fixture";
 import { afterEach, describe, it, expect, vi } from "vitest";
 import {
   returnedFixture,
@@ -5,6 +6,54 @@ import {
 } from "./quickbooks-corrections-fixture";
 afterEach(() => vi.unstubAllEnvs());
 describe("controller-proposed immutable QBO return authority", () => {
+  it("reserves exact restored capacity and rejects duplicates, wrong sums and over-allocation", async () => {
+    const f = await returnedFixture();
+    const p = await f.proposeCorrection();
+    await f.voteCorrection(p);
+    await f.voteCorrection(p, "finance");
+    const next = await seedSettled(f, 2000, 2000, [], "-next");
+    const input = {
+      kind: "payment_allocation",
+      caseId: f.detail.caseId,
+      paymentVersionId: next.versionId,
+      originalBillCents: 1000,
+      restoredPayables: [{ correctionId: p.proposalId, amountCents: 1000 }],
+      idempotencyKey: "allocate",
+      reason: "Exact approved allocation",
+    };
+    await expect(
+      f.proposeCorrection({ ...input, originalBillCents: 999 }),
+    ).rejects.toThrow(/allocation_sum/);
+    await expect(
+      f.proposeCorrection({
+        ...input,
+        restoredPayables: [
+          ...input.restoredPayables,
+          ...input.restoredPayables,
+        ],
+      }),
+    ).rejects.toThrow(/duplicate_restored_payable/);
+    const a = await f.proposeCorrection(input);
+    await f.voteCorrection(a);
+    await f.voteCorrection(a, "finance");
+    const e = await f.currentCorrection(a.proposalId);
+    expect(e).toMatchObject({
+      kind: "payment_allocation",
+      originalBillCents: 1000,
+      amountCents: 2000,
+    });
+    const second = await seedSettled(f, 1001, 1001, [], "-second");
+    await expect(
+      f.proposeCorrection({
+        ...input,
+        paymentVersionId: second.versionId,
+        originalBillCents: 0,
+        restoredPayables: [{ correctionId: p.proposalId, amountCents: 1001 }],
+        idempotencyKey: "over",
+      }),
+    ).rejects.toThrow(/restored_payable_exhausted/);
+  });
+
   it("requires explicit sequential human approval and preserves existing cash/AP journals", async () => {
     const f = await returnedFixture();
     const before = await f.t.run((ctx) =>

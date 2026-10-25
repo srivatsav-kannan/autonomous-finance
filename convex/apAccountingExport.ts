@@ -1,4 +1,8 @@
 import {
+  approvedCorrection,
+  approvedReturns,
+} from "./lib/apSystem/accountingCorrectionAuthority";
+import {
   appliedCredits,
   creditApplication,
   recognizedCredit,
@@ -28,15 +32,41 @@ export const current = query({
     caseId: v.id("apCaseRecords"),
     paymentVersionId: v.optional(v.id("demoVersions")),
     creditApplicationId: v.optional(v.id("apCreditApplications")),
+    correctionId: v.optional(v.id("apAccountingCorrections")),
   },
   handler: async (ctx, args): Promise<AccountingExport> => {
     const { subject } = await requirePaymentHuman(ctx, args.scope);
-    if (args.paymentVersionId && args.creditApplicationId)
+    if (
+      [
+        args.paymentVersionId,
+        args.creditApplicationId,
+        args.correctionId,
+      ].filter(Boolean).length > 1
+    )
       throw Error("Select one accounting application identity");
     const row = await ctx.db.get(args.caseId);
     assertRowScope(row, args.scope);
+    const selected = args.correctionId
+      ? await approvedCorrection(ctx, args.scope, args.correctionId)
+      : null;
+    if (selected && selected.caseId !== args.caseId)
+      throw Error("Correction case mismatch");
+    if (selected?.kind === "bank_return")
+      return {
+        version: "ap-qbo-export-v1",
+        exportedAt: Date.now(),
+        authorizedSubject: subject,
+        detail: await projectCase(ctx, row!),
+        billRecordHash: await sha256Hex(canonical(selected)),
+        settlement: null,
+        correction: selected,
+      };
     if (row?.creditId) {
-      if (args.paymentVersionId || args.creditApplicationId)
+      if (
+        args.paymentVersionId ||
+        args.creditApplicationId ||
+        args.correctionId
+      )
         throw Error("Credit recognition is not a payment");
       const credit = await recognizedCredit(ctx, args.scope, row.creditId);
       return {
@@ -183,12 +213,27 @@ export const current = query({
     );
     for (const r of [...observations, ...transactions])
       assertRowScope(r, args.scope);
-    if (
-      returned.length ||
-      returnCommands.length ||
-      observations.length ||
-      transactions.length
-    )
+    const corrections = await approvedReturns(ctx, args.scope, row._id);
+    if (corrections.length) base.requiredCorrections = corrections;
+    const covered = new Set(
+      corrections.flatMap((c) => [
+        c.original.paymentVersionId,
+        c.original.commandId,
+        c.observationId,
+        c.returnTransactionRowId,
+      ]),
+    );
+    const unresolved = [
+      ...returned.map((r) => r._id),
+      ...returnCommands.map((r) => r._id),
+      ...observations.map((r) => r._id),
+      ...transactions.map((r) => r._id),
+    ].filter((id) => !covered.has(id));
+    // Late transfers are never authorized by a correction for the original transfer.
+    unresolved.push(
+      ...returnCommands.filter((c) => c.lateTransferId).map((c) => c._id),
+    );
+    if (unresolved.length)
       return {
         ...base,
         holds: [
@@ -196,16 +241,58 @@ export const current = query({
             code: "return_accounting_remediation_required",
             owner: "controller",
             reason:
-              "A historical payment returned or has late bank activity; preserve original external history and approve a linked accounting correction before further sync.",
-            relatedIds: [
-              ...returned.map((r) => r._id),
-              ...returnCommands.map((r) => r._id),
-              ...observations.map((r) => r._id),
-              ...transactions.map((r) => r._id),
-            ],
+              "Historical return requires its exact current approved correction and verified external replication; late activity remains held.",
+            relatedIds: [...new Set(unresolved)],
           },
         ],
       };
+    if (selected?.kind === "payment_allocation")
+      return { ...base, settlement: selected.settlement, correction: selected };
+    if (
+      corrections.length &&
+      (args.paymentVersionId || args.creditApplicationId)
+    ) {
+      if (args.paymentVersionId) {
+        const candidates = await ctx.db
+          .query("apAccountingCorrections")
+          .withIndex("by_identity", (q) =>
+            q
+              .eq("scope.runId", args.scope.runId)
+              .eq("identity", `payment_allocation:${args.paymentVersionId}`),
+          )
+          .collect();
+        const approved = candidates.filter((c) => c.status === "approved");
+        if (approved.length === 1) {
+          const allocation = await approvedCorrection(
+            ctx,
+            args.scope,
+            approved[0]!._id,
+          );
+          if (
+            allocation.kind !== "payment_allocation" ||
+            allocation.caseId !== row._id
+          )
+            throw Error("Allocation case mismatch");
+          return {
+            ...base,
+            settlement: allocation.settlement,
+            correction: allocation,
+          };
+        }
+      }
+      return {
+        ...base,
+        holds: [
+          {
+            code: "restored_payable_allocation_required",
+            owner: "controller",
+            reason:
+              "An explicit approved allocation must distinguish the original Bill from restored payables before applying another cash or credit payment.",
+            relatedIds: corrections.map((c) => c.correctionId),
+          },
+        ],
+      };
+    }
     if (args.creditApplicationId)
       return {
         ...base,
@@ -373,6 +460,9 @@ export const current = query({
       detail,
       billRecordHash: bill.recordHash,
       settlement,
+      ...(base.requiredCorrections
+        ? { requiredCorrections: base.requiredCorrections }
+        : {}),
       ...(recognized
         ? {
             recognizedInvoice: {
