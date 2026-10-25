@@ -11,14 +11,13 @@ import { AdminClient, SeatClient, api, convex } from "../core/kernel-client";
 import { ROLE_CAPABILITIES } from "../core/roles";
 import { MemoryStore } from "../memory/store";
 import { memoryDir, runDir } from "../world/scenario";
+import { readHumanToken } from "../world/seat-tokens";
 import { addDays } from "../world/rng";
 import { GATEWAY_TOKEN_HEADER, guardRequest, loadGatewayAuth, type GatewayAuth } from "./gateway-auth";
 import { why } from "./why";
 
-const human = (runId: string) => {
-  const tokens = JSON.parse(fs.readFileSync(path.join(runDir(runId), "seats.json"), "utf8")) as Record<string, string>;
-  return new SeatClient(runId, "human-cfo", tokens["human-cfo"]!);
-};
+/** The human CFO's seat, from the run's human token file (never the agents' seats.json). */
+export const humanClient = (runId: string) => new SeatClient(runId, "human-cfo", readHumanToken(runDir(runId)));
 
 async function body(req: http.IncomingMessage): Promise<Record<string, unknown>> {
   let data = "";
@@ -152,7 +151,7 @@ export function createGatewayServer(auth: GatewayAuth) {
       let out: unknown;
       if (req.method === "POST" && /^asks\/[^/]+\/answer$/.test(rest)) {
         const b = await body(req);
-        out = await answer(human(runId), runId, rest.split("/")[1]!, String(b.optionId), b.note as string | undefined);
+        out = await answer(humanClient(runId), runId, rest.split("/")[1]!, String(b.optionId), b.note as string | undefined);
       } else if (req.method === "POST" && rest === "chaos") {
         out = await chaos(runId, String((await body(req)).kind));
       } else if (req.method === "POST" && rest === "why") {

@@ -1,7 +1,8 @@
-import vm from "node:vm";
+import { z } from "zod";
 import { parseMoney } from "../core/money";
 import type { MemoryStore } from "../memory/store";
 import { ParsedInvoice, checkInvoiceMath, layoutSignature } from "./invoice";
+import { ParserSpec, applySpec } from "./parser-spec";
 
 export interface Parser {
   id: string;
@@ -79,33 +80,43 @@ const keyvalue: Parser = {
 
 export const BUILTIN_PARSERS: Parser[] = [columnar, keyvalue];
 
-export interface ParserRecord {
-  id: string;
-  signature: string;
-  description: string;
-  /** Body of `function parse(text, helpers)`; must return a ParsedInvoice-shaped object. */
-  code: string;
-  tests: { input: string; expected: unknown }[];
-  author: string;
-}
+/** A parser approved into memory: a declarative spec plus the examples it must reproduce. */
+export const ParserRecord = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  signature: z.string(),
+  description: z.string(),
+  spec: ParserSpec,
+  tests: z.array(z.object({ input: z.string(), expected: z.unknown() })),
+  author: z.string(),
+}).strict();
+export type ParserRecord = z.infer<typeof ParserRecord>;
 
 /**
- * Agent-written parsers run in an isolated VM context: no require, no process, no network,
- * a 50 ms CPU budget, and their output still has to pass the schema and arithmetic checks.
+ * Records written before parsers became specs held a JavaScript function body in `code`.
+ * They are recognized so they can be reported and replaced, and are never executed.
  */
-export function compileParser(rec: ParserRecord): Parser {
-  const script = new vm.Script(`(function parse(text, helpers) {\n${rec.code}\n})`);
-  const context = vm.createContext(Object.freeze({}), { codeGeneration: { strings: false, wasm: false } });
-  const fn = script.runInContext(context, { timeout: 50 }) as (text: string, helpers: unknown) => unknown;
-  const helpers = Object.freeze({ parseMoney });
+export const LegacyParserRecord = z.object({ id: z.string(), signature: z.string(), code: z.string() }).passthrough();
+
+export class LegacyParserError extends Error {
+  constructor(id: string) {
+    super(`${id} is a JavaScript parser; agent-written code is no longer executed. The layout falls back to extraction and is re-learned as a spec.`);
+  }
+}
+
+/** Turn a stored record into a parser. Validates the spec first; nothing in it is executed. */
+export function compileParser(rec: unknown): Parser {
+  const parsed = ParserRecord.safeParse(rec);
+  if (!parsed.success) {
+    const legacy = LegacyParserRecord.safeParse(rec);
+    if (legacy.success && !(rec as { spec?: unknown }).spec) throw new LegacyParserError(legacy.data.id);
+    throw new Error(`invalid parser record: ${parsed.error.issues.slice(0, 3).map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")}`);
+  }
+  const { id, signature, spec } = parsed.data;
   return {
-    id: rec.id,
+    id,
     origin: "memory",
-    detect: (t) => layoutSignature(t) === rec.signature,
-    parse: (t) => {
-      const out = vm.runInContext("fn(text, helpers)", vm.createContext({ fn, text: t, helpers }), { timeout: 50 });
-      return ParsedInvoice.parse(JSON.parse(JSON.stringify(out)));
-    },
+    detect: (t) => layoutSignature(t) === signature,
+    parse: (t) => applySpec(spec, t),
   };
 }
 
@@ -114,12 +125,13 @@ export async function loadMemoryParsers(mem: MemoryStore, sha?: string): Promise
   const files = await mem.list("integrations/parsers/", snapshot);
   const parsers: Parser[] = [];
   for (const f of files) {
-    const rec = await mem.read<ParserRecord>(f, snapshot);
+    const rec = await mem.read<unknown>(f, snapshot);
     if (!rec) continue;
     try {
       parsers.push(compileParser(rec));
     } catch {
-      // A broken parser in memory is skipped; the extraction fallback still works.
+      // A broken or legacy (JavaScript) parser in memory is skipped; extraction still works,
+      // and the next extraction of that layout hands it to integrations to re-learn.
     }
   }
   return parsers;

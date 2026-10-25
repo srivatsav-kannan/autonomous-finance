@@ -80,7 +80,7 @@ All numbers come from [docs/RESULTS.md](RESULTS.md).
 | Claim | Result | Source |
 |---|---|---|
 | Catches planted errors in our simulated world | 13 of 13 planted errors, 3 of 3 look-alikes left alone, 0 false alarms, books correct, on 4 seeds; $0.04–0.05 and 71–82 s per 14-day run | [RESULTS.md](RESULTS.md) §2 |
-| Controls hold | 20 of 20 control tests: 17 bad actions refused; the hash chain verifies, a real bank transaction books and a cash entry can be reversed | [RESULTS.md](RESULTS.md) §4 |
+| Controls hold | 22 of 22 control tests: 19 bad actions refused; the hash chain verifies, a real bank transaction books and a cash entry can be reversed | [RESULTS.md](RESULTS.md) §4 |
 | Cheaper than one generalist agent | On the same world (earlier run, with Claude): ours $0.15 and 87 s; one plain agent $7.80 and 42 min, 12 of 13 caught. One seed. | [RESULTS.md](RESULTS.md) §2 |
 | Works on outside benchmarks | 15 public tasks (APEX, DABstep, Invoice Sandbox, FinBalance): our team 93.3% mean, 14 of 15 correct; the same model alone 84.0%, 12 of 15. The controller's review fixed the two answers the model got wrong alone; the team costs about 1.7× as much. One run each, so it is a small sample. | [RESULTS.md](RESULTS.md) §3 |
 | Better than an agent forced into spreadsheets | Same model, same 11 tasks: 12 tool calls vs 71, 45 s vs 94 s, $0.12 vs $0.48, 4 of 4 planted errors caught vs 3 of 4. | [RESULTS.md](RESULTS.md) §1 |

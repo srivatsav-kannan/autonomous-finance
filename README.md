@@ -60,7 +60,7 @@ Headline numbers, all from [docs/RESULTS.md](docs/RESULTS.md):
 - On 4 seeds of the simulated company, 13 of 13 planted errors caught, books correct, $0.04–0.05 per run.
 - Same model, same 11 tasks: our typed kernel tools used 12 tool calls and $0.12; spreadsheet tools used 71 tool calls and $0.48.
 - On 15 public benchmark tasks, our team scored 93.3% mean (14 of 15) and the same model alone 84.0% (12 of 15), at about 1.7× the cost.
-- 20 of 20 control tests hold.
+- 22 of 22 control tests hold.
 
 ## Prerequisites
 
@@ -73,7 +73,7 @@ Headline numbers, all from [docs/RESULTS.md](docs/RESULTS.md):
 | Playwright Chromium | `npm run test:browser:local` | `npx playwright install --with-deps chromium` |
 | Chrome or Chromium | `npm run design:review` | set `CHROME_PATH` if it is not in a standard location |
 
-API keys go in `.env.local`, which git ignores. With `OPENAI_API_KEY`, agents use OpenAI `gpt-6.1-sol`, capped by `AGENT_MAX_USD` (default $15, tracked in `var/agent-spend.json`). Without it they fall back to Claude if `ANTHROPIC_API_KEY` is set; **that path has no spend cap** ([AUDIT.md](docs/AUDIT.md) P1-5). `AGENT_LLM=off` turns inference off everywhere.
+API keys go in `.env.local`, which git ignores. With `OPENAI_API_KEY`, agents use OpenAI `gpt-6.1-sol`, capped by `AGENT_MAX_USD` (default $15, tracked in `var/agent-spend.json`). Without it they fall back to Claude if `ANTHROPIC_API_KEY` is set, under the same cap. A request is refused before it is sent if its worst case would pass the cap. `AGENT_LLM=off` turns inference off everywhere.
 
 ## Repo map
 

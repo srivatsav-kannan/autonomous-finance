@@ -10,7 +10,7 @@ Measured Oct 24–25, 2026. Agents: OpenAI `gpt-6.1-sol` at medium effort. APEX 
 | 156 bookkeeping operations with 18 bad ones injected (no model) | All 18 stopped | 8 flagged after the fact, 10 never caught |
 | Simulated Sweetgreen books, 4 seeds × 14 days | 13 of 13 errors caught on every seed, books correct, $0.04–0.05 per run | — |
 | 15 public benchmark tasks (APEX, DABstep, Invoice Sandbox, FinBalance) | Our team: 93.3% mean, 14 of 15 correct, $4.06 | Same model alone: 84.0%, 12 of 15, $2.33 |
-| Control tests | 20 of 20 hold | — |
+| Control tests | 22 of 22 hold | — |
 | Payment survives a worker crash | 1 transfer, 1 journal entry | — |
 
 ## 1. Kernel vs spreadsheet
@@ -134,9 +134,9 @@ Sources: [APEX leaderboard](https://www.mercor.com/apex/apex-accounting-leaderbo
 
 ## 4. Controls and payment recovery
 
-**Control tests:** 20 of 20 hold ([control-tests.json](evals/control-tests.json)). Each case runs against the live kernel and git memory.
+**Control tests:** 22 of 22 hold ([control-tests.json](evals/control-tests.json)). Each case runs against the live kernel and git memory.
 
-Refused (17):
+Refused (19):
 - a bill with no source document
 - two bills from one document
 - cash posted with no bank transaction behind it
@@ -153,6 +153,8 @@ Refused (17):
 - booking it at a different amount
 - re-booking it after a double reversal
 - posting with a kernel-only source label
+- reversing a bill accrual outside the bill flow
+- reversing a payment settlement with no bank evidence
 - answering your own question to the human
 
 Also checked:
