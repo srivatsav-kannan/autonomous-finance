@@ -222,6 +222,35 @@ if (billId) {
   record("reserved-source-label", "kernel-only entry labels can't be posted directly", !reserved.ok, reserved.ok ? "posted a settlement-labelled entry directly" : (reserved as { error: string }).error);
 }
 
+// 20-21. Kernel-created entries (bill accruals, payment settlements) can't be undone by a mirror
+// entry: that would move AP or cash and leave the bill and payment state stale (audit P1-3).
+{
+  const bill = await ctl.client.mutation(api.ap.recordBill, {
+    ...ctl.auth, idempotencyKey: "c20a", vendor: "golden-state-produce", invoiceNumber: "SETTLE-1", invoiceDate: "2026-01-02", dueDate: "2026-01-16",
+    lines: line(50_00), totalCents: 50_00, documentEventId: await newDoc("ctl-doc-settle"), decision: "approve", exceptions: [], expenseAccount: "5000",
+  });
+  const settleBill = (bill as { billId?: Id<"bills"> }).billId;
+  const accrual = settleBill ? (await convex().query(api.ledger.entries, { runId, limit: 200 })).find((e) => e.source.kind === "bill" && e.source.ref === settleBill) : undefined;
+  const revBill = accrual ? await ctl.client.mutation(api.ledger.reverseEntry, { ...ctl.auth, idempotencyKey: "c20b", entryId: accrual._id, date: "2026-01-02", reason: "undo accrual" }) : undefined;
+  record("bill-accrual-reversal", "a bill accrual can't be reversed outside the bill flow", revBill !== undefined && !revBill.ok,
+    !revBill ? `setup failed: ${JSON.stringify(bill)}` : revBill.ok ? "reversed a bill accrual; the bill stays approved with no liability" : (revBill as { error: string }).error);
+
+  const req = settleBill ? await pay.client.mutation(api.payments.requestPayment, {
+    ...pay.auth, idempotencyKey: "c21a", payee: "golden-state-produce", amountCents: 50_00, method: "ach", remitTo: remit, billIds: [settleBill], dueDate: "2026-01-16",
+  }) : undefined;
+  const intentId = (req as { intentId?: Id<"paymentIntents"> } | undefined)?.intentId;
+  let settled: { ok: boolean; entryId?: Id<"journalEntries"> } | undefined;
+  if (intentId) {
+    await ctl.client.mutation(api.payments.approvePayment, { ...ctl.auth, intentId });
+    await pay.client.mutation(api.payments.executePayment, { ...pay.auth, intentId, currentRemitTo: remit });
+    settled = await pay.client.mutation(api.payments.settlePayment, { ...pay.auth, intentId, bankRef: "CTL-ACH-1", settledOn: "2026-01-02" });
+  }
+  const revSettle = settled?.entryId ? await pay.client.mutation(api.ledger.reverseEntry, { ...pay.auth, idempotencyKey: "c21b", entryId: settled.entryId, date: "2026-01-02", reason: "looks wrong" }) : undefined;
+  const after = intentId ? await convex().query(api.payments.intent, { runId, intentId }) : undefined;
+  record("settlement-reversal", "a payment settlement can't be reversed without bank evidence", revSettle !== undefined && !revSettle.ok && after?.status === "settled",
+    !revSettle ? `setup failed: ${JSON.stringify(settled ?? req)}` : revSettle.ok ? "reversed a settlement: cash back up with no bank transaction, intent still settled" : (revSettle as { error: string }).error);
+}
+
 // 16. Asks: a seat can't answer its own question.
 {
   const ask = await ap.client.mutation(api.asks.createAsk, {

@@ -18,7 +18,7 @@ for (const optionId of ["pay", "reject"] as const) {
   const before = await admin.client.query(api.asks.list, { runId, to: "human_cfo" });
   const ask = before.find((a) => a.status === "open" && a.options.some((o) => o.id === "pay"))!;
   assert.ok(ask?.taskId);
-  const human = new SeatClient(runId, "human-cfo", scenario.tokens["human-cfo"]!);
+  const human = new SeatClient(runId, "human-cfo", scenario.humanTokens!["human-cfo"]!);
   assert.equal((await human.client.mutation(api.asks.answerAsk, { ...human.auth, askId: ask._id, optionId, note: "Synthetic human verification" })).ok, true);
   await team.runUntilIdle();
   const bills = await admin.client.query(api.ap.bills, { runId });

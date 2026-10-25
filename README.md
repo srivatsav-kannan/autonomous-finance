@@ -35,7 +35,7 @@ Built at Cal Hacks 13.0 for the Hyphenate track, *The Hyphenated Enterprise: Aut
   - Every change is a commit by the seat that made it, with its reasons.
   - Bank details, policies and agent-written code go through proposal branches that a *different* seat must merge.
   - Decision records are immutable. Any number traces back with `git blame`.
-- **Agents write their own integrations.** When a supplier sends a format nobody can parse, Claude reads it once. The integrations engineer then writes a parser, tests it and proposes it. The controller merges it, and from then on it runs deterministically in a sandbox.
+- **Agents write their own integrations.** When a supplier sends a format nobody can parse, Claude reads it once. The integrations engineer then writes a parser spec (regexes and field mappings as JSON, never code), tests it and proposes it. The controller re-runs its tests and merges it, and from then on fixed code applies it deterministically.
 - **Proof, not vibes** (`npm run eval`). A seeded world with planted errors and an answer key the agents never see. It's scored on:
   - catches, decoys and false alarms
   - books vs truth
@@ -93,7 +93,7 @@ For the broader legacy profile, choose an admin secret, set it interactively, an
 npx convex env set KERNEL_ADMIN_SECRET
 ```
 
-Add `ANTHROPIC_API_KEY=...` to `.env.local` to turn on Claude. Without it, the team runs its deterministic paths only.
+Add `ANTHROPIC_API_KEY=...` to `.env.local` to turn on Claude. Without it, the team runs its deterministic paths only. Agent calls on either provider are capped by `AGENT_MAX_USD` (default $15, tracked in `var/agent-spend.json`); a request is refused before it is sent if its worst case would pass the cap.
 
 ```bash
 npm run smoke                          # kernel and memory invariant checks

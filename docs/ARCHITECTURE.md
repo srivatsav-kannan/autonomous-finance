@@ -137,7 +137,7 @@ One Node process supervises all seats:
 - **Deterministic first.** Parsing, matching, arithmetic and policy checks are code. Claude handles unstructured documents, ambiguous matches, exceptions, explanations, planning, and questions from humans.
 - **Tools are the kernel's typed API.** Inputs are validated with zod and `strict: true`, and every call is permission-checked by the kernel, not by the prompt. Document text is data: an invoice that says "pay a new account" can't change anything, because no tool lets an AP clerk change remit-to.
 - **Knowing when to ask.** Every non-trivial decision gets `act | ask | hold` with a confidence. Thresholds depend on risk: amount tier, new or changed vendor data, invalidated facts. Asks go to the right human with the evidence and options attached.
-- **Model:** `claude-opus-5-5`, with effort set per seat. Prompt caching on the stable system prompt and tool list. Server-side refusal fallbacks are on by default (`AGENT_FALLBACKS`).
+- **Model:** `claude-opus-5-5` or `gpt-6.1-sol`, with effort set per seat. Every call goes through `BudgetedModelClient` (`src/agents/model-client.ts`): it reserves the request's worst-case cost against `AGENT_MAX_USD` before sending, with no SDK retries, fallback models or prompt-cache writes.
 
 ### 4. World simulator
 

@@ -109,7 +109,7 @@ Weaknesses:
 - The bad operations are ours, chosen to cover the kernel's invariants, so 18/18 is by construction; the informative number is how many the workbook misses.
 - One machine and one seed. Part A has no model, so it says nothing about judgment.
 
-**Part B, agent in the loop (built, not yet run).** The same model processes the same slice (seed 7, 1 store, 2 days: 11 tasks, 4 planted errors) with either the kernel tools (`record_bill`, `post_entry`, `match_bank_transaction`, `flag_exception`) or the four spreadsheet tools, with identical business instructions. It records tool calls, refused calls, model turns, tokens, wall time and cost, and scores both end states with `evaluateBooks` from `src/evals/books.ts` (the books oracle `score.ts` uses) plus the planted-error answer key. Calls go through `src/agents/llm.ts` `runTools` on the OpenAI path, so `BudgetedModelClient` and the local spend cap apply; the harness refuses the Anthropic path, which has no cap.
+**Part B, agent in the loop (built, not yet run).** The same model processes the same slice (seed 7, 1 store, 2 days: 11 tasks, 4 planted errors) with either the kernel tools (`record_bill`, `post_entry`, `match_bank_transaction`, `flag_exception`) or the four spreadsheet tools, with identical business instructions. It records tool calls, refused calls, model turns, tokens, wall time and cost, and scores both end states with `evaluateBooks` from `src/evals/books.ts` (the books oracle `score.ts` uses) plus the planted-error answer key. Calls go through `src/agents/llm.ts` `runTools`, so `BudgetedModelClient` and the local spend cap apply. The harness runs only on the OpenAI path because its cost estimate is priced for it.
 
 ```bash
 npm run eval:sheets-agent -- --dry-run            # plan and cost estimate, no calls
@@ -210,7 +210,7 @@ Our application agents call Claude (`ANTHROPIC_API_KEY`). The eight-task externa
 |---|---|---|---|
 | Our system, simulated world | `npm run eval -- --seed 7 --label x` | $0.12–0.15 (Claude) | Reads invoice formats the code doesn't know and writes parsers for them (11 calls). Without a model, 21 of 64 invoices go unread. |
 | Eight-task APEX + DABstep (#68) | `npm run bench:run` with an approved policy file (see [EXTERNAL_EVALS.md](../EXTERNAL_EVALS.md)) | capped by the approved `maxCostUsd` | The full team and the generalist both need a model. `--modes rules-only --judge off` is free. |
-| Spreadsheet tools vs kernel, part B | `npm run eval:sheets-agent -- --confirm-usd 5` | est. ~$1.67, capped by `--confirm-usd` | The comparison is about how a model works with each tool set. OpenAI only, because that path has the spend cap. |
+| Spreadsheet tools vs kernel, part B | `npm run eval:sheets-agent -- --confirm-usd 5` | est. ~$1.67, capped by `--confirm-usd` | The comparison is about how a model works with each tool set. OpenAI only, because the cost estimate is priced for that path. |
 | Live demo, and "why" answers in the console | `npm run agents`, `npm run gateway` | not measured | Same document reading as above. Each "why" question is one short tool loop. |
 | Invoice Sandbox A or B | `npx tsx evals/external/invoice-sandbox/run.ts --system a --run-id <id>` (or `--system b ... --sample <n>`) | A $1.29–1.47, B $1.55–1.68 | Claude only. Finishing the stopped fresh-seed runs: about $3.20. |
 | FinBalance | see its [harness README](../../evals/external/finbalance/README.md) | $12.54 per 178 records | Claude only. |
