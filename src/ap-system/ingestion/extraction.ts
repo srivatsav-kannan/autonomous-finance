@@ -12,9 +12,9 @@ import { candidateSchema } from "../contracts";
 import type { ProviderOutput, Json } from "./provider";
 import {
   providerGrounding,
+  cellNativeRegions,
   groundText,
   normalize,
-  decode,
   type NativeRegion,
   type GroundingData,
 } from "./grounding";
@@ -26,215 +26,38 @@ export type TrustedContext = {
   supplier?: { supplierId: string; legalName: string; aliases?: string[] };
   coding?: Omit<Allocation, "amountCents" | "period">;
 };
-export type ExtractedTableLine = {
-  sku: string;
-  description: string;
-  quantity: string;
-  unit: string;
-  unitPriceCents: number;
-  amountCents: number;
-  page: number;
-  cells: Map<string, { text: string; hint?: NativeRegion }>;
-};
-export function money(value: string): number | null {
-  const m =
-    /^(?:USD\s*|\$\s*)?((?:\d{1,3}(?:,\d{3})+|\d+))(?:\.(\d{1,2}))?$/.exec(
-      decode(value).trim(),
-    );
-  if (!m) return null;
-  const n =
-    BigInt(m[1]!.replaceAll(",", "")) * 100n +
-    BigInt((m[2] ?? "").padEnd(2, "0"));
-  return n <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(n) : null;
-}
-function labelKey(s: string) {
-  return normalize(s).replace(/[^a-z0-9]/g, "");
-}
-const headerAliases: Record<string, string[]> = {
-  sku: ["sku", "itemcode", "item"],
-  description: ["description"],
-  quantity: ["qty", "quantity"],
-  unit: ["uom", "unitofmeasure"],
-  unitPriceCents: ["unitusd", "unitprice", "unitpriceusd", "price", "rate"],
-  amountCents: ["amountusd", "amount", "lineamount", "linetotal"],
-};
-export function tableLines(
-  output: ProviderOutput,
-  issues: string[] = [],
-): ExtractedTableLine[] {
-  const result: ExtractedTableLine[] = [];
-  for (const page of output.result.items?.pages ?? []) {
-    for (const [ii, item] of (page.items ?? []).entries()) {
-      if (item.type !== "table" || !item.rows?.length) continue;
-      const headers = (item.rows[0] as unknown[]).map((v) =>
-        labelKey(String(v)),
-      );
-      const columns = new Map<string, number>();
-      for (const [field, aliases] of Object.entries(headerAliases)) {
-        const i = headers.findIndex((h: string) => aliases.includes(h));
-        if (i >= 0) columns.set(field, i);
-      }
-      if (columns.size !== 6) {
-        if (
-          columns.has("quantity") &&
-          (columns.has("sku") || columns.has("description"))
-        )
-          issues.push("unsupported_line_table_columns");
-        continue;
-      }
-      const grounded = output.grounded.find(
-        (p) => p.page_number === page.page_number,
-      )?.items?.[ii];
-      for (let ri = 1; ri < item.rows.length; ri++) {
-        const row = item.rows[ri] as unknown[],
-          cells = new Map<string, { text: string; hint?: NativeRegion }>();
-        for (const [field, ci] of columns) {
-          const text = decode(String(row[ci] ?? "")).trim();
-          const b = grounded?.grounding?.rows?.[ri]?.[ci]?.bbox;
-          const hint =
-            b &&
-            normalize(String(grounded?.rows?.[ri]?.[ci] ?? "")) ===
-              normalize(text)
-              ? {
-                  text,
-                  page: page.page_number,
-                  regions: (Array.isArray(b) ? b : [b]).map((v: Json) => ({
-                    x: v.x,
-                    y: v.y,
-                    width: v.w,
-                    height: v.h,
-                    granularity: "cell" as const,
-                    tokenRefs: [],
-                  })),
-                }
-              : undefined;
-          cells.set(field, { text, hint });
-        }
-        const val = (k: string) => cells.get(k)!.text;
-        // Some providers include the explicitly labeled summary footer in the line table.
-        if (
-          ["sku", "description", "quantity", "unit"].every((k) => !val(k)) &&
-          [
-            "subtotal",
-            "tax",
-            "freight",
-            "discount",
-            "total",
-            "totaldue",
-          ].includes(labelKey(val("unitPriceCents")))
-        )
-          continue;
-        const qty = val("quantity"),
-          price = money(val("unitPriceCents")),
-          amount = money(val("amountCents"));
-        if (
-          !val("sku") ||
-          !val("description") ||
-          !/^\d+(\.\d{1,6})?$/.test(qty) ||
-          price === null ||
-          amount === null ||
-          !val("unit")
-        ) {
-          issues.push(`unparsed_line_row_page_${page.page_number}_row_${ri}`);
-          continue;
-        }
-        result.push({
-          sku: val("sku"),
-          description: val("description"),
-          quantity: qty,
-          unit: val("unit"),
-          unitPriceCents: price,
-          amountCents: amount,
-          page: page.page_number,
-          cells,
-        });
-      }
-    }
-  }
-  return result;
-}
-export function headerFields(output: ProviderOutput) {
-  const text = String(output.result.markdown_full ?? "")
-    .replace(/\*\*/g, "")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<[^>]+>/g, "\n");
-  const find = (label: string) => {
-    const re = new RegExp(
-      `(?:^|\\n|\\|)\\s*(?:${label})\\s*:?\\s*(?:\\|\\s*)?([^\\n|]+)`,
-      "gim",
-    );
-    const values = [...text.matchAll(re)]
-      .map((m) => m[1]!.trim())
-      .filter(Boolean);
-    return [...new Set(values)].length === 1 ? values[0]! : null;
-  };
-  return {
-    extractedSupplierName: find("Supplier"),
-    invoiceNumber: find("Document Number|Invoice (?:Number|#)"),
-    invoiceDate: find("Invoice Date"),
-    dueDate: find("Due Date"),
-    terms: find("Terms"),
-    currency: find("Currency"),
-    subtotalCents: find("Subtotal"),
-    taxCents: find("Tax"),
-    freightCents: find("Freight"),
-    discountCents: find("Discount"),
-    totalCents: find("Invoice Total|Grand Total|Total"),
-    reference: find("Document Number"),
-    delivery: find("Delivery Reference"),
-    acceptedBy: find("Receiving owner"),
-    acceptedAt: find("Acceptance recorded"),
-    text,
-  };
-}
+import {
+  headerFields, tableLines, money, labelKey, FIELD_LABELS,
+} from "./document-mapping";
+export { headerFields, tableLines, money } from "./document-mapping";
+export type { ExtractedTableLine } from "./document-mapping";
 function headerHint(
   output: ProviderOutput,
   field: string,
   value: string,
 ): NativeRegion | undefined {
-  const labels: Record<string, string> = {
-    extractedSupplierName: "supplier",
-    invoiceNumber: "documentnumber",
-    invoiceDate: "invoicedate",
-    dueDate: "duedate",
-    terms: "terms",
-    currency: "currency",
-    subtotalCents: "subtotal",
-    taxCents: "tax",
-    freightCents: "freight",
-    discountCents: "discount",
-    totalCents: "total",
-  };
+  const aliases = FIELD_LABELS[field as keyof typeof FIELD_LABELS] ?? [];
+  const labels = aliases.map(labelKey);
   const matches: NativeRegion[] = [];
   for (const page of output.grounded)
     for (const [ii, item] of (page.items ?? []).entries()) {
       for (const [ri, row] of (item.rows ?? []).entries()) {
         const labelIndex = row.findIndex(
-          (x: unknown) => labelKey(String(x)) === labels[field],
+          (x: unknown) => labels.includes(labelKey(String(x))),
         );
         if (labelIndex < 0) continue;
         for (let ci = labelIndex + 1; ci < row.length; ci++)
           if (normalize(String(row[ci])) === normalize(value)) {
-            const b = item.grounding?.rows?.[ri]?.[ci]?.bbox;
-            if (b)
-              matches.push({
-                text: value,
-                page: page.page_number,
-                regions: (Array.isArray(b) ? b : [b]).map((v: Json) => ({
-                  x: v.x,
-                  y: v.y,
-                  width: v.w,
-                  height: v.h,
-                  granularity: "cell",
-                  tokenRefs: [],
-                })),
-              });
+            const cell = item.grounding?.rows?.[ri]?.[ci];
+            const regions = cell ? cellNativeRegions(String(row[ci]), cell) : undefined;
+            if (regions) matches.push({text: value, page: page.page_number, regions});
           }
       }
       const md = Buffer.from(String(item.md ?? item.value ?? ""), "utf8");
       for (const [li, line] of (item.grounding?.lines ?? []).entries()) {
         const text = md.subarray(line.span?.[0], line.span?.[1]).toString();
-        if (!labelKey(text).startsWith(labels[field] ?? "!")) continue;
+        const plain = normalize(text.replace(/\*\*/g, "")).replace(/\s*:\s*/g, ":");
+        if (!aliases.some(alias => plain.startsWith(normalize(alias) + ":") || plain === normalize(alias) + " " + normalize(value))) continue;
         const words = (line.words ?? []).map((w: Json, wi: number) => ({
           text: md.subarray(w.span?.[0], w.span?.[1]).toString(),
           b: w.bbox,
@@ -280,6 +103,11 @@ export async function extractCandidate(
     table = tableLines(output, reasons),
     data = providerGrounding(output),
     evidence: FieldEvidence[] = [];
+  reasons.push(...fields.issues);
+  for (const key of ["invoiceDate", "dueDate"] as const) {
+    const value = fields[key];
+    if (value && (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !Number.isFinite(Date.parse(value)) || new Date(value).toISOString().slice(0, 10) !== value)) reasons.push(`invalid_${key}`);
+  }
   let ocr: Promise<GroundingData> | undefined;
   const fallback =
     ocrOptions === false
@@ -392,6 +220,8 @@ export async function extractCandidate(
       allocations,
     });
   }
+  if (amounts.subtotalCents !== undefined && lines.reduce((sum, line) => sum + BigInt(line.amountCents), 0n) !== BigInt(amounts.subtotalCents)) reasons.push("subtotal_arithmetic_mismatch");
+  if (["subtotalCents", "taxCents", "freightCents", "discountCents", "totalCents"].every(key => amounts[key] !== undefined) && BigInt(amounts.subtotalCents!) + BigInt(amounts.taxCents!) + BigInt(amounts.freightCents!) - BigInt(amounts.discountCents!) !== BigInt(amounts.totalCents!)) reasons.push("total_arithmetic_mismatch");
   // Tax allocation is explicit: non-zero header tax needs reviewed line allocation; no invented split.
   if ((amounts.taxCents ?? 0) !== 0)
     reasons.push("line_tax_allocation_requires_review");
@@ -416,8 +246,8 @@ export async function extractCandidate(
     kind: "invoice",
     appliesToBillId: null,
     lines,
-    freightAllocations: [],
-    discountAllocations: [],
+    freightAllocations: context.coding && amounts.freightCents! > 0 ? [{...context.coding, amountCents: amounts.freightCents, period: fields.invoiceDate!.slice(0, 7)}] : [],
+    discountAllocations: context.coding && amounts.discountCents! > 0 ? [{...context.coding, amountCents: amounts.discountCents, period: fields.invoiceDate!.slice(0, 7)}] : [],
     ...amounts,
     evidence,
     parseWarnings: [

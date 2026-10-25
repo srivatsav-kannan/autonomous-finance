@@ -75,6 +75,24 @@ function span(md: string, s: unknown) {
     .subarray(Number(s[0]), Number(s[1]))
     .toString("utf8");
 }
+/** Multiline cells retain actual per-line boxes; never collapse their intervening whitespace. */
+export function cellNativeRegions(text: string, cell: Json): EvidenceRegion[] | undefined {
+  const lines: Json[] = Array.isArray(cell.lines) ? cell.lines : [];
+  const multiline = decode(text).split(/\r?\n/).filter(s => s.trim()).length > 1 || lines.length > 1;
+  const completeLines = lines.length > 0 && lines.every((line, index) => {
+    const prior = lines[index - 1];
+    return line.bbox && Array.isArray(line.span) && line.span.length === 2 &&
+      line.span.every(Number.isInteger) && line.span[0] >= 0 &&
+      line.span[1] > line.span[0] && line.span[1] <= Buffer.byteLength(text) &&
+      (!prior || line.span[0] >= prior.span[1] &&
+        line.bbox.y >= prior.bbox.y + prior.bbox.h - 0.01);
+  }) && normalize(lines.map(line => span(text, line.span)).join(" ")) === normalize(text);
+  if (multiline || !cell.bbox) {
+    if (!completeLines || multiline && lines.length < 2) return undefined;
+    return lines.map(line => ({...box(line.bbox), granularity: "line", tokenRefs: []}));
+  }
+  return (Array.isArray(cell.bbox) ? cell.bbox : [cell.bbox]).map((b: Json) => ({...box(b), granularity: "cell", tokenRefs: []}));
+}
 export function providerGrounding(output: ProviderOutput): GroundingData {
   const rawPages: Json[] = output.result.items?.pages ?? [];
   const coverageValid =
@@ -186,28 +204,8 @@ export function providerGrounding(output: ProviderOutput): GroundingData {
         for (const [ci, text] of row.entries()) {
           const cell = item.grounding?.rows?.[ri]?.[ci];
           if (!cell) continue;
-          if (cell.bbox)
-            native.push({
-              text: String(text),
-              page: page.page_number,
-              regions: (Array.isArray(cell.bbox) ? cell.bbox : [cell.bbox]).map(
-                (b: Json) => ({
-                  ...box(b),
-                  granularity: "cell",
-                  tokenRefs: [],
-                }),
-              ),
-            });
-          else if (cell.lines?.length && cell.lines.every((l: Json) => l.bbox))
-            native.push({
-              text: String(text),
-              page: page.page_number,
-              regions: cell.lines.map((l: Json) => ({
-                ...box(l.bbox),
-                granularity: "line",
-                tokenRefs: [],
-              })),
-            });
+          const regions = cellNativeRegions(String(text), cell);
+          if (regions) native.push({text: String(text), page: page.page_number, regions});
         }
     }
   }

@@ -257,3 +257,22 @@ describe("exact grounding", () => {
     ).toBe(false);
   });
 });
+
+describe('multiline native table cells',()=>{
+  const text='Wrapped<br/>description';
+  const make=(cell:any)=>providerGrounding({result:{items:{pages:[{page_number:1,page_width:612,page_height:792,success:true}]}},grounded:[{page_number:1,page_width:612,page_height:792,success:true,items:[{rows:[[text]],grounding:{rows:[[cell]]}}]}],rawWords:[],processor,reused:true});
+  const first={span:[0,7],bbox:{x:10,y:20,w:40,h:10}};
+  const second={span:[12,23],bbox:{x:10,y:36,w:60,h:10}};
+  it('prefers exact separate line regions over a broad enclosing cell box',async()=>{
+    const g=await groundText('Wrapped\ndescription',make({bbox:{x:10,y:20,w:60,h:26},lines:[first,second]}));
+    expect(g.status).toBe('native');expect(g.regions).toHaveLength(2);expect(g.regions.map(r=>r.height)).toEqual([10,10]);
+  });
+  it('does not use an enclosing cell box when line geometry is missing',async()=>{
+    const g=await groundText('Wrapped\ndescription',make({bbox:{x:10,y:20,w:60,h:26}}));
+    expect(g.status).toBe('unresolved');expect(g.regions).toEqual([]);
+  });
+  it('refuses incomplete or wrongly bound line spans',async()=>{
+    const g=await groundText('Wrapped\ndescription',make({bbox:{x:10,y:20,w:60,h:26},lines:[first,{...second,span:[12,18]}]}));
+    expect(g.status).toBe('unresolved');
+  });
+});
