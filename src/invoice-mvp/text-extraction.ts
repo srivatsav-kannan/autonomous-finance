@@ -27,6 +27,7 @@ export function extractTextDocument(source: SourceInput, ref: EvidenceRef, custo
   const titleQuotes = new Set<string>();
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]!;
+    if (line.value.length > 2000) continue;
     const title = titlePattern.exec(line.value);
     if (title && !/^(?:date|number|no\.?|total|amount|status|currency|due|reference)$/i.test(title[3] ?? "")) {
       titles.push({ kind: /credit/i.test(title[2]!) ? "credit" : "invoice", draft: Boolean(title[1]), quote: line.raw });
@@ -40,7 +41,7 @@ export function extractTextDocument(source: SourceInput, ref: EvidenceRef, custo
     if (inline) add(field, inline[2]!, line.raw);
     else {
       const next = lines[i + 1];
-      if (next && !LABELS[labelKey(next.value)] && !/^=== Page|^Page \d+|^\f/.test(next.value)) {
+      if (next && next.value.length <= 2000 && !LABELS[labelKey(next.value)] && !/^=== Page|^Page \d+|^\f/.test(next.value)) {
         add(field, next.value, source.text.slice(line.start, next.end)); i++;
       }
     }
@@ -87,7 +88,7 @@ export function extractTextDocument(source: SourceInput, ref: EvidenceRef, custo
     }
   }
   const total = one("total"), rawCents = one("amountCents"), currency = one("currency"), status = one("status");
-  const centsNumber = rawCents && /^\d+$/.test(rawCents) && BigInt(rawCents) <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(rawCents) : undefined;
+  const centsNumber = rawCents && /^\d{1,16}$/.test(rawCents) && BigInt(rawCents) <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(rawCents) : undefined;
   const signedTotal = total === undefined ? centsNumber : signedDecimalCents(total);
   let amountCents = signedTotal === undefined ? undefined : credit ? Math.abs(signedTotal) : signedTotal;
   if (total !== undefined && rawCents !== undefined && centsNumber !== Math.abs(signedTotal ?? NaN)) {

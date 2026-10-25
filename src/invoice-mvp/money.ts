@@ -1,6 +1,7 @@
 /** Exact decimal arithmetic. No floating-point rounding, OCR repair or locale guessing. */
 export function signedDecimalCents(raw: string): number | undefined {
   let value = raw.trim().replace(/\u00a0/g, " ").replace(/\u2212/g, "-");
+  if (value.length > 128) return undefined;
   const parentheses = value.startsWith("(") && value.endsWith(")");
   if (parentheses) value = value.slice(1, -1).trim();
   const match = /^(-)?\s*(?:(?:USD|US\$|\$)\s*)?(-)?((?:\d{1,3}(?:,\d{3})+|\d+))(?:\.(\d{1,2}))?(?:\s+USD)?$/i.exec(value);
