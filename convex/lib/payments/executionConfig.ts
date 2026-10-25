@@ -1,10 +1,11 @@
-import type { Doc } from "../../_generated/dataModel";
+import type { Doc, Id } from "../../_generated/dataModel";
 import type { MutationCtx } from "../../_generated/server";
 import type { PaymentExecutionConfig } from "../../../src/payments/contracts";
 import { assertCommandMatchesSnapshot, assertSnapshotCurrent } from "../../../src/payments/domain/rules";
 import { assertFrozenBankCommand } from "../../../src/payments/domain/validation";
 import { assertRowScope } from "../demoAuth";
 import { canonical, sha256Hex } from "../kernel";
+import { resolveAPBusinessPaymentAuthority } from "../apSystem/businessAuthority";
 
 /** The request already owns its reservations; approval and first dispatch retain them. */
 export async function assertReservedObligations(ctx: MutationCtx, version: Doc<"demoVersions">, config: PaymentExecutionConfig) {
@@ -39,8 +40,10 @@ export async function assertDispatchAuthority(ctx: MutationCtx, config: PaymentE
   await assertFrozenBankCommand(row.command);
   if (row.command.idempotencyKey !== `demo:${version._id}`) throw new Error("Original payment operation key mismatch");
   if (!firstDispatch) return { notBefore: 0 }; // Changed authority cannot authorize new money, or rewrite a possible old send.
-  assertSnapshotCurrent(config, version.snapshot);
-  await assertReservedObligations(ctx, version, config);
+  const authority = await resolveAPBusinessPaymentAuthority(ctx, config.scope, version.snapshot.bills.map(b => b.billId as Id<"demoBills">));
+  const currentConfig = authority ? { ...config, ...authority } : config;
+  assertSnapshotCurrent(currentConfig, version.snapshot);
+  await assertReservedObligations(ctx, version, currentConfig);
   for (const approval of version.approvals.filter(a => a.kind === "human" && a.snapshotHash === version.snapshotHash)) {
     if (!config.humanSubjects.some(binding => binding.seatId === approval.seatId && binding.subject === approval.subject)) continue;
     const seat = await ctx.db.query("seats").withIndex("by_run_seat", q => q.eq("runId", config.scope.runId).eq("seatId", approval.seatId)).unique();

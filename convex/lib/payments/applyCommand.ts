@@ -4,6 +4,7 @@ import { assertRowScope, auditDemo, getPaymentConfig, requirePaymentSeat, requir
 import { canonical, sha256Hex } from "../kernel";
 import { releaseReservations, reserveObligations } from "./reservations";
 import { assertReservedObligations } from "./executionConfig";
+import { resolveAPBusinessPaymentAuthority } from "../apSystem/businessAuthority";
 import { commandRequestHash, buildIncreaseRequestBody, type BankCommand, type BankScope, type UnsentProviderCheck } from "../../../src/payments/contracts";
 import { assertCanCancel, assertReleasableUnsent, assertSnapshotCurrent, safeSumCents } from "../../../src/payments/domain/rules";
 import { businessDateSchema } from "../../../src/payments/domain/validation";
@@ -21,16 +22,18 @@ export async function cancelUnsent(ctx: MutationCtx, version: Doc<"demoVersions"
   await ctx.db.patch(version._id, { status: "cancelled" });
 }
 export async function versionForApproval(ctx: MutationCtx, scope: Doc<"demoConfigs">["scope"], versionId: Id<"demoVersions">, hash: string) {
-  const config = await getPaymentConfig(ctx, scope);
+  const baseConfig = await getPaymentConfig(ctx, scope);
   const version = await ctx.db.get(versionId); assertRowScope(version, scope);
   const p = version as Doc<"demoVersions">;
   if (p.status !== "awaiting_approval" || p.snapshotHash !== hash || await sha256Hex(canonical(p.snapshot)) !== hash) throw new Error("Stale payment approval");
+  const authority = await resolveAPBusinessPaymentAuthority(ctx, scope, p.snapshot.bills.map(b => b.billId as Id<"demoBills">));
+  const config = authority ? { ...baseConfig, ...authority } : baseConfig;
   assertSnapshotCurrent(config, p.snapshot);
   await assertReservedObligations(ctx, p, config);
   return p;
 }
 export async function requestPaymentCommand(ctx: MutationCtx, args: { scope: BankScope; seatId: string; token: string; requestKey: string; billIds: Id<"demoBills">[]; billAmounts?: { billId: Id<"demoBills">; amountCents: number }[]; executionDate?: string; credits: { creditId: Id<"demoCredits">; amountCents: number }[] }) {
-    const { config } = await requirePaymentSeat(ctx, args, ["payments"]);
+    const { config: baseConfig } = await requirePaymentSeat(ctx, args, ["payments"]);
     if (!args.requestKey.trim() || !args.billIds.length || new Set(args.billIds).size !== args.billIds.length || new Set(args.credits.map(c => c.creditId)).size !== args.credits.length) throw new Error("Distinct bills/credits and request key required");
     if (args.executionDate !== undefined) businessDateSchema.parse(args.executionDate);
     const selectedAmounts = args.billAmounts?.slice().sort((a,b) => a.billId.localeCompare(b.billId));
@@ -43,6 +46,8 @@ export async function requestPaymentCommand(ctx: MutationCtx, args: { scope: Ban
       if (existing.snapshot.schedule?.executionDate !== args.executionDate || canonical(existing.requestedBillAmounts ?? null) !== canonical(selectedAmounts ?? null) || existing.requestedBy !== args.seatId || canonical(existing.snapshot.bills.map(b => b.billId)) !== canonical([...args.billIds].sort()) || canonical(existing.snapshot.credits) !== canonical([...args.credits].sort((a,b) => a.creditId.localeCompare(b.creditId)))) throw new Error("Payment idempotency conflict");
       return { versionId: existing._id, snapshotHash: existing.snapshotHash };
     }
+    const authority = await resolveAPBusinessPaymentAuthority(ctx, args.scope, args.billIds);
+    const config = authority ? { ...baseConfig, ...authority } : baseConfig;
     const bills = [];
     for (const id of [...args.billIds].sort()) {
       const bill = await ctx.db.get(id); assertRowScope(bill, args.scope);
