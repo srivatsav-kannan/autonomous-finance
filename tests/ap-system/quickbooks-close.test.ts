@@ -298,6 +298,26 @@ describe("approved B4 journals to QBO mock protocol", () => {
     expect(replay.requestId).toBe(reversal.requestId);
     expect(p.posts).toHaveLength(2);
     expect(await p.journal.get(accrual)).toEqual(accrual);
+    const external = p.rows.get(accrual.externalId!)!;
+    external.MetaData = { CreateTime: "2026-10-25T00:00:00Z" };
+    external.domain = "QBO";
+    expect(await p.journal.client.verify(accrual)).toMatchObject(
+      accrual.payload,
+    );
+    external.ClassRef = { value: "999" };
+    await expect(p.journal.client.verify(accrual)).rejects.toThrow(
+      "external_stale_or_changed",
+    );
+    delete external.ClassRef;
+    external.Line[0].JournalEntryLineDetail.ClassRef.value = "999";
+    await expect(p.journal.client.verify(accrual)).rejects.toThrow(
+      "external_stale_or_changed",
+    );
+    external.Line[0].JournalEntryLineDetail.ClassRef.value = "9";
+    external.Line[1].JournalEntryLineDetail.ClassRef = { value: "999" };
+    await expect(p.journal.client.verify(accrual)).rejects.toThrow(
+      "external_stale_or_changed",
+    );
     expect(reversal.submissionAuthorization?.subject).toBe(
       (await f.load(req)).authorizedSubject,
     );

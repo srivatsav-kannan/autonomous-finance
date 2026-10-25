@@ -531,6 +531,16 @@ describe("QBO business dispatcher HTTP protocol (mocked)", () => {
     ]);
     expect(p.calls()).toBe(callsBefore);
     expect(await p.dispatcher.checkHolds(req, { verify: true })).toEqual([]);
+    const externalReturn = p.rows.get(`JournalEntry:${je.externalId}`)!;
+    externalReturn.Line[1].JournalEntryLineDetail.ClassRef = { value: "999" };
+    await expect(p.journal.client.verify(je)).rejects.toThrow(
+      "external_stale_or_changed",
+    );
+    expect(await p.dispatcher.checkHolds(req, { verify: true })).toMatchObject([
+      { code: "return_correction_sync_required" },
+    ]);
+    delete externalReturn.Line[1].JournalEntryLineDetail.ClassRef;
+    expect(await p.dispatcher.checkHolds(req, { verify: true })).toEqual([]);
     const callsAfter = p.calls();
     expect(await p.dispatcher.checkHolds(req)).toEqual([]);
     expect(p.calls()).toBe(callsAfter);

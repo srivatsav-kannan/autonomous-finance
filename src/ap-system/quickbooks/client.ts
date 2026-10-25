@@ -64,13 +64,8 @@ export function matches(expected: unknown, actual: unknown): boolean {
   if (expected !== null && typeof expected === "object") {
     const e = expected as Record<string, any>;
     const a = actual as Record<string, any> | null;
-    // An added Class is an economic dimension change even if the approved line had none.
-    if (
-      e.AccountBasedExpenseLineDetail &&
-      e.AccountBasedExpenseLineDetail.ClassRef == null &&
-      a?.AccountBasedExpenseLineDetail?.ClassRef != null
-    )
-      return false;
+    // ClassRef is economic data at every level, unlike additive provider metadata.
+    if (e.ClassRef == null && a?.ClassRef != null) return false;
     return (
       actual !== null &&
       typeof actual === "object" &&
