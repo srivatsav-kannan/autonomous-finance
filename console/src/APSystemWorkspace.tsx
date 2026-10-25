@@ -24,6 +24,10 @@ const WORKSPACES = ["cases", "runs", "governance", "close"] as const;
 const VIEWS = ["evidence", "matching", "accounting", "history"] as const;
 const FILTERS = ["all", "attention", "approved", "settled"] as const;
 const dateTime = (value: number) => new Date(value).toLocaleString();
+// Presentation label for the designated demo fixture, never a business status.
+const isDemoCaseB = (detail: APCaseDetail) => detail.scope.provider === "fake"
+  && detail.runId === "ap97-b3-guidance-20261025-v1"
+  && detail.candidate?.invoiceNumber === "CLEAN-B-20261025";
 export type APWorkspaceSection = typeof WORKSPACES[number];
 const SECTION_HEADINGS: Record<APWorkspaceSection, { title: string; lede: string }> = {
   cases: { title: "Invoices", lede: "Each invoice is one case: the original documents, the checks, the decisions and what happened to the money." },
@@ -82,18 +86,20 @@ export function APSystemWorkspace({ onContextChange, onBusyChange, section, onSe
         <label className="aps-filter-label">Show<select value={filter} onChange={e=>setFilter(e.target.value as typeof filter)} aria-label="Filter AP cases">{FILTERS.map(v=><option key={v} value={v}>{v === "attention" ? "Needs attention" : apLabel(v)}</option>)}</select></label>
       </div>
       {listError ? <p className="aps-empty">Cases will be available after the connection is restored.</p> : !cases ? <APLoading label="Loading cases…"/> : !filtered?.length ? <div className="aps-empty"><h3>{cases?.length ? "No matching cases" : "No AP cases yet"}</h3><p>{cases?.length ? "Change the search or filter to find a case." : "Upload the invoice and its supporting documents to start a case."}</p></div> : <ul className="aps-cases">{filtered.map(c=><li key={c.caseId}><button type="button" disabled={busy} className={c.caseId===selectedId ? "is-selected" : ""} aria-pressed={c.caseId===selectedId} onClick={()=>setSelectedId(c.caseId)}>
+        {isDemoCaseB(c)&&<span className="aps-demo-label">Demo case B · Traceability</span>}
         <span className="aps-case-supplier">{c.candidate?.extractedSupplierName ?? "Extraction needs review"}</span><span className="aps-case-line"><span>{c.candidate?.invoiceNumber ?? c.sources[0]?.name ?? c.caseId}</span><strong>{apMoney(c.amounts.invoicedCents)}</strong></span><span className="aps-case-line"><small>{c.links.duplicateOfCaseId ? "Duplicate delivery" : apLabel(c.states.business)}</small><small>{caseNeedsAttention(c) ? "Needs attention" : apLabel(c.states.execution)}</small></span>
       </button></li>)}</ul>}
       {cases && <p className="aps-queue-footer">{filtered?.length ?? 0} of {cases.length} cases shown</p>}
       </aside>
       <div className="aps-case-content">
         {selectedId && listError ? <p className="aps-empty">Case evidence is unavailable until the workspace connection is restored. Retry the connection above.</p> : selectedId && !detail && !detailError ? <APLoading label="Loading linked case evidence…"/> : detailError ? <div className="aps-error" role="alert"><h3>Case unavailable</h3><p>{detailError}</p><button onClick={refresh} disabled={busy}>Retry case</button></div> : !detail ? <div className="aps-empty aps-case-placeholder"><Icon name="file"/><h3>Select an AP case</h3><p>Originals, review decisions, the bill and payment evidence stay together here.</p></div> : <>
+          {isDemoCaseB(detail)&&<aside className="aps-demo-highlight" aria-label="Demo case B"><strong>Demo case B · Traceability walkthrough</strong><p>Use this cleaning invoice in the demo. Follow the original PDF, source matches and saved guidance to the rule and history A.</p><a href="#ap-case-guidance">Show traceability: why A applies to B</a></aside>}
           <header className="aps-case-header"><div><h3 id="ap-case-heading" ref={heading} tabIndex={-1}>{detail.candidate?.invoiceNumber ?? "Document review"}</h3><p>{detail.candidate?.extractedSupplierName ?? "Supplier not established"}</p></div><div className="aps-case-identity"><span>{detail.scope.provider === "fake" ? "Local FakeBank" : "Increase sandbox"}</span><span>{detail.identityMode === "simulated_human" ? "Simulated human identity" : "Authenticated human identity"}</span></div></header>
           <p className="aps-caption">Case <code>{detail.caseId}</code> / Revision {detail.revision} / {detail.sources.every(s=>s.provenance.kind === "synthetic") ? "Synthetic documents" : "Document provenance varies; inspect originals"}</p>
           <APRelatedCases detail={detail} cases={cases??[]} onOpenCase={setSelectedId} busy={busy}/>
           <APCaseStatus detail={detail}/>
           <APAmounts detail={detail}/>
-          <APCaseGuidance key={`${detail.caseId}:${detail.revision}:${reload}`} detail={detail}/>
+          <div id="ap-case-guidance" tabIndex={-1}><APCaseGuidance key={`${detail.caseId}:${detail.revision}:${reload}`} detail={detail}/></div>
           {detail.links.duplicateOfCaseId && <p className="aps-notice">This delivery is linked to an existing obligation. <button className="aps-text-button" onClick={()=>setSelectedId(detail.links.duplicateOfCaseId!)} disabled={busy}>Open original case</button></p>}
           <div className="aps-tabs" role="group" aria-label="Case sections">{VIEWS.map(v=><button type="button" key={v} disabled={busy} onClick={()=>setView(v)} aria-pressed={view===v} className={view===v ? "is-selected" : ""}>{v === "evidence" ? "Source & fields" : apLabel(v)}</button>)}</div>
           {view === "evidence" && <><APSystemEvidence detail={detail}/><APOriginals detail={detail}/></>}

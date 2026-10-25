@@ -24,6 +24,11 @@
 .aps-cases button { display: flex; flex-direction: column; gap: var(--space-xs); width: 100%; padding: var(--space-md) var(--space-sm); border: 0; border-radius: 0; text-align: left; }
 .aps-cases button:hover { background: var(--bg); }
 .aps-cases button.is-selected { background: var(--selected); }
+.aps-demo-label { color: var(--accent); font-size: var(--text-xs); font-weight: 600; }
+.aps-demo-highlight { border: 1px solid var(--accent); background: var(--selected); padding: var(--space-md); margin-bottom: var(--space-lg); font-size: var(--text-sm); }
+.aps-demo-highlight p { margin-top: var(--space-xs); line-height: 1.5; }
+.aps-demo-highlight a { display: inline-flex; align-items: center; min-height: 44px; margin-top: var(--space-xs); color: var(--accent); text-decoration: underline; }
+#ap-case-guidance { scroll-margin-top: var(--space-lg); }
 .aps-case-supplier { font-weight: 600; font-size: var(--text-sm); overflow-wrap: anywhere; }
 .aps-case-line { display: flex; justify-content: space-between; align-items: baseline; width: 100%; gap: var(--space-xs); font-size: var(--text-xs); }
 .aps-case-line > span { overflow-wrap: anywhere; min-width: 0; }
