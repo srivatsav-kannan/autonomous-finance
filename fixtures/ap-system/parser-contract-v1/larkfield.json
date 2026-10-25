@@ -1,0 +1,4688 @@
+{
+  "sourceSha256": "545655fc231453aaf2a6c60b44b3b137d506db0d1d79bff12eeef86044aedb86",
+  "result": {
+    "items": {
+      "pages": [
+        {
+          "items": [
+            {
+              "bbox": [
+                {
+                  "confidence": 0.813,
+                  "end_index": 25,
+                  "h": 15.16,
+                  "label": "paragraph_title",
+                  "start_index": 0,
+                  "w": 176.2,
+                  "x": 56.55,
+                  "y": 55.56
+                }
+              ],
+              "level": 1,
+              "md": "# **Larkfield Stationers**",
+              "type": "heading",
+              "value": "<span style=\"color:#24543c\">Larkfield Stationers</span>"
+            },
+            {
+              "bbox": [
+                {
+                  "confidence": 0.813,
+                  "end_index": 16,
+                  "h": 12.89,
+                  "label": "paragraph_title",
+                  "start_index": 0,
+                  "w": 103.58,
+                  "x": 435.74,
+                  "y": 57.25
+                }
+              ],
+              "level": 1,
+              "md": "# **TAX INVOICE**",
+              "type": "heading",
+              "value": "TAX INVOICE"
+            },
+            {
+              "bbox": [
+                {
+                  "confidence": 1,
+                  "end_index": 111,
+                  "h": 46.01,
+                  "label": "text",
+                  "start_index": 0,
+                  "w": 166.67,
+                  "x": 56,
+                  "y": 81.11
+                }
+              ],
+              "md": "A fictional company\n22 Example Market, Sampleton 000 000\n<accounts@larkfield.example>\nTax no.: SPECIMEN-TAX-0001",
+              "type": "text",
+              "value": "A fictional company\n22 Example Market, Sampleton 000 000\naccounts@larkfield.example\nTax no.: SPECIMEN-TAX-0001"
+            },
+            {
+              "bbox": [
+                {
+                  "confidence": 1,
+                  "end_index": 132,
+                  "h": 48.75,
+                  "label": "key-value-region",
+                  "start_index": 0,
+                  "w": 179.34,
+                  "x": 359.64,
+                  "y": 85.37
+                }
+              ],
+              "md": "**Invoice no.** **INV-2026-0142**\n**Invoice date** **18 September 2026**\n**Due date** **18 October 2026**\n**Order ref.** **PO-77310**",
+              "type": "text",
+              "value": "Invoice no. INV-2026-0142\nInvoice date 18 September 2026\nDue date 18 October 2026\nOrder ref. PO-77310"
+            },
+            {
+              "bbox": [
+                {
+                  "confidence": 0.813,
+                  "end_index": 13,
+                  "h": 7.57,
+                  "label": "text",
+                  "start_index": 0,
+                  "w": 32.14,
+                  "x": 55.96,
+                  "y": 167.54
+                }
+              ],
+              "level": 2,
+              "md": "## **BILL TO**",
+              "type": "heading",
+              "value": "BILL TO"
+            },
+            {
+              "bbox": [
+                {
+                  "confidence": 0.844,
+                  "end_index": 30,
+                  "h": 10.94,
+                  "label": "paragraph_title",
+                  "start_index": 0,
+                  "w": 126.79,
+                  "x": 55.96,
+                  "y": 181.85
+                },
+                {
+                  "confidence": 1,
+                  "end_index": 110,
+                  "h": 33.34,
+                  "label": "text",
+                  "start_index": 32,
+                  "w": 149.84,
+                  "x": 56.09,
+                  "y": 195.78
+                }
+              ],
+              "md": "**Example Traders (fictional)**\nUnit 5, Specimen Industrial Estate\nSampleton 000 000\nTax no.: SPECIMEN-TAX-0002",
+              "type": "text",
+              "value": "Example Traders (fictional)\nUnit 5, Specimen Industrial Estate\nSampleton 000 000\nTax no.: SPECIMEN-TAX-0002"
+            },
+            {
+              "bbox": [
+                {
+                  "confidence": 0.9,
+                  "end_index": 630,
+                  "h": 142.28,
+                  "label": "table",
+                  "start_index": 0,
+                  "w": 486.94,
+                  "x": 53.57,
+                  "y": 250.04
+                }
+              ],
+              "csv": "\"#\",\"Description\",\"Qty\",\"Unit price\",\"Amount\"\n\"1\",\"A4 copier paper, 75 gsm, ream of 500\",\"20\",\"₹285.00\",\"₹5,700.00\"\n\"2\",\"Ballpoint pens, blue, box of 50\",\"4\",\"₹420.00\",\"₹1,680.00\"\n\"3\",\"Lever-arch files, A4, pack of 10\",\"3\",\"₹899.00\",\"₹2,697.00\"\n\"4\",\"Whiteboard markers, assorted, pack of 4\",\"6\",\"₹160.00\",\"₹960.00\"\n\"5\",\"Desk organiser, mesh, black\",\"5\",\"₹349.00\",\"₹1,745.00\"\n\"6\",\"Sticky notes, 76 x 76 mm, pack of 12\",\"8\",\"₹240.00\",\"₹1,920.00\"",
+              "html": "<table>\n  <thead>\n    <tr>\n      <th>#</th>\n      <th>Description</th>\n      <th>Qty</th>\n      <th>Unit price</th>\n      <th>Amount</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>1</td>\n      <td>A4 copier paper, 75 gsm, ream of 500</td>\n      <td>20</td>\n      <td>₹285.00</td>\n      <td>₹5,700.00</td>\n    </tr>\n    <tr>\n      <td>2</td>\n      <td>Ballpoint pens, blue, box of 50</td>\n      <td>4</td>\n      <td>₹420.00</td>\n      <td>₹1,680.00</td>\n    </tr>\n    <tr>\n      <td>3</td>\n      <td>Lever-arch files, A4, pack of 10</td>\n      <td>3</td>\n      <td>₹899.00</td>\n      <td>₹2,697.00</td>\n    </tr>\n    <tr>\n      <td>4</td>\n      <td>Whiteboard markers, assorted, pack of 4</td>\n      <td>6</td>\n      <td>₹160.00</td>\n      <td>₹960.00</td>\n    </tr>\n    <tr>\n      <td>5</td>\n      <td>Desk organiser, mesh, black</td>\n      <td>5</td>\n      <td>₹349.00</td>\n      <td>₹1,745.00</td>\n    </tr>\n    <tr>\n      <td>6</td>\n      <td>Sticky notes, 76 x 76 mm, pack of 12</td>\n      <td>8</td>\n      <td>₹240.00</td>\n      <td>₹1,920.00</td>\n    </tr>\n  </tbody>\n</table>",
+              "md": "| # | Description                             | Qty | Unit price | Amount    |\n| - | --------------------------------------- | --- | ---------- | --------- |\n| 1 | A4 copier paper, 75 gsm, ream of 500    | 20  | ₹285.00    | ₹5,700.00 |\n| 2 | Ballpoint pens, blue, box of 50         | 4   | ₹420.00    | ₹1,680.00 |\n| 3 | Lever-arch files, A4, pack of 10        | 3   | ₹899.00    | ₹2,697.00 |\n| 4 | Whiteboard markers, assorted, pack of 4 | 6   | ₹160.00    | ₹960.00   |\n| 5 | Desk organiser, mesh, black             | 5   | ₹349.00    | ₹1,745.00 |\n| 6 | Sticky notes, 76 x 76 mm, pack of 12    | 8   | ₹240.00    | ₹1,920.00 |",
+              "parse_concerns": [
+                {
+                  "details": "col 3 'Unit price' expects numeric, got '₹285.00' in row 1",
+                  "type": "header_value_type_mismatch"
+                },
+                {
+                  "details": "col 4 'Amount' expects numeric, got '₹5,700.00' in row 1",
+                  "type": "header_value_type_mismatch"
+                }
+              ],
+              "rows": [
+                [
+                  "#",
+                  "Description",
+                  "Qty",
+                  "Unit price",
+                  "Amount"
+                ],
+                [
+                  "1",
+                  "A4 copier paper, 75 gsm, ream of 500",
+                  "20",
+                  "₹285.00",
+                  "₹5,700.00"
+                ],
+                [
+                  "2",
+                  "Ballpoint pens, blue, box of 50",
+                  "4",
+                  "₹420.00",
+                  "₹1,680.00"
+                ],
+                [
+                  "3",
+                  "Lever-arch files, A4, pack of 10",
+                  "3",
+                  "₹899.00",
+                  "₹2,697.00"
+                ],
+                [
+                  "4",
+                  "Whiteboard markers, assorted, pack of 4",
+                  "6",
+                  "₹160.00",
+                  "₹960.00"
+                ],
+                [
+                  "5",
+                  "Desk organiser, mesh, black",
+                  "5",
+                  "₹349.00",
+                  "₹1,745.00"
+                ],
+                [
+                  "6",
+                  "Sticky notes, 76 x 76 mm, pack of 12",
+                  "8",
+                  "₹240.00",
+                  "₹1,920.00"
+                ]
+              ],
+              "type": "table"
+            },
+            {
+              "bbox": [
+                {
+                  "confidence": 1,
+                  "end_index": 64,
+                  "h": 44.88,
+                  "label": "key-value-region",
+                  "start_index": 0,
+                  "w": 103.48,
+                  "x": 435.47,
+                  "y": 407.4
+                }
+              ],
+              "md": "Subtotal ₹14,702.00\nGST at 18% ₹2,646.36\n**Total due ₹17,348.36**",
+              "type": "text",
+              "value": "Subtotal ₹14,702.00\nGST at 18% ₹2,646.36\nTotal due ₹17,348.36"
+            },
+            {
+              "bbox": [
+                {
+                  "confidence": 0.581,
+                  "end_index": 13,
+                  "h": 10.35,
+                  "label": "paragraph_title",
+                  "start_index": 0,
+                  "w": 45.24,
+                  "x": 55.96,
+                  "y": 479.04
+                }
+              ],
+              "level": 2,
+              "md": "## **Payment**",
+              "type": "heading",
+              "value": "Payment"
+            },
+            {
+              "bbox": [
+                {
+                  "confidence": 1,
+                  "end_index": 125,
+                  "h": 23.12,
+                  "label": "text",
+                  "start_index": 0,
+                  "w": 298.83,
+                  "x": 55.36,
+                  "y": 495.03
+                }
+              ],
+              "md": "Bank transfer to Specimen Bank, account SPECIMEN-0000-1111, within 30 days. Please quote the invoice number with your payment.",
+              "type": "text",
+              "value": "Bank transfer to Specimen Bank, account SPECIMEN-0000-1111, within 30 days. Please quote the invoice number with your payment."
+            },
+            {
+              "bbox": [
+                {
+                  "confidence": 1,
+                  "end_index": 90,
+                  "h": 21.89,
+                  "label": "text",
+                  "start_index": 0,
+                  "w": 292.28,
+                  "x": 54.77,
+                  "y": 531.23
+                }
+              ],
+              "md": "Every amount is quantity times unit price; the subtotal, GST and total add up to the paisa.",
+              "type": "text",
+              "value": "Every amount is quantity times unit price; the subtotal, GST and total add up to the paisa."
+            },
+            {
+              "bbox": [
+                {
+                  "h": 7.03,
+                  "w": 497.4,
+                  "x": 48.36,
+                  "y": 808.53
+                }
+              ],
+              "items": [
+                {
+                  "bbox": [
+                    {
+                      "confidence": 1,
+                      "end_index": 85,
+                      "h": 7.03,
+                      "label": "footer",
+                      "start_index": 0,
+                      "w": 270.87,
+                      "x": 48.36,
+                      "y": 808.53
+                    },
+                    {
+                      "confidence": 1,
+                      "end_index": 96,
+                      "h": 7.03,
+                      "label": "footer",
+                      "start_index": 86,
+                      "w": 34.33,
+                      "x": 511.43,
+                      "y": 808.53
+                    }
+                  ],
+                  "md": "SPECIMEN - fictional document made by filedone.ai for testing. Free to use (CC0 1.0). Page 1 of 1",
+                  "type": "text",
+                  "value": "SPECIMEN - fictional document made by filedone.ai for testing. Free to use (CC0 1.0). Page 1 of 1"
+                }
+              ],
+              "md": "SPECIMEN - fictional document made by filedone.ai for testing. Free to use (CC0 1.0). Page 1 of 1",
+              "type": "footer"
+            }
+          ],
+          "page_height": 841.89,
+          "page_number": 1,
+          "page_width": 595.276,
+          "success": true
+        }
+      ]
+    },
+    "markdown_full": "# **Larkfield Stationers**\n\n# **TAX INVOICE**\n\nA fictional company\n22 Example Market, Sampleton 000 000\naccounts@larkfield.example\nTax no.: SPECIMEN-TAX-0001\n\n**Invoice no.** **INV-2026-0142**\n**Invoice date** **18 September 2026**\n**Due date** **18 October 2026**\n**Order ref.** **PO-77310**\n\n## **BILL TO**\n\n**Example Traders (fictional)**\nUnit 5, Specimen Industrial Estate\nSampleton 000 000\nTax no.: SPECIMEN-TAX-0002\n\n<table>\n  <thead>\n    <tr>\n      <th>#</th>\n      <th>Description</th>\n      <th>Qty</th>\n      <th>Unit price</th>\n      <th>Amount</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>1</td>\n<td>A4 copier paper, 75 gsm, ream of 500</td>\n<td>20</td>\n<td>₹285.00</td>\n<td>₹5,700.00</td>\n    </tr>\n<tr>\n      <td>2</td>\n<td>Ballpoint pens, blue, box of 50</td>\n<td>4</td>\n<td>₹420.00</td>\n<td>₹1,680.00</td>\n    </tr>\n<tr>\n      <td>3</td>\n<td>Lever-arch files, A4, pack of 10</td>\n<td>3</td>\n<td>₹899.00</td>\n<td>₹2,697.00</td>\n    </tr>\n<tr>\n      <td>4</td>\n<td>Whiteboard markers, assorted, pack of 4</td>\n<td>6</td>\n<td>₹160.00</td>\n<td>₹960.00</td>\n    </tr>\n<tr>\n      <td>5</td>\n<td>Desk organiser, mesh, black</td>\n<td>5</td>\n<td>₹349.00</td>\n<td>₹1,745.00</td>\n    </tr>\n<tr>\n      <td>6</td>\n<td>Sticky notes, 76 x 76 mm, pack of 12</td>\n<td>8</td>\n<td>₹240.00</td>\n<td>₹1,920.00</td>\n    </tr>\n  </tbody>\n</table>\n\nSubtotal ₹14,702.00\nGST at 18% ₹2,646.36\n**Total due ₹17,348.36**\n\n## **Payment**\n\nBank transfer to Specimen Bank, account SPECIMEN-0000-1111, within 30 days. Please quote the invoice number with your payment.\n\nEvery amount is quantity times unit price; the subtotal, GST and total add up to the paisa.\n\nSPECIMEN - fictional document made by filedone.ai for testing. Free to use (CC0 1.0). Page 1 of 1",
+    "text_full": "Larkfield Stationers                                     TAX INVOICE\nA fictional company                      Invoice no.     INV-2026-0142\n22 Example Market, Sampleton 000 000     Invoice date    18 September 2026\naccounts@larkfield.example               Due date        18 October 2026\nTax no.: SPECIMEN-TAX-0001               Order ref.      PO-77310\n\n\nBILL TO\nExample Traders (fictional)\nUnit 5, Specimen Industrial Estate\nSampleton 000 000\nTax no.: SPECIMEN-TAX-0002\n\n #     Description                                                          Qty    Unit price     Amount\n 1     A4 copier paper, 75 gsm, ream of 500                                  20     ₹285.00    ₹5,700.00\n 2     Ballpoint pens, blue, box of 50                                        4     ₹420.00    ₹1,680.00\n 3     Lever-arch files, A4, pack of 10                                       3     ₹899.00    ₹2,697.00\n 4     Whiteboard markers, assorted, pack of 4                                6     ₹160.00      ₹960.00\n 5     Desk organiser, mesh, black                                            5     ₹349.00    ₹1,745.00\n 6     Sticky notes, 76 x 76 mm, pack of 12                                   8     ₹240.00    ₹1,920.00\n\n                                                                                     Subtotal    ₹14,702.00\n                                                                                     GST at 18%   ₹2,646.36\n                                                                                     Total due   ₹17,348.36\n\nPayment\nBank transfer to Specimen Bank, account SPECIMEN-0000-1111, within\n30 days. Please quote the invoice number with your payment.\nEvery amount is quantity times unit price; the subtotal, GST and total add\nup to the paisa.\n\n\n\n\n\n\n\n\n\n\nSPECIMEN - fictional document made by filedone.ai for testing. Free to use (CC0 1.0).    Page 1 of 1"
+  },
+  "grounded": [
+    {
+      "page_number": 1,
+      "page_width": 595.276,
+      "page_height": 841.89,
+      "success": true,
+      "items": [
+        {
+          "type": "heading",
+          "md": "# **Larkfield Stationers**",
+          "value": "<span style=\"color:#24543c\">Larkfield Stationers</span>",
+          "level": 1,
+          "bbox": [
+            {
+              "start_index": 0,
+              "end_index": 25,
+              "x": 56.55,
+              "y": 55.56,
+              "w": 176.2,
+              "h": 15.16,
+              "confidence": 0.813,
+              "label": "paragraph_title"
+            }
+          ],
+          "grounding": {
+            "source": "md",
+            "lines": [
+              {
+                "span": [
+                  4,
+                  24
+                ],
+                "bbox": {
+                  "x": 57.53,
+                  "y": 56.23,
+                  "w": 174.76,
+                  "h": 13.93
+                },
+                "words": [
+                  {
+                    "span": [
+                      4,
+                      13
+                    ],
+                    "bbox": {
+                      "x": 57.53,
+                      "y": 56.23,
+                      "w": 77.04,
+                      "h": 13.93
+                    }
+                  },
+                  {
+                    "span": [
+                      14,
+                      24
+                    ],
+                    "bbox": {
+                      "x": 141.39,
+                      "y": 56.3,
+                      "w": 90.9,
+                      "h": 13.86
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "heading",
+          "md": "# **TAX INVOICE**",
+          "value": "TAX INVOICE",
+          "level": 1,
+          "bbox": [
+            {
+              "start_index": 0,
+              "end_index": 16,
+              "x": 435.74,
+              "y": 57.25,
+              "w": 103.58,
+              "h": 12.89,
+              "confidence": 0.813,
+              "label": "paragraph_title"
+            }
+          ],
+          "grounding": {
+            "source": "md",
+            "lines": [
+              {
+                "span": [
+                  4,
+                  15
+                ],
+                "bbox": {
+                  "x": 436.65,
+                  "y": 58.4,
+                  "w": 101.68,
+                  "h": 11.74
+                },
+                "words": [
+                  {
+                    "span": [
+                      4,
+                      7
+                    ],
+                    "bbox": {
+                      "x": 436.65,
+                      "y": 58.53,
+                      "w": 30.66,
+                      "h": 11.47
+                    }
+                  },
+                  {
+                    "span": [
+                      8,
+                      15
+                    ],
+                    "bbox": {
+                      "x": 472.04,
+                      "y": 58.4,
+                      "w": 66.29,
+                      "h": 11.74
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "md": "A fictional company\n22 Example Market, Sampleton 000 000\n<accounts@larkfield.example>\nTax no.: SPECIMEN-TAX-0001",
+          "value": "A fictional company\n22 Example Market, Sampleton 000 000\naccounts@larkfield.example\nTax no.: SPECIMEN-TAX-0001",
+          "bbox": [
+            {
+              "start_index": 0,
+              "end_index": 111,
+              "x": 56,
+              "y": 81.11,
+              "w": 166.67,
+              "h": 46.01,
+              "confidence": 1,
+              "label": "text"
+            }
+          ],
+          "grounding": {
+            "source": "md",
+            "lines": [
+              {
+                "span": [
+                  0,
+                  19
+                ],
+                "bbox": {
+                  "x": 56,
+                  "y": 81.11,
+                  "w": 83.03,
+                  "h": 9.04
+                },
+                "words": [
+                  {
+                    "span": [
+                      0,
+                      1
+                    ],
+                    "bbox": {
+                      "x": 56,
+                      "y": 81.55,
+                      "w": 5.74,
+                      "h": 6.45
+                    }
+                  },
+                  {
+                    "span": [
+                      2,
+                      11
+                    ],
+                    "bbox": {
+                      "x": 64.23,
+                      "y": 81.11,
+                      "w": 32.79,
+                      "h": 6.97
+                    }
+                  },
+                  {
+                    "span": [
+                      12,
+                      19
+                    ],
+                    "bbox": {
+                      "x": 100.61,
+                      "y": 83.09,
+                      "w": 38.42,
+                      "h": 7.07
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  20,
+                  56
+                ],
+                "bbox": {
+                  "x": 56.43,
+                  "y": 94.16,
+                  "w": 166.24,
+                  "h": 8.99
+                },
+                "words": [
+                  {
+                    "span": [
+                      20,
+                      22
+                    ],
+                    "bbox": {
+                      "x": 56.43,
+                      "y": 94.48,
+                      "w": 9.4,
+                      "h": 6.52
+                    }
+                  },
+                  {
+                    "span": [
+                      23,
+                      30
+                    ],
+                    "bbox": {
+                      "x": 69.51,
+                      "y": 94.16,
+                      "w": 34.83,
+                      "h": 8.99
+                    }
+                  },
+                  {
+                    "span": [
+                      31,
+                      38
+                    ],
+                    "bbox": {
+                      "x": 108.01,
+                      "y": 94.16,
+                      "w": 30.92,
+                      "h": 7.99
+                    }
+                  },
+                  {
+                    "span": [
+                      39,
+                      48
+                    ],
+                    "bbox": {
+                      "x": 142.41,
+                      "y": 94.16,
+                      "w": 44.41,
+                      "h": 8.99
+                    }
+                  },
+                  {
+                    "span": [
+                      49,
+                      52
+                    ],
+                    "bbox": {
+                      "x": 190.33,
+                      "y": 94.48,
+                      "w": 14.56,
+                      "h": 6.61
+                    }
+                  },
+                  {
+                    "span": [
+                      53,
+                      56
+                    ],
+                    "bbox": {
+                      "x": 208.11,
+                      "y": 94.48,
+                      "w": 14.56,
+                      "h": 6.61
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  58,
+                  84
+                ],
+                "bbox": {
+                  "x": 56.41,
+                  "y": 107.12,
+                  "w": 117.93,
+                  "h": 9.04
+                },
+                "words": [
+                  {
+                    "span": [
+                      58,
+                      84
+                    ],
+                    "bbox": {
+                      "x": 56.41,
+                      "y": 107.12,
+                      "w": 117.93,
+                      "h": 9.04
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  86,
+                  112
+                ],
+                "bbox": {
+                  "x": 56.09,
+                  "y": 120.48,
+                  "w": 119.84,
+                  "h": 6.64
+                },
+                "words": [
+                  {
+                    "span": [
+                      86,
+                      89
+                    ],
+                    "bbox": {
+                      "x": 56.09,
+                      "y": 120.57,
+                      "w": 14.56,
+                      "h": 6.51
+                    }
+                  },
+                  {
+                    "span": [
+                      90,
+                      94
+                    ],
+                    "bbox": {
+                      "x": 73.92,
+                      "y": 122.05,
+                      "w": 14.42,
+                      "h": 5.07
+                    }
+                  },
+                  {
+                    "span": [
+                      95,
+                      112
+                    ],
+                    "bbox": {
+                      "x": 91.78,
+                      "y": 120.48,
+                      "w": 84.14,
+                      "h": 6.61
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "md": "**Invoice no.** **INV-2026-0142**\n**Invoice date** **18 September 2026**\n**Due date** **18 October 2026**\n**Order ref.** **PO-77310**",
+          "value": "Invoice no. INV-2026-0142\nInvoice date 18 September 2026\nDue date 18 October 2026\nOrder ref. PO-77310",
+          "bbox": [
+            {
+              "start_index": 0,
+              "end_index": 132,
+              "x": 359.64,
+              "y": 85.37,
+              "w": 179.34,
+              "h": 48.75,
+              "confidence": 1,
+              "label": "key-value-region"
+            }
+          ],
+          "grounding": {
+            "source": "md",
+            "lines": [
+              {
+                "span": [
+                  2,
+                  13
+                ],
+                "bbox": {
+                  "x": 359.64,
+                  "y": 85.37,
+                  "w": 45.1,
+                  "h": 6.75
+                },
+                "words": [
+                  {
+                    "span": [
+                      2,
+                      9
+                    ],
+                    "bbox": {
+                      "x": 359.64,
+                      "y": 85.37,
+                      "w": 29.53,
+                      "h": 6.71
+                    }
+                  },
+                  {
+                    "span": [
+                      10,
+                      13
+                    ],
+                    "bbox": {
+                      "x": 392.73,
+                      "y": 87.09,
+                      "w": 12.01,
+                      "h": 5.03
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  18,
+                  31
+                ],
+                "bbox": {
+                  "x": 475.95,
+                  "y": 85.48,
+                  "w": 63.03,
+                  "h": 6.61
+                },
+                "words": [
+                  {
+                    "span": [
+                      18,
+                      31
+                    ],
+                    "bbox": {
+                      "x": 475.95,
+                      "y": 85.48,
+                      "w": 63.03,
+                      "h": 6.61
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  36,
+                  48
+                ],
+                "bbox": {
+                  "x": 359.64,
+                  "y": 99.16,
+                  "w": 50.78,
+                  "h": 6.92
+                },
+                "words": [
+                  {
+                    "span": [
+                      36,
+                      43
+                    ],
+                    "bbox": {
+                      "x": 359.64,
+                      "y": 99.37,
+                      "w": 29.53,
+                      "h": 6.71
+                    }
+                  },
+                  {
+                    "span": [
+                      44,
+                      48
+                    ],
+                    "bbox": {
+                      "x": 392.46,
+                      "y": 99.16,
+                      "w": 17.95,
+                      "h": 6.92
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  53,
+                  70
+                ],
+                "bbox": {
+                  "x": 455.08,
+                  "y": 99.16,
+                  "w": 83.9,
+                  "h": 8.99
+                },
+                "words": [
+                  {
+                    "span": [
+                      53,
+                      55
+                    ],
+                    "bbox": {
+                      "x": 455.08,
+                      "y": 99.49,
+                      "w": 9.44,
+                      "h": 6.59
+                    }
+                  },
+                  {
+                    "span": [
+                      56,
+                      65
+                    ],
+                    "bbox": {
+                      "x": 467.6,
+                      "y": 99.16,
+                      "w": 48.64,
+                      "h": 8.99
+                    }
+                  },
+                  {
+                    "span": [
+                      66,
+                      70
+                    ],
+                    "bbox": {
+                      "x": 519.03,
+                      "y": 99.48,
+                      "w": 19.95,
+                      "h": 6.61
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  75,
+                  83
+                ],
+                "bbox": {
+                  "x": 360.15,
+                  "y": 113.16,
+                  "w": 37.13,
+                  "h": 6.92
+                },
+                "words": [
+                  {
+                    "span": [
+                      75,
+                      78
+                    ],
+                    "bbox": {
+                      "x": 360.15,
+                      "y": 113.57,
+                      "w": 15.88,
+                      "h": 6.51
+                    }
+                  },
+                  {
+                    "span": [
+                      79,
+                      83
+                    ],
+                    "bbox": {
+                      "x": 379.32,
+                      "y": 113.16,
+                      "w": 17.95,
+                      "h": 6.92
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  88,
+                  103
+                ],
+                "bbox": {
+                  "x": 467.86,
+                  "y": 113.16,
+                  "w": 71.12,
+                  "h": 6.92
+                },
+                "words": [
+                  {
+                    "span": [
+                      88,
+                      90
+                    ],
+                    "bbox": {
+                      "x": 467.86,
+                      "y": 113.49,
+                      "w": 9.44,
+                      "h": 6.59
+                    }
+                  },
+                  {
+                    "span": [
+                      91,
+                      98
+                    ],
+                    "bbox": {
+                      "x": 480.46,
+                      "y": 113.16,
+                      "w": 35.78,
+                      "h": 6.92
+                    }
+                  },
+                  {
+                    "span": [
+                      99,
+                      103
+                    ],
+                    "bbox": {
+                      "x": 519.03,
+                      "y": 113.48,
+                      "w": 19.95,
+                      "h": 6.61
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  108,
+                  118
+                ],
+                "bbox": {
+                  "x": 359.83,
+                  "y": 127.12,
+                  "w": 40.52,
+                  "h": 7
+                },
+                "words": [
+                  {
+                    "span": [
+                      108,
+                      113
+                    ],
+                    "bbox": {
+                      "x": 359.83,
+                      "y": 127.16,
+                      "w": 24.39,
+                      "h": 6.92
+                    }
+                  },
+                  {
+                    "span": [
+                      114,
+                      118
+                    ],
+                    "bbox": {
+                      "x": 387.46,
+                      "y": 127.12,
+                      "w": 12.89,
+                      "h": 7
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  123,
+                  131
+                ],
+                "bbox": {
+                  "x": 498.71,
+                  "y": 127.48,
+                  "w": 40.23,
+                  "h": 6.61
+                },
+                "words": [
+                  {
+                    "span": [
+                      123,
+                      131
+                    ],
+                    "bbox": {
+                      "x": 498.71,
+                      "y": 127.48,
+                      "w": 40.23,
+                      "h": 6.61
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "heading",
+          "md": "## **BILL TO**",
+          "value": "BILL TO",
+          "level": 2,
+          "bbox": [
+            {
+              "start_index": 0,
+              "end_index": 13,
+              "x": 55.96,
+              "y": 167.54,
+              "w": 32.14,
+              "h": 7.57,
+              "confidence": 0.813,
+              "label": "text"
+            }
+          ],
+          "grounding": {
+            "source": "md",
+            "lines": [
+              {
+                "span": [
+                  5,
+                  12
+                ],
+                "bbox": {
+                  "x": 56.72,
+                  "y": 168.84,
+                  "w": 31.1,
+                  "h": 6.24
+                },
+                "words": [
+                  {
+                    "span": [
+                      5,
+                      9
+                    ],
+                    "bbox": {
+                      "x": 56.72,
+                      "y": 168.93,
+                      "w": 17.47,
+                      "h": 6.07
+                    }
+                  },
+                  {
+                    "span": [
+                      10,
+                      12
+                    ],
+                    "bbox": {
+                      "x": 76.83,
+                      "y": 168.84,
+                      "w": 10.99,
+                      "h": 6.24
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "md": "**Example Traders (fictional)**\nUnit 5, Specimen Industrial Estate\nSampleton 000 000\nTax no.: SPECIMEN-TAX-0002",
+          "value": "Example Traders (fictional)\nUnit 5, Specimen Industrial Estate\nSampleton 000 000\nTax no.: SPECIMEN-TAX-0002",
+          "bbox": [
+            {
+              "start_index": 0,
+              "end_index": 30,
+              "x": 55.96,
+              "y": 181.85,
+              "w": 126.79,
+              "h": 10.94,
+              "confidence": 0.844,
+              "label": "paragraph_title"
+            },
+            {
+              "start_index": 32,
+              "end_index": 110,
+              "x": 56.09,
+              "y": 195.78,
+              "w": 149.84,
+              "h": 33.34,
+              "confidence": 1,
+              "label": "text"
+            }
+          ],
+          "grounding": {
+            "source": "md",
+            "lines": [
+              {
+                "span": [
+                  2,
+                  29
+                ],
+                "bbox": {
+                  "x": 56.86,
+                  "y": 182.73,
+                  "w": 125.54,
+                  "h": 9.54
+                },
+                "words": [
+                  {
+                    "span": [
+                      2,
+                      9
+                    ],
+                    "bbox": {
+                      "x": 56.86,
+                      "y": 182.78,
+                      "w": 38.98,
+                      "h": 9.49
+                    }
+                  },
+                  {
+                    "span": [
+                      10,
+                      17
+                    ],
+                    "bbox": {
+                      "x": 98.92,
+                      "y": 182.78,
+                      "w": 35.53,
+                      "h": 7.31
+                    }
+                  },
+                  {
+                    "span": [
+                      18,
+                      29
+                    ],
+                    "bbox": {
+                      "x": 137.7,
+                      "y": 182.73,
+                      "w": 44.7,
+                      "h": 8.76
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  32,
+                  66
+                ],
+                "bbox": {
+                  "x": 56.86,
+                  "y": 195.78,
+                  "w": 149.07,
+                  "h": 9.49
+                },
+                "words": [
+                  {
+                    "span": [
+                      32,
+                      36
+                    ],
+                    "bbox": {
+                      "x": 56.86,
+                      "y": 196,
+                      "w": 17.63,
+                      "h": 7.09
+                    }
+                  },
+                  {
+                    "span": [
+                      37,
+                      39
+                    ],
+                    "bbox": {
+                      "x": 77.77,
+                      "y": 196.22,
+                      "w": 6.66,
+                      "h": 8
+                    }
+                  },
+                  {
+                    "span": [
+                      40,
+                      48
+                    ],
+                    "bbox": {
+                      "x": 88.1,
+                      "y": 196,
+                      "w": 42.28,
+                      "h": 9.27
+                    }
+                  },
+                  {
+                    "span": [
+                      49,
+                      59
+                    ],
+                    "bbox": {
+                      "x": 134.01,
+                      "y": 195.78,
+                      "w": 41.75,
+                      "h": 7.31
+                    }
+                  },
+                  {
+                    "span": [
+                      60,
+                      66
+                    ],
+                    "bbox": {
+                      "x": 179.96,
+                      "y": 196.22,
+                      "w": 25.97,
+                      "h": 6.87
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  67,
+                  84
+                ],
+                "bbox": {
+                  "x": 56.49,
+                  "y": 208.78,
+                  "w": 84.72,
+                  "h": 9.49
+                },
+                "words": [
+                  {
+                    "span": [
+                      67,
+                      76
+                    ],
+                    "bbox": {
+                      "x": 56.49,
+                      "y": 208.78,
+                      "w": 46.87,
+                      "h": 9.49
+                    }
+                  },
+                  {
+                    "span": [
+                      77,
+                      80
+                    ],
+                    "bbox": {
+                      "x": 107.06,
+                      "y": 209.11,
+                      "w": 15.37,
+                      "h": 6.97
+                    }
+                  },
+                  {
+                    "span": [
+                      81,
+                      84
+                    ],
+                    "bbox": {
+                      "x": 125.84,
+                      "y": 209.11,
+                      "w": 15.37,
+                      "h": 6.97
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  85,
+                  111
+                ],
+                "bbox": {
+                  "x": 56.1,
+                  "y": 222.11,
+                  "w": 128.06,
+                  "h": 7.01
+                },
+                "words": [
+                  {
+                    "span": [
+                      85,
+                      88
+                    ],
+                    "bbox": {
+                      "x": 56.1,
+                      "y": 222.22,
+                      "w": 15.37,
+                      "h": 6.87
+                    }
+                  },
+                  {
+                    "span": [
+                      89,
+                      93
+                    ],
+                    "bbox": {
+                      "x": 74.92,
+                      "y": 223.78,
+                      "w": 15.22,
+                      "h": 5.35
+                    }
+                  },
+                  {
+                    "span": [
+                      94,
+                      111
+                    ],
+                    "bbox": {
+                      "x": 93.77,
+                      "y": 222.11,
+                      "w": 90.38,
+                      "h": 6.97
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "table",
+          "md": "| # | Description                             | Qty | Unit price | Amount    |\n| - | --------------------------------------- | --- | ---------- | --------- |\n| 1 | A4 copier paper, 75 gsm, ream of 500    | 20  | ₹285.00    | ₹5,700.00 |\n| 2 | Ballpoint pens, blue, box of 50         | 4   | ₹420.00    | ₹1,680.00 |\n| 3 | Lever-arch files, A4, pack of 10        | 3   | ₹899.00    | ₹2,697.00 |\n| 4 | Whiteboard markers, assorted, pack of 4 | 6   | ₹160.00    | ₹960.00   |\n| 5 | Desk organiser, mesh, black             | 5   | ₹349.00    | ₹1,745.00 |\n| 6 | Sticky notes, 76 x 76 mm, pack of 12    | 8   | ₹240.00    | ₹1,920.00 |",
+          "html": "<table>\n  <thead>\n    <tr>\n      <th>#</th>\n      <th>Description</th>\n      <th>Qty</th>\n      <th>Unit price</th>\n      <th>Amount</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>1</td>\n      <td>A4 copier paper, 75 gsm, ream of 500</td>\n      <td>20</td>\n      <td>₹285.00</td>\n      <td>₹5,700.00</td>\n    </tr>\n    <tr>\n      <td>2</td>\n      <td>Ballpoint pens, blue, box of 50</td>\n      <td>4</td>\n      <td>₹420.00</td>\n      <td>₹1,680.00</td>\n    </tr>\n    <tr>\n      <td>3</td>\n      <td>Lever-arch files, A4, pack of 10</td>\n      <td>3</td>\n      <td>₹899.00</td>\n      <td>₹2,697.00</td>\n    </tr>\n    <tr>\n      <td>4</td>\n      <td>Whiteboard markers, assorted, pack of 4</td>\n      <td>6</td>\n      <td>₹160.00</td>\n      <td>₹960.00</td>\n    </tr>\n    <tr>\n      <td>5</td>\n      <td>Desk organiser, mesh, black</td>\n      <td>5</td>\n      <td>₹349.00</td>\n      <td>₹1,745.00</td>\n    </tr>\n    <tr>\n      <td>6</td>\n      <td>Sticky notes, 76 x 76 mm, pack of 12</td>\n      <td>8</td>\n      <td>₹240.00</td>\n      <td>₹1,920.00</td>\n    </tr>\n  </tbody>\n</table>",
+          "csv": "\"#\",\"Description\",\"Qty\",\"Unit price\",\"Amount\"\n\"1\",\"A4 copier paper, 75 gsm, ream of 500\",\"20\",\"₹285.00\",\"₹5,700.00\"\n\"2\",\"Ballpoint pens, blue, box of 50\",\"4\",\"₹420.00\",\"₹1,680.00\"\n\"3\",\"Lever-arch files, A4, pack of 10\",\"3\",\"₹899.00\",\"₹2,697.00\"\n\"4\",\"Whiteboard markers, assorted, pack of 4\",\"6\",\"₹160.00\",\"₹960.00\"\n\"5\",\"Desk organiser, mesh, black\",\"5\",\"₹349.00\",\"₹1,745.00\"\n\"6\",\"Sticky notes, 76 x 76 mm, pack of 12\",\"8\",\"₹240.00\",\"₹1,920.00\"",
+          "rows": [
+            [
+              "#",
+              "Description",
+              "Qty",
+              "Unit price",
+              "Amount"
+            ],
+            [
+              "1",
+              "A4 copier paper, 75 gsm, ream of 500",
+              "20",
+              "₹285.00",
+              "₹5,700.00"
+            ],
+            [
+              "2",
+              "Ballpoint pens, blue, box of 50",
+              "4",
+              "₹420.00",
+              "₹1,680.00"
+            ],
+            [
+              "3",
+              "Lever-arch files, A4, pack of 10",
+              "3",
+              "₹899.00",
+              "₹2,697.00"
+            ],
+            [
+              "4",
+              "Whiteboard markers, assorted, pack of 4",
+              "6",
+              "₹160.00",
+              "₹960.00"
+            ],
+            [
+              "5",
+              "Desk organiser, mesh, black",
+              "5",
+              "₹349.00",
+              "₹1,745.00"
+            ],
+            [
+              "6",
+              "Sticky notes, 76 x 76 mm, pack of 12",
+              "8",
+              "₹240.00",
+              "₹1,920.00"
+            ]
+          ],
+          "bbox": [
+            {
+              "start_index": 0,
+              "end_index": 630,
+              "x": 53.57,
+              "y": 250.04,
+              "w": 486.94,
+              "h": 142.28,
+              "confidence": 0.9,
+              "label": "table"
+            }
+          ],
+          "parse_concerns": [
+            {
+              "type": "header_value_type_mismatch",
+              "details": "col 3 'Unit price' expects numeric, got '₹285.00' in row 1"
+            },
+            {
+              "type": "header_value_type_mismatch",
+              "details": "col 4 'Amount' expects numeric, got '₹5,700.00' in row 1"
+            }
+          ],
+          "grounding": {
+            "rows": [
+              [
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 60.21,
+                        "y": 260.23,
+                        "w": 5.72,
+                        "h": 6.77
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 60.21,
+                            "y": 260.23,
+                            "w": 5.72,
+                            "h": 6.77
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 60.21,
+                      "y": 260.23,
+                      "w": 5.72,
+                      "h": 6.77
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    11
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        11
+                      ],
+                      "bbox": {
+                        "x": 86.81,
+                        "y": 259.77,
+                        "w": 52.98,
+                        "h": 9.5
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            11
+                          ],
+                          "bbox": {
+                            "x": 86.81,
+                            "y": 259.77,
+                            "w": 52.98,
+                            "h": 9.5
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 86.81,
+                      "y": 259.77,
+                      "w": 52.98,
+                      "h": 9.5
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    3
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        3
+                      ],
+                      "bbox": {
+                        "x": 351.46,
+                        "y": 260.11,
+                        "w": 16.54,
+                        "h": 9.16
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            3
+                          ],
+                          "bbox": {
+                            "x": 351.46,
+                            "y": 260.11,
+                            "w": 16.54,
+                            "h": 9.16
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 351.46,
+                      "y": 260.11,
+                      "w": 16.54,
+                      "h": 9.16
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    10
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        10
+                      ],
+                      "bbox": {
+                        "x": 404.35,
+                        "y": 259.77,
+                        "w": 45.21,
+                        "h": 9.5
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            4
+                          ],
+                          "bbox": {
+                            "x": 404.35,
+                            "y": 259.77,
+                            "w": 19.21,
+                            "h": 7.32
+                          }
+                        },
+                        {
+                          "span": [
+                            5,
+                            10
+                          ],
+                          "bbox": {
+                            "x": 427.03,
+                            "y": 259.77,
+                            "w": 22.53,
+                            "h": 9.5
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 404.35,
+                      "y": 259.77,
+                      "w": 45.21,
+                      "h": 9.5
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    6
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        6
+                      ],
+                      "bbox": {
+                        "x": 497.02,
+                        "y": 260.19,
+                        "w": 37.94,
+                        "h": 6.9
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            6
+                          ],
+                          "bbox": {
+                            "x": 497.02,
+                            "y": 260.19,
+                            "w": 37.94,
+                            "h": 6.9
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 497.02,
+                      "y": 260.19,
+                      "w": 37.94,
+                      "h": 6.9
+                    }
+                  ]
+                }
+              ],
+              [
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 60.85,
+                        "y": 280.22,
+                        "w": 2.53,
+                        "h": 6.78
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 60.85,
+                            "y": 280.22,
+                            "w": 2.53,
+                            "h": 6.78
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 60.85,
+                      "y": 280.22,
+                      "w": 2.53,
+                      "h": 6.78
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    36
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        36
+                      ],
+                      "bbox": {
+                        "x": 86,
+                        "y": 279.73,
+                        "w": 166.55,
+                        "h": 9.54
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            2
+                          ],
+                          "bbox": {
+                            "x": 86,
+                            "y": 280.18,
+                            "w": 11.32,
+                            "h": 6.82
+                          }
+                        },
+                        {
+                          "span": [
+                            3,
+                            9
+                          ],
+                          "bbox": {
+                            "x": 100.5,
+                            "y": 280,
+                            "w": 27.22,
+                            "h": 9.27
+                          }
+                        },
+                        {
+                          "span": [
+                            10,
+                            16
+                          ],
+                          "bbox": {
+                            "x": 131.14,
+                            "y": 281.81,
+                            "w": 27.31,
+                            "h": 7.46
+                          }
+                        },
+                        {
+                          "span": [
+                            17,
+                            19
+                          ],
+                          "bbox": {
+                            "x": 162.06,
+                            "y": 280.22,
+                            "w": 9.91,
+                            "h": 6.87
+                          }
+                        },
+                        {
+                          "span": [
+                            20,
+                            24
+                          ],
+                          "bbox": {
+                            "x": 175.5,
+                            "y": 281.81,
+                            "w": 20.58,
+                            "h": 7.46
+                          }
+                        },
+                        {
+                          "span": [
+                            25,
+                            29
+                          ],
+                          "bbox": {
+                            "x": 200.08,
+                            "y": 281.81,
+                            "w": 21.92,
+                            "h": 5.27
+                          }
+                        },
+                        {
+                          "span": [
+                            30,
+                            32
+                          ],
+                          "bbox": {
+                            "x": 225.76,
+                            "y": 279.73,
+                            "w": 8.9,
+                            "h": 7.35
+                          }
+                        },
+                        {
+                          "span": [
+                            33,
+                            36
+                          ],
+                          "bbox": {
+                            "x": 237.32,
+                            "y": 280.11,
+                            "w": 15.24,
+                            "h": 6.97
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 86,
+                      "y": 279.73,
+                      "w": 166.55,
+                      "h": 9.54
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    2
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        2
+                      ],
+                      "bbox": {
+                        "x": 357.59,
+                        "y": 280.11,
+                        "w": 9.95,
+                        "h": 6.97
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            2
+                          ],
+                          "bbox": {
+                            "x": 357.59,
+                            "y": 280.11,
+                            "w": 9.95,
+                            "h": 6.97
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 357.59,
+                      "y": 280.11,
+                      "w": 9.95,
+                      "h": 6.97
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    9
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        9
+                      ],
+                      "bbox": {
+                        "x": 415.6,
+                        "y": 280.11,
+                        "w": 33.93,
+                        "h": 7.01
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            9
+                          ],
+                          "bbox": {
+                            "x": 415.6,
+                            "y": 280.11,
+                            "w": 33.93,
+                            "h": 7.01
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 415.6,
+                      "y": 280.11,
+                      "w": 33.93,
+                      "h": 7.01
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    11
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        11
+                      ],
+                      "bbox": {
+                        "x": 492.89,
+                        "y": 280.11,
+                        "w": 41.91,
+                        "h": 8.1
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            11
+                          ],
+                          "bbox": {
+                            "x": 492.89,
+                            "y": 280.11,
+                            "w": 41.91,
+                            "h": 8.1
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 492.89,
+                      "y": 280.11,
+                      "w": 41.91,
+                      "h": 8.1
+                    }
+                  ]
+                }
+              ],
+              [
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 60.46,
+                        "y": 300.12,
+                        "w": 4.48,
+                        "h": 6.88
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 60.46,
+                            "y": 300.12,
+                            "w": 4.48,
+                            "h": 6.88
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 60.46,
+                      "y": 300.12,
+                      "w": 4.48,
+                      "h": 6.88
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    31
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        31
+                      ],
+                      "bbox": {
+                        "x": 86.92,
+                        "y": 299.73,
+                        "w": 133.45,
+                        "h": 9.54
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            9
+                          ],
+                          "bbox": {
+                            "x": 86.92,
+                            "y": 299.78,
+                            "w": 38.62,
+                            "h": 9.49
+                          }
+                        },
+                        {
+                          "span": [
+                            10,
+                            15
+                          ],
+                          "bbox": {
+                            "x": 129.03,
+                            "y": 301.81,
+                            "w": 22.64,
+                            "h": 7.46
+                          }
+                        },
+                        {
+                          "span": [
+                            16,
+                            21
+                          ],
+                          "bbox": {
+                            "x": 155.66,
+                            "y": 299.78,
+                            "w": 20.54,
+                            "h": 8.44
+                          }
+                        },
+                        {
+                          "span": [
+                            22,
+                            25
+                          ],
+                          "bbox": {
+                            "x": 180.2,
+                            "y": 299.78,
+                            "w": 15.64,
+                            "h": 7.31
+                          }
+                        },
+                        {
+                          "span": [
+                            26,
+                            28
+                          ],
+                          "bbox": {
+                            "x": 199,
+                            "y": 299.73,
+                            "w": 8.9,
+                            "h": 7.35
+                          }
+                        },
+                        {
+                          "span": [
+                            29,
+                            31
+                          ],
+                          "bbox": {
+                            "x": 210.56,
+                            "y": 300.11,
+                            "w": 9.8,
+                            "h": 6.97
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 86.92,
+                      "y": 299.73,
+                      "w": 133.45,
+                      "h": 9.54
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 362.77,
+                        "y": 300.18,
+                        "w": 5.04,
+                        "h": 6.82
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 362.77,
+                            "y": 300.18,
+                            "w": 5.04,
+                            "h": 6.82
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 362.77,
+                      "y": 300.18,
+                      "w": 5.04,
+                      "h": 6.82
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    9
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        9
+                      ],
+                      "bbox": {
+                        "x": 415.6,
+                        "y": 300.11,
+                        "w": 33.93,
+                        "h": 7.01
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            9
+                          ],
+                          "bbox": {
+                            "x": 415.6,
+                            "y": 300.11,
+                            "w": 33.93,
+                            "h": 7.01
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 415.6,
+                      "y": 300.11,
+                      "w": 33.93,
+                      "h": 7.01
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    11
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        11
+                      ],
+                      "bbox": {
+                        "x": 492.89,
+                        "y": 300.11,
+                        "w": 41.91,
+                        "h": 8.1
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            11
+                          ],
+                          "bbox": {
+                            "x": 492.89,
+                            "y": 300.11,
+                            "w": 41.91,
+                            "h": 8.1
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 492.89,
+                      "y": 300.11,
+                      "w": 41.91,
+                      "h": 8.1
+                    }
+                  ]
+                }
+              ],
+              [
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 60.43,
+                        "y": 320.12,
+                        "w": 4.47,
+                        "h": 6.96
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 60.43,
+                            "y": 320.12,
+                            "w": 4.47,
+                            "h": 6.96
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 60.43,
+                      "y": 320.12,
+                      "w": 4.47,
+                      "h": 6.96
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    32
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        32
+                      ],
+                      "bbox": {
+                        "x": 86.92,
+                        "y": 319.73,
+                        "w": 133.51,
+                        "h": 9.54
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            10
+                          ],
+                          "bbox": {
+                            "x": 86.92,
+                            "y": 319.78,
+                            "w": 45.5,
+                            "h": 7.31
+                          }
+                        },
+                        {
+                          "span": [
+                            11,
+                            17
+                          ],
+                          "bbox": {
+                            "x": 135.8,
+                            "y": 319.73,
+                            "w": 19.76,
+                            "h": 8.48
+                          }
+                        },
+                        {
+                          "span": [
+                            18,
+                            21
+                          ],
+                          "bbox": {
+                            "x": 158.75,
+                            "y": 320.18,
+                            "w": 13.33,
+                            "h": 8.04
+                          }
+                        },
+                        {
+                          "span": [
+                            22,
+                            26
+                          ],
+                          "bbox": {
+                            "x": 176.08,
+                            "y": 319.78,
+                            "w": 19.91,
+                            "h": 9.49
+                          }
+                        },
+                        {
+                          "span": [
+                            27,
+                            29
+                          ],
+                          "bbox": {
+                            "x": 199.07,
+                            "y": 319.73,
+                            "w": 8.9,
+                            "h": 7.35
+                          }
+                        },
+                        {
+                          "span": [
+                            30,
+                            32
+                          ],
+                          "bbox": {
+                            "x": 210.88,
+                            "y": 320.11,
+                            "w": 9.56,
+                            "h": 6.97
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 86.92,
+                      "y": 319.73,
+                      "w": 133.51,
+                      "h": 9.54
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 362.99,
+                        "y": 320.12,
+                        "w": 4.46,
+                        "h": 6.96
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 362.99,
+                            "y": 320.12,
+                            "w": 4.47,
+                            "h": 6.96
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 362.99,
+                      "y": 320.12,
+                      "w": 4.46,
+                      "h": 6.96
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    9
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        9
+                      ],
+                      "bbox": {
+                        "x": 415.6,
+                        "y": 320.11,
+                        "w": 33.93,
+                        "h": 7.01
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            9
+                          ],
+                          "bbox": {
+                            "x": 415.6,
+                            "y": 320.11,
+                            "w": 33.93,
+                            "h": 7.01
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 415.6,
+                      "y": 320.11,
+                      "w": 33.93,
+                      "h": 7.01
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    11
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        11
+                      ],
+                      "bbox": {
+                        "x": 492.89,
+                        "y": 320.11,
+                        "w": 41.91,
+                        "h": 8.1
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            11
+                          ],
+                          "bbox": {
+                            "x": 492.89,
+                            "y": 320.11,
+                            "w": 41.91,
+                            "h": 8.1
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 492.89,
+                      "y": 320.11,
+                      "w": 41.91,
+                      "h": 8.1
+                    }
+                  ]
+                }
+              ],
+              [
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 60.2,
+                        "y": 340.18,
+                        "w": 5.04,
+                        "h": 6.82
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 60.2,
+                            "y": 340.18,
+                            "w": 5.04,
+                            "h": 6.82
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 60.2,
+                      "y": 340.18,
+                      "w": 5.04,
+                      "h": 6.82
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    39
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        39
+                      ],
+                      "bbox": {
+                        "x": 86.11,
+                        "y": 339.73,
+                        "w": 180.8,
+                        "h": 9.54
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            10
+                          ],
+                          "bbox": {
+                            "x": 86.11,
+                            "y": 339.78,
+                            "w": 51.71,
+                            "h": 7.31
+                          }
+                        },
+                        {
+                          "span": [
+                            11,
+                            19
+                          ],
+                          "bbox": {
+                            "x": 141.91,
+                            "y": 339.78,
+                            "w": 38.06,
+                            "h": 8.44
+                          }
+                        },
+                        {
+                          "span": [
+                            20,
+                            29
+                          ],
+                          "bbox": {
+                            "x": 183.59,
+                            "y": 339.78,
+                            "w": 40.12,
+                            "h": 8.44
+                          }
+                        },
+                        {
+                          "span": [
+                            30,
+                            34
+                          ],
+                          "bbox": {
+                            "x": 227.71,
+                            "y": 339.78,
+                            "w": 19.91,
+                            "h": 9.49
+                          }
+                        },
+                        {
+                          "span": [
+                            35,
+                            37
+                          ],
+                          "bbox": {
+                            "x": 250.7,
+                            "y": 339.73,
+                            "w": 8.9,
+                            "h": 7.35
+                          }
+                        },
+                        {
+                          "span": [
+                            38,
+                            39
+                          ],
+                          "bbox": {
+                            "x": 261.86,
+                            "y": 340.18,
+                            "w": 5.05,
+                            "h": 6.82
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 86.11,
+                      "y": 339.73,
+                      "w": 180.8,
+                      "h": 9.54
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 363.09,
+                        "y": 340.12,
+                        "w": 4.46,
+                        "h": 6.96
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 363.09,
+                            "y": 340.12,
+                            "w": 4.47,
+                            "h": 6.96
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 363.09,
+                      "y": 340.12,
+                      "w": 4.46,
+                      "h": 6.96
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    9
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        9
+                      ],
+                      "bbox": {
+                        "x": 415.6,
+                        "y": 340.11,
+                        "w": 33.93,
+                        "h": 7.01
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            9
+                          ],
+                          "bbox": {
+                            "x": 415.6,
+                            "y": 340.11,
+                            "w": 33.93,
+                            "h": 7.01
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 415.6,
+                      "y": 340.11,
+                      "w": 33.93,
+                      "h": 7.01
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    9
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        9
+                      ],
+                      "bbox": {
+                        "x": 500.87,
+                        "y": 340.11,
+                        "w": 33.93,
+                        "h": 7.01
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            9
+                          ],
+                          "bbox": {
+                            "x": 500.87,
+                            "y": 340.11,
+                            "w": 33.93,
+                            "h": 7.01
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 500.87,
+                      "y": 340.11,
+                      "w": 33.93,
+                      "h": 7.01
+                    }
+                  ]
+                }
+              ],
+              [
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 60.6,
+                        "y": 360.22,
+                        "w": 4.29,
+                        "h": 6.87
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 60.6,
+                            "y": 360.22,
+                            "w": 4.29,
+                            "h": 6.87
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 60.6,
+                      "y": 360.22,
+                      "w": 4.29,
+                      "h": 6.87
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    27
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        27
+                      ],
+                      "bbox": {
+                        "x": 86.92,
+                        "y": 359.78,
+                        "w": 124.33,
+                        "h": 9.49
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            4
+                          ],
+                          "bbox": {
+                            "x": 86.92,
+                            "y": 359.78,
+                            "w": 20.91,
+                            "h": 7.31
+                          }
+                        },
+                        {
+                          "span": [
+                            5,
+                            15
+                          ],
+                          "bbox": {
+                            "x": 110.91,
+                            "y": 360,
+                            "w": 44.3,
+                            "h": 9.27
+                          }
+                        },
+                        {
+                          "span": [
+                            16,
+                            21
+                          ],
+                          "bbox": {
+                            "x": 159.21,
+                            "y": 359.78,
+                            "w": 25.68,
+                            "h": 8.44
+                          }
+                        },
+                        {
+                          "span": [
+                            22,
+                            27
+                          ],
+                          "bbox": {
+                            "x": 188.89,
+                            "y": 359.78,
+                            "w": 22.36,
+                            "h": 7.31
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 86.92,
+                      "y": 359.78,
+                      "w": 124.33,
+                      "h": 9.49
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 363.17,
+                        "y": 360.22,
+                        "w": 4.29,
+                        "h": 6.87
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 363.17,
+                            "y": 360.22,
+                            "w": 4.29,
+                            "h": 6.87
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 363.17,
+                      "y": 360.22,
+                      "w": 4.29,
+                      "h": 6.87
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    9
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        9
+                      ],
+                      "bbox": {
+                        "x": 415.6,
+                        "y": 360.11,
+                        "w": 33.93,
+                        "h": 7.01
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            9
+                          ],
+                          "bbox": {
+                            "x": 415.6,
+                            "y": 360.11,
+                            "w": 33.93,
+                            "h": 7.01
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 415.6,
+                      "y": 360.11,
+                      "w": 33.93,
+                      "h": 7.01
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    11
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        11
+                      ],
+                      "bbox": {
+                        "x": 492.89,
+                        "y": 360.11,
+                        "w": 41.91,
+                        "h": 8.1
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            11
+                          ],
+                          "bbox": {
+                            "x": 492.89,
+                            "y": 360.11,
+                            "w": 41.91,
+                            "h": 8.1
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 492.89,
+                      "y": 360.11,
+                      "w": 41.91,
+                      "h": 8.1
+                    }
+                  ]
+                }
+              ],
+              [
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 60.52,
+                        "y": 380.12,
+                        "w": 4.46,
+                        "h": 6.96
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 60.52,
+                            "y": 380.12,
+                            "w": 4.47,
+                            "h": 6.96
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 60.52,
+                      "y": 380.12,
+                      "w": 4.46,
+                      "h": 6.96
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    36
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        36
+                      ],
+                      "bbox": {
+                        "x": 86.49,
+                        "y": 379.73,
+                        "w": 159.62,
+                        "h": 9.54
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            6
+                          ],
+                          "bbox": {
+                            "x": 86.49,
+                            "y": 379.78,
+                            "w": 25.09,
+                            "h": 9.49
+                          }
+                        },
+                        {
+                          "span": [
+                            7,
+                            13
+                          ],
+                          "bbox": {
+                            "x": 114.85,
+                            "y": 380.74,
+                            "w": 25.97,
+                            "h": 7.48
+                          }
+                        },
+                        {
+                          "span": [
+                            14,
+                            16
+                          ],
+                          "bbox": {
+                            "x": 144.44,
+                            "y": 380.12,
+                            "w": 10,
+                            "h": 6.96
+                          }
+                        },
+                        {
+                          "span": [
+                            17,
+                            18
+                          ],
+                          "bbox": {
+                            "x": 157.53,
+                            "y": 381.91,
+                            "w": 4.68,
+                            "h": 5.09
+                          }
+                        },
+                        {
+                          "span": [
+                            19,
+                            21
+                          ],
+                          "bbox": {
+                            "x": 165.27,
+                            "y": 380.12,
+                            "w": 10,
+                            "h": 6.96
+                          }
+                        },
+                        {
+                          "span": [
+                            22,
+                            25
+                          ],
+                          "bbox": {
+                            "x": 179,
+                            "y": 381.81,
+                            "w": 18.78,
+                            "h": 6.4
+                          }
+                        },
+                        {
+                          "span": [
+                            26,
+                            30
+                          ],
+                          "bbox": {
+                            "x": 201.78,
+                            "y": 379.78,
+                            "w": 19.91,
+                            "h": 9.49
+                          }
+                        },
+                        {
+                          "span": [
+                            31,
+                            33
+                          ],
+                          "bbox": {
+                            "x": 224.77,
+                            "y": 379.73,
+                            "w": 8.9,
+                            "h": 7.35
+                          }
+                        },
+                        {
+                          "span": [
+                            34,
+                            36
+                          ],
+                          "bbox": {
+                            "x": 236.58,
+                            "y": 380.12,
+                            "w": 9.53,
+                            "h": 6.88
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 86.49,
+                      "y": 379.73,
+                      "w": 159.62,
+                      "h": 9.54
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        1
+                      ],
+                      "bbox": {
+                        "x": 363.03,
+                        "y": 380.12,
+                        "w": 4.49,
+                        "h": 6.96
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            1
+                          ],
+                          "bbox": {
+                            "x": 363.03,
+                            "y": 380.12,
+                            "w": 4.49,
+                            "h": 6.96
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 363.03,
+                      "y": 380.12,
+                      "w": 4.49,
+                      "h": 6.96
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    9
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        9
+                      ],
+                      "bbox": {
+                        "x": 415.6,
+                        "y": 380.11,
+                        "w": 33.93,
+                        "h": 7.01
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            9
+                          ],
+                          "bbox": {
+                            "x": 415.6,
+                            "y": 380.11,
+                            "w": 33.93,
+                            "h": 7.01
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 415.6,
+                      "y": 380.11,
+                      "w": 33.93,
+                      "h": 7.01
+                    }
+                  ]
+                },
+                {
+                  "span": [
+                    0,
+                    11
+                  ],
+                  "lines": [
+                    {
+                      "span": [
+                        0,
+                        11
+                      ],
+                      "bbox": {
+                        "x": 492.89,
+                        "y": 380.11,
+                        "w": 41.91,
+                        "h": 8.1
+                      },
+                      "words": [
+                        {
+                          "span": [
+                            0,
+                            11
+                          ],
+                          "bbox": {
+                            "x": 492.89,
+                            "y": 380.11,
+                            "w": 41.91,
+                            "h": 8.1
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "bbox": [
+                    {
+                      "x": 492.89,
+                      "y": 380.11,
+                      "w": 41.91,
+                      "h": 8.1
+                    }
+                  ]
+                }
+              ]
+            ],
+            "row_bboxes": [
+              [
+                {
+                  "x": 60.2,
+                  "y": 259.77,
+                  "w": 474.76,
+                  "h": 9.5
+                }
+              ],
+              [
+                {
+                  "x": 60.2,
+                  "y": 279.73,
+                  "w": 474.76,
+                  "h": 9.54
+                }
+              ],
+              [
+                {
+                  "x": 60.2,
+                  "y": 299.73,
+                  "w": 474.76,
+                  "h": 9.54
+                }
+              ],
+              [
+                {
+                  "x": 60.2,
+                  "y": 319.73,
+                  "w": 474.76,
+                  "h": 9.54
+                }
+              ],
+              [
+                {
+                  "x": 60.2,
+                  "y": 339.73,
+                  "w": 474.76,
+                  "h": 9.54
+                }
+              ],
+              [
+                {
+                  "x": 60.2,
+                  "y": 359.78,
+                  "w": 474.76,
+                  "h": 9.49
+                }
+              ],
+              [
+                {
+                  "x": 60.2,
+                  "y": 379.73,
+                  "w": 474.76,
+                  "h": 9.54
+                }
+              ]
+            ],
+            "column_bboxes": [
+              [
+                {
+                  "x": 60.46,
+                  "y": 259.77,
+                  "w": 4.48,
+                  "h": 129.5
+                }
+              ],
+              [
+                {
+                  "x": 86.81,
+                  "y": 259.77,
+                  "w": 133.62,
+                  "h": 129.5
+                }
+              ],
+              [
+                {
+                  "x": 362.99,
+                  "y": 259.77,
+                  "w": 4.55,
+                  "h": 129.5
+                }
+              ],
+              [
+                {
+                  "x": 415.6,
+                  "y": 259.77,
+                  "w": 33.93,
+                  "h": 129.5
+                }
+              ],
+              [
+                {
+                  "x": 492.89,
+                  "y": 259.77,
+                  "w": 41.91,
+                  "h": 129.5
+                }
+              ]
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "md": "Subtotal ₹14,702.00\nGST at 18% ₹2,646.36\n**Total due ₹17,348.36**",
+          "value": "Subtotal ₹14,702.00\nGST at 18% ₹2,646.36\nTotal due ₹17,348.36",
+          "bbox": [
+            {
+              "start_index": 0,
+              "end_index": 64,
+              "x": 435.47,
+              "y": 407.4,
+              "w": 103.48,
+              "h": 44.88,
+              "confidence": 1,
+              "label": "key-value-region"
+            }
+          ],
+          "grounding": {
+            "source": "md",
+            "lines": [
+              {
+                "span": [
+                  0,
+                  21
+                ],
+                "bbox": {
+                  "x": 435.79,
+                  "y": 407.4,
+                  "w": 103,
+                  "h": 8.88
+                },
+                "words": [
+                  {
+                    "span": [
+                      0,
+                      8
+                    ],
+                    "bbox": {
+                      "x": 435.79,
+                      "y": 407.4,
+                      "w": 37.92,
+                      "h": 7.69
+                    }
+                  },
+                  {
+                    "span": [
+                      9,
+                      21
+                    ],
+                    "bbox": {
+                      "x": 488.95,
+                      "y": 407.75,
+                      "w": 49.84,
+                      "h": 8.53
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  22,
+                  44
+                ],
+                "bbox": {
+                  "x": 435.89,
+                  "y": 425.76,
+                  "w": 102.92,
+                  "h": 8.52
+                },
+                "words": [
+                  {
+                    "span": [
+                      22,
+                      25
+                    ],
+                    "bbox": {
+                      "x": 435.89,
+                      "y": 425.76,
+                      "w": 17.61,
+                      "h": 7.33
+                    }
+                  },
+                  {
+                    "span": [
+                      26,
+                      28
+                    ],
+                    "bbox": {
+                      "x": 456.67,
+                      "y": 426.41,
+                      "w": 8.54,
+                      "h": 6.68
+                    }
+                  },
+                  {
+                    "span": [
+                      29,
+                      32
+                    ],
+                    "bbox": {
+                      "x": 468.92,
+                      "y": 425.76,
+                      "w": 18.37,
+                      "h": 7.33
+                    }
+                  },
+                  {
+                    "span": [
+                      33,
+                      44
+                    ],
+                    "bbox": {
+                      "x": 494.67,
+                      "y": 425.76,
+                      "w": 44.14,
+                      "h": 8.52
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  47,
+                  69
+                ],
+                "bbox": {
+                  "x": 435.47,
+                  "y": 443.4,
+                  "w": 103.48,
+                  "h": 8.88
+                },
+                "words": [
+                  {
+                    "span": [
+                      47,
+                      52
+                    ],
+                    "bbox": {
+                      "x": 435.47,
+                      "y": 443.4,
+                      "w": 24.4,
+                      "h": 7.69
+                    }
+                  },
+                  {
+                    "span": [
+                      53,
+                      56
+                    ],
+                    "bbox": {
+                      "x": 463.68,
+                      "y": 443.4,
+                      "w": 17.86,
+                      "h": 7.69
+                    }
+                  },
+                  {
+                    "span": [
+                      57,
+                      69
+                    ],
+                    "bbox": {
+                      "x": 488.51,
+                      "y": 443.76,
+                      "w": 50.44,
+                      "h": 8.52
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "heading",
+          "md": "## **Payment**",
+          "value": "Payment",
+          "level": 2,
+          "bbox": [
+            {
+              "start_index": 0,
+              "end_index": 13,
+              "x": 55.96,
+              "y": 479.04,
+              "w": 45.24,
+              "h": 10.35,
+              "confidence": 0.581,
+              "label": "paragraph_title"
+            }
+          ],
+          "grounding": {
+            "source": "md",
+            "lines": [
+              {
+                "span": [
+                  5,
+                  12
+                ],
+                "bbox": {
+                  "x": 56.85,
+                  "y": 479.86,
+                  "w": 43.3,
+                  "h": 9.53
+                },
+                "words": [
+                  {
+                    "span": [
+                      5,
+                      12
+                    ],
+                    "bbox": {
+                      "x": 56.85,
+                      "y": 479.86,
+                      "w": 43.3,
+                      "h": 9.53
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "md": "Bank transfer to Specimen Bank, account SPECIMEN-0000-1111, within 30 days. Please quote the invoice number with your payment.",
+          "value": "Bank transfer to Specimen Bank, account SPECIMEN-0000-1111, within 30 days. Please quote the invoice number with your payment.",
+          "bbox": [
+            {
+              "start_index": 0,
+              "end_index": 125,
+              "x": 55.36,
+              "y": 495.03,
+              "w": 298.83,
+              "h": 23.12,
+              "confidence": 1,
+              "label": "text"
+            }
+          ],
+          "grounding": {
+            "source": "md",
+            "lines": [
+              {
+                "span": [
+                  0,
+                  66
+                ],
+                "bbox": {
+                  "x": 56.87,
+                  "y": 496.12,
+                  "w": 296.57,
+                  "h": 9.04
+                },
+                "words": [
+                  {
+                    "span": [
+                      0,
+                      4
+                    ],
+                    "bbox": {
+                      "x": 56.87,
+                      "y": 496.16,
+                      "w": 20.31,
+                      "h": 6.92
+                    }
+                  },
+                  {
+                    "span": [
+                      5,
+                      13
+                    ],
+                    "bbox": {
+                      "x": 79.75,
+                      "y": 496.12,
+                      "w": 33.5,
+                      "h": 6.97
+                    }
+                  },
+                  {
+                    "span": [
+                      14,
+                      16
+                    ],
+                    "bbox": {
+                      "x": 115.87,
+                      "y": 497.07,
+                      "w": 8.06,
+                      "h": 6.01
+                    }
+                  },
+                  {
+                    "span": [
+                      17,
+                      25
+                    ],
+                    "bbox": {
+                      "x": 127.22,
+                      "y": 496.37,
+                      "w": 40.06,
+                      "h": 8.78
+                    }
+                  },
+                  {
+                    "span": [
+                      26,
+                      31
+                    ],
+                    "bbox": {
+                      "x": 171.22,
+                      "y": 496.16,
+                      "w": 22.12,
+                      "h": 7.99
+                    }
+                  },
+                  {
+                    "span": [
+                      32,
+                      39
+                    ],
+                    "bbox": {
+                      "x": 196.78,
+                      "y": 497.07,
+                      "w": 32.9,
+                      "h": 6.01
+                    }
+                  },
+                  {
+                    "span": [
+                      40,
+                      59
+                    ],
+                    "bbox": {
+                      "x": 232.67,
+                      "y": 496.48,
+                      "w": 92.39,
+                      "h": 7.68
+                    }
+                  },
+                  {
+                    "span": [
+                      60,
+                      66
+                    ],
+                    "bbox": {
+                      "x": 328.18,
+                      "y": 496.16,
+                      "w": 25.26,
+                      "h": 6.92
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  67,
+                  126
+                ],
+                "bbox": {
+                  "x": 56.41,
+                  "y": 509.16,
+                  "w": 259.13,
+                  "h": 8.99
+                },
+                "words": [
+                  {
+                    "span": [
+                      67,
+                      69
+                    ],
+                    "bbox": {
+                      "x": 56.41,
+                      "y": 509.48,
+                      "w": 9.45,
+                      "h": 6.61
+                    }
+                  },
+                  {
+                    "span": [
+                      70,
+                      75
+                    ],
+                    "bbox": {
+                      "x": 69.13,
+                      "y": 509.16,
+                      "w": 20.75,
+                      "h": 8.99
+                    }
+                  },
+                  {
+                    "span": [
+                      76,
+                      82
+                    ],
+                    "bbox": {
+                      "x": 93.75,
+                      "y": 509.16,
+                      "w": 25.95,
+                      "h": 6.92
+                    }
+                  },
+                  {
+                    "span": [
+                      83,
+                      88
+                    ],
+                    "bbox": {
+                      "x": 122.99,
+                      "y": 510.07,
+                      "w": 23.91,
+                      "h": 8.08
+                    }
+                  },
+                  {
+                    "span": [
+                      89,
+                      92
+                    ],
+                    "bbox": {
+                      "x": 149.84,
+                      "y": 509.16,
+                      "w": 13.28,
+                      "h": 6.92
+                    }
+                  },
+                  {
+                    "span": [
+                      93,
+                      100
+                    ],
+                    "bbox": {
+                      "x": 166.63,
+                      "y": 509.37,
+                      "w": 28.46,
+                      "h": 6.71
+                    }
+                  },
+                  {
+                    "span": [
+                      101,
+                      107
+                    ],
+                    "bbox": {
+                      "x": 198.65,
+                      "y": 509.16,
+                      "w": 32.97,
+                      "h": 6.92
+                    }
+                  },
+                  {
+                    "span": [
+                      108,
+                      112
+                    ],
+                    "bbox": {
+                      "x": 234.19,
+                      "y": 509.16,
+                      "w": 17.38,
+                      "h": 6.92
+                    }
+                  },
+                  {
+                    "span": [
+                      113,
+                      117
+                    ],
+                    "bbox": {
+                      "x": 254.65,
+                      "y": 511.09,
+                      "w": 19.17,
+                      "h": 7.07
+                    }
+                  },
+                  {
+                    "span": [
+                      118,
+                      126
+                    ],
+                    "bbox": {
+                      "x": 277.06,
+                      "y": 510.07,
+                      "w": 38.48,
+                      "h": 8.08
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "md": "Every amount is quantity times unit price; the subtotal, GST and total add up to the paisa.",
+          "value": "Every amount is quantity times unit price; the subtotal, GST and total add up to the paisa.",
+          "bbox": [
+            {
+              "start_index": 0,
+              "end_index": 90,
+              "x": 54.77,
+              "y": 531.23,
+              "w": 292.28,
+              "h": 21.89,
+              "confidence": 1,
+              "label": "text"
+            }
+          ],
+          "grounding": {
+            "source": "md",
+            "lines": [
+              {
+                "span": [
+                  0,
+                  74
+                ],
+                "bbox": {
+                  "x": 56.83,
+                  "y": 532.54,
+                  "w": 289.93,
+                  "h": 8.49
+                },
+                "words": [
+                  {
+                    "span": [
+                      0,
+                      5
+                    ],
+                    "bbox": {
+                      "x": 56.83,
+                      "y": 532.93,
+                      "w": 20.86,
+                      "h": 8.1
+                    }
+                  },
+                  {
+                    "span": [
+                      6,
+                      12
+                    ],
+                    "bbox": {
+                      "x": 80.29,
+                      "y": 533.4,
+                      "w": 30.86,
+                      "h": 5.68
+                    }
+                  },
+                  {
+                    "span": [
+                      13,
+                      15
+                    ],
+                    "bbox": {
+                      "x": 114.2,
+                      "y": 532.74,
+                      "w": 5.22,
+                      "h": 6.34
+                    }
+                  },
+                  {
+                    "span": [
+                      16,
+                      24
+                    ],
+                    "bbox": {
+                      "x": 122.48,
+                      "y": 532.74,
+                      "w": 32.7,
+                      "h": 8.3
+                    }
+                  },
+                  {
+                    "span": [
+                      25,
+                      30
+                    ],
+                    "bbox": {
+                      "x": 157.52,
+                      "y": 532.74,
+                      "w": 21.56,
+                      "h": 6.34
+                    }
+                  },
+                  {
+                    "span": [
+                      31,
+                      35
+                    ],
+                    "bbox": {
+                      "x": 182.34,
+                      "y": 532.74,
+                      "w": 14.91,
+                      "h": 6.34
+                    }
+                  },
+                  {
+                    "span": [
+                      36,
+                      42
+                    ],
+                    "bbox": {
+                      "x": 200.37,
+                      "y": 532.74,
+                      "w": 20.73,
+                      "h": 8.3
+                    }
+                  },
+                  {
+                    "span": [
+                      43,
+                      46
+                    ],
+                    "bbox": {
+                      "x": 224.08,
+                      "y": 532.54,
+                      "w": 12.55,
+                      "h": 6.54
+                    }
+                  },
+                  {
+                    "span": [
+                      47,
+                      56
+                    ],
+                    "bbox": {
+                      "x": 239.7,
+                      "y": 532.54,
+                      "w": 33.99,
+                      "h": 7.55
+                    }
+                  },
+                  {
+                    "span": [
+                      57,
+                      60
+                    ],
+                    "bbox": {
+                      "x": 277.07,
+                      "y": 532.85,
+                      "w": 14.97,
+                      "h": 6.23
+                    }
+                  },
+                  {
+                    "span": [
+                      61,
+                      64
+                    ],
+                    "bbox": {
+                      "x": 294.73,
+                      "y": 532.54,
+                      "w": 14.14,
+                      "h": 6.54
+                    }
+                  },
+                  {
+                    "span": [
+                      65,
+                      70
+                    ],
+                    "bbox": {
+                      "x": 311.94,
+                      "y": 532.54,
+                      "w": 17.38,
+                      "h": 6.54
+                    }
+                  },
+                  {
+                    "span": [
+                      71,
+                      74
+                    ],
+                    "bbox": {
+                      "x": 332.64,
+                      "y": 532.54,
+                      "w": 14.11,
+                      "h": 6.54
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  75,
+                  91
+                ],
+                "bbox": {
+                  "x": 56.67,
+                  "y": 544.54,
+                  "w": 60.46,
+                  "h": 8.49
+                },
+                "words": [
+                  {
+                    "span": [
+                      75,
+                      77
+                    ],
+                    "bbox": {
+                      "x": 56.67,
+                      "y": 546.36,
+                      "w": 9.34,
+                      "h": 6.67
+                    }
+                  },
+                  {
+                    "span": [
+                      78,
+                      80
+                    ],
+                    "bbox": {
+                      "x": 68.83,
+                      "y": 545.4,
+                      "w": 7.62,
+                      "h": 5.68
+                    }
+                  },
+                  {
+                    "span": [
+                      81,
+                      84
+                    ],
+                    "bbox": {
+                      "x": 79.25,
+                      "y": 544.54,
+                      "w": 12.55,
+                      "h": 6.54
+                    }
+                  },
+                  {
+                    "span": [
+                      85,
+                      91
+                    ],
+                    "bbox": {
+                      "x": 95.16,
+                      "y": 544.74,
+                      "w": 21.97,
+                      "h": 8.3
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "footer",
+          "md": "SPECIMEN - fictional document made by filedone.ai for testing. Free to use (CC0 1.0). Page 1 of 1",
+          "bbox": [
+            {
+              "x": 48.36,
+              "y": 808.53,
+              "w": 497.4,
+              "h": 7.03
+            }
+          ],
+          "items": [
+            {
+              "type": "text",
+              "md": "SPECIMEN - fictional document made by filedone.ai for testing. Free to use (CC0 1.0). Page 1 of 1",
+              "value": "SPECIMEN - fictional document made by filedone.ai for testing. Free to use (CC0 1.0). Page 1 of 1",
+              "bbox": [
+                {
+                  "start_index": 0,
+                  "end_index": 85,
+                  "x": 48.36,
+                  "y": 808.53,
+                  "w": 270.87,
+                  "h": 7.03,
+                  "confidence": 1,
+                  "label": "footer"
+                },
+                {
+                  "start_index": 86,
+                  "end_index": 96,
+                  "x": 511.43,
+                  "y": 808.53,
+                  "w": 34.33,
+                  "h": 7.03,
+                  "confidence": 1,
+                  "label": "footer"
+                }
+              ],
+              "grounding": {
+                "source": "md",
+                "lines": [
+                  {
+                    "span": [
+                      0,
+                      83
+                    ],
+                    "bbox": {
+                      "x": 48.36,
+                      "y": 808.54,
+                      "w": 275.97,
+                      "h": 7.03
+                    },
+                    "words": [
+                      {
+                        "span": [
+                          0,
+                          8
+                        ],
+                        "bbox": {
+                          "x": 48.36,
+                          "y": 808.82,
+                          "w": 33.29,
+                          "h": 5.13
+                        }
+                      },
+                      {
+                        "span": [
+                          11,
+                          20
+                        ],
+                        "bbox": {
+                          "x": 88.33,
+                          "y": 808.54,
+                          "w": 25.5,
+                          "h": 5.42
+                        }
+                      },
+                      {
+                        "span": [
+                          21,
+                          29
+                        ],
+                        "bbox": {
+                          "x": 116.63,
+                          "y": 808.57,
+                          "w": 33.03,
+                          "h": 5.38
+                        }
+                      },
+                      {
+                        "span": [
+                          30,
+                          34
+                        ],
+                        "bbox": {
+                          "x": 152.23,
+                          "y": 808.57,
+                          "w": 17.77,
+                          "h": 5.38
+                        }
+                      },
+                      {
+                        "span": [
+                          35,
+                          37
+                        ],
+                        "bbox": {
+                          "x": 172.78,
+                          "y": 808.57,
+                          "w": 7.28,
+                          "h": 6.99
+                        }
+                      },
+                      {
+                        "span": [
+                          38,
+                          49
+                        ],
+                        "bbox": {
+                          "x": 181.98,
+                          "y": 808.54,
+                          "w": 33.75,
+                          "h": 5.45
+                        }
+                      },
+                      {
+                        "span": [
+                          50,
+                          53
+                        ],
+                        "bbox": {
+                          "x": 218.19,
+                          "y": 808.54,
+                          "w": 9.32,
+                          "h": 5.42
+                        }
+                      },
+                      {
+                        "span": [
+                          54,
+                          62
+                        ],
+                        "bbox": {
+                          "x": 229.55,
+                          "y": 808.73,
+                          "w": 24.05,
+                          "h": 6.83
+                        }
+                      },
+                      {
+                        "span": [
+                          63,
+                          67
+                        ],
+                        "bbox": {
+                          "x": 256.61,
+                          "y": 808.89,
+                          "w": 13.38,
+                          "h": 5.06
+                        }
+                      },
+                      {
+                        "span": [
+                          68,
+                          70
+                        ],
+                        "bbox": {
+                          "x": 272.28,
+                          "y": 809.28,
+                          "w": 6.27,
+                          "h": 4.68
+                        }
+                      },
+                      {
+                        "span": [
+                          71,
+                          74
+                        ],
+                        "bbox": {
+                          "x": 281.3,
+                          "y": 810.07,
+                          "w": 10.72,
+                          "h": 3.89
+                        }
+                      },
+                      {
+                        "span": [
+                          75,
+                          79
+                        ],
+                        "bbox": {
+                          "x": 294.48,
+                          "y": 808.82,
+                          "w": 14.33,
+                          "h": 6.17
+                        }
+                      },
+                      {
+                        "span": [
+                          80,
+                          83
+                        ],
+                        "bbox": {
+                          "x": 311.59,
+                          "y": 808.82,
+                          "w": 12.73,
+                          "h": 6.17
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "span": [
+                      86,
+                      97
+                    ],
+                    "bbox": {
+                      "x": 511.43,
+                      "y": 808.54,
+                      "w": 34.33,
+                      "h": 7.03
+                    },
+                    "words": [
+                      {
+                        "span": [
+                          86,
+                          90
+                        ],
+                        "bbox": {
+                          "x": 511.43,
+                          "y": 808.89,
+                          "w": 15.38,
+                          "h": 6.67
+                        }
+                      },
+                      {
+                        "span": [
+                          91,
+                          92
+                        ],
+                        "bbox": {
+                          "x": 529.61,
+                          "y": 808.89,
+                          "w": 1.86,
+                          "h": 5
+                        }
+                      },
+                      {
+                        "span": [
+                          93,
+                          95
+                        ],
+                        "bbox": {
+                          "x": 535.19,
+                          "y": 808.54,
+                          "w": 6.56,
+                          "h": 5.42
+                        }
+                      },
+                      {
+                        "span": [
+                          96,
+                          97
+                        ],
+                        "bbox": {
+                          "x": 543.9,
+                          "y": 808.89,
+                          "w": 1.86,
+                          "h": 5
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "grounding": {
+            "source": "md",
+            "lines": [
+              {
+                "span": [
+                  0,
+                  83
+                ],
+                "bbox": {
+                  "x": 48.36,
+                  "y": 808.54,
+                  "w": 275.97,
+                  "h": 7.03
+                },
+                "words": [
+                  {
+                    "span": [
+                      0,
+                      8
+                    ],
+                    "bbox": {
+                      "x": 48.36,
+                      "y": 808.82,
+                      "w": 33.29,
+                      "h": 5.13
+                    }
+                  },
+                  {
+                    "span": [
+                      11,
+                      20
+                    ],
+                    "bbox": {
+                      "x": 88.33,
+                      "y": 808.54,
+                      "w": 25.5,
+                      "h": 5.42
+                    }
+                  },
+                  {
+                    "span": [
+                      21,
+                      29
+                    ],
+                    "bbox": {
+                      "x": 116.63,
+                      "y": 808.57,
+                      "w": 33.03,
+                      "h": 5.38
+                    }
+                  },
+                  {
+                    "span": [
+                      30,
+                      34
+                    ],
+                    "bbox": {
+                      "x": 152.23,
+                      "y": 808.57,
+                      "w": 17.77,
+                      "h": 5.38
+                    }
+                  },
+                  {
+                    "span": [
+                      35,
+                      37
+                    ],
+                    "bbox": {
+                      "x": 172.78,
+                      "y": 808.57,
+                      "w": 7.28,
+                      "h": 6.99
+                    }
+                  },
+                  {
+                    "span": [
+                      38,
+                      49
+                    ],
+                    "bbox": {
+                      "x": 181.98,
+                      "y": 808.54,
+                      "w": 33.75,
+                      "h": 5.45
+                    }
+                  },
+                  {
+                    "span": [
+                      50,
+                      53
+                    ],
+                    "bbox": {
+                      "x": 218.19,
+                      "y": 808.54,
+                      "w": 9.32,
+                      "h": 5.42
+                    }
+                  },
+                  {
+                    "span": [
+                      54,
+                      62
+                    ],
+                    "bbox": {
+                      "x": 229.55,
+                      "y": 808.73,
+                      "w": 24.05,
+                      "h": 6.83
+                    }
+                  },
+                  {
+                    "span": [
+                      63,
+                      67
+                    ],
+                    "bbox": {
+                      "x": 256.61,
+                      "y": 808.89,
+                      "w": 13.38,
+                      "h": 5.06
+                    }
+                  },
+                  {
+                    "span": [
+                      68,
+                      70
+                    ],
+                    "bbox": {
+                      "x": 272.28,
+                      "y": 809.28,
+                      "w": 6.27,
+                      "h": 4.68
+                    }
+                  },
+                  {
+                    "span": [
+                      71,
+                      74
+                    ],
+                    "bbox": {
+                      "x": 281.3,
+                      "y": 810.07,
+                      "w": 10.72,
+                      "h": 3.89
+                    }
+                  },
+                  {
+                    "span": [
+                      75,
+                      79
+                    ],
+                    "bbox": {
+                      "x": 294.48,
+                      "y": 808.82,
+                      "w": 14.33,
+                      "h": 6.17
+                    }
+                  },
+                  {
+                    "span": [
+                      80,
+                      83
+                    ],
+                    "bbox": {
+                      "x": 311.59,
+                      "y": 808.82,
+                      "w": 12.73,
+                      "h": 6.17
+                    }
+                  }
+                ]
+              },
+              {
+                "span": [
+                  86,
+                  97
+                ],
+                "bbox": {
+                  "x": 511.43,
+                  "y": 808.54,
+                  "w": 34.33,
+                  "h": 7.03
+                },
+                "words": [
+                  {
+                    "span": [
+                      86,
+                      90
+                    ],
+                    "bbox": {
+                      "x": 511.43,
+                      "y": 808.89,
+                      "w": 15.38,
+                      "h": 6.67
+                    }
+                  },
+                  {
+                    "span": [
+                      91,
+                      92
+                    ],
+                    "bbox": {
+                      "x": 529.61,
+                      "y": 808.89,
+                      "w": 1.86,
+                      "h": 5
+                    }
+                  },
+                  {
+                    "span": [
+                      93,
+                      95
+                    ],
+                    "bbox": {
+                      "x": 535.19,
+                      "y": 808.54,
+                      "w": 6.56,
+                      "h": 5.42
+                    }
+                  },
+                  {
+                    "span": [
+                      96,
+                      97
+                    ],
+                    "bbox": {
+                      "x": 543.9,
+                      "y": 808.89,
+                      "w": 1.86,
+                      "h": 5
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "rawWords": [],
+  "processor": {
+    "provider": "llamaparse",
+    "model": "agentic_plus",
+    "version": "2026-09-28",
+    "configHash": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84",
+    "jobId": "pjb-koqp4zaiegka36bcwc7ycjl9sdq2",
+    "resolvedVersion": null,
+    "implementationVersion": "ap-ingestion-v1",
+    "configArtifact": {
+      "ref": "artifacts/93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84.json",
+      "sha256": "93232df1fdfd28301bb720511892a8d7a6e9f9f28eb4eb4b44c4861827782d84"
+    },
+    "rawArtifact": {
+      "ref": "artifacts/a15e89b4c8ced77ee765e0b7492c8645dda91fad02bcb7938cd26bde41aa94fe.jsonl",
+      "sha256": "a15e89b4c8ced77ee765e0b7492c8645dda91fad02bcb7938cd26bde41aa94fe"
+    },
+    "tokenArtifact": {
+      "ref": "artifacts/24dcc2d061906f459e706a9a5e608425291aa519e8c394335c15621171e7667f.jsonl",
+      "sha256": "24dcc2d061906f459e706a9a5e608425291aa519e8c394335c15621171e7667f"
+    },
+    "rasterArtifact": null,
+    "traineddata": null
+  },
+  "reused": true
+}

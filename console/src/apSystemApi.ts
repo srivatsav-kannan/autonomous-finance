@@ -135,9 +135,10 @@ export const apSystemApi = {
   accountingPreview: (caseId:string,selection?:APAccountingSelection|string) => request<QBOPreview>(`/cases/${encodeURIComponent(caseId)}/accounting/preview`,accountingSelection(selection)),
   accountingSubmit: (caseId:string,expectedPlanHash:string,selection?:APAccountingSelection|string) => request<QBOSubmit>(`/cases/${encodeURIComponent(caseId)}/accounting/submit`,{expectedPlanHash,...accountingSelection(selection)}),
   accountingVerify: (caseId:string,selection?:APAccountingSelection|string) => request<QBOVerify>(`/cases/${encodeURIComponent(caseId)}/accounting/verify`,accountingSelection(selection)),
-  intake: (files: { file: File; kind: SourceDocument["kind"] }[], key: string) => {
+  intake: (files: { file: File; kind: SourceDocument["kind"] }[], key: string, explicitRevisionOf?: string) => {
     const data = new FormData(); files.forEach(({ file }) => data.append("documents", file));
     data.append("kinds", JSON.stringify(files.map(f => f.kind))); data.append("idempotencyKey", key);
+    if (explicitRevisionOf) data.append("explicitRevisionOf", explicitRevisionOf);
     return request<{ caseId: string }>("/intake", data);
   },
 };
