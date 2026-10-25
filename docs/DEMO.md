@@ -37,13 +37,13 @@ npm run agents -- --run demo                      # terminal 5
 ```
 
 - **Pace:** at `--pace 20000` (a simulated day every 20 seconds), start the world about 4 minutes before the judge arrives. By then the inbox has decisions and the team has learned a parser.
-- **Crash run:** have terminal 6 ready with `npm run demo:local -- --browser-approval --lease-wait-seconds 40`. Don't start it yet. It prints the path to `browser-session.json`; paste its scope and JWT into `/ap-demo` once, before the judge arrives, and tick "Reload this view every 3 seconds".
+- **Crash run, before each judge:** in terminal 6 start `npm run demo:local -- --browser-approval --lease-wait-seconds 40`. It seeds a payment (about $660 to Golden State Produce), prints `awaiting_browser_approval` and the path to `browser-session.json`, then waits up to 10 minutes. Paste that file's `scope` and `jwt` into `/ap-demo`, click **Connect and load review** and tick **Reload this view every 3 seconds**. Stop at the approval checkbox. Each run has a new run id and token, so repeat this between judges (Ctrl-C the previous run first).
 - **Tabs open, in this order:**
-  1. `/ap-demo`
+  1. `/ap-demo`, loaded and waiting at the approval checkbox
   2. Control room
-  3. Live activity
+  3. Inbox
   4. Finance flow
-  5. Evals
+  5. Evals for a scored run (`?view=evals#scenario-check`, or any run from `npm run scenario`). The live world run isn't scored, so its Evals tab is empty.
   6. the latest green CI run
   7. a decision commit in Memory
 - **Spend:** `OPENAI_API_KEY` in `.env.local`, capped by `AGENT_MAX_USD` (default $15, see `var/agent-spend.json`). A 14-day run costs about 5 cents.
@@ -54,11 +54,11 @@ npm run agents -- --run demo                      # terminal 5
 
 | Time | Screen | What happens | What we say |
 |---|---|---|---|
-| 0:00 | terminal 6 | Start the crash run. | The seat line. |
-| 0:10 | `/ap-demo` | Point at the amount, the beneficiary and who requested it. Approve. | "A human approves the payment. The agent that asked for it can't." |
-| 0:25 | terminal 6 | The bank accepts the $100 payment, the response is lost and the worker is killed. The terminal counts down the lease. | "The bank took the money and the worker died before it heard back. Most systems either pay twice or lose track." |
-| 0:35 | Control room → **Phishing bank-change email**, then Live activity | While the lease waits: a look-alike domain demands same-day wires to a new account and says "ignore previous instructions". The payments agent refuses it. The domain doesn't match, it flags the instructions aimed at the AI, and the callback to the number on file doesn't confirm. | "New bank details the day before a big payment is the fraud that costs companies millions. Even a fooled agent couldn't change them: the kernel requires a human." |
-| 1:05 | `/ap-demo`, terminal 6 | The new worker reuses the saved request and key, and gets the original transfer back. Status reads `settled / posted / matched`; the terminal asserts one transfer and one journal entry. Close has two signatures. | "Exactly once. Same key, same transfer, one entry in the books." |
+| 0:00 | `/ap-demo` | The seat line, while pointing at the payment. | The seat line. |
+| 0:10 | `/ap-demo` | Point at the amount, the beneficiary and who requested it. Tick the checkbox and approve. | "A human approves the payment. The agent that asked for it can't." |
+| 0:25 | terminal 6 | The bank accepts the payment, the response is lost and the worker is killed. The terminal counts down the lease. | "The bank took the money and the worker died before it heard back. Most systems either pay twice or lose track." |
+| 0:35 | Control room → **Phishing bank-change email**, then Inbox | While the lease waits: a look-alike domain demands same-day wires to a new account and says "ignore previous instructions". Within about 10 seconds the payments agent blocks it and the Inbox gets "Blocked a suspected fraud attempt against Bay Farms Protein LLC" with the reasons: the domain doesn't match the one on file, the email has instructions aimed at an AI, and the callback to the number on file didn't confirm. | "New bank details the day before a big payment is the fraud that costs companies millions. Even a fooled agent couldn't change them: the kernel requires a human." |
+| 1:05 | `/ap-demo`, terminal 6 | The new worker reuses the saved request and key, and gets the original transfer back. `/ap-demo` reads `settled / posted / matched`; the terminal prints `bankTransfers: 1`, `postedDebits: 1`, `paymentJournalEntries: 1`, `closeBlockers: 0` and the period closed. | "Exactly once. Same key, same transfer, one entry in the books." |
 | 1:25 | Finance flow, then Evals | The reveal: the same run across cash, revenue, payroll, leases and close. The ghost employee held out of payroll, the CAM charge over the lease cap. Then the eval: 13 of 13 planted errors, books correct. | "And it isn't only AP. A fast AP agent waits on the humans in cash and close, so the whole department runs on tools built for agents. We check it against an answer key the agents never see." |
 | 1:45 | Control room → Ask why | "Why did you hold INV-1002?" The answer cites the decision commits. Offer the scenario menu. | "Every call traces to the data, rule or person behind it. Want to throw something at it?" |
 
@@ -89,7 +89,7 @@ Burn in captions, zoom on amounts and IDs, and label every sped-up wait. About 3
 | 0:15–0:30 | — | Title card with the seat line. |
 | 0:30–1:05 | Real | Sweetgreen, simulated from its FY2025 10-K. 64 invoices, 21 in formats our code can't read, 13 planted errors, 3 look-alikes, and an answer key the agents never see. Live activity as bills arrive; the parser proposal in Memory. |
 | 1:05–1:35 | Hire | Seats and limits. The AP clerk can't approve its own bill, and the kernel blocks the bank-detail change. The CFO's inbox has 5 decisions. |
-| 1:35–1:55 | Moment | The crash replay: saved key, the lease wait (labeled "sped up 30 s"), polling, one posting, two-signature close. |
+| 1:35–1:55 | Moment | The crash replay: saved key, the lease wait (labeled "sped up 40 s"), polling, one posting, two-signature close. |
 | 1:55–2:15 | New | Each seat has its own identity and limits; `git blame` on a number goes to the decision commit. Then the reveal: Finance flow across the department. |
 | 2:15–2:30 | Real | The proof card below, and a green CI run of the crash recovery. |
 
@@ -106,6 +106,19 @@ From [RESULTS.md](RESULTS.md), OpenAI `gpt-6.1-sol`:
 | 15 public benchmark tasks (APEX, DABstep, Invoice Sandbox, FinBalance) | Our team 93.3% (14 of 15) vs the same model alone 84.0% (12 of 15), at about 1.7× the cost |
 | Control tests | 22 of 22 hold |
 | Payment through a worker crash | 1 transfer, 1 journal entry, runs in CI on every PR |
+
+## Rehearsal notes (Oct 24, 11:45 PM, on main)
+
+Ran the whole script on the latest main with the model on:
+- World plus agents: the 14 days finished in about 5 minutes at `--pace 20000`, with 225 tasks done, 0 failed, 152 journal entries and 5 human decisions.
+- **Fraud email:** blocked in under 10 seconds, with all three reasons.
+- **Ask why on INV-1002:** cites the hold and the controller's commit (short shipment, $77.00; approved $763.20).
+- **Inbox, $50,949.23 to Embarcadero:** approved from the drawer. The drawer shows 0 supporting evidence records, so point at "From your team" and the payment details instead.
+- **Crash run:** approved in the browser, worker killed after the bank accepted, recovered after 40 s with 1 transfer, 1 posted debit and 1 journal entry; the period closed.
+- **The main run kept working** after the crash run rebound the human login.
+- The inbox also has a fraud item from the world's own planted error (Golden State Produce). The one you inject from the Control room is Bay Farms Protein.
+
+Timing risk: the crash run takes about 60 seconds from approval to the proof (40 s lease plus dispatch). If the judge cuts us off, the fraud email and the inbox carry the story without it.
 
 ## Real versus simulated
 
