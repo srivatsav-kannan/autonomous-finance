@@ -3,6 +3,7 @@ import type { Auth0Client } from "@auth0/auth0-spa-js";
 import { z } from "zod";
 import { configureAPSession } from "./apAuthSession";
 import { apSystemApi } from "./apSystemApi";
+import { APLocalSimulationGate } from "./APLocalSimulationGate";
 import "./apAuth.css";
 
 export const AP_AUTH_CALLBACK = "http://127.0.0.1:5192/ap-system";
@@ -13,13 +14,18 @@ export function apAuthReturnUrl(appState: unknown) {
   return url.toString();
 }
 const authConfig = z.object({ mode: z.literal("auth0"), domain: z.string().regex(/^[a-z0-9.-]+\.auth0\.com$/), clientId: z.string().min(1) });
-type Boot = { mode: "local" } | { mode: "auth0"; client: Auth0Client };
+const simulationConfig=z.object({mode:z.literal("local_simulation"),actors:z.array(z.object({id:z.string().regex(/^[-a-z0-9]{1,80}$/),name:z.string().trim().min(1).max(120)})).min(1).max(20)});
+type Boot = { mode: "local" } | { mode: "auth0"; client: Auth0Client } | z.infer<typeof simulationConfig>;
 let boot: Promise<Boot> | undefined;
 async function initialize(): Promise<Boot> {
   const response = await fetch("/api/ap-system/runtime", { credentials: "same-origin", redirect: "error", signal: AbortSignal.timeout(10_000) });
   if (!response.ok) throw new Error("AP service unavailable. Start the configured gateway, then retry.");
   const runtime = await response.json();
   if (!runtime.auth && runtime.identityMode === "simulated_human") return { mode: "local" };
+  if(runtime.auth?.mode==="local_simulation"){
+    if(runtime.identityMode!=="simulated_human"||location.origin!=="http://127.0.0.1:5193")throw new Error("Local multi-human simulation must use its isolated UI on127.0.0.1:5193.");
+    return simulationConfig.parse(runtime.auth);
+  }
   const config = authConfig.safeParse(runtime.auth);
   if (!config.success) throw new Error("Auth0 is not configured. Complete the development tenant setup before signing in.");
   if (location.origin !== new URL(AP_AUTH_CALLBACK).origin) throw new Error(`Open ${AP_AUTH_CALLBACK} to use the configured Auth0 callback.`);
@@ -52,10 +58,11 @@ export function APAuthStatus({ state, message, identity, onLogin, onRetry, onLog
     </>}
   </section>;
 }
-export function APAuthGate({ children }: { children: ReactNode }) {
+export function APAuthGate({ children,busy=false }: { children: ReactNode;busy?:boolean }) {
   const stop = useRef(() => {});
   const [attempt, setAttempt] = useState(0);
-  const [state, setState] = useState<APAuthViewState | "ready" | "local">("loading");
+  const [state, setState] = useState<APAuthViewState | "ready" | "local" | "simulation">("loading");
+  const [actors,setActors]=useState<{id:string;name:string}[]>([]);
   const [client, setClient] = useState<Auth0Client>();
   const [identity, setIdentity] = useState<string>();
   const [message, setMessage] = useState<string>();
@@ -67,6 +74,7 @@ export function APAuthGate({ children }: { children: ReactNode }) {
       const result = await (boot ??= initialize().catch(error => { boot = undefined; throw error; }));
       if (!live) return;
       if (result.mode === "local") { release = configureAPSession({ mode: "local" }); setState("local"); return; }
+      if(result.mode==="local_simulation"){setActors(result.actors);setState("simulation");return;}
       setClient(result.client);
       if (!await result.client.isAuthenticated()) { if (live) setState("login"); return; }
       if (!live) return;
@@ -98,6 +106,7 @@ export function APAuthGate({ children }: { children: ReactNode }) {
     try { await client?.logout({ logoutParams: { returnTo: AP_AUTH_CALLBACK } }); }
     catch { setState("login"); setMessage("Your local AP session is closed. Retry sign-in to choose an account."); }
   };
+  if(state==="simulation")return <APLocalSimulationGate actors={actors} busy={busy}>{children}</APLocalSimulationGate>;
   if (state === "local") return children;
   if (state === "ready") return <><div className="ap-auth-session aps-app"><span>Signed in to Increase sandbox<small>{identity}</small></span><button onClick={() => { void logout(); }}>Sign out</button></div>{children}</>;
   return <APAuthStatus state={state} identity={identity} message={message} onLogin={() => { void login(); }} onRetry={retry} onLogout={() => { void logout(); }} />;

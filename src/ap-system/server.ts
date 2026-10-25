@@ -33,7 +33,7 @@ export interface APWorkspaceService {
  runtime():unknown;
 }
 export type APExternalAuthentication = {
- publicConfig:{mode:"auth0";domain:string;clientId:string};
+ publicConfig:{mode:"auth0";domain:string;clientId:string}|{mode:"local_simulation";actors:{id:string;name:string}[]};
  authenticate:(token:string)=>Promise<{subject:string;issuer:string;approved:boolean;service:APWorkspaceService}>;
 };
 const privateProcessor=(p:unknown)=>{if(!p||typeof p!=="object")return p;return {...p,configArtifact:null,rawArtifact:null,tokenArtifact:null,rasterArtifact:null};};

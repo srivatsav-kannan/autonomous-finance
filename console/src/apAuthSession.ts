@@ -2,7 +2,7 @@
 export class APSystemApiError extends Error {
   constructor(message: string, public status: number, public code: string) { super(message); }
 }
-type Session = { mode: "local" } | { mode: "auth0"; token: () => Promise<string>; expired: () => void };
+type Session = { mode: "local" } | { mode: "local_simulation"; actorId:string; expired:()=>void } | { mode: "auth0"; token: () => Promise<string>; expired: () => void };
 let session: Session | null = null;
 let pending = new AbortController();
 export function configureAPSession(next: Session | null) {
@@ -20,11 +20,12 @@ export async function apProtectedFetch(path: string, init: RequestInit = {}) {
     try { headers.set("Authorization", `Bearer ${await current.token()}`); }
     catch { assertCurrent(); current.expired(); throw new APSystemApiError("Your sign-in expired. Sign in again.", 401, "authentication_required"); }
   }
+  if(current.mode==="local_simulation")headers.set("Authorization",`Bearer local:${current.actorId}`);
   assertCurrent();
   const signals = [pending.signal, init.signal ?? AbortSignal.timeout(180_000)];
   const response = await fetch(path, { ...init, headers, signal: AbortSignal.any(signals), credentials: "same-origin", redirect: "error" });
   assertCurrent();
-  if (current.mode === "auth0") {
+  if (current.mode === "auth0"||current.mode==="local_simulation") {
     const denied = response.status === 403 && (await response.clone().json().catch(() => null))?.error?.code === "owner_binding_required";
     assertCurrent();
     if (response.status === 401 || denied) current.expired();
@@ -34,7 +35,7 @@ export async function apProtectedFetch(path: string, init: RequestInit = {}) {
 /** Hide old data and abort in-flight work before the revocation request completes. */
 export async function closeAPSession() {
   const previous = session; configureAPSession(null);
-  if (previous?.mode !== "auth0") return;
-  const token = await previous.token();
+  if (!previous||previous.mode === "local") return;
+  const token = previous.mode==="local_simulation"?`local:${previous.actorId}`:await previous.token();
   await fetch("/api/ap-system/logout", { method: "POST", credentials: "same-origin", redirect: "error", signal: AbortSignal.timeout(10_000), headers: { Authorization: `Bearer ${token}`, "X-AP-System-Session": "1" } });
 }

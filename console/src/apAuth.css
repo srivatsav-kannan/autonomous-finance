@@ -12,3 +12,7 @@
 .ap-auth-session span { min-width: 0; font-size: var(--text-sm); }
 .ap-auth-session small { display: block; overflow-wrap: anywhere; margin-top: var(--space-2xs); }
 .ap-auth-session button { flex-shrink: 0; }
+.ap-local-simulation { display: grid; gap: var(--space-md); margin-bottom: var(--space-lg); padding: var(--space-md); background: var(--chip); border: 1px solid var(--line); }
+.ap-local-simulation p { margin-top: var(--space-xs); font-size: var(--text-sm); max-width: 75ch; }
+.ap-local-simulation label { display: grid; gap: var(--space-xs); max-width: 28rem; }
+.ap-local-simulation select { width: 100%; }

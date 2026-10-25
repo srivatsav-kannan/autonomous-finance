@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
+import { APLocalSimulationGate, APLocalSimulationBanner } from "../console/src/APLocalSimulationGate";
 import { APAuthGate, APAuthStatus, apAuthReturnUrl } from "../console/src/APAuthGate";
 import { apProtectedFetch, closeAPSession, configureAPSession } from "../console/src/apAuthSession";
 import { apSystemApi, downloadOriginal, loadPage, validatePaymentRequest } from "../console/src/apSystemApi";
@@ -15,6 +16,19 @@ describe("Auth0 AP gate and request lifetime",()=>{
   expect(login).toContain("Sign in with Auth0");expect(login).toContain("Signing in does not authorize a transfer");expect(login).not.toContain("textarea");
   const pending=renderToStaticMarkup(<APAuthStatus state="unapproved" identity="https://fixture.auth0.com/|auth0|reviewer" {...hooks}/>);
   expect(pending).toContain("Verified identity for owner setup");expect(pending).not.toContain("Authorize this payment");expect(pending).toContain("Check access again");
+ });
+ it("requires explicit local actor selection and labels every identity as simulated",()=>{
+  const actors=[{id:"owner-a",name:"Simulated owner A"},{id:"owner-b",name:"Simulated owner B"}];
+  const html=renderToStaticMarkup(<APLocalSimulationGate actors={actors}><p>private prior actor case</p></APLocalSimulationGate>);
+  expect(html).toContain("Local multi-human simulation / FakeBank");expect(html).toContain("Choose a simulated actor");expect(html).not.toContain("private prior actor case");expect(html).not.toContain("textarea");
+  const ready=renderToStaticMarkup(<APLocalSimulationBanner actors={actors} selected="owner-b" busy={true} state="ready" onSelect={()=>{}} onRetry={()=>{}}/>);
+  expect(ready).toContain("Acting as Simulated owner B");expect(ready).toContain("<select disabled");expect(ready).toContain("not an Auth0 login");
+ });
+ it("keeps public simulated selection in memory and rejects an old actor response after switching",async()=>{
+  let finish!:(value:Response)=>void;const fetcher=vi.fn((_url:string,_init?:RequestInit)=>new Promise<Response>(resolve=>{finish=resolve;}));vi.stubGlobal("fetch",fetcher);
+  configureAPSession({mode:"local_simulation",actorId:"owner-a",expired:vi.fn()});const result=apSystemApi.list();await vi.waitFor(()=>expect(fetcher).toHaveBeenCalled());
+  expect(new Headers(fetcher.mock.calls[0]![1]!.headers).get("Authorization")).toBe("Bearer local:owner-a");const signal=fetcher.mock.calls[0]![1]!.signal!;
+  configureAPSession({mode:"local_simulation",actorId:"owner-b",expired:vi.fn()});expect(signal.aborted).toBe(true);finish(response([]));await expect(result).rejects.toMatchObject({code:"session_changed"});
  });
  it("returns from the SDK callback only to the AP route with a case identifier",()=>{
   expect(apAuthReturnUrl({caseId:"case /1",returnTo:"https://other.invalid"})).toBe("http://127.0.0.1:5192/ap-system?case=case+%2F1");

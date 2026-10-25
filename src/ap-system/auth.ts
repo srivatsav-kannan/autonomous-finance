@@ -25,6 +25,7 @@ export function createAPExternalAuthentication(options:{config:APAuth0Config;con
  return {
   publicConfig:{mode:"auth0",domain:options.config.domain,clientId:options.config.clientId},
   async authenticate(token){
+   if(token.startsWith("local:"))throw new APHttpError("authentication_required",401,"A local simulated identity cannot access the Auth0 workspace.");
    const human=(options.clientFactory??(url=>new ConvexHttpClient(url)))(options.convexUrl);
    human.setAuth(token);
    let identity:z.infer<typeof identitySchema>;
