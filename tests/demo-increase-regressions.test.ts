@@ -9,7 +9,7 @@ import { increaseMock, increaseRun } from "./helpers/increase-mock";
 
 afterEach(() => vi.unstubAllEnvs());
 
-async function fundedFixture() {
+async function fundedFixture(sourceCategory = "inbound_wire_transfer") {
   const f = await demoFixture("review-ap50", { provider: "increase", environment: "sandbox", accountId: "account_demo" });
   await f.t.run(async ctx => {
     const config = await ctx.db.query("demoConfigs").first();
@@ -21,7 +21,7 @@ async function fundedFixture() {
     created_at: "2026-10-23T00:01:00Z", settlement: { settled_at: "2026-10-23T00:02:00Z" } };
   const debit = { ...fixtures.debit, created_at: "2026-10-23T00:02:00Z" };
   const funding = { ...fixtures.unknown, id: "transaction_funding", amount: 100000,
-    created_at: "2026-10-22T00:00:00Z", source: { category: "inbound_wire_transfer", inbound_wire_transfer: { id: "inbound_wire_transfer_funding" } } };
+    created_at: "2026-10-22T00:00:00Z", source: { category: sourceCategory, [sourceCategory]: { id: `${sourceCategory}_funding` } } };
   const routes: Record<string, unknown> = {
     "/ach_transfers": transfer,
     "/ach_transfers/ach_transfer_demo": transfer,
@@ -70,8 +70,8 @@ describe("Increase account evidence regressions", () => {
     expect(await f.t.run(ctx => ctx.db.query("activity").filter(q => q.eq(q.field("kind"), "sandbox_funding_approved")).collect())).toHaveLength(1);
   });
 
-  it("reconciles explicitly approved funding, pays once and closes with both signatures", async () => {
-    const f = await fundedFixture();
+  it.each(["inbound_wire_transfer", "inbound_ach_transfer"])("reconciles explicitly approved %s funding, pays once and closes with both signatures", async sourceCategory => {
+    const f = await fundedFixture(sourceCategory);
     await f.t.mutation(api.demoEvidence.ingestNotice, { scope: f.scope, token: f.evidenceToken, eventId: "event_funding", transactionId: "transaction_funding", bodyHash: "b".repeat(64) });
     expect((await f.dispatcher.tick()).providerTransferId).toBe("ach_transfer_demo");
     expect(await f.worker.tick()).toEqual({ posted: 1, errors: ["Unmatched bank transaction"] });
@@ -91,6 +91,8 @@ describe("Increase account evidence regressions", () => {
     expect(explained.transactions).toHaveLength(2);
     expect(explained.transactions.every(tx => tx.entryId)).toBe(true);
     expect(explained.blockers).toEqual([]);
+    expect(await f.human.query(api.demoEvidence.bankReconciliation, {scope:f.scope})).toMatchObject({allImportedMatched:true,cashLedgerCents:97500,importedNetCents:97500,blockers:[]});
+    await expect(f.t.query(api.demoEvidence.bankReconciliation, {scope:f.scope})).rejects.toThrow("authenticated human");
     expect(await f.t.run(ctx => ctx.db.query("demoInbox").first())).toMatchObject({ eventId: "event_funding", processed: true });
     const journal = await f.t.run(ctx => ctx.db.query("journalEntries").collect());
     expect(journal).toHaveLength(3); // Accrual, one bank debit and the approved funding.

@@ -30,3 +30,7 @@ Credential files, JWTs, live identity details and raw parser caches with signed 
 - [Full manifest](claude-review/MANIFEST.json) links immutable bytes to the handoff.
 
 Supplement validation:31 selected existing scenarios passed;74 journal rows exactly match captured databases and balance in integer cents. Source lengths/hashes, archives and separate phase manifests were checked. No product code/test assertion or CI change was made. The initial handoff archives/manifests remain immutable.
+
+## Subsequent live-sandbox comparison addendum (25 October 2026)
+
+After freezing the independent phase1 derivation, include [the actual invoice/payment/QBO round trip](evidence/C4-live-happy-path.md) and [the completed funding reconciliation](evidence/C4-funding-reconciliation.md), with their structured records. These are additional implementation outcomes for comparison, not Claude findings. The original review archives/manifests are unchanged. The funding fact is an official simulated inbound ACH +USD678.60; the user authorized test-capital classification. Expected policy treatment is explicitly synthetic contributed capital. Require Claude to assess journal arithmetic, exact bank links, duplicates and the stated limits, including no formal month close and no QBO export of the test-capital journal.

@@ -1,3 +1,4 @@
+import {sandboxFundingSchema} from "./bank-reconciliation";
 import {physicalLineOperationSchemas} from "./physical-line-contracts";
 import type {PhysicalLineOperations} from "./physical-line-operations";
 import {contactChangeOperationSchemas} from "./supplier-contact-contracts";
@@ -82,6 +83,10 @@ export function createAPWorkspaceService(options:{
  };
  return{
   paymentRuns,domain,close,corrections,supplierContacts,physicalLines,
+  bankEvidence:{
+   view:()=>human.query(makeFunctionReference<"query">("demoEvidence:bankReconciliation"),{scope}),
+   classifyFunding:input=>human.mutation(makeFunctionReference<"mutation">("demoEvidence:approveSandboxFunding"),{scope,...sandboxFundingSchema.parse(input)}),
+  },
   operationalTimings:()=>human.query(makeFunctionReference<"query">("apOperationalMetrics:current"),{scope}),
   closeAccounting:{status:closeQbo.status,preview:closeQbo.preview,submit:(request,hash)=>{requireExternal();return closeQbo.submit(request,hash);},verify:request=>{requireExternal();return closeQbo.verify(request);}},
   accounting:{status:async caseId=>({...await qbo.status(caseId),externalWritesAllowed}),preview:qbo.preview,submit:(request,hash)=>{requireExternal();return qbo.submit(request,hash);},verify:request=>{requireExternal();return qbo.verify(request);}},

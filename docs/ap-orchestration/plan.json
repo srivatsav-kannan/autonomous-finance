@@ -30,9 +30,9 @@
   "external_gates": {
     "openai": "Existing evaluation-worktree key reused in ignored var/ap-environment/providers.env; authentication and one gpt-6.1-sol Responses request verified 2026-10-25. Config import verified in main-browser-recovery; application workflow not run.",
     "llamaparse": "Actual original Golden State and held-out synthetic provider jobs retained. Independent cached repair replay: 4/4 complete held-out candidates, content104/104 and strict geometry102/104;2 Copper currency fields explicitly unresolved. Original0/4 baseline preserved. This is two project-authored suppliers/four representations, not blind production validation. Container OCR packaging build and two-scan bounded runtime smoke PASS; A4 evidence and issue comment 6396729954 retain scope. Complete application OCR integration and production accuracy are not promoted by this gate.",
-    "increase": "One synthetic INV-1001 USD678.60 happy path passed with actual Auth0 user authorization, one Increase sandbox transfer/debit, verified polling settlement, one local settlement journal and zero case outstanding. Official simulator used; separate inbound ACH test-funding deposit remains unmatched. No complete bank-close or live webhook claim. See docs/ap-orchestration/evidence/C4-live-happy-path.json",
+    "increase": "One synthetic INV-1001 USD678.60 happy path passed with actual Auth0 user authorization, one Increase sandbox transfer/debit, verified polling settlement, one local settlement journal and zero case outstanding. Official simulator used; inbound ACH test-funding now classified once with both bank rows matched and cash GL/provider balance0. No formal period-close, QBO funding-export or live webhook claim. See docs/ap-orchestration/evidence/C4-live-happy-path.json",
     "erp_selection_and_access": "QBO US sandbox Bill145 and BillPayment146 created once and read-back verified; Bill balance0. Optional BillPayment APAccountRef omission repaired and unknown original operation recovered without another POST. Broader credits/corrections/partial-payment external acceptance remains separate. See docs/ap-orchestration/evidence/C4-live-happy-path.json",
-    "domain_review": "User replaced practitioner gate with Claude 独立模型评审 on2026-10-25. Packet ready; recipient has Claude and will execute blind derivation then comparison. Retain findings/fixes/re-review; no practitioner required or claimed. External QBO/Increase unchanged."
+    "domain_review": "User replaced practitioner gate with Claude \u72ec\u7acb\u6a21\u578b\u8bc4\u5ba1 on2026-10-25. Packet ready; recipient has Claude and will execute blind derivation then comparison. Retain findings/fixes/re-review; no practitioner required or claimed. External QBO/Increase unchanged."
   },
   "tasks": [
     {
@@ -300,7 +300,7 @@
         "docs/ap-orchestration/evidence/C4-live-happy-path.json"
       ],
       "blocker": null,
-      "next_action": "Requested single synthetic USD happy path PASS. Retain unmatched test-funding deposit and broader external coverage as separate limits; do not claim complete bank close, webhook, credits/returns or successive partial-payment acceptance."
+      "next_action": "Requested synthetic USD happy path and bank-to-local-ledger reconciliation PASS. Funding inbound ACH classified once to Dr1000/Cr3000; two matched bank rows, cash GL/provider balance0, no unresolved evidence. Formal period close, QBO funding export, webhook, credits/returns and successive partial-payment acceptance remain unclaimed."
     },
     {
       "id": "B3",
@@ -325,7 +325,7 @@
         "docs/ap-orchestration/evidence/B4-cost-corrections.md"
       ],
       "blocker": null,
-      "next_action": "B3 lifecycle and corrected-cost controls accepted in V4–V6; contact/physical identity repairs accepted in V8–V9; E01/E02 extensions tracked by B5. No unresolved reproduced defects remain in these tests.",
+      "next_action": "B3 lifecycle and corrected-cost controls accepted in V4\u2013V6; contact/physical identity repairs accepted in V8\u2013V9; E01/E02 extensions tracked by B5. No unresolved reproduced defects remain in these tests.",
       "source_sha": "4f7d76d",
       "acceptance_scope": "Declared USD capabilities; synthetic/local independent engineering verification, not external provider or practitioner acceptance."
     },
@@ -382,7 +382,7 @@
         "docs/ap-orchestration/evidence/C4-live-happy-path.json"
       ],
       "blocker": null,
-      "next_action": "Requested single synthetic USD happy path PASS. Retain unmatched test-funding deposit and broader external coverage as separate limits; do not claim complete bank close, webhook, credits/returns or successive partial-payment acceptance.",
+      "next_action": "Requested synthetic USD happy path and bank-to-local-ledger reconciliation PASS. Funding inbound ACH classified once to Dr1000/Cr3000; two matched bank rows, cash GL/provider balance0, no unresolved evidence. Formal period close, QBO funding export, webhook, credits/returns and successive partial-payment acceptance remain unclaimed.",
       "source_sha": "4f7d76d"
     },
     {
@@ -634,7 +634,7 @@
       "title": "Complete broader accounting policies and remaining supported business repair paths",
       "status": "accepted",
       "acceptance": "Explicit policies and tests before enabling additional currency/tax/dimensions; governed trusted-contact replacement and stable repeated physical-line identity; preserve exact capacity and authority through journals/payment/export.",
-      "next_action": "E03/E04 repaired in V8/V9; dimensions and frozen settlement verified V10–V12; tax recognition/header/adjustments verified V13; QBO tax/immutable recovery verified V14. Multicurrency deferred with user agreement to #104. Actual operator/provider and external Claude model-review gates remain separate; practitioner no longer required.",
+      "next_action": "E03/E04 repaired in V8/V9; dimensions and frozen settlement verified V10\u2013V12; tax recognition/header/adjustments verified V13; QBO tax/immutable recovery verified V14. Multicurrency deferred with user agreement to #104. Actual operator/provider and external Claude model-review gates remain separate; practitioner no longer required.",
       "blocker": null,
       "depends_on": [
         "B3"
@@ -1031,7 +1031,7 @@
   "scope_decisions": [
     {
       "date": "2026-10-25",
-      "user_statement": "先完成当前 USD，多币种移到后续 issue",
+      "user_statement": "\u5148\u5b8c\u6210\u5f53\u524d USD\uff0c\u591a\u5e01\u79cd\u79fb\u5230\u540e\u7eed issue",
       "current_delivery": "USD only",
       "deferred": "multicurrency and FX accounting",
       "followup": "https://github.com/srivatsav-kannan/autonomous-finance/issues/104",
@@ -1040,8 +1040,8 @@
     },
     {
       "date": "2026-10-25",
-      "user_statement": "本轮改用 Claude 独立评审；不再让真人评审阻塞交付",
-      "current_delivery": "Claude 独立模型评审; practitioner not required",
+      "user_statement": "\u672c\u8f6e\u6539\u7528 Claude \u72ec\u7acb\u8bc4\u5ba1\uff1b\u4e0d\u518d\u8ba9\u771f\u4eba\u8bc4\u5ba1\u963b\u585e\u4ea4\u4ed8",
+      "current_delivery": "Claude \u72ec\u7acb\u6a21\u578b\u8bc4\u5ba1; practitioner not required",
       "method": "Freeze independent derivation from originals/policy before revealing implementation results; preserve findings, fixes and rechecks",
       "executor": "External recipient with existing Claude account, per user: they will do it. they have claude",
       "external_providers": "QuickBooks/Increase acceptance unchanged",
@@ -1070,7 +1070,7 @@
     "ci_result": "failure retained; no repair/rerun requested"
   },
   "model_review": {
-    "label": "Claude 独立模型评审",
+    "label": "Claude \u72ec\u7acb\u6a21\u578b\u8bc4\u5ba1",
     "status": "awaiting_external_reviewer",
     "packet": "docs/ap-orchestration/CLAUDE-REVIEW.md",
     "phase1": "not_executed",
@@ -1091,8 +1091,10 @@
     "status": "passed",
     "scope": "one synthetic USD678.60 INV-1001; official provider sandboxes",
     "evidence": "docs/ap-orchestration/evidence/C4-live-happy-path.json",
-    "bank_close": "not_complete_unmatched_test_funding_deposit",
+    "bank_close": "bank_reconciled_locally; formal_period_close_not_executed",
     "webhook_delivery": "not_claimed",
-    "claude_review": "pending"
+    "claude_review": "pending",
+    "funding_reconciliation_evidence": "docs/ap-orchestration/evidence/C4-funding-reconciliation.json",
+    "qbo_funding_export": "not_executed"
   }
 }

@@ -1,3 +1,4 @@
+import { isSandboxFunding } from "../src/ap-system/bank-reconciliation";
 import { activeBusinessPolicy } from "./lib/apSystem/businessAuthority";
 import { mutation, query, type QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
@@ -46,17 +47,15 @@ export const ignoreForeignNotice = mutation({
   },
 });
 
-/** The human explicitly classifies a verified sandbox wire as contributed demo capital. */
+/** The human explicitly classifies a verified sandbox inbound wire/ACH as contributed demo capital. */
 export const approveSandboxFunding = mutation({
   args: { scope: scopeValidator, transactionId: v.string(), expectedAmountCents: v.number(), reason: v.string() },
   handler: async (ctx, args) => {
     const { subject, seat } = await requirePaymentHuman(ctx, args.scope);
     const evidence = await transactionFor(ctx, args.scope, args.transactionId);
     const tx = evidence?.transaction;
-    if (args.scope.provider !== "increase" || args.scope.environment !== "sandbox" || !tx ||
-        tx.sourceCategory !== "inbound_wire_transfer" || tx.purpose !== "other" || tx.commandId || tx.transferId || tx.originalTransactionId ||
-        tx.status !== "posted" || tx.amountCents <= 0 || tx.amountCents !== args.expectedAmountCents || !args.reason.trim()) {
-      throw new Error("Review an imported positive sandbox funding wire and its exact amount");
+    if (!tx || !isSandboxFunding(args.scope, tx) || tx.amountCents !== args.expectedAmountCents || !args.reason.trim() || args.reason.length > 2000) {
+      throw new Error("Review an imported positive sandbox funding wire or inbound ACH and its exact amount");
     }
     if (evidence.entryId) {
       if (!evidence.fundingApproval) throw new Error("Transaction already classified differently");
@@ -245,6 +244,25 @@ export const humanView = query({
   args: { scope: scopeValidator }, handler: async (ctx, args) => {
     await requireHuman(ctx, args.scope);
     return { transactions: await ctx.db.query("demoTransactions").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).collect(), blockers: await closeBlockers(ctx, args.scope) };
+  },
+});
+/** Run-scoped accounting view; imported net is not a provider balance or a period-close signature. */
+export const bankReconciliation = query({
+  args: { scope: scopeValidator }, handler: async (ctx, args) => {
+    await requirePaymentHuman(ctx, args.scope);
+    const [transactions, balances, cursor, blockers] = await Promise.all([
+      ctx.db.query("demoTransactions").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).collect(),
+      ctx.db.query("balances").withIndex("by_run_account_period", q => q.eq("runId", args.scope.runId).eq("account", "1000")).collect(),
+      ctx.db.query("demoCursors").withIndex("by_run", q => q.eq("scope.runId", args.scope.runId)).unique(),
+      closeBlockers(ctx, args.scope),
+    ]);
+    const current = transactions.filter(t => t.state !== "prior_activity");
+    return { scope: args.scope, transactions: current.map(t => ({ transaction: t.transaction, state: t.state, entryId: t.entryId ?? null, fundingReason: t.fundingApproval?.reason ?? null, fundingEligible: !t.entryId && isSandboxFunding(args.scope, t.transaction) })), blockers,
+      cashLedgerCents: balances.reduce((n, b) => n + b.debits - b.credits, 0),
+      importedNetCents: current.filter(t => t.transaction.status === "posted").reduce((n, t) => n + t.transaction.amountCents, 0),
+      allImportedMatched: current.length > 0 && current.every(t => !!t.entryId && t.state === "posted") && blockers.length === 0,
+      scanCompletedAt: cursor?.scanCompletedAt ?? null,
+    };
   },
 });
 export const proposeMatch = mutation({
