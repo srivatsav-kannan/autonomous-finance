@@ -109,6 +109,6 @@ export function APAuthGate({ children,busy=false }: { children: ReactNode;busy?:
   };
   if(state==="simulation")return <APLocalSimulationGate actors={actors} busy={busy}>{children}</APLocalSimulationGate>;
   if (state === "local") return children;
-  if (state === "ready") return <><div className="ap-auth-session aps-app"><span>Signed in to Increase sandbox<small>{identity}</small></span><button onClick={() => { void logout(); }}>Sign out</button></div>{children}</>;
+  if (state === "ready") return <><div className="ap-auth-session aps-app"><span>Auth0 verified · Increase sandbox<small>{identity}</small></span><button disabled={busy} onClick={() => { void logout(); }}>Sign out</button></div>{children}</>;
   return <APAuthStatus state={state} identity={identity} message={message} onLogin={() => { void login(); }} onRetry={retry} onLogout={() => { void logout(); }} />;
 }

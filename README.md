@@ -14,6 +14,10 @@ So we built the ledger for the agents. The agents work through it, and it enforc
 
 ## How it works
 
+![Document processing, agent harness, controlled finance environment and traceability](docs/images/agent-environment.png)
+
+[Edit diagram](docs/images/agent-environment.excalidraw)
+
 - **The ledger (`convex/`).** A Convex database. Every change to the books is one transaction, in integer cents, with double entry, an idempotency key and a hash chain. Each agent has its own login and limits, and the database checks them on every write. For example, a cash entry needs a matching bank transaction, and whoever requests a payment can't approve it. These rules live in the database, not in prompts.
 - **Memory (`src/memory/`).** Company knowledge, like vendors, bank details, policies and every decision, is YAML in a git repo. Each change is a commit by the agent that made it. A change to bank details goes on a branch that a different agent or a human has to merge.
 - **The agents (`src/agents/`).** Twelve of them: AP clerk, controller, payments, treasury and others. Routine work is plain code. The model only reads documents the code can't parse and makes judgment calls. In the historical 14-day simulator run, 92% of tasks never called the model. That is not a cost or automation-rate measurement of the document-based AP workspace.

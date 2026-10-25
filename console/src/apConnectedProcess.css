@@ -1,0 +1,22 @@
+/* Hallmark · shape: app screen · genre: modern-minimal · theme: locked finance workbench · signature: persisted connected-case processing · states: missing, active, held, complete · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S5 R5 V4 · original provenance and recorded work explain progress without inferred activity. */
+.aps-connected-process { display: grid; gap: var(--space-md); padding-block: var(--space-lg); border-block: 1px solid var(--line); margin-block: var(--space-md); min-width: 0; }
+.acp-heading { display: flex; justify-content: space-between; align-items: start; gap: var(--space-md); }
+.acp-heading > div { min-width: 0; }
+.acp-heading p, .acp-details p { font-size: var(--text-sm); overflow-wrap: anywhere; }
+.acp-heading p { color: var(--muted); margin-top: var(--space-xs); }
+.acp-connection { display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-md); justify-content: end; color: var(--muted); font-size: var(--text-xs); }
+.acp-stages { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); list-style: none; padding: 0; margin: 0; gap: var(--space-xs); }
+.acp-stages li { display: grid; gap: var(--space-xs); border-top: 3px solid var(--line); padding-top: var(--space-sm); overflow-wrap: anywhere; }
+.acp-stages li[data-complete="true"] { border-top-color: var(--accent); }
+.acp-stages span, .acp-label { color: var(--muted); font-size: var(--text-xs); }
+.acp-stages strong { font-size: var(--text-sm); font-weight: 500; }
+.acp-details { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr); gap: var(--space-lg); }
+.acp-details > div { display: flex; flex-direction: column; align-items: start; gap: var(--space-xs); min-width: 0; }
+.acp-details strong { font-size: var(--text-sm); font-weight: 600; overflow-wrap: anywhere; }
+.acp-requirements { color: var(--decision); }
+.acp-actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+.aps-connected-process button { min-height: 44px; text-align: left; }
+.aps-connected-process button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 960px) { .acp-stages { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md); } .acp-details { grid-template-columns: minmax(0, 1fr); gap: var(--space-md); } }
+@media (max-width: 540px) { .acp-heading { flex-direction: column; } .acp-connection { justify-content: start; } .acp-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

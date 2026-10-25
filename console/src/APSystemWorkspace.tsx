@@ -1,3 +1,6 @@
+import { APConnectedProcess } from "./APConnectedProcess";
+import { APDocumentUpload } from "./APDocumentUpload";
+import { APTraceability } from "./APTraceability";
 import { APAgentTimeline } from "./APAgentHistory";
 import { decisionAnchor } from "./apAgentHistoryView";
 import {APPaymentDimensions} from "./APDimensions";
@@ -7,7 +10,7 @@ import { APSystemBusiness, APRelatedCases } from "./APSystemBusiness";
 import { APSystemCorrections } from "./APSystemCorrections";
 import { APSystemClose } from "./APSystemClose";
 import { APSystemGovernance } from "./APSystemGovernance";
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { APCaseDetail, ReviewRequest, SourceDocument } from "../../src/ap-system/contracts";
 import { APSystemRuns } from "./APSystemRuns";
 import { APSystemQuickBooks } from "./APSystemQuickBooks";
@@ -20,7 +23,7 @@ import "./apSystem.css";
 
 export type APSystemContext = { runId: string; organizationId: string; provider: string; identityMode: APCaseDetail["identityMode"] };
 const WORKSPACES = ["cases", "runs", "governance", "close"] as const;
-const VIEWS = ["evidence", "matching", "accounting", "history"] as const;
+const VIEWS = ["evidence", "matching", "accounting", "traceability", "history"] as const;
 const FILTERS = ["all", "attention", "approved", "settled"] as const;
 const dateTime = (value: number) => new Date(value).toLocaleString();
 export type APWorkspaceSection = typeof WORKSPACES[number];
@@ -50,6 +53,7 @@ export function APSystemWorkspace({ onContextChange, onBusyChange, section, onSe
   const detail=currentDetail?.detail, detailError=currentDetail?.error;
   const [busy,setBusy]=useState(false);
   const [showUpload,setShowUpload]=useState(false);
+  const [liveUpdateError,setLiveUpdateError]=useState(false);
   const heading=useRef<HTMLHeadingElement>(null);
   useEffect(()=>{const abort=new AbortController();
     // GET cases establishes the read/write session. Tag every result so an old
@@ -62,6 +66,27 @@ export function APSystemWorkspace({ onContextChange, onBusyChange, section, onSe
     apSystemApi.detail(selectedId,abort.signal).then(value=>{if(!abort.signal.aborted){setDetailResult({generation:reload,caseId:selectedId,detail:value});heading.current?.focus();}}).catch(e=>{if(!abort.signal.aborted)setDetailResult({generation:reload,caseId:selectedId,error:apError(e)});});
     return ()=>abort.abort();
   },[selectedId,reload,sessionReady]);
+  useEffect(()=>{
+    if(!sessionReady || busy)return;
+    const abort=new AbortController();let timer:ReturnType<typeof setTimeout>;
+    const poll=async()=>{
+      try{
+        if(!document.activeElement?.matches("input,textarea,select")){
+          const nextCases=await apSystemApi.list(abort.signal);
+          const nextDetail=selectedId?await apSystemApi.detail(selectedId,abort.signal):undefined;
+          if(abort.signal.aborted)return;
+          if(!document.activeElement?.matches("input,textarea,select")){
+            setListResult({generation:reload,cases:nextCases});
+            if(nextDetail)setDetailResult(previous=>JSON.stringify(previous?.detail)===JSON.stringify(nextDetail)?previous:{generation:reload,caseId:selectedId,detail:nextDetail});
+          }
+          setLiveUpdateError(false);
+        }
+      }catch{if(!abort.signal.aborted)setLiveUpdateError(true);}
+      if(!abort.signal.aborted)timer=setTimeout(poll,3000);
+    };
+    timer=setTimeout(poll,3000);
+    return()=>{abort.abort();clearTimeout(timer);};
+  },[selectedId,reload,sessionReady,busy]);
   useEffect(()=>{onBusyChange?.(busy);return ()=>onBusyChange?.(false);},[busy,onBusyChange]);
   useEffect(()=>{const active=detail ?? cases?.[0];onContextChange?.(active ? {runId:active.runId,organizationId:active.organizationId,provider:active.scope.provider === "fake" ? "Local FakeBank" : "Increase sandbox",identityMode:active.identityMode} : undefined);},[detail,cases,onContextChange]);
   const refresh=useCallback(()=>setReload(n=>n+1),[]);
@@ -70,8 +95,9 @@ export function APSystemWorkspace({ onContextChange, onBusyChange, section, onSe
     return matches && (filter === "all" || filter === "attention" && caseNeedsAttention(c) || filter === "approved" && c.states.business === "approved" || filter === "settled" && c.states.execution === "settled");
   }),[cases,search,filter]);
   return <section className="aps-app" aria-label="Accounts payable workspace">
-    <div className="page-heading"><div><h2>{section ? headingText.title : "Accounts payable"}</h2><p className="lede">{section ? headingText.lede : "Inspect the obligation, its approvals and the outcome."}</p></div><div className="aps-heading-actions"><button type="button" onClick={refresh} disabled={busy}>Refresh</button><button type="button" className="primary" onClick={()=>setShowUpload(v=>!v)} disabled={busy||!sessionReady} aria-expanded={showUpload}>Upload documents</button></div></div>
-    {showUpload && <APUpload sessionReady={sessionReady} onBusy={setBusy} onComplete={id=>{setWorkspace("cases");setSelectedId(id);setShowUpload(false);refresh();}} />}
+    <div className="page-heading"><div><h2>{section ? headingText.title : "Accounts payable"}</h2><p className="lede">{section ? headingText.lede : "Inspect the obligation, its approvals and the outcome."}</p></div><div className="aps-heading-actions"><button type="button" onClick={refresh} disabled={busy}>Refresh</button><button type="button" className="primary" onClick={()=>setShowUpload(v=>!v)} disabled={busy||!sessionReady} aria-expanded={showUpload}>Process documents</button></div></div>
+    {liveUpdateError&&<p className="aps-notice" role="status">Live updates are reconnecting. The last recorded result is shown; use Refresh to check the connection.</p>}
+    {showUpload && <APDocumentUpload sessionReady={sessionReady} onBusy={setBusy} onImported={refresh} onComplete={id=>{setWorkspace("cases");setView("evidence");setSelectedId(id);setShowUpload(false);refresh();}} />}
     {listError && <div className="aps-error" role="alert"><strong>Case list unavailable</strong><p>{listError}</p><button type="button" onClick={refresh} disabled={busy}>Retry connection</button></div>}
     {!section && <div className="aps-tabs" role="group" aria-label="Workspace sections">{WORKSPACES.map(section=><button key={section} disabled={busy} aria-pressed={workspace===section} className={workspace===section?"is-selected":""} onClick={()=>setWorkspace(section)}>{section==="runs"?"Payment runs":section==="governance"?"Policy & suppliers":section==="close"?"Period close":"Cases"}</button>)}</div>}
     {cases && <APOperationalMetrics cases={cases} onOpenCase={id=>{if(!busy){setSelectedId(id);setWorkspace("cases");}}}/>}
@@ -90,15 +116,19 @@ export function APSystemWorkspace({ onContextChange, onBusyChange, section, onSe
           <header className="aps-case-header"><div><h3 id="ap-case-heading" ref={heading} tabIndex={-1}>{detail.candidate?.invoiceNumber ?? "Document review"}</h3><p>{detail.candidate?.extractedSupplierName ?? "Supplier not established"}</p></div><div className="aps-case-identity"><span>{detail.scope.provider === "fake" ? "Local FakeBank" : "Increase sandbox"}</span><span>{detail.identityMode === "simulated_human" ? "Simulated human identity" : "Authenticated human identity"}</span></div></header>
           <p className="aps-caption">Case <code>{detail.caseId}</code> / Revision {detail.revision} / {detail.sources.every(s=>s.provenance.kind === "synthetic") ? "Synthetic documents" : "Document provenance varies; inspect originals"}</p>
           <APRelatedCases detail={detail} cases={cases??[]} onOpenCase={setSelectedId} busy={busy}/>
-          <APCaseStatus detail={detail}/>
-          <APAmounts detail={detail}/>
+          <details className="aps-processing-details" open={view!=="traceability"} key={`processing:${detail.caseId}:${view==="traceability"}`}>
+            <summary>Processing & amounts</summary>
+            {detail.identityMode==="authenticated_human"?<APConnectedProcess detail={detail} onView={setView}/>:<APCaseStatus detail={detail}/>}
+            <APAmounts detail={detail}/>
+          </details>
           {detail.links.duplicateOfCaseId && <p className="aps-notice">This delivery is linked to an existing obligation. <button className="aps-text-button" onClick={()=>setSelectedId(detail.links.duplicateOfCaseId!)} disabled={busy}>Open original case</button></p>}
           <div className="aps-tabs" role="group" aria-label="Case sections">{VIEWS.map(v=><button type="button" key={v} disabled={busy} onClick={()=>setView(v)} aria-pressed={view===v} className={view===v ? "is-selected" : ""}>{v === "evidence" ? "Source & fields" : apLabel(v)}</button>)}</div>
           {view === "evidence" && <><APSystemEvidence detail={detail}/><APOriginals detail={detail}/></>}
           {view === "matching" && <><APMatching detail={detail}/><APSystemPhysicalLines key={`physical:${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/><APSystemBusiness key={`business:${detail.caseId}:${detail.revision}:${detail.updatedAt}`} detail={detail} cases={cases??[]} busy={busy} onBusy={setBusy} onChanged={refresh} onOpenCase={setSelectedId}/></>}
           {view === "accounting" && <APAccounting key={`accounting:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
+          {view === "traceability" && <APTraceability key={detail.caseId} detail={detail}><APHistory detail={detail} onOpenAccounting={()=>setView("accounting")}/></APTraceability>}
           {view === "history" && <APHistory key={detail.caseId} detail={detail} onOpenAccounting={()=>setView("accounting")}/>}
-          <APActions key={`review:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>
+          {(view==="evidence"||view==="matching")&&<APActions key={`review:${detail.caseId}:${detail.revision}`} detail={detail} busy={busy} onBusy={setBusy} onChanged={refresh}/>}
         </>}
       </div>
     </div>}
@@ -185,9 +215,4 @@ export function APActions({detail,busy,onBusy,onChanged}:{detail:APCaseDetail;bu
     {decisionRecorded && <p className="aps-success">Bill approved. {detail.states.authorization === "not_requested" ? "Payment has not been requested." : `Payment authorization: ${apLabel(detail.states.authorization)}.`}</p>}
     <p className="aps-caption">Payment release requires the exact amount, verified beneficiary, funding account and independent authorization. Review the proposal under Accounting.</p>
   </section>;
-}
-function APUpload({sessionReady,onBusy,onComplete}:{sessionReady:boolean;onBusy:(busy:boolean)=>void;onComplete:(caseId:string)=>void}){
-  const [files,setFiles]=useState<{file:File;kind:SourceDocument["kind"]}[]>([]);const [error,setError]=useState<string>();const [uploading,setUploading]=useState(false);const key=useRef<string | undefined>(undefined);
-  const submit=async(e:FormEvent)=>{e.preventDefault();setError(undefined);if(!sessionReady){setError("Restore the workspace connection before uploading documents.");return;}if(!files.length)return;if(files.length>10||files.reduce((n,f)=>n+f.file.size,0)>8*1024*1024){setError("Choose up to 10 documents totaling no more than 8 MiB.");return;}onBusy(true);setUploading(true);key.current??=crypto.randomUUID();try{const result=await apSystemApi.intake(files,key.current);onComplete(result.caseId);}catch(e){setError(apError(e));}finally{setUploading(false);onBusy(false);}};
-  return <form className="aps-upload" onSubmit={submit}><h3>Upload a source packet</h3><p>Preserve the supplier invoice with its purchase order, receipt or contract.</p><label htmlFor="ap-source-files">Original documents</label><input id="ap-source-files" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.xml" disabled={uploading} onChange={e=>{key.current=undefined;setFiles(Array.from(e.target.files ?? []).map(file=>({file,kind:"invoice"})));setError(undefined);}}/>{files.length>0 && <ul>{files.map((entry,i)=><li key={`${entry.file.name}:${i}`}><span>{entry.file.name}</span><label>Document kind<select aria-label={`Kind of ${entry.file.name}`} value={entry.kind} disabled={uploading} onChange={e=>{key.current=undefined;setFiles(current=>current.map((f,n)=>n===i ? {...f,kind:e.target.value as SourceDocument["kind"]} : f));}}>{["invoice","purchase_order","receipt","contract","credit_note","correction","other"].map(kind=><option key={kind} value={kind}>{apLabel(kind)}</option>)}</select></label></li>)}</ul>}{!sessionReady && <p className="aps-notice" role="status">Waiting for the workspace connection before upload.</p>}{error && <p className="aps-error" role="alert">{error}</p>}<button type="submit" className="primary" disabled={uploading||!sessionReady||!files.length}>{uploading ? "Preserving and parsing sources…" : "Create AP case"}</button><small>PDF, scanned image or XML. Up to 10 files and 8 MiB per packet. Parsing does not approve a bill.</small></form>;
 }

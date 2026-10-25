@@ -1,0 +1,52 @@
+/* Hallmark · shape: app screen · genre: modern-minimal · theme: locked finance workbench · signature: chronological case activity · states: empty, recorded, expanded, unavailable · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S5 R5 V4 · recorded activity leads; exact evidence and differences remain available on demand. */
+.aps-trace { min-width: 0; padding-top: var(--space-md); }
+.apt-log { list-style: none; padding: 0; margin: var(--space-md) 0 var(--space-lg); border-top: 1px solid var(--line); }
+.apt-log > li { border-bottom: 1px solid var(--line); }
+.apt-event > summary { display: grid; grid-template-columns: 110px minmax(0, 1fr) minmax(80px, 150px) 16px; align-items: start; gap: var(--space-md); list-style: none; padding: var(--space-md) var(--space-sm); color: var(--ink); }
+.apt-event > summary::-webkit-details-marker { display: none; }
+.apt-event > summary:hover, .apt-event[open] > summary { background: var(--bg); }
+.apt-event time, .apt-event-content { display: grid; gap: var(--space-xs); min-width: 0; }
+.apt-event time { color: var(--muted); font-size: var(--text-xs); font-variant-numeric: tabular-nums; }
+.apt-event-kind { color: var(--muted); font-size: var(--text-xs); }
+.apt-event-summary { color: var(--ink); font-size: var(--text-sm); overflow-wrap: anywhere; line-height: 1.5; }
+.apt-event-actor { color: var(--muted); font-size: var(--text-xs); overflow-wrap: anywhere; text-align: right; }
+.apt-event-toggle { color: var(--muted); text-align: center; }
+.apt-event[open] .apt-event-toggle { transform: rotate(45deg); }
+.apt-event-body { padding: 0 var(--space-md) var(--space-md); min-width: 0; overflow-wrap: anywhere; }
+.apt-event-body h4 { font-size: var(--text-xs); color: var(--muted); margin-block: var(--space-sm); }
+.apt-references ul { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-xs); font-size: var(--text-xs); }
+.apt-inspectors { border-top: 1px solid var(--line); }
+.apt-inspector { border-bottom: 1px solid var(--line); }
+.apt-inspector > summary { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm); color: var(--ink); list-style: none; }
+.apt-inspector > summary::-webkit-details-marker { display: none; }
+.apt-inspector > summary::before { content: "+"; color: var(--muted); width: 16px; flex-shrink: 0; }
+.apt-inspector[open] > summary::before { content: "−"; }
+.apt-inspector > summary > span:last-child:not(:first-child) { margin-left: auto; color: var(--muted); font-size: var(--text-xs); }
+.apt-inspector-body { padding: var(--space-sm) var(--space-md) var(--space-md); min-width: 0; overflow-wrap: anywhere; }
+.apt-empty { color: var(--muted); padding-block: var(--space-lg); font-size: var(--text-sm); }
+@media (max-width: 640px) {
+  .apt-event > summary { grid-template-columns: minmax(0, 1fr) 16px; gap: var(--space-xs) var(--space-sm); }
+  .apt-event time { grid-column: 1; display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+  .apt-event-content { grid-column: 1; grid-row: 2; }
+  .apt-event-actor { grid-column: 1; grid-row: 3; text-align: left; }
+  .apt-event-toggle { grid-column: 2; grid-row: 1; }
+  .apt-event-body, .apt-inspector-body { padding-inline: var(--space-sm); }
+}
+
+.aps-trace-change { padding-block: var(--space-sm); border-bottom: 1px solid var(--line); }
+.aps-trace-change > summary { color: var(--ink); overflow-wrap: anywhere; }
+.aps-trace-json, .aps-text-diff { background: var(--bg); padding: var(--space-md); font-size: var(--text-xs); overflow: auto; max-height: 420px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.aps-trace-votes { padding-left: var(--space-lg); font-size: var(--text-sm); }
+.aps-trace-votes small { display: block; }
+.aps-trace-preview { margin-block: var(--space-md); }
+.aps-trace .aps-source-pair, .aps-trace .aps-compare-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); margin-block: var(--space-md); }
+.aps-trace .aps-compare-controls label { display: grid; gap: var(--space-xs); }
+.aps-trace .aps-diff-table td { white-space: pre-wrap; }
+.aps-text-diff .diff-added { color: var(--accent); }
+.aps-text-diff .diff-removed { color: var(--urgent); }
+.aps-source-controls { display: grid; gap: var(--space-sm); margin-bottom: var(--space-md); }
+.aps-source-controls label { display: grid; gap: var(--space-xs); }
+@media (max-width: 640px) {
+  .aps-trace .aps-source-pair, .aps-trace .aps-compare-controls { grid-template-columns: minmax(0, 1fr); }
+}
