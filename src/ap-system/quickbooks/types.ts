@@ -9,6 +9,8 @@ export type Settlement = {
   journalId: string;
   amountCents: number;
   date: string;
+  grossAppliedCents?: number;
+  credits?: AppliedCredit[];
 };
 /** Exact immutable B3 recognition, not a rewritten invoice candidate. */
 export type RecognizedInvoice = {
@@ -34,6 +36,9 @@ export type AccountingExport = {
   billRecordHash: string;
   settlement: Settlement | null;
   recognizedInvoice?: RecognizedInvoice;
+  recognizedCredit?: RecognizedCredit;
+  creditApplication?: CreditApplication;
+  holds?: AccountingHold[];
 };
 export type CreditExport = {
   creditId: string;
@@ -46,7 +51,44 @@ export type CreditExport = {
   amountCents: number;
   allocations: Array<{ account: string; amountCents: number }>;
 };
-export type ExportRequest = { caseId: string; paymentVersionId?: string };
+export type RecognizedCredit = CreditExport & {
+  kind: "credit";
+  approvalId: string;
+  sourceRevision: number;
+  sourceSnapshotHash: string;
+};
+export type AppliedCredit = {
+  recognition: RecognizedCredit;
+  amountCents: number;
+};
+export type CreditApplication = {
+  applicationId: string;
+  applicationIds: string[];
+  requestKey: string;
+  billId: string;
+  date: string;
+  amountCents: number;
+  credits: AppliedCredit[];
+};
+export type AccountingHold = {
+  code: string;
+  owner: "controller";
+  reason: string;
+  relatedIds: string[];
+};
+export type SyncHold = AccountingHold & {
+  state: "held";
+  realmId: string;
+  caseId: string;
+  request: ExportRequest;
+  createdAt: number;
+  updatedAt: number;
+};
+export type ExportRequest = {
+  caseId: string;
+  paymentVersionId?: string;
+  creditApplicationId?: string;
+};
 /** Inject a request-bound authenticated backend query, never a browser-supplied export. */
 export type ExportLoader = (
   request: ExportRequest,
@@ -70,6 +112,8 @@ export type LocalLinks = {
   bankTransactionId: string | null;
   settlementJournalId: string | null;
   creditId: string | null;
+  creditApplicationId?: string;
+  appliedCreditIds?: string[];
 };
 export type Plan = {
   version: "ap-qbo-operation-v1";
@@ -81,7 +125,14 @@ export type Plan = {
   mappingHash: string;
   payload: Record<string, unknown>;
 };
+/** Server-issued approval for the first external POST; never replaced by a recovery reader. */
+export type SubmissionAuthorization = {
+  subject: string;
+  planHash: string;
+  decidedAt: number;
+};
 export type Operation = Plan & {
+  submissionAuthorization?: SubmissionAuthorization;
   requestId: string;
   payloadHash: string;
   state:

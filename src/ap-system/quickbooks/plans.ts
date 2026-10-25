@@ -8,6 +8,7 @@ import type {
   Operation,
   Plan,
   CreditExport,
+  AppliedCredit,
 } from "./types";
 export function validateMappings(m: Mappings, realm: string) {
   if (
@@ -52,6 +53,54 @@ function line(account: string, amount: number, m: Mappings) {
 export function assertExport(e: AccountingExport, request: ExportRequest) {
   const d = caseDetailSchema.parse(e.detail),
     c = d.candidate;
+  if (e.holds?.length) throw new QboError(e.holds[0]!.code);
+  if (request.paymentVersionId && request.creditApplicationId)
+    throw new QboError("ambiguous_application_request");
+  if (
+    request.creditApplicationId &&
+    !e.creditApplication?.applicationIds.includes(request.creditApplicationId)
+  )
+    throw new QboError("verified_credit_application_required");
+  if (e.recognizedCredit) {
+    const r = e.recognizedCredit;
+    if (
+      e.version !== "ap-qbo-export-v1" ||
+      !e.authorizedSubject ||
+      d.caseId !== request.caseId ||
+      r.caseId !== d.caseId ||
+      d.states.business !== "approved" ||
+      d.states.document !== "reviewed" ||
+      d.states.accounting !== "recognized" ||
+      r.journalId !== d.links.recognitionJournalId ||
+      d.amounts.acceptedCents !== r.amountCents ||
+      !r.approvalId ||
+      !r.creditId ||
+      !r.billId ||
+      !Number.isSafeInteger(r.amountCents) ||
+      !Number.isSafeInteger(r.sourceRevision) ||
+      r.sourceRevision < 1 ||
+      !/^[a-f0-9]{64}$/.test(r.sourceSnapshotHash) ||
+      r.amountCents <= 0 ||
+      !r.allocations.length ||
+      request.paymentVersionId ||
+      request.creditApplicationId
+    )
+      throw new QboError("approved_credit_required");
+    const expected = [
+      ...r.allocations.map((a) => ({
+        account: a.account,
+        debit: Math.max(0, -a.amountCents),
+        credit: Math.max(0, a.amountCents),
+      })),
+      { account: "2000", debit: r.amountCents, credit: 0 },
+    ];
+    const j = d.journals.find(
+      (j) => j.entryId === r.journalId && j.kind === "credit",
+    );
+    if (!j || canonical(j.lines) !== canonical(expected))
+      throw new QboError("credit_journal_mismatch");
+    return d;
+  }
   const recognized = e.recognizedInvoice;
   if (recognized) {
     if (
@@ -70,6 +119,7 @@ export function assertExport(e: AccountingExport, request: ExportRequest) {
       !Number.isSafeInteger(recognized.sourceRevision) ||
       recognized.sourceRevision < 1 ||
       !/^[a-f0-9]{64}$/.test(recognized.sourceSnapshotHash) ||
+      !Number.isSafeInteger(recognized.amountCents) ||
       recognized.amountCents <= 0 ||
       !recognized.allocations.length
     )
@@ -203,6 +253,7 @@ export function paymentPlan(
   e: AccountingExport,
   m: Mappings,
   bill: Operation,
+  creditOperations: Operation[] = [],
 ): Plan {
   const s = e.settlement;
   if (!s) throw new QboError("verified_settlement_required");
@@ -214,8 +265,6 @@ export function paymentPlan(
   if (
     d.scope.provider !== "increase" ||
     d.scope.environment !== "sandbox" ||
-    d.states.execution !== "settled" ||
-    d.states.reconciliation !== "matched" ||
     bill.state !== "succeeded" ||
     bill.entity !== "Bill" ||
     bill.identity !== b.identity ||
@@ -247,6 +296,17 @@ export function paymentPlan(
       s.amountCents
   )
     throw new QboError("settlement_link_mismatch");
+  const applied = s.credits ?? [];
+  const creditLines = appliedCreditLines(applied, creditOperations, m, bill);
+  const gross = s.grossAppliedCents ?? s.amountCents;
+  if (
+    !Number.isSafeInteger(gross) ||
+    gross !== s.amountCents + sumCents(applied.map((c) => c.amountCents)) ||
+    gross <= 0 ||
+    s.amountCents <= 0 ||
+    gross > Math.round(Number(b.payload.TotalAmt) * 100)
+  )
+    throw new QboError("payment_application_sum_mismatch");
   const identity = `BillPayment:${d.scope.organizationId}:${d.scope.runId}:${s.paymentVersionId}:${s.bankTransactionId}`;
   return {
     ...b,
@@ -258,6 +318,9 @@ export function paymentPlan(
       commandId: s.commandId,
       bankTransactionId: s.bankTransactionId,
       settlementJournalId: s.journalId,
+      ...(applied.length
+        ? { appliedCreditIds: applied.map((c) => c.recognition.creditId) }
+        : {}),
     },
     payload: {
       VendorRef: b.payload.VendorRef,
@@ -274,21 +337,28 @@ export function paymentPlan(
       TotalAmt: money(s.amountCents),
       Line: [
         {
-          Amount: money(s.amountCents),
+          Amount: money(gross),
           LinkedTxn: [{ TxnId: bill.externalId, TxnType: "Bill" }],
         },
+        ...creditLines,
       ],
     },
   };
 }
 /** B3 hook: caller must load approved credit evidence from an authenticated authoritative source.
- * Creates VendorCredit recognition only; applying credits/refunds is a separate future operation. */
+ * VendorCredit recognition is separate from explicitly approved application. */
 export function creditPlan(
   credit: CreditExport,
   m: Mappings,
   bill: Operation,
 ): Plan {
   validateMappings(m, m.realmId);
+  if (
+    credit.allocations.some(
+      (a) => !Number.isSafeInteger(a.amountCents) || a.amountCents < 0,
+    )
+  )
+    throw new QboError("signed_cost_allocation_requires_review");
   if (
     bill.state !== "succeeded" ||
     bill.entity !== "Bill" ||
@@ -332,6 +402,106 @@ export function creditPlan(
       PrivateNote: `ap-sync:${hash(identity)}; credit ${credit.reference}; original bill ${bill.externalId}`,
       TotalAmt: money(credit.amountCents),
       Line: credit.allocations.map((a) => line(a.account, a.amountCents, m)),
+    },
+  };
+}
+
+/** Bill and VendorCredit line amounts are positive applied amounts; their difference is cash. */
+function appliedCreditLines(
+  items: AppliedCredit[],
+  operations: Operation[],
+  m: Mappings,
+  bill: Operation,
+) {
+  if (
+    new Set(items.map((i) => i.recognition.creditId)).size !== items.length ||
+    operations.length !== items.length
+  )
+    throw new QboError("credit_operation_mismatch");
+  return items.map((item) => {
+    const r = item.recognition;
+    const op = operations.find((o) => o.links.creditId === r.creditId);
+    if (
+      !Number.isSafeInteger(item.amountCents) ||
+      item.amountCents <= 0 ||
+      item.amountCents > r.amountCents ||
+      !op ||
+      op.state !== "succeeded" ||
+      op.entity !== "VendorCredit" ||
+      op.realmId !== m.realmId ||
+      op.mappingHash !== hash(m) ||
+      op.links.caseId !== r.caseId ||
+      op.links.recognitionJournalId !== r.journalId ||
+      op.payload.TotalAmt !== money(r.amountCents) ||
+      canonical(op.payload.VendorRef) !== canonical(bill.payload.VendorRef) ||
+      !op.externalId
+    )
+      throw new QboError("credit_operation_mismatch");
+    return {
+      Amount: money(item.amountCents),
+      LinkedTxn: [{ TxnId: op.externalId, TxnType: "VendorCredit" }],
+    };
+  });
+}
+export function applicationPlan(
+  e: AccountingExport,
+  m: Mappings,
+  bill: Operation,
+  credits: Operation[],
+): Plan {
+  const a = e.creditApplication;
+  if (!a) throw new QboError("verified_credit_application_required");
+  const d = assertExport(e, {
+    caseId: e.detail.caseId,
+    creditApplicationId: a.applicationId,
+  });
+  const b = billPlan(e, m);
+  if (
+    bill.state !== "succeeded" ||
+    bill.entity !== "Bill" ||
+    bill.identity !== b.identity ||
+    bill.realmId !== m.realmId ||
+    bill.mappingHash !== hash(m) ||
+    !bill.externalId ||
+    canonical(bill.payload) !== canonical(b.payload) ||
+    a.billId !== bill.links.billId ||
+    !Number.isSafeInteger(a.amountCents) ||
+    a.amountCents <= 0 ||
+    a.amountCents > Math.round(Number(b.payload.TotalAmt) * 100) ||
+    a.amountCents !== sumCents(a.credits.map((c) => c.amountCents))
+  )
+    throw new QboError("credit_application_mismatch");
+  const lines = appliedCreditLines(a.credits, credits, m, bill);
+  const identity = `CreditApplication:${d.scope.organizationId}:${d.scope.runId}:${a.billId}:${a.requestKey}`;
+  return {
+    ...b,
+    entity: "BillPayment",
+    identity,
+    links: {
+      ...b.links,
+      creditApplicationId: a.applicationId,
+      appliedCreditIds: a.credits.map((c) => c.recognition.creditId),
+    },
+    payload: {
+      VendorRef: b.payload.VendorRef,
+      APAccountRef: b.payload.APAccountRef,
+      CurrencyRef: { value: "USD" },
+      TxnDate: a.date,
+      DocNumber: `AP${hash(identity).slice(0, 18)}`,
+      PrivateNote: `ap-sync:${hash(identity)}; explicit credit-only application ${a.applicationId}`,
+      PayType: "Check",
+      CheckPayment: {
+        BankAccountRef: { value: m.accounts[m.bankAccount]!.id },
+        PrintStatus: "NotSet",
+      },
+      TotalAmt: 0,
+      Line: [
+        {
+          Amount: money(a.amountCents),
+          LinkedTxn: [{ TxnId: bill.externalId, TxnType: "Bill" }],
+        },
+        ...lines,
+      ],
     },
   };
 }

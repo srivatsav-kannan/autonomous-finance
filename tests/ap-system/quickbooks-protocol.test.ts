@@ -77,6 +77,11 @@ const mappings: Mappings = {
   apAccount: "2000",
   bankAccount: "1000",
 };
+const authorization = (p: Plan) => ({
+  subject: "test-authorized-writer",
+  planHash: hash(p),
+  decidedAt: Date.now(),
+});
 function plan(): Plan {
   return {
     version: "ap-qbo-operation-v1",
@@ -314,14 +319,19 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
           : { QueryResponse: {} },
       );
     });
-    const op = await f.journal.execute(p, mappings);
+    const op = await f.journal.execute(
+      p,
+      mappings,
+      undefined,
+      authorization(p),
+    );
     expect(op).toMatchObject({
       state: "succeeded",
       externalId: "90",
       syncToken: "0",
       attempts: 1,
     });
-    await f.journal.execute(p, mappings);
+    await f.journal.execute(p, mappings, undefined, authorization(p));
     expect(writes).toBe(1);
     const post = f.calls.find(
       (c) => c.init.method === "POST" && c.url.pathname.endsWith("/bill"),
@@ -338,6 +348,36 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
     ).rejects.toThrow("immutable_operation_conflict");
     expect(writes).toBe(1);
   });
+  it("serializes distinct operation writes within the same realm", async () => {
+    let inFlight = 0,
+      max = 0;
+    const f = await protocol(async (_url, init) => {
+      if (init.method !== "POST") return json({ QueryResponse: {} });
+      inFlight++;
+      max = Math.max(max, inFlight);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      inFlight--;
+      return json({
+        Bill: { ...JSON.parse(String(init.body)), Id: "90", SyncToken: "0" },
+      });
+    });
+    const a = plan();
+    const b = {
+      ...plan(),
+      identity: "Bill:org:run:bill-2",
+      payload: {
+        ...plan().payload,
+        DocNumber: "AP" + hash("second").slice(0, 18),
+      },
+    };
+    const result = await Promise.all(
+      [a, b].map((p) =>
+        f.journal.execute(p, mappings, undefined, authorization(p)),
+      ),
+    );
+    expect(result.every((r) => r.state === "succeeded")).toBe(true);
+    expect(max).toBe(1);
+  });
   it("reconciles an unknown successful write by marker and never posts a fresh ID", async () => {
     let writes = 0;
     const p = plan();
@@ -352,12 +392,17 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
           : {},
       });
     });
-    await expect(f.journal.execute(p, mappings)).rejects.toThrow(
-      "qbo_transport_unknown",
-    );
+    await expect(
+      f.journal.execute(p, mappings, undefined, authorization(p)),
+    ).rejects.toThrow("qbo_transport_unknown");
     const before = await f.journal.get(p);
     expect(before?.state).toBe("unknown");
-    const after = await f.journal.execute(p, mappings);
+    const after = await f.journal.execute(
+      p,
+      mappings,
+      undefined,
+      authorization(p),
+    );
     expect(after.state).toBe("succeeded");
     expect(after.requestId).toBe(before?.requestId);
     expect(writes).toBe(1);
@@ -373,10 +418,12 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
       }
       return json({ QueryResponse: {} });
     });
-    await expect(f.journal.execute(p, mappings)).rejects.toThrow(
-      "qbo_write_unknown",
-    );
-    expect((await f.journal.execute(p, mappings)).state).toBe("unknown");
+    await expect(
+      f.journal.execute(p, mappings, undefined, authorization(p)),
+    ).rejects.toThrow("qbo_write_unknown");
+    expect(
+      (await f.journal.execute(p, mappings, undefined, authorization(p))).state,
+    ).toBe("unknown");
     expect(writes).toBe(1);
     const g = await protocol(() =>
       json({
@@ -388,9 +435,9 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
         },
       }),
     );
-    await expect(g.journal.execute(p, mappings)).rejects.toThrow(
-      "external_mapping_conflict",
-    );
+    await expect(
+      g.journal.execute(p, mappings, undefined, authorization(p)),
+    ).rejects.toThrow("external_mapping_conflict");
     expect((await g.journal.get(p))?.state).toBe("conflict");
   });
   it("treats crash-retained sending as unknown and stale external edits as conflicts", async () => {
@@ -409,7 +456,9 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
       lastError: null,
       responseHash: null,
     });
-    expect((await f.journal.execute(p, mappings)).state).toBe("unknown");
+    expect(
+      (await f.journal.execute(p, mappings, undefined, authorization(p))).state,
+    ).toBe("unknown");
     expect(
       f.calls.filter(
         (c) => c.init.method === "POST" && c.url.pathname.endsWith("/bill"),
@@ -424,10 +473,10 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
         },
       }),
     ); // preflight query has no result
-    await g.journal.execute(p, mappings);
-    await expect(g.journal.execute(p, mappings)).rejects.toThrow(
-      "external_stale_or_changed",
-    );
+    await g.journal.execute(p, mappings, undefined, authorization(p));
+    await expect(
+      g.journal.execute(p, mappings, undefined, authorization(p)),
+    ).rejects.toThrow("external_stale_or_changed");
     expect((await g.journal.get(p))?.state).toBe("conflict");
   });
   it("does not downgrade unknown or succeeded receipts after read-only 429 failures", async () => {
@@ -442,12 +491,12 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
         ? json({}, 429, { "Retry-After": "120" })
         : json({ QueryResponse: {} });
     });
-    await expect(f.journal.execute(p, mappings)).rejects.toThrow(
-      "qbo_transport_unknown",
-    );
-    await expect(f.journal.execute(p, mappings)).rejects.toThrow(
-      "qbo_retry_later",
-    );
+    await expect(
+      f.journal.execute(p, mappings, undefined, authorization(p)),
+    ).rejects.toThrow("qbo_transport_unknown");
+    await expect(
+      f.journal.execute(p, mappings, undefined, authorization(p)),
+    ).rejects.toThrow("qbo_retry_later");
     expect((await f.journal.get(p))?.state).toBe("unknown");
     let done = false;
     const g = await protocol((_url, init) => {
@@ -459,10 +508,10 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
         ? json({}, 429, { "Retry-After": "120" })
         : json({ QueryResponse: {} });
     });
-    await g.journal.execute(p, mappings);
-    await expect(g.journal.execute(p, mappings)).rejects.toThrow(
-      "qbo_retry_later",
-    );
+    await g.journal.execute(p, mappings, undefined, authorization(p));
+    await expect(
+      g.journal.execute(p, mappings, undefined, authorization(p)),
+    ).rejects.toThrow("qbo_retry_later");
     expect((await g.journal.get(p))?.state).toBe("succeeded");
   });
   it("refuses altered stored payloads even when their old hash field is unchanged", async () => {
@@ -478,9 +527,9 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
       ...op,
       payload: { ...op.payload, TotalAmt: 100 },
     });
-    await expect(f.journal.execute(p, mappings)).rejects.toThrow(
-      "immutable_operation_conflict",
-    );
+    await expect(
+      f.journal.execute(p, mappings, undefined, authorization(p)),
+    ).rejects.toThrow("immutable_operation_conflict");
   });
   it("honors bounded 429 waits and retains same POST body/requestid across definite retries", async () => {
     let n = 0;
@@ -492,7 +541,7 @@ describe("QuickBooks immutable operations and bounded protocol", () => {
           : json({ Bill: { ...p.payload, Id: "93", SyncToken: "0" } })
         : json({ QueryResponse: {} }),
     );
-    await f.journal.execute(p, mappings);
+    await f.journal.execute(p, mappings, undefined, authorization(p));
     expect(f.waits).toEqual([1000, 1000]);
     const posts = f.calls.filter(
       (c) => c.url.pathname.endsWith("/bill") && c.init.method === "POST",

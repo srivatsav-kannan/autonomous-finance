@@ -1,3 +1,8 @@
+import {
+  appliedCredits,
+  creditApplication,
+  recognizedCredit,
+} from "./lib/apSystem/accountingCredits";
 import { query } from "./_generated/server";
 import { v } from "convex/values";
 import { scopeValidator } from "./demoSchema";
@@ -22,11 +27,28 @@ export const current = query({
     scope: scopeValidator,
     caseId: v.id("apCaseRecords"),
     paymentVersionId: v.optional(v.id("demoVersions")),
+    creditApplicationId: v.optional(v.id("apCreditApplications")),
   },
   handler: async (ctx, args): Promise<AccountingExport> => {
     const { subject } = await requirePaymentHuman(ctx, args.scope);
+    if (args.paymentVersionId && args.creditApplicationId)
+      throw Error("Select one accounting application identity");
     const row = await ctx.db.get(args.caseId);
     assertRowScope(row, args.scope);
+    if (row?.creditId) {
+      if (args.paymentVersionId || args.creditApplicationId)
+        throw Error("Credit recognition is not a payment");
+      const credit = await recognizedCredit(ctx, args.scope, row.creditId);
+      return {
+        version: "ap-qbo-export-v1",
+        exportedAt: Date.now(),
+        authorizedSubject: subject,
+        detail: await projectCase(ctx, row),
+        billRecordHash: await sha256Hex(canonical(credit)),
+        settlement: null,
+        recognizedCredit: credit,
+      };
+    }
     if (
       !row ||
       !row.billId ||
@@ -94,6 +116,108 @@ export const current = query({
     )
       throw Error("Current approved snapshot required");
     let settlement: Settlement | null = null;
+    const base: AccountingExport = {
+      version: "ap-qbo-export-v1",
+      exportedAt: Date.now(),
+      authorizedSubject: subject,
+      detail,
+      billRecordHash: bill.recordHash,
+      settlement: null,
+      ...(recognized
+        ? {
+            recognizedInvoice: {
+              ...recognized,
+              kind: "invoice" as const,
+              creditId: null,
+            },
+          }
+        : {}),
+    };
+    const history = (
+      await ctx.db
+        .query("demoVersions")
+        .withIndex("by_run", (q) => q.eq("scope.runId", args.scope.runId))
+        .collect()
+    ).filter((p) => p.snapshot.bills.some((b) => b.billId === bill._id));
+    const returned = history.filter((p) => p.status === "returned");
+    for (const p of history) assertRowScope(p, args.scope);
+    const commands = (
+      await ctx.db
+        .query("demoCommands")
+        .withIndex("by_run", (q) => q.eq("scope.runId", args.scope.runId))
+        .collect()
+    ).filter((c) => history.some((p) => p._id === c.versionId));
+    for (const c of commands) assertRowScope(c, args.scope);
+    const returnCommands = commands.filter(
+      (c) =>
+        c.execution === "returned" ||
+        c.posting === "returned" ||
+        c.lateTransferId,
+    );
+    const relevant = (
+      commandId: string | undefined,
+      transferId: string | undefined,
+    ) =>
+      history.some((p) => p._id === commandId) ||
+      commands.some((c) => c.providerTransferId === transferId && !!transferId);
+    const observations = (
+      await ctx.db
+        .query("demoObservations")
+        .withIndex("by_run", (q) => q.eq("scope.runId", args.scope.runId))
+        .collect()
+    ).filter(
+      (o) =>
+        relevant(o.observation.commandId, o.transferId) &&
+        (o.observation.status === "returned" ||
+          o.observation.returnTransactionId),
+    );
+    const transactions = (
+      await ctx.db
+        .query("demoTransactions")
+        .withIndex("by_run", (q) => q.eq("scope.runId", args.scope.runId))
+        .collect()
+    ).filter(
+      (t) =>
+        relevant(t.transaction.commandId, t.transaction.transferId) &&
+        t.transaction.purpose === "return",
+    );
+    for (const r of [...observations, ...transactions])
+      assertRowScope(r, args.scope);
+    if (
+      returned.length ||
+      returnCommands.length ||
+      observations.length ||
+      transactions.length
+    )
+      return {
+        ...base,
+        holds: [
+          {
+            code: "return_accounting_remediation_required",
+            owner: "controller",
+            reason:
+              "A historical payment returned or has late bank activity; preserve original external history and approve a linked accounting correction before further sync.",
+            relatedIds: [
+              ...returned.map((r) => r._id),
+              ...returnCommands.map((r) => r._id),
+              ...observations.map((r) => r._id),
+              ...transactions.map((r) => r._id),
+            ],
+          },
+        ],
+      };
+    if (args.creditApplicationId)
+      return {
+        ...base,
+        creditApplication: await creditApplication(
+          ctx,
+          args.scope,
+          row._id,
+          bill._id,
+          args.creditApplicationId,
+        ),
+      };
+
     if (args.paymentVersionId) {
       const version = await ctx.db.get(args.paymentVersionId);
       assertRowScope(version, args.scope);
@@ -103,10 +227,13 @@ export const current = query({
         version.reservations !== "consumed" ||
         version.snapshot.bills.length !== 1 ||
         version.snapshot.bills[0]!.billId !== bill._id ||
-        version.snapshot.credits.length !== 0 ||
-        version.snapshot.bills[0]!.amountCents !== bill.approvedCents ||
-        version.snapshot.amountCents !== bill.approvedCents ||
-        bill.paidCents !== bill.approvedCents ||
+        version.snapshot.bills[0]!.amountCents > bill.approvedCents ||
+        version.snapshot.bills[0]!.amountCents <= 0 ||
+        version.snapshot.amountCents <= 0 ||
+        version.snapshot.amountCents +
+          version.snapshot.credits.reduce((n, c) => n + c.amountCents, 0) !==
+          version.snapshot.bills[0]!.amountCents ||
+        bill.paidCents < version.snapshot.bills[0]!.amountCents ||
         (await sha256Hex(canonical(version.snapshot))) !==
           version.snapshotHash ||
         !version.approvals.some((a) => a.snapshotHash === version.snapshotHash)
@@ -230,6 +357,13 @@ export const current = query({
         journalId: posted._id,
         amountCents: amount,
         date: posted.date,
+        grossAppliedCents: version.snapshot.bills[0]!.amountCents,
+        credits: await appliedCredits(
+          ctx,
+          args.scope,
+          bill.vendor,
+          version.snapshot.credits,
+        ),
       };
     }
     return {

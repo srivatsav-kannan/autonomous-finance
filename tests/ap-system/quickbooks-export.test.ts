@@ -344,7 +344,16 @@ describe("QBO authoritative recognition/settlement export", () => {
           });
         }
       });
-      await expect(f.load()).rejects.toThrow();
+      if (mode === "returned") {
+        const held = await f.load();
+        expect(held.holds?.[0]?.code).toBe(
+          "return_accounting_remediation_required",
+        );
+        expect(held.settlement).toBeNull();
+        expect(() => billPlan(held, mappings)).toThrow(
+          "return_accounting_remediation_required",
+        );
+      } else await expect(f.load()).rejects.toThrow();
     },
   );
   it("dispatcher loads authority itself; stale/fake exports never submit and new unapproved candidate cannot replace recognition", async () => {

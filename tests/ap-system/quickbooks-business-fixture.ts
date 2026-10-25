@@ -1,0 +1,274 @@
+import { makeFunctionReference } from "convex/server";
+import { businessFixture, br, binding, syncPrimary } from "./business-fixture";
+import { packet } from "./accounting-fixture";
+import { canonical, sha256Hex } from "../../convex/lib/kernel";
+import {
+  buildIncreaseRequestBody,
+  commandRequestHash,
+} from "../../src/integrations/contracts";
+import type { Id } from "../../convex/_generated/dataModel";
+import type {
+  AccountingExport,
+  Operation,
+  Plan,
+} from "../../src/ap-system/quickbooks/types";
+export const current = makeFunctionReference<"query">(
+  "apAccountingExport:current",
+);
+export const successful = (plan: Plan, id: string): Operation => ({
+  ...plan,
+  requestId: "test-operation",
+  payloadHash: "test-hash",
+  state: "succeeded",
+  createdAt: 1,
+  updatedAt: 1,
+  attempts: 1,
+  externalId: id,
+  syncToken: "0",
+  lastError: null,
+  responseHash: "test-response",
+});
+export async function creditFixture() {
+  const f = await businessFixture();
+  const original = await f.recognize();
+  async function credit(number = "CREDIT-1") {
+    const input = packet(number);
+    const c = input.candidate!;
+    c.kind = "credit_note";
+    c.lines[0]!.quantity.decimal = "1";
+    c.lines[0]!.amountCents = 3850;
+    c.lines[0]!.allocations[0]!.amountCents = 3850;
+    c.subtotalCents = 3850;
+    c.totalCents = 3850;
+    input.documents[0]!.kind = "credit_note";
+    syncPrimary(input);
+    const d = await f.reviewed(input);
+    const proposed = await f.t.mutation(br.propose!, {
+      ...f.ap,
+      input: {
+        caseId: d.caseId,
+        expectedRevision: d.revision,
+        snapshotHash: d.snapshotHash,
+        idempotencyKey: `approve-${number}`,
+        policyVersion: f.policy.version,
+        supplierRevision: 1,
+        credit: {
+          originalCaseId: f.detail.caseId,
+          originalApprovalId: original.proposal.proposalId,
+          freightCents: 0,
+          discountCents: 0,
+          lines: [
+            {
+              creditLineId: "line-1",
+              originalLineId: "line-1",
+              basis: "quantity_return",
+              quantity: "1",
+              netCents: 3850,
+              taxCents: 0,
+              returnEvidence: [binding(input.documents[2]!)],
+            },
+          ],
+          reason: "Supported original return",
+        },
+      },
+    });
+    const result = await f.vote(proposed);
+    return { caseId: d.caseId, creditId: result.creditId as Id<"demoCredits"> };
+  }
+  const load = (caseId = f.detail.caseId, extra: Record<string, string> = {}) =>
+    f.humans.finance!.query(current, {
+      scope: f.scope,
+      caseId,
+      ...extra,
+    }) as Promise<AccountingExport>;
+  return { ...f, original, credit, load };
+}
+/** Test-only conversion; never reads provider credentials or contacts Increase. */
+export async function promoteIncrease(
+  f: Awaited<ReturnType<typeof creditFixture>>,
+) {
+  const scope = {
+    ...f.scope,
+    provider: "increase" as const,
+    environment: "sandbox" as const,
+  };
+  await f.t.run(async (ctx) => {
+    for (const table of [
+      "demoConfigs",
+      "apCaseRecords",
+      "apCaseRevisions",
+      "apCaseSources",
+      "apCaseDeliveries",
+      "apCaseDecisions",
+      "apCaseOperations",
+      "demoBills",
+      "demoCredits",
+      "apBusinessPolicies",
+      "apSupplierContacts",
+      "apSuppliers",
+      "apSupplierRevisions",
+      "apApprovalProposals",
+      "apCreditLinks",
+      "apCreditApplications",
+    ] as const) {
+      for (const row of await ctx.db.query(table).collect())
+        await ctx.db.patch(row._id, { scope });
+    }
+    for (const row of await ctx.db.query("apCaseRecords").collect())
+      await ctx.db.patch(row._id, { identityMode: "authenticated_human" });
+  });
+  return {
+    scope,
+    load: (caseId = f.detail.caseId, extra: Record<string, string> = {}) =>
+      f.humans.finance!.query(current, {
+        scope,
+        caseId,
+        ...extra,
+      }) as Promise<AccountingExport>,
+  };
+}
+/** Synthetic immutable bank evidence, introduced only through test-owned Convex DB. */
+export async function seedSettled(
+  f: Awaited<ReturnType<typeof creditFixture>>,
+  cash: number,
+  gross: number,
+  credits: Array<{ creditId: Id<"demoCredits">; amountCents: number }> = [],
+) {
+  const { scope } = await promoteIncrease(f);
+  const result = await f.t.run(async (ctx) => {
+    const bill = (await ctx.db.get(f.original.billId as Id<"demoBills">))!;
+    const snapshot = {
+      scope,
+      bills: [{ billId: bill._id, version: bill.version, amountCents: gross }],
+      credits,
+      amountCents: cash,
+      currency: "USD" as const,
+      destination: {
+        externalAccountId: "external-supplier-v1",
+        version: "golden-state-produce:r1",
+      },
+      policyVersion: f.policy.version,
+    };
+    const snapshotHash = await sha256Hex(canonical(snapshot));
+    const versionId = await ctx.db.insert("demoVersions", {
+      scope,
+      snapshot,
+      snapshotHash,
+      requestedBy: "payments",
+      requestKey: `cash-${cash}`,
+      status: "settled",
+      approvals: [
+        {
+          seatId: "human-finance",
+          subject: "https://ap-demo.invalid|finance",
+          kind: "human",
+          snapshotHash,
+          at: 1,
+        },
+      ],
+      reservations: "consumed",
+      createdAt: 1,
+    });
+    const command = {
+      commandId: versionId,
+      scope,
+      amountCents: cash,
+      currency: "USD" as const,
+      destination: snapshot.destination,
+      approvalVersion: versionId,
+      idempotencyKey: `demo:${versionId}`,
+      providerRequest: buildIncreaseRequestBody({
+        commandId: versionId,
+        scope,
+        amountCents: cash,
+        destination: snapshot.destination,
+      }),
+      requestHash: "",
+    };
+    command.requestHash = await commandRequestHash(command);
+    const commandId = await ctx.db.insert("demoCommands", {
+      scope,
+      command,
+      versionId,
+      execution: "settled",
+      posting: "posted",
+      reconciliation: "matched",
+      generation: 1,
+      attemptCount: 1,
+      nextAttemptAt: 0,
+      firstAttemptAt: 1,
+      providerTransferId: "transfer-business",
+      createdAt: 1,
+    });
+    await ctx.db.insert("demoObservations", {
+      scope,
+      transferId: "transfer-business",
+      observation: {
+        id: "transfer-business",
+        scope,
+        commandId: versionId,
+        requestHash: command.requestHash,
+        idempotencyKey: command.idempotencyKey,
+        amountCents: cash,
+        currency: "USD",
+        destination: command.destination,
+        status: "settled",
+        createdAt: "2026-10-19T12:00:00Z",
+        updatedAt: "2026-10-19T12:00:00Z",
+        originalTransactionId: "tx-business",
+      },
+      importedAt: 1,
+    });
+    const key = `${scope.organizationId}:${scope.runId}:${scope.provider}:${scope.environment}:${scope.accountId}:tx-business:debit`;
+    const old = (await ctx.db.get(bill.entryId!))!;
+    const { _id, _creationTime, ...base } = old;
+    const entryId = await ctx.db.insert("journalEntries", {
+      ...base,
+      source: { kind: "payment_settlement", ref: key },
+      sequence: 99,
+      idempotencyKey: key,
+      lines: [
+        { account: "2000", debit: cash, credit: 0 },
+        { account: "1000", debit: 0, credit: cash },
+      ],
+      hash: "b".repeat(64),
+    });
+    await ctx.db.insert("demoTransactions", {
+      scope,
+      commandRowId: commandId,
+      entryId,
+      state: "posted",
+      transaction: {
+        id: "tx-business",
+        scope,
+        transferId: "transfer-business",
+        commandId: versionId,
+        amountCents: -cash,
+        currency: "USD",
+        status: "posted",
+        purpose: "debit",
+        createdAt: "2026-10-19T12:00:00Z",
+        postedAt: "2026-10-19T12:00:00Z",
+      },
+      importedAt: 1,
+      matchedAt: 1,
+    });
+    await ctx.db.patch(bill._id, {
+      paidCents: gross,
+      status: gross === bill.approvedCents ? "paid" : "approved",
+    });
+    for (const c of credits)
+      await ctx.db.patch(c.creditId, { consumedCents: c.amountCents });
+    return { versionId, commandId, entryId };
+  });
+  return {
+    ...result,
+    scope,
+    load: (caseId = f.detail.caseId, extra: Record<string, string> = {}) =>
+      f.humans.finance!.query(current, {
+        scope,
+        caseId,
+        ...extra,
+      }) as Promise<AccountingExport>,
+  };
+}
