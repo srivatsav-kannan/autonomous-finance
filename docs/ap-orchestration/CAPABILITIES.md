@@ -16,12 +16,12 @@ This is the live implementation matrix for issue #97. A capability is not integr
 | Unified case workspace | integrated-verified locally, D1 corrections verified | I1 same settled case; D1-live-layout responsive evidence; cold gateway restart/deep-link screenshot |
 | Same-case PDF → FakeBank → settlement reconciliation | integrated-verified locally | I1-integrated.md/json; one transfer, bank debit and settlement entry; zero AP outstanding |
 | Negative cases and crash/recovery | independently verified component-to-bank path | V2: 34/34 tests; 15 integrated negative/recovery tests re-run after A3/C3; no external/practitioner claim |
-| Increase sandbox | auth/resource-read verified only; Auth0 implementation underway | User selected Auth0 development tenant; registration and real browser login pending; no outbound payment yet |
+| Increase sandbox | auth/resource-read verified only; normal Auth0 browser path implemented | AUTH0-SETUP.md; official SPA SDK, per-request Convex identity and protected sources tested; independent review, registration and real browser login pending; no outbound payment yet |
 | Broader suppliers/non-PO/partial receipt/credits/allocations | implementation underway | B3 domain policies, supplier verification, approvals, allocations and credits |
-| Business initiation scheduling and explicit partial payments | component-verified; integrated UI/API acceptance underway | C3-scheduling.md; frozen UTC date, separate retry clock, explicit allocations and renewals |
+| Business initiation scheduling, explicit partial payments and atomic payment runs | component-verified; integrated UI/API acceptance underway | C3-scheduling.md; frozen UTC date, separate retry clock, explicit allocations, run rollback and renewals; V3 independent review concluding |
 | Period close and unpaid AP carryforward | planned | B4; accounting correctness and locked-period gates |
-| QuickBooks Online US sandbox | credential-independent connector implementation underway | QUICKBOOKS-SETUP.md; external grant and live record round trip NOT_RUN |
-| Polished audit/recovery presentation | planned | D2 after V2/B3; source-to-journal same-case evidence required |
+| QuickBooks Online US sandbox | OAuth and durable protocol component-verified; broader business coverage underway | QUICKBOOKS-SETUP.md; request-bound preview hash, private tokens, immutable sync operation and ambiguous-write reconciliation; partial recognition/credit application integration pending; external grant and live record round trip NOT_RUN |
+| Polished audit/recovery presentation | implementation underway | D2 payment-run/accounting/business operation UI; source-to-journal same-case evidence required |
 | AP practitioner review | external acceptance pending | No reviewer available; PRACTITIONER-REVIEW.md; agent review is distinct |
 
 No production deployment, main merge or real-money operation is part of this goal. The original Desktop checkout and existing previews remain outside this goal's ownership.

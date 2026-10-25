@@ -32,16 +32,26 @@ The first-wave Golden State policy accepts only the full validated amount; zero 
 | Case | Source facts and expected outcome | Evidence status |
 | --- | --- | --- |
 | Clean INV-1001 | Kale5×3850=19250; Romaine4×4275=17100; Avocado3×6890=20670; Tomato2×5420=10840. Total67860 cents, zero tax/freight/discount. After independent decisions, recognize67860 and pay67860. | V1 original derivation; I1 local integrated PASS. |
-| Quantity discrepancy INV-1001-QTY | Invoice Kale6, PO/receipt5; invoice total71710. Expected `po_mismatch` and `receipt_mismatch`, no accepted amount, bill or transfer. | V1 independently checked expected rule/output; V2 integrated negative gate pending. |
+| Quantity discrepancy INV-1001-QTY | Invoice Kale6, PO/receipt5; invoice total71710. Expected `po_mismatch` and `receipt_mismatch`, no accepted amount, bill or transfer. | V1 independently checked expected rule/output; V2 integrated negative cases PASS; no payable/payment released. |
 | Two unresolved locations | Supplier name and currency content retained; precision not invented. Review exact original/text before bill approval. | I1 33 native +2 unresolved out of35 fields; actual local review retained. |
 | Upload retry after restart | Return original saved response and case identity. | I1 live HTTP PASS. |
 | Renamed original under new request key | Retain four additional delivery records; one obligation and unchanged economic effects. | I1 live HTTP PASS. |
 | Changed request with reused key | Reject409 intake_key_conflict. | I1 live HTTP PASS. |
-| Possible send / lost response / interrupted posting | Reconcile original operation; no replacement key while uncertain, no duplicate economic effect. | C1 component verification passed; independent V2 integration pending. |
+| Possible send / lost response / interrupted posting | Reconcile original operation; no replacement key while uncertain, no duplicate economic effect. | C1 and independent V2 recovery tests PASS; original operation recovered without duplicate effects. |
 
 For the clean case, expected recognition is **Dr expense5000 $678.60 / Cr AP2000 $678.60**. The actual journal retains four expense lines ($192.50, $171.00, $206.70, $108.40) and one AP credit. Expected settlement is **Dr AP2000 $678.60 / Cr cash1000 $678.60**. Payment does not recognize expense again. I1 observed one transfer, one posted bank debit, one recognition entry and one settlement entry; outstanding AP is$0.00 after two worker cycles.
 
 This immediate expense treatment is the deliberately limited first policy. Inventory, fixed assets, prepayments, tax treatment, posting-period selection and corrections need explicit reviewed policy; they are not inferred merely from the word invoice. B3/B4 must expand this packet with exact supported treatments and exceptions.
+
+## Scheduling, partial payment and payment-run rules awaiting business review
+
+The C3 engineering policy treats an initiation date as **00:00 UTC on the selected business date**, not a promised arrival date. It is frozen in the authorization hash. Retry timing is separate. Rescheduling requires cancellation of a provably unsent payment and a new exact authorization; an operation that may have been sent must retain its original request and key while the bank outcome is resolved.
+
+A reviewer explicitly chooses the gross payable amount and any recognized available credits. Cash equals gross less credits and must be positive for a bank payment. A full-credit, zero-cash application is a distinct B3 business operation. No unexplained short-pay or credit is inferred from the difference. A later installment requires a new proposal and authorization against the then-outstanding balance. Payment runs hold one immutable payment identity per case; one stale or unavailable member causes atomic preparation/authorization/cancellation to roll back. Cancellation cannot erase a possible bank send.
+
+The C3 automated FakeBank case starts with a $100.00 recognized bill and a $20.00 recognized supplier credit. First discharge $60.00 = $20.00 credit + $40.00 cash; the bill balance becomes $40.00. Second authorized cash payment $40.00 clears it. Expected postings are Dr cost $100 / Cr AP $100; Dr AP $20 / Cr original cost $20; Dr AP $40 / Cr cash $40 twice. Final AP is $0, expense net $80 and cash paid $80. The component test observes two transfers, two posted debits and four journals, with no extra effects on replay. This is synthetic automated evidence, not external bank acceptance or practitioner validation. Independent V3 results are added after Master acceptance.
+
+The corresponding QuickBooks connector currently supports full recognized bills and verified full cash settlements; partial recognition and credit/application coverage are still being integrated. A successful local journal must not be described as an external QuickBooks record. Browser login is implemented with Auth0, but the development tenant and approved real human have not yet been configured.
 
 ## Reviewer questions and completion gaps
 
@@ -52,7 +62,7 @@ This immediate expense treatment is the deliberately limited first policy. Inven
 5. Are later source corrections, rejected/returned payments, unmatched bank activity and unpaid AP carryforward treated correctly in the completed B3/B4 evidence?
 6. Are QuickBooks account/vendor mappings and Bill/BillPayment/credit representations appropriate, with Increase retaining payment execution authority?
 
-Pending evidence: V2 independent recovery results; B3 broader cases and exact postings; B4 locked-period/close/carryforward; C3 scheduling; C2 real human authorization and Increase sandbox workflow; C4 real QuickBooks OAuth and external record reconciliation. Update each entry with measured results, leaving all unsupported and unresolved cases visible.
+Pending evidence: B3 broader cases and exact postings; B4 locked-period/close/carryforward; C3 scheduling; C2 real human authorization and Increase sandbox workflow; C4 real QuickBooks OAuth and external record reconciliation. Update each entry with measured results, leaving all unsupported and unresolved cases visible.
 
 ## Review record — unfilled
 

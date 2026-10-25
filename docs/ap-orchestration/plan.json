@@ -321,19 +321,23 @@
     {
       "id": "C3",
       "owner": "C",
-      "title": "Implement business payment scheduling",
+      "title": "Implement scheduled and partial payments with atomic payment-run authorization",
       "depends_on": [
         "V2"
       ],
-      "acceptance": "Due-date scheduling is distinct from retries, preserves payment authorization and durable execution controls, and is verified without requiring an external ERP connector.",
+      "acceptance": "Frozen business UTC initiation date distinct from retry clock; explicit gross/credit/cash allocations, one operation identity per payment and atomic run preparation/authorization/cancellation; preserve possible-send recovery and verify through FakeBank independently.",
       "status": "in_progress",
       "session_id": "01a1722e-2f26-7130-bfe6-9480c7d2883f",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
       "branch": "codex/ap-system-integration",
-      "commit": null,
-      "evidence": [],
+      "commit": "d650b33",
+      "evidence": [
+        "docs/ap-orchestration/evidence/C3-scheduling.md",
+        "tests/ap-system/payment-scheduling.test.ts",
+        "tests/ap-system/payment-runs.test.ts"
+      ],
       "blocker": null,
-      "next_action": "Implement and verify authorized roadmap scope",
+      "next_action": "18 scheduling/partial and 7 batch tests pass; V3 review concluding; supplier authority integration and D2 browser journey pending.",
       "source_sha": "4f7d76d"
     },
     {
@@ -349,10 +353,14 @@
       "session_id": "/root/p0_inventory",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-evidence/calhacks",
       "branch": "codex/ap-system-qbo",
-      "commit": null,
-      "evidence": [],
+      "commit": "6251f57",
+      "evidence": [
+        "docs/ap-orchestration/QUICKBOOKS-SETUP.md",
+        "docs/ap-orchestration/evidence/C4-local.md",
+        "tests/ap-system/quickbooks-runtime.test.ts"
+      ],
       "blocker": "External live acceptance awaits owner Intuit registration and OAuth grant; credential-independent engineering is not blocked.",
-      "next_action": "Credential-independent implementation and adversarial verification; external live evidence remains separately pending",
+      "next_action": "OAuth/private storage/durable protocol implemented, request-bound preview-hash bridge merged8f8ab57. Extend partial recognition, partial cash and credit applications after B3; actual Intuit grant and external record evidence remain pending.",
       "source_sha": "4f7d76d"
     },
     {
@@ -381,14 +389,15 @@
         "B3"
       ],
       "acceptance": "Browser-verified case journey, accounting vocabulary, reliable source highlights and operational recovery instructions. Browser evidence exercises native, derived and unresolved states using saved source-version-correct regions; screenshots alone do not establish integration.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "/root/experience",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-experience/calhacks",
+      "branch": "codex/ap-system-d2",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": null
+      "next_action": "Wire payment runs, QBO preview/sync/check, cancellation and operational UI now; integrate B3 operations when available. Browser evidence distinguishes fixtures from live same-case results.",
+      "source_sha": "6114a03"
     },
     {
       "id": "FINAL",
@@ -447,10 +456,34 @@
       "session_id": "/root/experience",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-experience/calhacks",
       "branch": "codex/ap-system-auth0",
+      "commit": "6114a03",
+      "evidence": [
+        "docs/ap-orchestration/AUTH0-SETUP.md",
+        "docs/ap-orchestration/evidence/C2-auth0.md",
+        "tests/ap-system-auth.test.ts",
+        "tests/ap-system-auth-http.test.ts",
+        "tests/ap-system-auth-ui.test.tsx"
+      ],
+      "blocker": null,
+      "next_action": "Merged official SDK login and request-bound Convex identity; 73 combined focused tests and app/backend typechecks passed. Independent V4 pending; real tenant/JWKS/browser authorization remains external."
+    },
+    {
+      "id": "V3",
+      "owner": "independent-verifier",
+      "title": "Independently verify scheduling, partial/credit/return payments, atomic runs and QBO protocol",
+      "depends_on": [
+        "V2"
+      ],
+      "acceptance": "Immutable6251f57 adversarial tests and evidence; simulated protocol, local bank execution and external acceptance distinguished. Known partial/credit QBO coverage gap remains open.",
+      "status": "in_progress",
+      "session_id": "/root/verifier",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks",
+      "branch": "codex/ap-system-verification-v3",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": "Credential-independent implementation and registration/application/login guide authorized by user"
+      "next_action": "Finalize independent tests and report; Master re-run and accept.",
+      "source_sha": "6251f57"
     }
   ],
   "registry": {
@@ -459,7 +492,7 @@
     "adoption": "P0 copies the reviewed untracked launch pack into the owned integration worktree, records hashes and names one canonical registry; bootstrap remains a reference after handoff. Master is the sole registry writer."
   },
   "grounding_strategy": {
-    "status": "diagnostic_verified_not_integrated",
+    "status": "accepted_A2_A3_I1_measured_scope",
     "evidence_report": "LLAMAPARSE-GROUNDING.md",
     "order": [
       "valid_native_regions",
@@ -532,15 +565,15 @@
     "environment": "sandbox",
     "protocol": "Accounting API + OAuth 2.0",
     "credential_storage": "server-only private configuration",
-    "status": "selected_access_pending",
+    "status": "protocol_implemented_broader_business_sync_and_external_acceptance_pending",
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true
   },
-  "last_updated_at": "2026-10-25T09:13:37.901251+00:00",
+  "last_updated_at": "2026-10-25T09:21:58.965850+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",
-    "status": "selected_access_pending",
+    "status": "implemented_independent_and_external_verification_pending",
     "flow": "official browser login; Convex issuer/audience validation; no manual JWT sharing",
     "user_authorizes_sandbox_payment": true
   }
