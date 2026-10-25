@@ -18,9 +18,9 @@ The [official JournalEntryLineDetail reference](https://static.developer.intuit.
 
 Authenticated Convex test exports feed independent mock HTTP transport for case-less accrual, exact partial reversal, selector alias replay, unchanged original receipts, missing Class mapping, missing original external journal, retired approval seat, lost response recovery without repost, and exact cost-reclassification planner dimensions. B4's own export tests separately check original approved cost journals and invoice-triggered accrual application. Local tests contain no real credentials or provider calls. This agent did not inspect or change grants/tokens, start services, or write persistent backends.
 
-## Remaining full-scope follow-up: credit-only restored-payable allocation
+## Restored-credit allocation follow-up status
 
-Ordinary credit-only applications and restored-payable cash+credit are implemented. A credit-only application specifically to a restored JournalEntry remains an explicit controller-owned hold, with the following intended implementation; it is not removed from the roadmap:
+The following planned extension is now implemented in the restored-credit checkpoint; see [C4-restored-credit.md](C4-restored-credit.md) for current behavior and measured evidence. The plan is retained here as provenance of the scope, not an outstanding permanent hold:
 
 1. Add strict `credit_allocation` authority alongside `bank_return` and `payment_allocation`: caseId, creditApplicationId, originalBillCents, restoredPayables, reason and idempotencyKey. Resolve the immutable existing `apCreditApplications` plus recognized credit/bill bindings server-side. No bank command or zero-dollar transfer is created.
 2. Freeze the exact credit application, current policy/supplier hashes, original/restored allocation and amount route. Reuse current independent human/seat/delegation approvals. Count prior approved cash and credit allocations together against returned principal; exclude the selected current application from original-principal consumption to avoid double counting. Previously exported applications must retain their original payload and cannot be reallocated under a new selector.

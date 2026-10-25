@@ -248,37 +248,59 @@ export const current = query({
       };
     if (selected?.kind === "payment_allocation")
       return { ...base, settlement: selected.settlement, correction: selected };
+    if (selected?.kind === "credit_allocation")
+      return {
+        ...base,
+        creditApplication: selected.creditApplication,
+        correction: selected,
+      };
     if (
       corrections.length &&
       (args.paymentVersionId || args.creditApplicationId)
     ) {
-      if (args.paymentVersionId) {
-        const candidates = await ctx.db
-          .query("apAccountingCorrections")
-          .withIndex("by_identity", (q) =>
-            q
-              .eq("scope.runId", args.scope.runId)
-              .eq("identity", `payment_allocation:${args.paymentVersionId}`),
-          )
-          .collect();
-        const approved = candidates.filter((c) => c.status === "approved");
-        if (approved.length === 1) {
-          const allocation = await approvedCorrection(
+      const app = args.creditApplicationId
+        ? await creditApplication(
             ctx,
             args.scope,
-            approved[0]!._id,
-          );
-          if (
-            allocation.kind !== "payment_allocation" ||
-            allocation.caseId !== row._id
+            row._id,
+            bill._id,
+            args.creditApplicationId,
           )
-            throw Error("Allocation case mismatch");
+        : null;
+      const identity = args.paymentVersionId
+        ? `payment_allocation:${args.paymentVersionId}`
+        : `credit_allocation:${app!.applicationId}`;
+      const candidates = await ctx.db
+        .query("apAccountingCorrections")
+        .withIndex("by_identity", (q) =>
+          q.eq("scope.runId", args.scope.runId).eq("identity", identity),
+        )
+        .collect();
+      const approved = candidates.filter((c) => c.status === "approved");
+      if (approved.length === 1) {
+        const allocation = await approvedCorrection(
+          ctx,
+          args.scope,
+          approved[0]!._id,
+        );
+        if (
+          allocation.caseId !== row._id ||
+          (args.paymentVersionId && allocation.kind !== "payment_allocation") ||
+          (app && allocation.kind !== "credit_allocation")
+        )
+          throw Error("Allocation case mismatch");
+        if (allocation.kind === "payment_allocation")
           return {
             ...base,
             settlement: allocation.settlement,
             correction: allocation,
           };
-        }
+        if (allocation.kind === "credit_allocation")
+          return {
+            ...base,
+            creditApplication: allocation.creditApplication,
+            correction: allocation,
+          };
       }
       return {
         ...base,

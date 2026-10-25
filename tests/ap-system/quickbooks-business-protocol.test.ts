@@ -1,3 +1,4 @@
+import { restoredCreditFixture } from "./quickbooks-restored-credit-fixture";
 import { returnedFixture } from "./quickbooks-corrections-fixture";
 import { mkdtemp, rm, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -241,6 +242,160 @@ async function applicationFixture() {
   return { f, c, a: a!, s, load };
 }
 describe("QBO business dispatcher HTTP protocol (mocked)", () => {
+  it("applies zero cash to exact restored and original principal and resolves only read-verified application holds", async () => {
+    let p!: Awaited<ReturnType<typeof protocol>>;
+    const f = await restoredCreditFixture(async (f, s, c) => {
+      p = await protocol(({ caseId, ...rest }) => s.load(caseId, rest));
+      await p.submit({ caseId: f.detail.caseId });
+      await p.submit({ caseId: c.caseId });
+      await p.submit({
+        caseId: f.detail.caseId,
+        paymentVersionId: s.versionId,
+      });
+    });
+    const request = {
+      caseId: f.detail.caseId,
+      creditApplicationId: f.application._id,
+    };
+    expect(await p.dispatcher.run(request, "submit")).toMatchObject({
+      hold: { code: "restored_payable_allocation_required" },
+    });
+    const je = await p.submit({
+      caseId: f.detail.caseId,
+      correctionId: f.returned.proposalId,
+    });
+    expect(
+      await p.dispatcher.checkHolds(
+        { caseId: f.detail.caseId },
+        { verify: true },
+      ),
+    ).toEqual([]);
+    const a = await f.proposeCorrection(f.allocationRequest);
+    await f.voteCorrection(a);
+    await f.voteCorrection(a, "finance");
+    const op = await p.submit({
+      caseId: f.detail.caseId,
+      correctionId: a.proposalId,
+    });
+    expect(op.payload).toMatchObject({
+      TotalAmt: 0,
+      Line: [
+        { Amount: 18.5, LinkedTxn: [{ TxnType: "Bill" }] },
+        {
+          Amount: 20,
+          LinkedTxn: [{ TxnType: "JournalEntry", TxnId: je.externalId }],
+        },
+        { Amount: 38.5, LinkedTxn: [{ TxnType: "VendorCredit" }] },
+      ],
+    });
+    const holdFile = (await readdir(p.root)).find((n) =>
+      n.startsWith("hold-"),
+    )!;
+    expect(await p.journal.store.read(holdFile)).toMatchObject({
+      state: "held",
+    });
+    const calls = p.calls();
+    expect(await p.dispatcher.checkHolds(request)).toEqual([]);
+    expect(p.calls()).toBe(calls);
+    expect(await p.journal.store.read(holdFile)).toMatchObject({
+      state: "held",
+    });
+    expect(await p.dispatcher.checkHolds(request, { verify: true })).toEqual(
+      [],
+    );
+    expect(await p.journal.store.read(holdFile)).toMatchObject({
+      state: "resolved",
+      resolution: {
+        corrections: [
+          { correctionId: f.returned.proposalId, externalId: je.externalId },
+          { correctionId: a.proposalId, externalId: op.externalId },
+        ],
+      },
+    });
+    expect((await p.submit(request)).requestId).toBe(op.requestId);
+    expect(p.posts).toHaveLength(5);
+    expect(
+      await f.t.run((ctx) => ctx.db.query("demoCommands").collect()),
+    ).toEqual(f.beforeApplication.commands);
+    expect(
+      await f.t.run((ctx) => ctx.db.query("journalEntries").collect()),
+    ).toEqual(f.beforeApplication.journals);
+    p.rows.get(`BillPayment:${op.externalId}`)!.Line[1].Amount = 19;
+    expect(
+      await p.dispatcher.checkHolds(request, { verify: true }),
+    ).toMatchObject([{ code: "restored_application_verification_required" }]);
+    const failures = await Promise.all(
+      (await readdir(p.root))
+        .filter((n) => n.startsWith("hold-"))
+        .map((n) => p.journal.store.read<any>(n)),
+    );
+    expect(
+      failures.some(
+        (h) =>
+          h?.code === "restored_application_verification_required" &&
+          h.state === "held",
+      ),
+    ).toBe(true);
+  });
+  it("keeps lost zero-cash restored-credit responses unknown with the original identity and unresolved hold", async () => {
+    let p!: Awaited<ReturnType<typeof protocol>>;
+    const f = await restoredCreditFixture(async (f, s, c) => {
+      p = await protocol(({ caseId, ...rest }) => s.load(caseId, rest));
+      await p.submit({ caseId: f.detail.caseId });
+      await p.submit({ caseId: c.caseId });
+      await p.submit({
+        caseId: f.detail.caseId,
+        paymentVersionId: s.versionId,
+      });
+    }, 2000);
+    const request = {
+      caseId: f.detail.caseId,
+      creditApplicationId: f.application._id,
+    };
+    await p.dispatcher.run(request, "submit");
+    await p.submit({
+      caseId: f.detail.caseId,
+      correctionId: f.returned.proposalId,
+    });
+    await p.dispatcher.checkHolds(
+      { caseId: f.detail.caseId },
+      { verify: true },
+    );
+    const a = await f.proposeCorrection(f.allocationRequest);
+    await f.voteCorrection(a);
+    await f.voteCorrection(a, "finance");
+    const plan = await p.preview(request);
+    expect(plan.payload).toMatchObject({
+      TotalAmt: 0,
+      Line: [
+        { Amount: 20, LinkedTxn: [{ TxnType: "JournalEntry" }] },
+        { Amount: 20, LinkedTxn: [{ TxnType: "VendorCredit" }] },
+      ],
+    });
+    p.obscure();
+    await expect(p.submit(request)).rejects.toThrow(
+      "external_response_mismatch",
+    );
+    const first = (await p.journal.get(plan))!;
+    expect(first.state).toBe("unknown");
+    const replay = await p.submit({
+      caseId: f.detail.caseId,
+      correctionId: a.proposalId,
+    });
+    expect(replay).toMatchObject({
+      state: "unknown",
+      requestId: first.requestId,
+      attempts: 1,
+    });
+    expect(replay.submissionAuthorization).toEqual(
+      first.submissionAuthorization,
+    );
+    expect(p.posts).toHaveLength(5);
+    await p.dispatcher.checkHolds(request, { verify: true });
+    const file = (await readdir(p.root)).find((n) => n.startsWith("hold-"))!;
+    expect(await p.journal.store.read(file)).toMatchObject({ state: "held" });
+  });
+
   it("preserves cash+credit economics across original Bill and restored JournalEntry", async () => {
     let p!: Awaited<ReturnType<typeof protocol>>;
     const base = await creditFixture();

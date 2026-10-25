@@ -313,6 +313,35 @@ export class QuickBooksDispatcher {
       }
     }
     if (!verify) return [];
+    let allocationProof:
+      NonNullable<SyncHold["resolution"]>["corrections"][number] | null = null;
+    if (e.correction) {
+      const resolved = await this.resolve(e, request);
+      const op = await this.journal.get(resolved.plan);
+      if (op?.state === "succeeded") {
+        if (op.payloadHash !== hash(resolved.plan))
+          throw new QboError("immutable_allocation_operation_conflict");
+        try {
+          const external = await this.journal.client.verify(op);
+          allocationProof = {
+            correctionId: e.correction.correctionId,
+            proposalHash: e.correction.proposalHash,
+            externalId: op.externalId!,
+            syncToken: op.syncToken!,
+            responseHash: hash(external),
+          };
+        } catch (error) {
+          return [
+            await this.journal.recordHold(request, {
+              code: "restored_application_verification_required",
+              owner: "controller",
+              reason: `Approved payable allocation requires exact external application readback: ${safeError(error)}`,
+              relatedIds: [e.correction.correctionId, op.externalId!],
+            }),
+          ];
+        }
+      }
+    }
     const covered = new Set(
       required.flatMap((c) => [
         c.correctionId,
@@ -347,11 +376,20 @@ export class QuickBooksDispatcher {
           hold.relatedIds.length > 0 &&
           hold.relatedIds.every((id) => covered.has(id));
         const allocation =
-          hold.code === "restored_payable_allocation_required" &&
-          e.correction?.kind === "payment_allocation" &&
-          hold.request.paymentVersionId ===
-            e.correction.settlement.paymentVersionId;
-        if (!returns && !allocation) return;
+          (hold.code === "restored_application_verification_required" &&
+            !!allocationProof &&
+            hold.relatedIds.includes(allocationProof.correctionId) &&
+            hold.relatedIds.includes(allocationProof.externalId)) ||
+          (hold.code === "restored_payable_allocation_required" &&
+            ((e.correction?.kind === "payment_allocation" &&
+              hold.request.paymentVersionId ===
+                e.correction.settlement.paymentVersionId) ||
+              (e.correction?.kind === "credit_allocation" &&
+                !!hold.request.creditApplicationId &&
+                e.correction.creditApplication.applicationIds.includes(
+                  hold.request.creditApplicationId,
+                ))));
+        if (!returns && !(allocation && allocationProof)) return;
         await this.journal.store.write(file, {
           ...hold,
           state: "resolved",
@@ -359,7 +397,10 @@ export class QuickBooksDispatcher {
           resolution: {
             verifiedAt: Date.now(),
             authorizedSubject: e.authorizedSubject,
-            corrections: proof,
+            corrections:
+              allocation && allocationProof
+                ? [...proof, allocationProof]
+                : proof,
           },
         } satisfies SyncHold);
       });
@@ -417,7 +458,7 @@ export class QuickBooksDispatcher {
       deps.push(op);
       credits.push(op);
     }
-    if (e.correction?.kind === "payment_allocation") {
+    if (e.correction) {
       const restored: Operation[] = [];
       for (const item of e.correction.restoredPayables) {
         const op = await this.journal.get({
@@ -509,7 +550,8 @@ export class QuickBooksDispatcher {
             if (plan.entity === "BillPayment") {
               if (
                 op.entity === "JournalEntry" &&
-                e.correction?.kind === "payment_allocation"
+                e.correction &&
+                e.correction.kind !== "bank_return"
               ) {
                 const allocation = e.correction.restoredPayables.find(
                   (r) => r.correction.correctionId === op.links.correctionId,
@@ -529,7 +571,7 @@ export class QuickBooksDispatcher {
               }
               const need =
                 op.entity === "Bill"
-                  ? ((e.correction?.kind === "payment_allocation"
+                  ? ((e.correction && e.correction.kind !== "bank_return"
                       ? e.correction.originalBillCents
                       : undefined) ??
                     e.creditApplication?.amountCents ??

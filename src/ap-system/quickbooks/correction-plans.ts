@@ -1,13 +1,12 @@
 import type {
   BankReturnCorrection,
-  PaymentAllocationCorrection,
   Plan,
   Operation,
   Mappings,
   AccountingExport,
 } from "./types";
 import { hash, canonical, QboError } from "./private-store";
-import { paymentPlan, validateMappings } from "./plans";
+import { applicationPlan, paymentPlan, validateMappings } from "./plans";
 const money = (c: number) => {
   if (!Number.isSafeInteger(c) || c <= 0 || c > 999999999999)
     throw new QboError("invalid_correction_amount");
@@ -157,16 +156,33 @@ export function allocatedPaymentPlan(
 ): Plan {
   const c = e.correction;
   if (
-    c?.kind !== "payment_allocation" ||
+    !c ||
+    c.kind === "bank_return" ||
     c.caseId !== e.detail.caseId ||
-    !e.settlement ||
-    canonical(c.settlement) !== canonical(e.settlement) ||
+    (c.kind === "payment_allocation"
+      ? !e.settlement || canonical(c.settlement) !== canonical(e.settlement)
+      : !e.creditApplication ||
+        canonical(c.creditApplication) !== canonical(e.creditApplication) ||
+        e.settlement !== null) ||
     !c.correctionId ||
     !/^[a-f0-9]{64}$/.test(c.proposalHash)
   )
     throw new QboError("approved_payment_allocation_required");
-  const base = paymentPlan(e, m, bill, credits);
-  const gross = e.settlement.grossAppliedCents ?? e.settlement.amountCents;
+  const base =
+    c.kind === "payment_allocation"
+      ? paymentPlan(e, m, bill, credits)
+      : applicationPlan(e, m, bill, credits);
+  const gross =
+    c.kind === "payment_allocation"
+      ? (c.settlement.grossAppliedCents ?? c.settlement.amountCents)
+      : c.creditApplication.amountCents;
+  if (
+    c.amountCents !== gross ||
+    c.billId !== bill.links.billId ||
+    m.vendors[c.supplierId]?.id !==
+      (bill.payload.VendorRef as { value?: string })?.value
+  )
+    throw new QboError("payable_allocation_binding_conflict");
   if (
     !Number.isSafeInteger(c.originalBillCents) ||
     c.originalBillCents < 0 ||
