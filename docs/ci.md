@@ -9,8 +9,8 @@ that branch. Branch protection and merging the stack remain repository-admin dec
 
 `.github/workflows/ap-ci.yml` runs for all pull requests, pushes to `main`, and
 explicit workflow dispatch. Feature-branch pushes do not duplicate the PR suite.
-Superseded runs for the same PR/ref
-are cancelled. It uses GitHub-hosted Ubuntu 24.04, Node 24.18.0, SHA-pinned
+Superseded runs for the same PR
+are cancelled; every push to `main` runs to completion. It uses GitHub-hosted Ubuntu 24.04, Node 24.18.0, SHA-pinned
 actions, `contents: read`, no persisted checkout credentials, no application
 secrets and no dependency/state cache. It never uses `pull_request_target`.
 PR runs validate GitHub's merge commit; the exact checked-out revision is in
