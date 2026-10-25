@@ -6,7 +6,7 @@ Status: implementation and worker checks complete; independent acceptance remain
 - Canonical registry (read-only to this worker): `/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks/docs/ap-orchestration/plan.json`.
 - Adopted issue SHA256: `b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565`.
 - Worktree: `/Users/junjiexiong/.codex/worktrees/ap-system-accounting/calhacks`; branch: `codex/ap-system-accounting`.
-- Source baseline: `ac62854`, plus worker table commit `b28764b` and Master's schema wiring cherry-pick `f134f7f` (origin `2bd870d`). Implementation commit is the commit containing this report; Master receives its full SHA separately.
+- Source baseline: `ac62854`, plus worker table commit `b28764b` and Master's schema wiring cherry-pick `f134f7f` (origin `2bd870d`). Main implementation commit: `65d0df570e6ea72e5782e2b7be63b150ae8f5b48`. A follow-up source/render seam commit containing this report is layered on top; Master receives its full SHA separately.
 - Contract: `ap-evidence-v1`; synthetic company policy: `golden-state-ap-v1`.
 - Run namespace: `ap97-20261025-01a1722e-b`. Worker started no backend, wrote no shared backend, and made no provider or real-money calls. Ports 3270/3271 were not used.
 
@@ -17,8 +17,8 @@ All public input payloads pass the shared Zod schema after scoped authentication
 | Convex operation | Authority and result |
 | --- | --- |
 | `apCases.ingest({scope,seatId,token,input})` | Scoped AP clerk. Stores verified original metadata/chunks, immutable case revision and delivery associations; returns caseId, revision, duplicate/replayed flags. Nullable failed candidates remain cases. No bill is created. |
-| `apCases.list({scope,seatId?,token?})` / `detail({...readAuth,caseId})` | Scoped AP/controller/payments/auditor/CFO-agent reader or authenticated configured human. Re-reads authoritative scoped bill, payment versions/commands/transactions and journals. Private original/artifact paths and original bytes are removed from the projection. |
-| `apCases.source({...readAuth,sourceId,revision,sha256})` | Exact binding only. Reassembles retained chunks and verifies bytes/hash; returns original name, MIME, length, hash and base64 for the HTTP source route. |
+| `apCases.list({scope,seatId?,token?})` / `detail({...readAuth,caseId})` | Scoped AP/controller/payments/auditor/CFO-agent reader or authenticated configured human. Re-reads authoritative scoped bill, payment versions/commands/transactions and journals. Private original/artifact paths and original bytes are removed from the projection. `currentSourceBindings` contains only the current intake documents; `sources` retains historical versions. |
+| `apCases.source({...readAuth,sourceId,revision,sha256})` | Exact binding only. Reassembles retained chunks and verifies bytes/hash; returns the full SourceDocument with original bytes for the authenticated HTTP/raster service; that service must strip private refs in public responses. |
 | `apCases.reviewFields({scope,input:ReviewRequest})` | Configured authenticated human, never case creator. Requires current revision/snapshot/all source bindings, supported complete content and explicit coverage of every candidate evidence item. Creates a separate retained field-review decision; no bill/payment. |
 | `apCases.approveBill({scope,input:BillApprovalRequest})` | Configured authenticated human, never case creator. Requires current field review, full original amount, no business holds and complete reviewed evidence. Atomically creates one existing-engine demoBill plus recognition journal and bill-approval decision. No payment authorization or settlement. |
 
@@ -38,7 +38,7 @@ Actual local-backend request-size, execution-time and maximum-packet verificatio
 
 ## Checks and evidence
 
-Final commands on the implementation in this report:
+Full-suite commands on the main implementation commit (before the two source/render seam additions):
 
 | Command | Result |
 | --- | --- |
@@ -47,6 +47,8 @@ Final commands on the implementation in this report:
 | `npm run typecheck:tests` | PASS |
 | `npm test` | PASS: 82 files passed / 1 skipped; 932 tests passed / 4 skipped; 8.87s |
 | `git diff --check` | PASS |
+
+The source/render follow-up was also compiled against Master contract addendum `61158be` using a temporary contracts.ts overlay that was restored before this worker commit. Both backend and test typechecks passed; 21 focused backend/policy tests passed. Added assertions check the full SourceDocument shape, invoice-only candidate references, and current source bindings excluding retained historical versions.
 
 New focused coverage is 6 deterministic policy/accounting tests and 15 Convex backend tests. Backend tests cover decision separation, exact debit/credit recognition with no payment command, replay/new-key duplicate approval, renamed duplicate deliveries, unrelated same filenames, exact original bytes/hash/scope, nullable failures, missing receipt, unilateral short-pay denial, stale source reviews, closed-period atomic rollback, legacy bypass rejection, cross-obligation receipt reuse after revision, unsent cancellation, attempted-operation reservation retention, multi-chunk originals, immutable parser metadata, altered idempotency payloads, incomplete field-review coverage and self/cross-source approval denial. Legacy tests add missing-delivery/unknown-SKU holds and four explicit-human variance cases.
 
@@ -59,10 +61,10 @@ Ignored local logs (hashes make the exact recorded results reviewable):
 
 Implementation file SHA256 manifest:
 
-- `convex/apCases.ts`: `148f861ebbc15e5bff54947a8e0df0240cd5aa5beebae0219543258477ca80b0`
+- `convex/apCases.ts`: `e69c51b25bcd57c1164fbbd72b33eafb7055ef36f0532b5fd61d92b5a629fadf`
 - `convex/apSystemSchema.ts`: `e7f183904b221204a53188f77a99aace280af6c3164d16fc19cad15cf26d8e0f`
 - `convex/lib/apSystem/shared.ts`: `6df5d32c4ea2d48c2c74b492674b6ddd587177442067aa7398e1a5149369ea53`
-- `convex/lib/apSystem/projection.ts`: `a8732c61df9fe093294eb88e664a070f6631ae9086690378850f20e18ea72b3f`
+- `convex/lib/apSystem/projection.ts`: `5c9e02aba6aa4a32becba10a3f9bcf475e07b7a849cd4151102a8bfe26d4448d`
 - `convex/lib/apSystem/legacyGate.ts`: `339be967b22c7a25bd932843e6882f0ade6b98bd8bb227fc686b8822d03507c2`
 - `src/ap-system/policy.ts`: `2ccc0a61c3cc1fc39a4aac5fdce44428dbf84d39f62a8f1f239beaacf2c1e738`
 - `src/ap-system/accounting.ts`: `d207bcfdffb4973296abf2ff3229982310788749594ae2848754f2a07077a060`

@@ -12,8 +12,12 @@ import {
   type APCaseDetail,
   type FieldEvidence,
   type SourceDocument,
+  type SourceBinding,
 } from "../../src/ap-system/contracts";
 import { PAYMENT_EXECUTOR_VERSION } from "../../src/payments/contracts";
+type CurrentCaseDetail = APCaseDetail & {
+  currentSourceBindings: SourceBinding[];
+};
 const modules = import.meta.glob("../../convex/**/*.ts");
 export const refs = {
   ingest: makeFunctionReference<"mutation">("apCases:ingest"),
@@ -261,17 +265,11 @@ export async function fixture() {
   });
   const ap = { scope, seatId: "ap_clerk", token: "token-ap_clerk" };
   const get = (caseId: string) =>
-    t.query(refs.detail, { ...ap, caseId }) as Promise<APCaseDetail>;
-  const request = (d: APCaseDetail, key = "review") => ({
+    t.query(refs.detail, { ...ap, caseId }) as Promise<CurrentCaseDetail>;
+  const request = (d: CurrentCaseDetail, key = "review") => ({
     caseId: d.caseId,
     expectedRevision: d.revision,
-    sourceBindings:
-      d.candidate?.sources ??
-      d.sources.map(({ sourceId, revision, sha256 }) => ({
-        sourceId,
-        revision,
-        sha256,
-      })),
+    sourceBindings: d.currentSourceBindings,
     snapshotHash: d.snapshotHash,
     idempotencyKey: key,
     outcome: "approved" as const,

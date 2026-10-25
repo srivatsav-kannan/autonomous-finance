@@ -2,13 +2,17 @@ import { createHash } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { caseDetailSchema } from "../../src/ap-system/contracts";
+import {
+  caseDetailSchema,
+  sourceDocumentSchema,
+} from "../../src/ap-system/contracts";
 import { fixture, packet, refs } from "./accounting-fixture";
 afterEach(() => vi.unstubAllEnvs());
 describe("source -> field review -> obligation recognition", () => {
   it("requires separate authenticated decisions and posts the same case once on replay", async () => {
     const f = await fixture();
     const input = packet();
+    input.candidate!.sources = input.candidate!.sources.slice(0, 1);
     const r = await f.t.mutation(refs.ingest, { ...f.ap, input });
     const first = await f.get(r.caseId);
     expect(first.amounts.acceptedCents).toBeNull();
@@ -112,6 +116,15 @@ describe("source -> field review -> obligation recognition", () => {
       sha256: s.sha256,
     });
     expect(data.originalBase64).toBe(s.originalBase64);
+    expect(sourceDocumentSchema.safeParse(data).success).toBe(true);
+    expect(data).toMatchObject({
+      sourceId: s.sourceId,
+      revision: s.revision,
+      pageCount: s.pageCount,
+      pageStatus: s.pageStatus,
+      parser: s.parser,
+      provenance: s.provenance,
+    });
     await expect(
       f.t.query(refs.source, {
         ...f.ap,
@@ -180,6 +193,16 @@ describe("source -> field review -> obligation recognition", () => {
     p.explicitRevisionOf = d.caseId;
     p.idempotencyKey = "revision";
     p.candidate!.revision = 2;
+    const invoice = p.documents[0]!;
+    invoice.replaces = {
+      sourceId: invoice.sourceId,
+      revision: invoice.revision,
+      sha256: invoice.sha256,
+    };
+    invoice.revision = 2;
+    invoice.deliveryId = "revised-invoice-delivery";
+    p.candidate!.sources[0]!.revision = 2;
+    p.candidate!.evidence.forEach((e) => (e.source.revision = 2));
     const r = await f.t.mutation(refs.ingest, { ...f.ap, input: p });
     expect(r.revision).toBe(2);
     await expect(
@@ -190,6 +213,13 @@ describe("source -> field review -> obligation recognition", () => {
     ).rejects.toThrow("current case revision");
     const next = await f.get(d.caseId);
     expect(next.decisions).toHaveLength(1);
+    expect(next.sources).toHaveLength(4);
+    expect(next.currentSourceBindings).toHaveLength(3);
+    expect(
+      next.currentSourceBindings
+        .filter((s) => s.sourceId === invoice.sourceId)
+        .map((s) => s.revision),
+    ).toEqual([2]);
     expect(next.states.document).toBe("review_required");
     await expect(
       f.human.mutation(refs.approve, {

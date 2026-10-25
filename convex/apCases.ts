@@ -342,10 +342,7 @@ export const source = query({
     assertRowScope(row, args.scope);
     const document = row.document as APIntake["documents"][number];
     return {
-      name: document.name,
-      mimeType: document.mimeType,
-      sha256: document.sha256,
-      byteLength: document.byteLength,
+      ...document,
       originalBase64: await sourceBytes(ctx, args.scope, document),
     };
   },

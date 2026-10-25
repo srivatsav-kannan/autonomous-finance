@@ -7,6 +7,7 @@ import {
   decisionSchema,
   type APCaseDetail,
   type SourceDocument,
+  type SourceBinding,
   type Processor,
 } from "../../../src/ap-system/contracts";
 import { evaluatePolicy } from "../../../src/ap-system/policy";
@@ -34,7 +35,7 @@ function safeSource(d: SourceDocument): SourceDocument {
 export async function projectCase(
   ctx: QueryCtx,
   row: Doc<"apCaseRecords">,
-): Promise<APCaseDetail> {
+): Promise<APCaseDetail & { currentSourceBindings: SourceBinding[] }> {
   const input = intakeSchema.parse(row.intake);
   const config = await getPaymentConfig(ctx, row.scope);
   const decisions = (
@@ -144,6 +145,9 @@ export async function projectCase(
     runId: row.scope.runId,
     organizationId: row.scope.organizationId,
     revision: row.currentRevision,
+    currentSourceBindings: input.documents.map(
+      ({ sourceId, revision, sha256 }) => ({ sourceId, revision, sha256 }),
+    ),
     candidate: input.candidate ? { ...input.candidate, evidence } : null,
     extraction: {
       ...input.extraction,
