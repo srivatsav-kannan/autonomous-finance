@@ -12,6 +12,7 @@ import {
   creditPlan,
   paymentPlan,
   applicationPlan,
+  dimensionHold,
 } from "../../src/ap-system/quickbooks/plans";
 import type {
   AccountingExport,
@@ -34,6 +35,7 @@ export const mappings: Mappings = {
     "5000": { id: "7", name: "Produce", type: "Expense" },
     "1200": { id: "8", name: "Inventory", type: "Other Current Asset" },
   },
+  classes: { "sf-hayes-valley": { id: "9", name: "SF Hayes Valley" } },
   apAccount: "2000",
   bankAccount: "1000",
 };
@@ -50,18 +52,74 @@ describe("B3 recognized accounting exports", () => {
     expect(e.recognizedInvoice).toMatchObject({
       amountCents: 3850,
       approvalId: recognition.proposal.proposalId,
-      allocations: [{ account: "5000", amountCents: 3850 }],
+      allocations: [
+        { account: "5000", amountCents: 3850, store: "sf-hayes-valley" },
+      ],
     });
     const p = billPlan(e, mappings);
     expect(p.payload.TotalAmt).toBe(38.5);
-    expect((p.payload.Line as any[])[0].Amount).toBe(38.5);
+    expect((p.payload.Line as any[])[0]).toMatchObject({
+      Amount: 38.5,
+      AccountBasedExpenseLineDetail: { ClassRef: { value: "9" } },
+    });
     const changed = structuredClone(e);
     changed.detail.candidate!.lines[0]!.allocations[0]!.account = "1200";
+    changed.detail.candidate!.lines[0]!.allocations[0]!.store =
+      "unapproved-store";
     expect(billPlan(changed, mappings)).toEqual(p);
     changed.recognizedInvoice!.allocations[0]!.amountCents = 7700;
     expect(() => billPlan(changed, mappings)).toThrow(
       "recognition_allocation_mismatch",
     );
+  });
+  it("holds missing authoritative stores or mappings and preserves explicit null without inventing a Class", async () => {
+    const f = await businessFixture();
+    await f.recognize(f.detail, acceptance(f.input, "1"));
+    const e = (await f.humans.finance!.query(current, {
+      scope: f.scope,
+      caseId: f.detail.caseId,
+    })) as AccountingExport;
+    expect(dimensionHold(e, { ...mappings, classes: {} })).toMatchObject({
+      code: "class_mapping_missing",
+      owner: "controller",
+      relatedIds: ["sf-hayes-valley"],
+    });
+    expect(() => billPlan(e, { ...mappings, classes: {} })).toThrow(
+      "class_mapping_missing",
+    );
+    const incomplete = structuredClone(e);
+    delete (incomplete.recognizedInvoice!.allocations[0] as any).store;
+    expect(dimensionHold(incomplete, mappings)).toMatchObject({
+      code: "store_dimension_missing",
+      owner: "controller",
+    });
+    expect(() => billPlan(incomplete, mappings)).toThrow(
+      "store_dimension_missing",
+    );
+    const noStore = structuredClone(e);
+    noStore.recognizedInvoice!.allocations[0]!.store = null;
+    const line = (billPlan(noStore, mappings).payload.Line as any[])[0];
+    expect(line.AccountBasedExpenseLineDetail).not.toHaveProperty("ClassRef");
+    const credit = {
+      creditId: "credit",
+      caseId: "credit-case",
+      billId: e.recognizedInvoice!.billId,
+      journalId: "credit-journal",
+      supplierId: "golden-state-produce",
+      reference: "C1",
+      date: "2026-10-25",
+      amountCents: 3850,
+      allocations: [
+        {
+          account: "5000",
+          amountCents: 3850,
+          store: undefined as unknown as string | null,
+        },
+      ],
+    };
+    expect(() =>
+      creditPlan(credit, mappings, successful(billPlan(e, mappings), "90")),
+    ).toThrow("store_dimension_missing");
   });
   it("still refuses an altered posted B3 recognition journal", async () => {
     const f = await businessFixture();
@@ -128,6 +186,13 @@ describe("QBO explicit credit and partial cash applications", () => {
       ],
     });
     expect(plan.links.creditApplicationId).toBe(app!._id);
+    const dimensionChanged = structuredClone(vc);
+    (
+      dimensionChanged.payload.Line as any[]
+    )[0].AccountBasedExpenseLineDetail.ClassRef.value = "10";
+    expect(() =>
+      applicationPlan(e, mappings, bill, [dimensionChanged]),
+    ).toThrow("credit_operation_mismatch");
     expect(
       await f.t.run((ctx) => ctx.db.query("demoCommands").collect()),
     ).toHaveLength(0);
@@ -225,8 +290,8 @@ describe("QBO explicit credit and partial cash applications", () => {
     const invoice = await f.load();
     const credit = await f.load(c.caseId);
     credit.recognizedCredit!.allocations = [
-      { account: "5000", amountCents: 4000 },
-      { account: "1200", amountCents: -151 },
+      { account: "5000", amountCents: 4000, store: "sf-hayes-valley" },
+      { account: "1200", amountCents: -151, store: "sf-hayes-valley" },
     ];
     expect(() =>
       creditPlan(

@@ -9,6 +9,7 @@ import type {
   Plan,
   CreditExport,
   AppliedCredit,
+  AccountingHold,
 } from "./types";
 export function validateMappings(m: Mappings, realm: string) {
   if (
@@ -44,7 +45,65 @@ const money = (c: number) => {
     throw new QboError("unsupported_amount");
   return c / 100;
 };
-function line(account: string, amount: number, m: Mappings) {
+function classReference(store: unknown, m: Mappings) {
+  if (store === null) return {};
+  if (typeof store !== "string" || !store.trim())
+    throw new QboError("store_dimension_missing");
+  const cls = m.classes?.[store];
+  if (!cls) throw new QboError("class_mapping_missing");
+  return { ClassRef: { value: cls.id } };
+}
+/** Current authority + operator configuration only; status does not read the provider. */
+export function dimensionHold(
+  e: AccountingExport,
+  m: Mappings,
+): AccountingHold | null {
+  if (e.correction?.kind === "bank_return") return null;
+  const allocations =
+    e.recognizedCredit?.allocations ?? e.recognizedInvoice?.allocations;
+  const stores: unknown[] = allocations
+    ? allocations.map((a) => a.store)
+    : e.detail.candidate
+      ? recognitionLines(e.detail.candidate)
+          .filter((l) => l.account !== "2000")
+          .map((l) => l.dims?.store ?? null)
+      : [];
+  for (const credit of e.creditApplication?.credits ??
+    e.settlement?.credits ??
+    [])
+    stores.push(...credit.recognition.allocations.map((a) => a.store));
+  try {
+    for (const store of stores) classReference(store, m);
+    return null;
+  } catch (error) {
+    if (
+      !(error instanceof QboError) ||
+      !["store_dimension_missing", "class_mapping_missing"].includes(
+        error.message,
+      )
+    )
+      throw error;
+    return {
+      code: error.message,
+      owner: "controller",
+      reason:
+        error.message === "store_dimension_missing"
+          ? "The authoritative approved allocation must explicitly retain its store or null dimension."
+          : "Map every approved store to its reviewed QuickBooks Class before exporting accounting.",
+      relatedIds: [
+        ...new Set(
+          stores.filter((s): s is string => typeof s === "string" && !!s),
+        ),
+      ],
+    };
+  }
+}
+function line(
+  account: string,
+  amount: number,
+  store: string | null,
+  m: Mappings,
+) {
   const a = m.accounts[account];
   if (!a) throw new QboError("account_mapping_missing");
   return {
@@ -52,6 +111,7 @@ function line(account: string, amount: number, m: Mappings) {
     DetailType: "AccountBasedExpenseLineDetail",
     AccountBasedExpenseLineDetail: {
       AccountRef: { value: a.id },
+      ...classReference(store, m),
       BillableStatus: "NotBillable",
     },
   };
@@ -236,8 +296,11 @@ export function billPlan(e: AccountingExport, m: Mappings): Plan {
         account: a.account,
         debit: Math.max(0, a.amountCents),
         credit: Math.max(0, -a.amountCents),
+        store: a.store,
       }))
-    : recognitionLines(c).filter((l) => l.account !== "2000");
+    : recognitionLines(c)
+        .filter((l) => l.account !== "2000")
+        .map((l) => ({ ...l, store: l.dims?.store ?? null }));
   const net = lines.reduce(
     (n, l) => n + BigInt(l.debit) - BigInt(l.credit),
     0n,
@@ -270,7 +333,7 @@ export function billPlan(e: AccountingExport, m: Mappings): Plan {
       ...(!r && c.dueDate ? { DueDate: c.dueDate } : {}),
       DocNumber: `AP${hash(identity).slice(0, 18)}`,
       PrivateNote: `ap-sync:${hash(identity)}; invoice ${r?.reference ?? c.invoiceNumber}; recognition ${d.links.recognitionJournalId}`,
-      Line: lines.map((l) => line(l.account, l.debit - l.credit, m)),
+      Line: lines.map((l) => line(l.account, l.debit - l.credit, l.store, m)),
       TotalAmt: money(r?.amountCents ?? c.totalCents),
     },
   };
@@ -427,7 +490,9 @@ export function creditPlan(
       DocNumber: `AP${hash(identity).slice(0, 18)}`,
       PrivateNote: `ap-sync:${hash(identity)}; credit ${credit.reference}; original bill ${bill.externalId}`,
       TotalAmt: money(credit.amountCents),
-      Line: credit.allocations.map((a) => line(a.account, a.amountCents, m)),
+      Line: credit.allocations.map((a) =>
+        line(a.account, a.amountCents, a.store, m),
+      ),
     },
   };
 }
@@ -461,6 +526,12 @@ function appliedCreditLines(
       op.payload.TotalAmt !== money(r.amountCents) ||
       canonical(op.payload.VendorRef) !== canonical(bill.payload.VendorRef) ||
       !op.externalId
+    )
+      throw new QboError("credit_operation_mismatch");
+    const expectedCredit = creditPlan(r, m, bill);
+    if (
+      op.identity !== expectedCredit.identity ||
+      canonical(op.payload) !== canonical(expectedCredit.payload)
     )
       throw new QboError("credit_operation_mismatch");
     return {

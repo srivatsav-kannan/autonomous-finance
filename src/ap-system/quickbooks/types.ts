@@ -22,7 +22,11 @@ export type RecognizedInvoice = {
   reference: string;
   date: string;
   amountCents: number;
-  allocations: Array<{ account: string; amountCents: number }>;
+  allocations: Array<{
+    account: string;
+    amountCents: number;
+    store: string | null;
+  }>;
   approvalId: string;
   sourceRevision: number;
   sourceSnapshotHash: string;
@@ -51,7 +55,11 @@ export type CreditExport = {
   reference: string;
   date: string;
   amountCents: number;
-  allocations: Array<{ account: string; amountCents: number }>;
+  allocations: Array<{
+    account: string;
+    amountCents: number;
+    store: string | null;
+  }>;
 };
 export type RecognizedCredit = CreditExport & {
   kind: "credit";

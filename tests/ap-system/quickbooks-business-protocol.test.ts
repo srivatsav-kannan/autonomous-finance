@@ -1,3 +1,4 @@
+import { matches } from "../../src/ap-system/quickbooks/client";
 import { restoredCreditFixture } from "./quickbooks-restored-credit-fixture";
 import { returnedFixture } from "./quickbooks-corrections-fixture";
 import { mkdtemp, rm, readdir } from "node:fs/promises";
@@ -43,6 +44,7 @@ const mappings: Mappings = {
     "5000": { id: "7", name: "Produce", type: "Expense" },
     "5100": { id: "8", name: "Purchase discounts", type: "Expense" },
   },
+  classes: { "sf-hayes-valley": { id: "9", name: "SF Hayes Valley" } },
   apAccount: "2000",
   bankAccount: "1000",
 };
@@ -104,6 +106,10 @@ async function protocol(load: ExportLoader) {
             Active: true,
             DisplayName: "Golden State Produce Co.",
           },
+        });
+      if (url.pathname.includes("/class/"))
+        return json({
+          Class: { Id: "9", Name: "SF Hayes Valley", Active: true },
         });
       if (url.pathname.includes("/account/")) {
         const a = Object.values(mappings.accounts).find((a) => a.id === path)!;
@@ -688,14 +694,15 @@ describe("QBO business dispatcher HTTP protocol (mocked)", () => {
       (op.payload.Line as any[]).map((l) => ({
         amount: l.Amount,
         account: l.AccountBasedExpenseLineDetail.AccountRef.value,
+        classId: l.AccountBasedExpenseLineDetail.ClassRef.value,
       }));
     expect(economic(bill)).toEqual([
-      { amount: 77, account: "7" },
-      { amount: -1, account: "8" },
+      { amount: 77, account: "7", classId: "9" },
+      { amount: -1, account: "8", classId: "9" },
     ]);
     expect(economic(credit)).toEqual([
-      { amount: 38.5, account: "7" },
-      { amount: -0.5, account: "8" },
+      { amount: 38.5, account: "7", classId: "9" },
+      { amount: -0.5, account: "8", classId: "9" },
     ]);
     expect(await p.journal.client.verify(bill)).toMatchObject(bill.payload);
     expect(await p.journal.client.verify(credit)).toMatchObject(credit.payload);
@@ -704,6 +711,19 @@ describe("QBO business dispatcher HTTP protocol (mocked)", () => {
     await expect(p.journal.client.verify(credit)).rejects.toThrow(
       "external_stale_or_changed",
     );
+    changed.Line[1].Amount = -0.5;
+    changed.Line[1].AccountBasedExpenseLineDetail.ClassRef.value = "10";
+    await expect(p.journal.client.verify(credit)).rejects.toThrow(
+      "external_stale_or_changed",
+    );
+    delete changed.Line[1].AccountBasedExpenseLineDetail.ClassRef;
+    await expect(p.journal.client.verify(credit)).rejects.toThrow(
+      "external_stale_or_changed",
+    );
+    const unclassified = structuredClone(bill.payload);
+    for (const line of unclassified.Line as any[])
+      delete line.AccountBasedExpenseLineDetail.ClassRef;
+    expect(matches(unclassified, bill.payload)).toBe(false); // A new provider Class is also a dimension change.
   });
   it("posts exact Bill, VendorCredit and credit-only application; retry preserves original approval author", async () => {
     const { f, c, a, load } = await applicationFixture();

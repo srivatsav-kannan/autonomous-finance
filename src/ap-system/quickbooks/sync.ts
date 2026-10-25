@@ -20,6 +20,7 @@ import {
   creditPlan,
   applicationPlan,
   validateMappings,
+  dimensionHold,
 } from "./plans";
 import type {
   ExportLoader,
@@ -232,6 +233,8 @@ export class QuickBooksDispatcher {
     )
       throw new QboError("authenticated_case_export_required");
     if (e.holds?.length) return e.holds;
+    const missingDimension = dimensionHold(e, this.mappings);
+    if (missingDimension) return [missingDimension];
     if (e.correction?.kind === "bank_return") return [];
     const required = e.requiredCorrections ?? [];
     if (!required.length) return [];

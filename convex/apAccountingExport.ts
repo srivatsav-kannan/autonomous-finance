@@ -118,17 +118,19 @@ export const current = query({
         journal.source.kind !== "bill" ||
         journal.source.ref !== bill._id ||
         canonical(
-          journal.lines.map(({ account, debit, credit }) => ({
+          journal.lines.map(({ account, debit, credit, dims }) => ({
             account,
             debit,
             credit,
+            dims: dims ?? {},
           })),
         ) !==
           canonical(
-            recognitionLines(c).map(({ account, debit, credit }) => ({
+            recognitionLines(c).map(({ account, debit, credit, dims }) => ({
               account,
               debit,
               credit,
+              dims: dims ?? {},
             })),
           ))
     )

@@ -13,7 +13,7 @@ import { validateMappings } from "./plans";
 import type { AccountingExport, AccountingHold, ExportRequest, Mappings, Operation, Plan, SyncHold } from "./types";
 
 export type QBOReceipt = Pick<Operation,"entity"|"requestId"|"state"|"externalId"|"syncToken"|"links"|"updatedAt"|"lastError"|"submissionAuthorization">;
-export type QBOStatus = {provider:"QuickBooks Online";environment:"sandbox";configuration:"not_configured"|"incomplete"|"configured";grant:"authorization_required"|"available";mappings:"missing"|"configured";externalVerification:"not_checked";receipts:QBOReceipt[];holds:AccountingHold[];authority:"not_recognized"|"verified"|"unavailable";complete:boolean;reason?:string};
+export type QBOStatus = {provider:"QuickBooks Online";environment:"sandbox";configuration:"not_configured"|"incomplete"|"configured";grant:"authorization_required"|"available";mappings:"missing"|"configured";externalVerification:"not_checked";receipts:QBOReceipt[];holds:AccountingHold[];holdHistory:Array<SyncHold&{current:boolean}>;authority:"not_recognized"|"verified"|"unavailable";complete:boolean;reason?:string};
 const receipt=(o:Operation):QBOReceipt=>({entity:o.entity,requestId:o.requestId,state:o.state,externalId:o.externalId,syncToken:o.syncToken,links:o.links,updatedAt:o.updatedAt,lastError:o.lastError,submissionAuthorization:o.submissionAuthorization});
 export type QBOPreview = {plan:Plan;planHash:string;externalWrites:0;hold?:never}|{hold:SyncHold;externalWrites:0;plan?:never;planHash?:never};
 export type QBOSubmit = {operation:QBOReceipt;hold?:never}|{hold:SyncHold;operation?:never};
@@ -35,7 +35,7 @@ export function createQBOBridge(human:ConvexHttpClient,scope:BankScope,env:NodeJ
   async status(caseId:string):Promise<QBOStatus>{
    // Even readiness/receipt inspection has the same current human/case boundary as originals.
    const detail=await authorizeCase(caseId);
-   const result:QBOStatus={provider:"QuickBooks Online",environment:"sandbox",configuration:config?"configured":supplied?"incomplete":"not_configured",grant:"authorization_required",mappings:"missing",externalVerification:"not_checked",receipts:[],holds:[],authority:"not_recognized",complete:true};
+   const result:QBOStatus={provider:"QuickBooks Online",environment:"sandbox",configuration:config?"configured":supplied?"incomplete":"not_configured",grant:"authorization_required",mappings:"missing",externalVerification:"not_checked",receipts:[],holds:[],holdHistory:[],authority:"not_recognized",complete:true};
    // A past successful receipt is never a substitute for current backend authority.
    if(detail.links.recognitionJournalId){
     try{const current=await load({caseId});result.authority="verified";result.holds=current.holds??[];}
@@ -46,11 +46,38 @@ export function createQBOBridge(human:ConvexHttpClient,scope:BankScope,env:NodeJ
     const token=await store.read<{realmId:string;clientHash:string;blocked:boolean;refreshUntil:number;hardUntil:number|null}>("tokens.json");
     if(token&&!token.blocked&&token.realmId===config.realmId&&token.clientHash===hash(config.clientId)&&token.refreshUntil>Date.now()&&(token.hardUntil===null||token.hardUntil>Date.now()))result.grant="available";
     try{await mapping();result.mappings="configured";}catch(e){result.reason??=safeError(e);}
-    if(result.mappings==="configured"&&result.authority==="verified")result.holds=await (await dispatcher()).checkHolds({caseId}); // Stored verification only; no provider request on page/status reads.
+    let currentMappingsChecked=false;
+    if(result.mappings==="configured"&&result.authority==="verified"){
+     result.holds=await (await dispatcher()).checkHolds({caseId}); // Stored verification only; no provider request on page/status reads.
+     currentMappingsChecked=true;
+    }
     const keys=(await readdir(store.root)).filter(k=>/^(operation|hold)-[a-f0-9]{64}\.json$/.test(k)).sort();result.complete=result.complete&&keys.length<=1000;
     const holds=new Map(result.holds.map(h=>[holdKey(h),h]));
+    const mappingChecks=new Map<string,AccountingHold[]>([[hash({caseId}),result.holds]]);
     for(const key of keys.slice(0,1000)){
-     if(key.startsWith("hold-")){const held=await store.read<SyncHold>(key);if(held?.realmId===config.realmId&&held.caseId===caseId&&(held.state!=="resolved"||!held.resolution))holds.set(holdKey(held),{code:held.code,owner:held.owner,reason:held.reason,relatedIds:held.relatedIds});}
+     if(key.startsWith("hold-")){
+      const held=await store.read<SyncHold>(key);
+      if(held?.realmId===config.realmId&&held.caseId===caseId){
+       const localMapping=["store_dimension_missing","class_mapping_missing"].includes(held.code);
+       let mappingStillHeld=true;
+       if(localMapping&&currentMappingsChecked){
+        try{
+         const requestKey=hash(held.request);
+         let current=mappingChecks.get(requestKey);
+         if(!current){
+          if(mappingChecks.size>=32)throw new QboError("hold_reconciliation_incomplete");
+          current=await (await dispatcher()).checkHolds(held.request);
+          mappingChecks.set(requestKey,current);
+         }
+         mappingStillHeld=current.some(h=>holdKey(h)===holdKey(held));
+         for(const h of current)holds.set(holdKey(h),h);
+        }catch{result.complete=false;result.reason??="current_mapping_hold_authority_unavailable";}
+       }
+       const active=(held.state!=="resolved"||!held.resolution)&&(!localMapping||mappingStillHeld);
+       result.holdHistory.push({...held,current:active});
+       if(active)holds.set(holdKey(held),{code:held.code,owner:held.owner,reason:held.reason,relatedIds:held.relatedIds});
+      }
+     }
      else{const op=await store.read<Operation>(key);if(op?.realmId===config.realmId&&op.links?.caseId===caseId)result.receipts.push(receipt(op));}
     }
     result.holds=[...holds.values()];

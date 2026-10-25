@@ -61,7 +61,16 @@ export function matches(expected: unknown, actual: unknown): boolean {
       actual.length === expected.length &&
       expected.every((v, i) => matches(v, actual[i]))
     );
-  if (expected !== null && typeof expected === "object")
+  if (expected !== null && typeof expected === "object") {
+    const e = expected as Record<string, any>;
+    const a = actual as Record<string, any> | null;
+    // An added Class is an economic dimension change even if the approved line had none.
+    if (
+      e.AccountBasedExpenseLineDetail &&
+      e.AccountBasedExpenseLineDetail.ClassRef == null &&
+      a?.AccountBasedExpenseLineDetail?.ClassRef != null
+    )
+      return false;
     return (
       actual !== null &&
       typeof actual === "object" &&
@@ -69,6 +78,7 @@ export function matches(expected: unknown, actual: unknown): boolean {
         matches(v, (actual as Record<string, unknown>)[k]),
       )
     );
+  }
   return expected === actual;
 }
 export class QboClient {

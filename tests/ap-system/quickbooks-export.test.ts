@@ -40,6 +40,7 @@ const mappings: Mappings = {
     "1000": { id: "35", name: "Bank", type: "Bank" },
     "5000": { id: "7", name: "Produce", type: "Expense" },
   },
+  classes: { "sf-hayes-valley": { id: "9", name: "SF Hayes Valley" } },
   apAccount: "2000",
   bankAccount: "1000",
 };
@@ -254,6 +255,7 @@ describe("QBO authoritative recognition/settlement export", () => {
         DetailType: "AccountBasedExpenseLineDetail",
         AccountBasedExpenseLineDetail: {
           AccountRef: { value: "7" },
+          ClassRef: { value: "9" },
           BillableStatus: "NotBillable",
         },
       },
@@ -277,6 +279,25 @@ describe("QBO authoritative recognition/settlement export", () => {
       ),
     );
     await expect(f.load()).rejects.toThrow("Recognition evidence mismatch");
+  });
+  it("rejects legacy posted journal store or supplier dimension tampering", async () => {
+    const f = await approved();
+    const e = await f.load();
+    const id = e.detail.links.recognitionJournalId as Id<"journalEntries">;
+    const original = await f.t.run((ctx) => ctx.db.get(id));
+    for (const dims of [
+      { store: "wrong-store", vendor: "golden-state-produce" },
+      { store: "sf-hayes-valley", vendor: "wrong-vendor" },
+    ]) {
+      await f.t.run((ctx) =>
+        ctx.db.patch(id, {
+          lines: original!.lines.map((line, i) =>
+            i === 0 ? { ...line, dims } : line,
+          ),
+        }),
+      );
+      await expect(f.load()).rejects.toThrow("Recognition evidence mismatch");
+    }
   });
   it("exports the exact posted Increase debit and creates accounting-only BillPayment linked to its Bill", async () => {
     const f = await settled();
@@ -473,7 +494,7 @@ describe("QBO authoritative recognition/settlement export", () => {
       reference: "CM-1",
       date: "2026-10-20",
       amountCents: 1000,
-      allocations: [{ account: "5000", amountCents: 1000 }],
+      allocations: [{ account: "5000", amountCents: 1000, store: null }],
     };
     const p = creditPlan(credit, mappings, bill);
     expect(p.entity).toBe("VendorCredit");
