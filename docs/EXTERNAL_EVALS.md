@@ -2,11 +2,11 @@
 
 This batch compares `full-team`, `generalist`, and `rules-only` on three APEX accounting tasks and five DABstep payment-analysis tasks. It supplements the synthetic-world eval (`npm run eval`) with real benchmark source files. Its scores are local development-subset scores, not official leaderboard results.
 
-**Live comparison status: NOT_RUN.** OpenAI tool calling and structured APEX judging are implemented, with mocked transport coverage for OpenAI and Anthropic. Paid execution is disabled by the checked-in `benchmarks/external-models.json` (`approval: null`); having API keys does not enable it. Model selection, explicit budget approval and the first live smoke/matrix remain tracked in [#67](https://github.com/srivatsav-kannan/autonomous-finance/issues/67). The free milestone covers all eight rules baselines over three repeats (24/24 answers, no errors or abstentions), 15/15 DABstep passes, and real-backend integration tests using model stubs. APEX rules answers remain ungraded until an authorized judge run; mock results are not model-performance evidence.
+**Live comparison status: NOT_RUN.** OpenAI tool calling and structured APEX judging are implemented, with mocked transport coverage for OpenAI and Anthropic. Paid execution is disabled by the checked-in `benchmarks/external-models.json` (`approval: null`); having API keys does not enable it. The recommended models and prices are configured. Explicit budget approval and the first live smoke/matrix remain tracked in [#67](https://github.com/srivatsav-kannan/autonomous-finance/issues/67). The free milestone covers all eight rules baselines over three repeats (24/24 answers, no errors or abstentions), 15/15 DABstep passes, and real-backend integration tests using model stubs. APEX rules answers remain ungraded until an authorized judge run; mock results are not model-performance evidence.
 
 ## Prepare and run
 
-Run from the repository root with Node 22+ and Python 3.11+. Install the source-file readers once:
+Run from the repository root with Node 24.18+ and Python 3.11+. Install the source-file readers once:
 
 ```bash
 python3 -m venv var/benchmarks/.venv
@@ -28,13 +28,22 @@ npm run bench:run -- --modes rules-only --repeats 1 --judge off
 
 The benchmark uses the reusable `src/agents/model-client.ts` interface for specialist/controller, generalist, and judge. It supports first-party OpenAI Responses and Anthropic Messages, without retries or fallback models. Ordinary application agents retain their existing runtime.
 
-Put your existing `OPENAI_API_KEY` in the private environment or ignored `.env.local`. Do not place credentials in the policy, command line or artifacts. This configures authentication only; **paid execution remains disabled**. The benchmark ignores ambient `OPENAI_BASE_URL`, `AGENT_MODEL`, `EXTERNAL_JUDGE_MODEL` and `AGENT_FALLBACKS`; its policy is the single source of model/budget configuration. `AGENT_LLM=off` still disables all inference.
+Put your existing `OPENAI_API_KEY` in the private environment or ignored `.env.local` **in the checkout where you run the benchmark**. Add it to the existing file; do not overwrite the generated backend URLs or admin secret. `.env.example` includes an empty `OPENAI_API_KEY=` line. A key in a different worktree is not automatically loaded. Do not place credentials in the policy, command line or artifacts. This configures authentication only; **paid execution remains disabled**. The benchmark ignores ambient `OPENAI_BASE_URL`, `AGENT_MODEL`, `EXTERNAL_JUDGE_MODEL` and `AGENT_FALLBACKS`; its policy is the single source of model/budget configuration. `AGENT_LLM=off` still disables all inference.
 
-Before any paid smoke, full matrix, or rescore, obtain approval for the exact agent/judge models, USD cap, maximum requests, token/turn limits and stop policy. After approval, save a private copy of `benchmarks/external-models.json` under `var/`, fill in both approved configurations, and supply it with `--model-policy PATH`. Keep the checked-in default disabled. Required fields:
+Before any paid smoke, full matrix, or rescore, obtain approval for the exact agent/judge models, USD cap, maximum requests, token/turn limits and stop policy. After approval, save a private copy of `benchmarks/external-models.json` under `var/`, verify its configured models/prices, fill in the approved budget, and supply it with `--model-policy PATH`. Keep the checked-in default disabled. Required fields:
 
 - `approval`: `approvedBy`, ISO `approvedAt`, positive `maxCostUsd`, positive integer `maxRequests`, and `maxTurnsPerCase` (the CLI cannot exceed this approved ceiling). It remains `null` until approval.
 - `agent` / `judge`: `provider` (`openai` or `anthropic`), exact `model` ID returned by the provider, reasoning `effort`, `maxInputTokens`, `maxOutputTokens`, and `prices` (`input`, `output`, `cacheRead`, `cacheWrite`, in USD per million tokens). Prices are explicit, model-specific estimates; no Claude prices are reused for OpenAI. Select a flat price tier valid across the approved input limit.
-- Both agent modes share the same agent configuration. The judge may use a different model/provider. Medium agent effort and low judge effort are the unapproved defaults; no model or price is selected yet.
+- Both agent modes share the same agent configuration. The judge may use a different model/provider. The configured defaults are GPT-6.1 Sol at medium effort for agents and GPT-6 Astra at low effort for judging. Selecting these models does not authorize paid execution.
+
+The checked-in policy uses the following **standard, short-context prices in USD per million tokens**, verified against [OpenAI pricing](https://developers.openai.com/api/docs/pricing) on October 24, 2026:
+
+| Role | Model | Effort | Input | Output (including reasoning) | Cached input | Cache write (30m) |
+|---|---|---|---:|---:|---:|---:|
+| Full-team and generalist | `gpt-6.1-sol` | medium | $2 | $10 | $0.10 | $2.50 |
+| APEX judge | `gpt-6-astra` | low | $10 | $50 | $1 | $12.50 |
+
+Both have 100,000 input and 4,096 output tokens per request configured. The CLI defaults to 12 total agent turns per task/mode and three repeats. Standard global processing is used; no Batch/Flex discount, regional surcharge, or long-context tier is assumed. The published cache-write prices remain recorded for conservative budget reservations, even though this client disables cache writes and rejects nonzero write usage. Prices should be rechecked before budget approval.
 
 OpenAI requires a Responses model supporting function calling, strict structured output, reasoning effort, and explicit prompt-cache controls (GPT-5.6 or later compatible models). Requests use `store: false`, standard service tier, no hosted tools, and explicit caching with no breakpoints, preventing cache writes. Returned reasoning items stay in memory for continuation. Cached input is separated from uncached input; reasoning tokens are included in output usage exactly once. Missing usage/cache-write details, nonzero cache writes, or a served model/tier mismatch stop execution. Anthropic uses an explicit `ANTHROPIC_API_KEY`, fixed origin, approved prices, and no SDK retries/fallbacks.
 

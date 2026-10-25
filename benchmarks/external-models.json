@@ -3,18 +3,28 @@
   "approval": null,
   "agent": {
     "provider": "openai",
-    "model": null,
+    "model": "gpt-6.1-sol",
     "effort": "medium",
     "maxInputTokens": 100000,
     "maxOutputTokens": 4096,
-    "prices": null
+    "prices": {
+      "input": 2,
+      "output": 10,
+      "cacheRead": 0.1,
+      "cacheWrite": 2.5
+    }
   },
   "judge": {
     "provider": "openai",
-    "model": null,
+    "model": "gpt-6-astra",
     "effort": "low",
     "maxInputTokens": 100000,
     "maxOutputTokens": 4096,
-    "prices": null
+    "prices": {
+      "input": 10,
+      "output": 50,
+      "cacheRead": 1,
+      "cacheWrite": 12.5
+    }
   }
 }

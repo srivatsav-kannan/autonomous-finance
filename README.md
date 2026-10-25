@@ -116,6 +116,8 @@ The [CI guide](docs/ci.md) documents automated pull-request gates and `npm run c
 
 Compare the full team, a generalist, and deterministic rules on eight pinned APEX + DABstep tasks. See [setup, scoring and run commands](docs/EXTERNAL_EVALS.md). After preparing the fixtures, `npm run bench:run -- --dry-run` shows the default 72-run matrix; `npm run bench:run -- --modes rules-only --repeats 1 --judge off` runs the free baseline.
 
+For OpenAI benchmarks, add `OPENAI_API_KEY` privately to this checkout's `.env.local` (see `.env.example`). `benchmarks/external-models.json` selects GPT-6.1 Sol at medium effort for both agent modes and GPT-6 Astra at low effort for the APEX judge, with explicit token prices. **Paid runs and rescoring remain disabled (`approval: null`) until the user approves a bounded budget.** Adding a key or choosing models does not grant budget approval.
+
 ### Simulation dates
 
 The requested start and day count bound all emitted events and the answer key.
