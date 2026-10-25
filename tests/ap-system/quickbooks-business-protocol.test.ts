@@ -39,6 +39,7 @@ const mappings: Mappings = {
     "2000": { id: "33", name: "AP", type: "Accounts Payable" },
     "1000": { id: "35", name: "Bank", type: "Bank" },
     "5000": { id: "7", name: "Produce", type: "Expense" },
+    "5100": { id: "8", name: "Purchase discounts", type: "Expense" },
   },
   apAccount: "2000",
   bankAccount: "1000",
@@ -212,6 +213,36 @@ async function applicationFixture() {
   return { f, c, a: a!, s, load };
 }
 describe("QBO business dispatcher HTTP protocol (mocked)", () => {
+  it("preserves original signed discount GL on Bill and linked VendorCredit through readback", async () => {
+    const f = await creditFixture(100);
+    const c = await f.credit();
+    const s = await promoteIncrease(f);
+    const p = await protocol(({ caseId, ...rest }) => s.load(caseId, rest));
+    const bill = await p.submit({ caseId: f.detail.caseId });
+    const credit = await p.submit({ caseId: c.caseId });
+    expect(bill.payload.TotalAmt).toBe(76);
+    expect(credit.payload.TotalAmt).toBe(38);
+    const economic = (op: Operation) =>
+      (op.payload.Line as any[]).map((l) => ({
+        amount: l.Amount,
+        account: l.AccountBasedExpenseLineDetail.AccountRef.value,
+      }));
+    expect(economic(bill)).toEqual([
+      { amount: 77, account: "7" },
+      { amount: -1, account: "8" },
+    ]);
+    expect(economic(credit)).toEqual([
+      { amount: 38.5, account: "7" },
+      { amount: -0.5, account: "8" },
+    ]);
+    expect(await p.journal.client.verify(bill)).toMatchObject(bill.payload);
+    expect(await p.journal.client.verify(credit)).toMatchObject(credit.payload);
+    const changed = p.rows.get(`VendorCredit:${credit.externalId}`)!;
+    changed.Line[1].Amount = 0.5;
+    await expect(p.journal.client.verify(credit)).rejects.toThrow(
+      "external_stale_or_changed",
+    );
+  });
   it("posts exact Bill, VendorCredit and credit-only application; retry preserves original approval author", async () => {
     const { f, c, a, load } = await applicationFixture();
     let reader = "";

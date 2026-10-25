@@ -1,6 +1,13 @@
 import { makeFunctionReference } from "convex/server";
 import { createHash } from "node:crypto";
-import { businessFixture, br, binding, syncPrimary } from "./business-fixture";
+import {
+  businessFixture,
+  br,
+  binding,
+  syncPrimary,
+  acceptance,
+  policy,
+} from "./business-fixture";
 import { packet } from "./accounting-fixture";
 import { canonical, sha256Hex } from "../../convex/lib/kernel";
 import {
@@ -29,9 +36,31 @@ export const successful = (plan: Plan, id: string): Operation => ({
   lastError: null,
   responseHash: "test-response",
 });
-export async function creditFixture() {
-  const f = await businessFixture();
-  const original = await f.recognize();
+export async function creditFixture(discountCents = 0) {
+  const originalInput = packet();
+  const originalCandidate = originalInput.candidate!;
+  originalCandidate.discountCents = discountCents;
+  originalCandidate.discountAllocations = discountCents
+    ? [
+        {
+          ...originalCandidate.lines[0]!.allocations[0]!,
+          account: "5100",
+          amountCents: discountCents,
+        },
+      ]
+    : [];
+  originalCandidate.totalCents -= discountCents;
+  syncPrimary(originalInput);
+  const configuredPolicy = policy();
+  configuredPolicy.accounts.push({ account: "5100", treatment: "expense" });
+  const f = await businessFixture({
+    input: originalInput,
+    policy: configuredPolicy,
+  });
+  const accepted = acceptance(originalInput);
+  accepted.discountCents = discountCents;
+  accepted.discountAllocations = originalCandidate.discountAllocations;
+  const original = await f.recognize(f.detail, accepted);
   async function credit(number = "CREDIT-1") {
     const input = packet(number);
     const c = input.candidate!;
@@ -40,7 +69,17 @@ export async function creditFixture() {
     c.lines[0]!.amountCents = 3850;
     c.lines[0]!.allocations[0]!.amountCents = 3850;
     c.subtotalCents = 3850;
-    c.totalCents = 3850;
+    c.discountCents = discountCents / 2;
+    c.discountAllocations = c.discountCents
+      ? [
+          {
+            ...c.lines[0]!.allocations[0]!,
+            account: "5100",
+            amountCents: c.discountCents,
+          },
+        ]
+      : [];
+    c.totalCents = 3850 - c.discountCents;
     input.documents[0]!.kind = "credit_note";
     // This is a distinct, explicitly synthetic return original, not the invoice's receiving record.
     const returned = input.documents[2]!;
@@ -71,7 +110,7 @@ export async function creditFixture() {
           originalCaseId: f.detail.caseId,
           originalApprovalId: original.proposal.proposalId,
           freightCents: 0,
-          discountCents: 0,
+          discountCents: c.discountCents,
           lines: [
             {
               creditLineId: "line-1",

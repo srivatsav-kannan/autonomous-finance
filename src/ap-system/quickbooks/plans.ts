@@ -210,8 +210,6 @@ export function billPlan(e: AccountingExport, m: Mappings): Plan {
         credit: Math.max(0, -a.amountCents),
       }))
     : recognitionLines(c).filter((l) => l.account !== "2000");
-  if (r?.allocations.some((a) => a.amountCents < 0))
-    throw new QboError("signed_cost_allocation_requires_review");
   const net = lines.reduce(
     (n, l) => n + BigInt(l.debit) - BigInt(l.credit),
     0n,
@@ -355,10 +353,10 @@ export function creditPlan(
   validateMappings(m, m.realmId);
   if (
     credit.allocations.some(
-      (a) => !Number.isSafeInteger(a.amountCents) || a.amountCents < 0,
+      (a) => !Number.isSafeInteger(a.amountCents) || a.account === m.apAccount,
     )
   )
-    throw new QboError("signed_cost_allocation_requires_review");
+    throw new QboError("invalid_cost_allocation");
   if (
     bill.state !== "succeeded" ||
     bill.entity !== "Bill" ||

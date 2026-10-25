@@ -277,23 +277,7 @@ export class QuickBooksDispatcher {
             },
     });
     if (e.holds?.length) return held(e.holds[0]!);
-    let resolved: Awaited<ReturnType<QuickBooksDispatcher["resolve"]>>;
-    try {
-      resolved = await this.resolve(e, request);
-    } catch (error) {
-      if (
-        error instanceof QboError &&
-        error.code === "signed_cost_allocation_requires_review"
-      )
-        return held({
-          code: error.code,
-          owner: "controller",
-          reason:
-            "Signed discount cost lines need an explicitly supported external accounting representation; no normalization or external write was attempted.",
-          relatedIds: [e.detail.links.recognitionJournalId ?? e.detail.caseId],
-        });
-      throw error;
-    }
+    const resolved = await this.resolve(e, request);
     const { plan, deps } = resolved;
     if (approval && hash(plan) !== approval.expectedPlanHash)
       throw new QboError("preview_changed_before_write");

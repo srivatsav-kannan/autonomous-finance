@@ -198,7 +198,7 @@ describe("QBO explicit credit and partial cash applications", () => {
       "return_accounting_remediation_required",
     );
   });
-  it("rejects wrong-case application IDs, altered consumed receipts, and unsupported signed credit allocations", async () => {
+  it("rejects wrong-case application IDs, altered consumed receipts, and altered signed credit allocation totals", async () => {
     const f = await creditFixture();
     const c = await f.credit();
     const d = await f.get(f.detail.caseId);
@@ -226,7 +226,7 @@ describe("QBO explicit credit and partial cash applications", () => {
     const credit = await f.load(c.caseId);
     credit.recognizedCredit!.allocations = [
       { account: "5000", amountCents: 4000 },
-      { account: "1200", amountCents: -150 },
+      { account: "1200", amountCents: -151 },
     ];
     expect(() =>
       creditPlan(
@@ -234,6 +234,6 @@ describe("QBO explicit credit and partial cash applications", () => {
         mappings,
         successful(billPlan(invoice, mappings), "90"),
       ),
-    ).toThrow("signed_cost_allocation_requires_review");
+    ).toThrow("approved_credit_required");
   });
 });
