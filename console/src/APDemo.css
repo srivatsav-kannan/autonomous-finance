@@ -32,3 +32,11 @@
 .ap-blockers { padding-left: var(--space-lg); }
 .ap-blockers p { margin: var(--space-2xs) 0 var(--space-md); }
 @media (max-width: 680px) { .ap-console { padding: var(--space-md) var(--space-sm) var(--space-xl); } .ap-panel { padding: var(--space-md); } .ap-facts { grid-template-columns: 1fr; } }
+.ap-auto-refresh { display: flex; gap: var(--space-sm); align-items: center; color: var(--muted); font-size: var(--text-xs); }
+.ap-health-healthy { color: var(--ok); }
+.ap-health-degraded, .ap-health-unhealthy { color: var(--urgent); }
+.ap-alerts { list-style: none; padding: 0; display: grid; gap: var(--space-sm); }
+.ap-alerts li { border: 1px solid var(--line); border-radius: var(--radius-card); padding: var(--space-xs) var(--space-sm); }
+.ap-alerts li.ap-alert-critical { border-color: var(--urgent); }
+.ap-alerts p { margin: var(--space-2xs) 0; }
+.ap-never { font-size: var(--text-xs); color: var(--muted); }

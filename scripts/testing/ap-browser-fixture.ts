@@ -3,36 +3,20 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import http from "node:http";
 import assert from "node:assert/strict";
-import { generateKeyPairSync, randomBytes, createHash, sign } from "node:crypto";
+import { randomBytes, createHash } from "node:crypto";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../convex/_generated/api";
 import { openFakeBank } from "../../src/integrations/banking/fake";
 import { PaymentDispatcher } from "../../src/payments/dispatcher";
 import { EvidenceWorker } from "../../src/payments/evidence";
 import type { BankScope } from "../../src/integrations/contracts";
+import { startLocalOidcIssuer } from "./local-oidc-issuer";
 
 const local = JSON.parse(fs.readFileSync(path.resolve(".convex/local/default/config.json"), "utf8")) as { ports: { cloud: number }; adminKey: string };
 const url = `http://127.0.0.1:${local.ports.cloud}`;
-const { publicKey, privateKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
-const jwk = { ...publicKey.export({ format: "jwk" }), kid: "ap-browser-test", alg: "RS256", use: "sig" };
-let issuer = "";
-const server = http.createServer((req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  if (req.url === "/.well-known/openid-configuration") res.end(JSON.stringify({ issuer, jwks_uri: `${issuer}/.well-known/jwks.json`, response_types_supported: ["id_token"], subject_types_supported: ["public"], id_token_signing_alg_values_supported: ["RS256"] }));
-  else if (req.url === "/.well-known/jwks.json") res.end(JSON.stringify({ keys: [jwk] }));
-  else { res.statusCode = 404; res.end("{}"); }
-});
-await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
-const port = (server.address() as { port: number }).port;
-issuer = `http://127.0.0.1:${port}`;
-const encode = (value: unknown) => Buffer.from(JSON.stringify(value)).toString("base64url");
-function token(overrides: Record<string, unknown> = {}) {
-  const now = Math.floor(Date.now() / 1000);
-  const bytes = `${encode({ alg: "RS256", typ: "JWT", kid: jwk.kid })}.${encode({ iss: issuer, sub: "browser-human", aud: "ap-browser-test", iat: now, exp: now + 3600, ...overrides })}`;
-  return `${bytes}.${sign("RSA-SHA256", Buffer.from(bytes), privateKey).toString("base64url")}`;
-}
+const oidc = await startLocalOidcIssuer("ap-browser-test");
+const { issuer, token } = oidc;
 const random = () => randomBytes(32).toString("hex");
 const secrets = { admin: random(), dispatcher: random(), evidence: random() };
 const runId = `ap-browser-${Date.now()}`;
@@ -89,5 +73,5 @@ try {
   console.log(JSON.stringify({ status: "passed", reportPath: path.join(artifactDir, "report.json"), close: "closed", note: "Refresh the browser to verify the posted and matched result. Stop this process after inspection." }, null, 2));
 } finally { bank.close(); }
 // Keep the local test issuer alive for the final UI refresh; Ctrl-C removes the test token.
-process.once("SIGINT", () => { fs.rmSync(credentialsPath, { force: true }); server.close(); process.exit(0); });
-process.once("SIGTERM", () => { fs.rmSync(credentialsPath, { force: true }); server.close(); process.exit(0); });
+process.once("SIGINT", () => { fs.rmSync(credentialsPath, { force: true }); oidc.close(); process.exit(0); });
+process.once("SIGTERM", () => { fs.rmSync(credentialsPath, { force: true }); oidc.close(); process.exit(0); });

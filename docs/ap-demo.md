@@ -68,6 +68,7 @@ The coordinator then performs the headline failure scenario:
 1. Persist the exact approved command and its stable provider key in Convex.
 2. Let FakeBank commit acceptance, lose the response, and exit the dispatcher process before it can record completion.
 3. Keep both the SQLite bank file and Convex state intact. Wait about 31 seconds for the recorded lease to expire.
+   The coordinator waits at least `--lease-wait-seconds` (default and minimum 31) and also until the killed worker's recorded `leaseExpiresAt` has passed.
 4. Start another dispatcher process. It reuses the saved command/key and receives the existing transfer.
    The coordinator then replays the lost request with the same key and bytes and records that the bank returned the original transfer.
 5. Settle the bank transfer, drop its notifications, and recover the posted debit by polling.
@@ -96,6 +97,50 @@ issuer/audience before testing a different identity provider.
 This exercises the browser and the backend's real JWT signature/claim validation
 with a synthetic `local_oidc_test_identity`. It does not establish a production
 identity, call Increase or demonstrate an external provider login.
+
+### Browser approval, then crash recovery (one flow for judges)
+
+The fixture above dispatches cleanly; `npm run demo:local` approves with a simulated
+admin identity. To show both in one run, a human approves in the browser and then
+watches the same crash and recovery as `demo:local`:
+
+```sh
+npm run backend      # terminal 1, leave running
+npm run console      # terminal 2, http://localhost:5173/ap-demo
+npm run demo:local -- --browser-approval      # terminal 3
+```
+
+1. The coordinator starts the same loopback OIDC test issuer as the fixture, binds this
+   local deployment to it, and checks that wrong-audience and expired tokens are rejected.
+2. It seeds the invoice and payment request, then prints `status: "awaiting_browser_approval"`
+   with the path to `var/ap-demo/<run-id>/browser-session.json` (mode 0600).
+3. Open `/ap-demo`, paste that file's `scope` and `jwt`, tick **Reload this view every 3
+   seconds**, review the payment and approve it. The coordinator waits up to 10 minutes.
+4. The coordinator runs the `demo:local` scenario on that approved command: the bank
+   accepts, the response is lost and the dispatcher process is SIGKILLed before it records
+   completion. The console shows `in_flight / unposted` with one attempt. Operator health
+   shows one attempted payment with no confirmed transfer, and critical `dispatcher_not_reporting`
+   and `evidence_not_reporting` alerts because no worker has completed a pass yet.
+5. After the lease expires (about 31 seconds; the terminal counts down), a new dispatcher
+   reuses the saved command and key and gets the original transfer back. The coordinator
+   then settles it, drops the notifications, polls, posts once, and gets both close signatures.
+6. It asserts the same invariants as `demo:local`: exactly one bank transfer, one posted
+   debit and one journal entry for the payment, zero blockers. The report adds
+   `approval: "browser_local_oidc"` and `identityMode: "local_oidc_test_identity"`.
+   The console then shows `settled / posted / matched` and a healthy operator view. No
+   worker keeps running after the demo, so about a minute later Operator health reports
+   `dispatcher_stale` and `evidence_stale`: the stale-heartbeat alert doing its job.
+
+The issuer stays up so the browser can refresh; press Ctrl-C to stop it, which also
+deletes `browser-session.json`. Like the fixture, this rebinds the local deployment's demo
+service secrets and human issuer (to a loopback port that stops with the process), so do
+not share that deployment with other AP work. A later plain `npm run demo:local` still
+works because it uses local admin authentication.
+
+`--lease-wait-seconds <n>` (31 to 600) makes the pause before recovery longer, for example
+to narrate. It cannot be shorter: the dispatcher lease is a 30-second backend constant
+(`LEASE_MS` in `convex/lib/payments/applyEffect.ts`) shared with real dispatch, and a
+restarted dispatcher cannot claim the command until it expires. The demo does not change it.
 
 ## Increase sandbox prerequisites and execution
 
@@ -285,6 +330,14 @@ commands, idempotency keys, saved requests, lease tokens or provider messages.
 Every alert also carries the rule it must not break: never generate a new
 provider key, resend a transfer, or free a reservation just to clear a warning.
 
+The `/ap-demo` console shows this view read-only under **Operator health**, loaded
+with the payment review for the authenticated human. It lists the status, each alert
+with its runbook action, and every signal above next to its target with whether it is
+within target. It has no buttons: recovery stays in the audited actions under
+**Dispatch and recovery**. If the query fails, the panel says so and the rest of the
+review still loads. The panel's rules are in `console/src/operatorHealthView.ts` and
+are tested against the real query in `tests/ap-demo-console-health.test.tsx`.
+
 Proposed SLO thresholds (`SLO_TARGETS` in `convex/demoOps.ts`) are **targets,
 not measurements**: a worker pass within 60 s, fewer than 3 consecutive failed
 passes, eligible commands claimed within 5 minutes, unknown outcomes, unposted
@@ -293,6 +346,15 @@ after 5 failed fetches. The configured mechanics they derive from are a 1 s
 service loop, 10 s heartbeat, 30 s lease and an 8-attempt / 24-hour automatic
 recovery budget. No baseline has been measured on a deployed backend yet;
 `convex-test` timings are not representative and are not reported as SLIs.
+The console prints the same label (`target_not_measured`) beside the thresholds.
+
+| Target (not measured) | Value | Derived from |
+| --- | --- | --- |
+| Worker pass age | 60 s | 1 s service loop |
+| Consecutive failed passes | fewer than 3 | |
+| Eligible command wait | 5 minutes | 30 s lease, 10 s heartbeat |
+| Unknown outcome, unposted transaction, unprocessed notice | 15 minutes | |
+| Quarantine | after 5 failed fetches | exponential fetch backoff |
 
 Historical application payments are not automatically migrated into this flow. Activation requires a fresh run without existing bills, payment intents or journal entries. Resolve old submitted/unknown outcomes through their original provider before considering a separately approved replacement. Preserve both bank and application state during recovery exercises; resetting either can erase the ambiguity the demo is intended to test.
 
