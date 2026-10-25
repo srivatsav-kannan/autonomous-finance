@@ -1,6 +1,8 @@
 # AP system orchestration launch pack
 
-Prepared on 2026-10-25. **Configuration only: no implementation sessions have been started.**
+Prepared on 2026-10-25. **Historical launch pack; the setup narrative below is not current implementation status.**
+
+Current branch handoff: [TEAMMATE-HANDOFF.md](../../TEAMMATE-HANDOFF.md). See [Hyphenate demo](HYPHENATE-DEMO.md) and [its verified results](evidence/hyphenate-20261025/RESULTS.md), plus the separately completed [Increase/QBO sandbox flow](evidence/agent-live-20261025/ROLLOUT.md).
 
 本启动包把 issue #97 转成可分派、可验收的工作。它不创建新的 orchestration 服务；使用 Codex 现有的 `/goal`、sessions、subagents 和 worktrees。机器可读清单是任务登记表，不是已经运行的 scheduler。
 

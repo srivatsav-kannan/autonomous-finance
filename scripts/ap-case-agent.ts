@@ -4,6 +4,7 @@ import { ConvexHttpClient } from "convex/browser";
 import { z } from "zod";
 import { parseBankScope } from "../src/payments/domain/validation";
 import { APCaseAgentWorker } from "../src/agents/ap-case-worker";
+import { apDecisionConfigSchema, createAPModelDecisionAdapter } from "../src/agents/ap-case-decision";
 import { workerFetch } from "../src/agents/control-plane";
 
 const credential = z
@@ -15,6 +16,7 @@ const configSchema = z
     scope: z.unknown(),
     apCredential: credential,
     paymentsCredential: credential,
+    decision: apDecisionConfigSchema.optional(),
   })
   .strict();
 const args = process.argv.slice(2),
@@ -43,15 +45,24 @@ if (
 )
   throw Error("Distinct AP and payments agent credentials required");
 const client = new ConvexHttpClient(config.convexUrl, { fetch: workerFetch });
+const decisionAdapter = config.decision ? createAPModelDecisionAdapter(config.decision) : undefined;
 const worker = new APCaseAgentWorker(client, scope, [
   config.apCredential,
   config.paymentsCredential,
-]);
+], decisionAdapter);
 const stop = new AbortController();
 process.once("SIGINT", () => stop.abort());
 process.once("SIGTERM", () => stop.abort());
 try {
-  if (args.includes("--once")) console.log(JSON.stringify(await worker.tick()));
+  if (args.includes("--inspect-decision")) {
+    const caseIndex = args.indexOf("--case");
+    const caseId = caseIndex >= 0 ? args[caseIndex + 1] : undefined;
+    if (!decisionAdapter || !caseId) throw Error("--inspect-decision requires model configuration and --case <id>");
+    const { createAPCaseAgentTools } = await import("../src/agents/ap-case-tools");
+    const inspection = await createAPCaseAgentTools(client, scope, config.apCredential).inspect_case({ caseId });
+    const decision = await decisionAdapter.decide(inspection.detail, Date.now() + 30_000);
+    console.log(JSON.stringify({ mode: "read_only_model_preview", writes: 0, decision }));
+  } else if (args.includes("--once")) console.log(JSON.stringify(await worker.tick()));
   else
     await worker.run(stop.signal, (result) =>
       console.log(JSON.stringify(result)),

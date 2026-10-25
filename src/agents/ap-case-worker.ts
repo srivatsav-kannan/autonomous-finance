@@ -9,6 +9,8 @@ import {
   pause,
   WorkerStopped,
 } from "./control-plane";
+import type { APModelDecision } from "../ap-system/agent-decision";
+import type { APDecisionAdapter } from "./ap-case-decision";
 import {
   createAPCaseAgentTools,
   type APAgentCredential,
@@ -21,6 +23,7 @@ export class APCaseAgentWorker {
     private readonly client: KernelTransport,
     private readonly scope: BankScope,
     private readonly credentials: APAgentCredential[],
+    private readonly decisionAdapter?: APDecisionAdapter,
   ) {}
   async tick() {
     const outcomes = [];
@@ -34,12 +37,27 @@ export class APCaseAgentWorker {
       );
       if (!lease) continue;
       const tools = createAPCaseAgentTools(this.client, this.scope, credential);
-      // Retrying this exact fenced mutation can recover a lost response without a new effect.
+      let failureKind: "model_decision_failed" | "backend_policy_rejected" = "backend_policy_rejected";
+      // The model sees a fresh read-only projection. A model/provider failure never falls back to an action.
       try {
+        let decision: APModelDecision | undefined;
+        if (this.decisionAdapter) {
+          const inspection = await this.control.call("apCaseAgent.inspect", () =>
+            tools.inspect_case({ caseId: lease.caseId }),
+          );
+          try {
+            decision = await this.decisionAdapter.decide(inspection.detail, lease.leaseUntil);
+          } catch {
+            failureKind = "model_decision_failed";
+            throw new OperatorActionRequired("AP model decision failed; explicit operator review required");
+          }
+        }
+        // Retrying this exact fenced mutation reuses the decision and cannot call the model twice.
         const result = await this.control.call("apCaseAgent.advance", () =>
           tools.advance_case({
             caseId: lease.caseId,
             generation: lease.generation,
+            ...(decision ? { decision } : {}),
           }),
         );
         outcomes.push({ caseId: lease.caseId, ...result });
@@ -55,6 +73,7 @@ export class APCaseAgentWorker {
               ...credential,
               caseId: lease.caseId,
               generation: lease.generation,
+              failureKind,
             },
           ),
         );

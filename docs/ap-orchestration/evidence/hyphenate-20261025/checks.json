@@ -1,0 +1,10 @@
+{
+  "sameWorkId": true,
+  "transitionCount": 9,
+  "modelDecisionCount": 1,
+  "snapshotChainIntact": true,
+  "caseCount": 1,
+  "newBills": 0,
+  "newPayments": 0,
+  "newJournals": 0
+}

@@ -24,6 +24,8 @@ import type * as apIdentity from "../apIdentity.js";
 import type * as apOperationalMetrics from "../apOperationalMetrics.js";
 import type * as apPaymentRunSchema from "../apPaymentRunSchema.js";
 import type * as apPaymentRuns from "../apPaymentRuns.js";
+import type * as apPrecedentSchema from "../apPrecedentSchema.js";
+import type * as apPrecedents from "../apPrecedents.js";
 import type * as apSandboxBootstrap from "../apSandboxBootstrap.js";
 import type * as apSupplierContacts from "../apSupplierContacts.js";
 import type * as apSystemSchema from "../apSystemSchema.js";
@@ -99,6 +101,8 @@ declare const fullApi: ApiFromModules<{
   apOperationalMetrics: typeof apOperationalMetrics;
   apPaymentRunSchema: typeof apPaymentRunSchema;
   apPaymentRuns: typeof apPaymentRuns;
+  apPrecedentSchema: typeof apPrecedentSchema;
+  apPrecedents: typeof apPrecedents;
   apSandboxBootstrap: typeof apSandboxBootstrap;
   apSupplierContacts: typeof apSupplierContacts;
   apSystemSchema: typeof apSystemSchema;

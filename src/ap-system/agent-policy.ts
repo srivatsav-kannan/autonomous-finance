@@ -80,7 +80,9 @@ export function planAPCase(d: APCaseDetail): APAgentPlan {
     (e) =>
       e.blocking &&
       e.status !== "resolved" &&
-      e.code !== "geometry_review_required",
+      // These are later workflow gates, not missing source evidence. The
+      // field-review and bill-approval branches below keep their authority intact.
+      !["geometry_review_required", "business_plan_required", "business_approval_pending"].includes(e.code),
   );
   if (holds.length)
     return plan(

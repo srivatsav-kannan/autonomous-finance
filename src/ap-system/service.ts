@@ -1,3 +1,5 @@
+import {precedentContextSchema,precedentReviewSchema} from "./precedent-contracts";
+import {workControlSchema} from "./work-contracts";
 import {sandboxFundingSchema} from "./bank-reconciliation";
 import {contactChangeOperationSchemas} from "./supplier-contact-contracts";
 import type {SupplierContactOperations} from "./supplier-contact-operations";
@@ -76,6 +78,13 @@ export function createAPWorkspaceService(options:{
  };
  return{
   paymentRuns,domain,close,corrections,supplierContacts,
+  learning:{
+   overview:()=>human.query(makeFunctionReference<"query">("apPrecedents:overview"),{scope}),
+   seedDemo:idempotencyKey=>agent.mutation(makeFunctionReference<"mutation">("apPrecedents:seedDemo"),{scope,...options.apCredential,idempotencyKey}),
+   reviewRule:input=>human.mutation(makeFunctionReference<"mutation">("apPrecedents:reviewRule"),{scope,...precedentReviewSchema.parse(input)}),
+   evaluate:input=>human.mutation(makeFunctionReference<"mutation">("apPrecedents:evaluate"),{scope,context:precedentContextSchema.parse(input.context),idempotencyKey:input.idempotencyKey}),
+  },
+  workControl:input=>human.mutation(makeFunctionReference<"mutation">("apCaseAgent:control"),{scope,...workControlSchema.parse(input)}),
   bankEvidence:{
    view:()=>human.query(makeFunctionReference<"query">("demoEvidence:bankReconciliation"),{scope}),
    classifyFunding:input=>human.mutation(makeFunctionReference<"mutation">("demoEvidence:approveSandboxFunding"),{scope,...sandboxFundingSchema.parse(input)}),

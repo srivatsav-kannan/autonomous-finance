@@ -1,3 +1,5 @@
+import {precedentContextSchema,precedentReviewSchema,type PrecedentOverview,type PrecedentReviewInput,type PrecedentContext,type PrecedentEvaluation} from "./precedent-contracts";
+import {workControlSchema} from "./work-contracts";
 import {sandboxFundingSchema, type SandboxFundingInput, type BankReconciliationView} from "./bank-reconciliation";
 import {contactChangeOperationSchemas,type ContactChangeOperation} from "./supplier-contact-contracts";
 import type {SupplierContactOperations} from "./supplier-contact-operations";
@@ -23,6 +25,13 @@ const MAX_BYTES=MAX_ORIGINAL_BYTES+64*1024;
 export class APHttpError extends Error {constructor(readonly code:string,readonly status:number,reason:string){super(reason);}}
 export type UploadDocument={bytes:Uint8Array;name:string;mimeType:string;kind:SourceDocument["kind"]};
 export interface APWorkspaceService {
+ learning?:{
+  overview():Promise<PrecedentOverview>;
+  seedDemo(idempotencyKey:string):Promise<unknown>;
+  reviewRule(input:PrecedentReviewInput):Promise<unknown>;
+  evaluate(input:{context:PrecedentContext;idempotencyKey:string}):Promise<PrecedentEvaluation>;
+ };
+ workControl?(input:z.infer<typeof workControlSchema>):Promise<{ok:boolean;code?:string}>;
  list():Promise<APCaseDetail[]>;
  detail(caseId:string):Promise<APCaseDetail>;
  ingest(input:APIntake):Promise<{caseId:string}>;
@@ -124,6 +133,24 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
    if(req.method==="GET"&&url.pathname===PREFIX+"/metrics"){
     if(!service.operationalTimings)throw new APHttpError("capability_unavailable",503,"Operational event timings are unavailable on this service.");
     return send(res,await service.operationalTimings());
+   }
+   const learning=/^\/api\/ap-system\/learning(?:\/(seed-demo|review|evaluate))?$/.exec(url.pathname);
+   if(learning){
+    if(!service.learning)throw new APHttpError("capability_unavailable",503,"The precedent learning workspace is unavailable.");
+    if(req.method==="GET"&&!learning[1])return send(res,await service.learning.overview());
+    if(req.method==="POST"){
+     const input=await json(req);
+     if(learning[1]==="seed-demo")return send(res,await service.learning.seedDemo(z.object({idempotencyKey:z.string().trim().min(1).max(160)}).strict().parse(input).idempotencyKey));
+     if(learning[1]==="review")return send(res,await service.learning.reviewRule(precedentReviewSchema.parse(input)));
+     if(learning[1]==="evaluate")return send(res,await service.learning.evaluate(z.object({context:precedentContextSchema,idempotencyKey:z.string().trim().min(1).max(160)}).strict().parse(input)));
+    }
+   }
+   const workControl=/^\/api\/ap-system\/cases\/([^/]+)\/work\/control$/.exec(url.pathname);
+   if(req.method==="POST"&&workControl){
+    if(!service.workControl)throw new APHttpError("capability_unavailable",503,"Shared case work controls are unavailable.");
+    const input=workControlSchema.parse(await json(req));
+    if(input.caseId!==decodeURIComponent(workControl[1]!))throw new APHttpError("case_mismatch",400,"The work control must belong to the selected case.");
+    return send(res,await service.workControl(input));
    }
    const contacts=/^\/api\/ap-system\/supplier-contacts(?:\/([a-z]+))?$/.exec(url.pathname);
    if(contacts){

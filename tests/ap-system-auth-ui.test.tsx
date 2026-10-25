@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { APLocalSimulationGate, APLocalSimulationBanner } from "../console/src/APLocalSimulationGate";
-import { APAuthGate, APAuthStatus, apAuthReturnUrl } from "../console/src/APAuthGate";
+import { APAuthGate, APAuthStatus, apAuthReturnUrl, isHyphenateDemoRuntime } from "../console/src/APAuthGate";
 import { apProtectedFetch, closeAPSession, configureAPSession } from "../console/src/apAuthSession";
 import { apSystemApi, downloadOriginal, loadPage, validatePaymentRequest } from "../console/src/apSystemApi";
 import { apUIFixture, uiSourceText } from "./ap-system-ui.fixture";
@@ -9,6 +9,12 @@ afterEach(()=>{configureAPSession(null);vi.unstubAllGlobals();vi.restoreAllMocks
 const response=(value:unknown,status=200)=>new Response(JSON.stringify(value),{status,headers:{"Content-Type":"application/json"}});
 const hooks={onLogin:()=>{},onRetry:()=>{},onLogout:()=>{}};
 describe("Auth0 AP gate and request lifetime",()=>{
+ it("admits only the isolated Hyphenate FakeBank run at the dedicated local origin",()=>{
+  const runtime={identityMode:"simulated_human",runId:"ap97-b3-hyphenate-test",scope:{runId:"ap97-b3-hyphenate-test",provider:"fake",environment:"local"}};
+  expect(isHyphenateDemoRuntime(runtime,"http://127.0.0.1:5196")).toBe(true);
+  for(const origin of ["http://127.0.0.1:5192","http://localhost:5196","https://127.0.0.1:5196","https://demo.invalid"])expect(isHyphenateDemoRuntime(runtime,origin)).toBe(false);
+  for(const bad of [{...runtime,identityMode:"authenticated_human"},{...runtime,runId:"apex107-replay-20261025"},{...runtime,scope:{...runtime.scope,provider:"increase"}},{...runtime,scope:{...runtime.scope,environment:"sandbox"}},{...runtime,scope:{...runtime.scope,runId:"different"}},null])expect(isHyphenateDemoRuntime(bad,"http://127.0.0.1:5196")).toBe(false);
+ });
  it("does not mount workspace before runtime and identity are established",()=>{
   const html=renderToStaticMarkup(<APAuthGate><div>private case content</div></APAuthGate>);
   expect(html).toContain("Checking your sign-in");expect(html).not.toContain("private case content");
@@ -22,7 +28,7 @@ describe("Auth0 AP gate and request lifetime",()=>{
   const html=renderToStaticMarkup(<APLocalSimulationGate actors={actors}><p>private prior actor case</p></APLocalSimulationGate>);
   expect(html).toContain("Local multi-human simulation / FakeBank");expect(html).toContain("Choose a simulated actor");expect(html).not.toContain("private prior actor case");expect(html).not.toContain("textarea");
   const ready=renderToStaticMarkup(<APLocalSimulationBanner actors={actors} selected="owner-b" busy={true} state="ready" onSelect={()=>{}} onRetry={()=>{}}/>);
-  expect(ready).toContain("Acting as Simulated owner B");expect(ready).toContain("<select disabled");expect(ready).toContain("not an Auth0 login");
+  expect(ready).toContain("Acting as Simulated owner B");expect(ready).toMatch(/<select[^>]*disabled/);expect(ready).toContain("not an Auth0 login");
  });
  it("keeps public simulated selection in memory and rejects an old actor response after switching",async()=>{
   let finish!:(value:Response)=>void;const fetcher=vi.fn((_url:string,_init?:RequestInit)=>new Promise<Response>(resolve=>{finish=resolve;}));vi.stubGlobal("fetch",fetcher);

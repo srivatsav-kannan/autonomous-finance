@@ -1,0 +1,939 @@
+{
+  "scope": {
+    "organizationId": "ap97-b3-synthetic-company",
+    "runId": "ap97-b3-hyphenate-20261025-v3",
+    "provider": "fake",
+    "environment": "local",
+    "accountId": "ap97-b3-usd-operating"
+  },
+  "caseId": "kd71y1v3ytahfa7drqewcsj94d8gygt6",
+  "revision": 2,
+  "snapshotHash": "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+  "work": {
+    "caseId": "kd71y1v3ytahfa7drqewcsj94d8gygt6",
+    "deadlineAt": 1793026335375,
+    "generation": 5,
+    "owner": "human_field_reviewer",
+    "reason": "Source review and bill approval are missing; the blocking business_plan_required exception remains open and requires controller-provided evidence.",
+    "requirements": [
+      "current_source_field_review"
+    ],
+    "role": "ap_clerk",
+    "stage": "field_review",
+    "status": "waiting",
+    "updatedAt": 1792939935375,
+    "version": "ap-case-agent-v1",
+    "waitSince": 1792939935375,
+    "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj"
+  },
+  "states": {
+    "accounting": "unposted",
+    "authorization": "not_requested",
+    "business": "held",
+    "document": "review_required",
+    "execution": "not_started",
+    "reconciliation": "unmatched"
+  },
+  "links": {
+    "bankTransactionIds": [],
+    "billId": null,
+    "billVersion": null,
+    "commandIds": [],
+    "duplicateOfCaseId": null,
+    "externalAccountingIds": [],
+    "paymentVersionIds": [],
+    "recognitionJournalId": null,
+    "settlementJournalIds": []
+  },
+  "amounts": {
+    "acceptedCents": null,
+    "creditedCents": 0,
+    "disputedCents": null,
+    "instructedCents": 0,
+    "invoicedCents": 7700,
+    "outstandingCents": null,
+    "settledCents": 0
+  },
+  "payments": [],
+  "journals": [],
+  "transitions": [
+    {
+      "actor": "ap97-b3-ap",
+      "at": 1792939880680,
+      "eventId": "m170hh8a8hz0ccv4g18cp2svqn8gy8h2",
+      "kind": "agent_check_case",
+      "references": [
+        "0bbe56b1f163c5bfc090618c4bb076bbebfa0651c8141e1006b9b7bd95cc90fe",
+        "revision:1"
+      ],
+      "summary": "New source case awaits agent policy check.",
+      "transition": {
+        "action": "created",
+        "actorKind": "agent",
+        "after": {
+          "deadlineAt": null,
+          "generation": 0,
+          "owner": "ap_clerk",
+          "reason": "New source case awaits agent policy check.",
+          "requirements": [],
+          "role": "ap_clerk",
+          "stage": "check_case",
+          "status": "queued",
+          "waitSince": null
+        },
+        "authority": "ap_clerk:ingest",
+        "before": null,
+        "caseRevision": 1,
+        "changes": [
+          {
+            "after": "queued",
+            "before": null,
+            "field": "status"
+          },
+          {
+            "after": "check_case",
+            "before": null,
+            "field": "stage"
+          },
+          {
+            "after": "ap_clerk",
+            "before": null,
+            "field": "owner"
+          },
+          {
+            "after": "ap_clerk",
+            "before": null,
+            "field": "role"
+          },
+          {
+            "after": "New source case awaits agent policy check.",
+            "before": null,
+            "field": "reason"
+          },
+          {
+            "after": [],
+            "before": null,
+            "field": "requirements"
+          },
+          {
+            "after": 0,
+            "before": null,
+            "field": "generation"
+          }
+        ],
+        "contractVersion": "ap-work-v1",
+        "operationId": "work:kx78hv254wntmy4c6e4zndhmbd8gy0dj:created",
+        "outcome": "committed",
+        "policyVersion": "hyphenate-local-governance-v1",
+        "snapshotHash": "0bbe56b1f163c5bfc090618c4bb076bbebfa0651c8141e1006b9b7bd95cc90fe",
+        "sourceBindings": [
+          {
+            "revision": 1,
+            "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+            "sourceId": "source-agent-20261025-01-contract"
+          },
+          {
+            "revision": 1,
+            "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+            "sourceId": "source-agent-20261025-01-invoice"
+          },
+          {
+            "revision": 1,
+            "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+            "sourceId": "source-agent-20261025-01-purchase_order"
+          }
+        ],
+        "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj",
+        "workerVersion": "ap-case-agent-v1"
+      }
+    },
+    {
+      "actor": "ap97-b3-ap",
+      "at": 1792939880706,
+      "eventId": "m174t3bpgyj7ee0ksknf2a1zdx8gz216",
+      "kind": "agent_check_case",
+      "references": [
+        "0bbe56b1f163c5bfc090618c4bb076bbebfa0651c8141e1006b9b7bd95cc90fe",
+        "revision:1"
+      ],
+      "summary": "Scoped worker claimed the current work lease.",
+      "transition": {
+        "action": "claimed",
+        "actorKind": "agent",
+        "after": {
+          "deadlineAt": null,
+          "generation": 1,
+          "owner": "ap_clerk",
+          "reason": "New source case awaits agent policy check.",
+          "requirements": [],
+          "role": "ap_clerk",
+          "stage": "check_case",
+          "status": "leased",
+          "waitSince": null
+        },
+        "authority": "seat:ap_clerk",
+        "before": {
+          "deadlineAt": null,
+          "generation": 0,
+          "owner": "ap_clerk",
+          "reason": "New source case awaits agent policy check.",
+          "requirements": [],
+          "role": "ap_clerk",
+          "stage": "check_case",
+          "status": "queued",
+          "waitSince": null
+        },
+        "caseRevision": 1,
+        "changes": [
+          {
+            "after": "leased",
+            "before": "queued",
+            "field": "status"
+          },
+          {
+            "after": 1,
+            "before": 0,
+            "field": "generation"
+          }
+        ],
+        "contractVersion": "ap-work-v1",
+        "operationId": "work:kx78hv254wntmy4c6e4zndhmbd8gy0dj:claim:47f1667f-aeb9-4e93-9df4-56339f2f7cb1",
+        "outcome": "committed",
+        "policyVersion": "hyphenate-local-governance-v1",
+        "snapshotHash": "0bbe56b1f163c5bfc090618c4bb076bbebfa0651c8141e1006b9b7bd95cc90fe",
+        "sourceBindings": [
+          {
+            "revision": 1,
+            "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+            "sourceId": "source-agent-20261025-01-contract"
+          },
+          {
+            "revision": 1,
+            "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+            "sourceId": "source-agent-20261025-01-invoice"
+          },
+          {
+            "revision": 1,
+            "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+            "sourceId": "source-agent-20261025-01-purchase_order"
+          }
+        ],
+        "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj",
+        "workerVersion": "ap-case-agent-v1"
+      }
+    },
+    {
+      "actor": "ap97-b3-ap",
+      "at": 1792939880727,
+      "eventId": "m172yxbfqhbhz3d3fh2jxnbry58gzw71",
+      "kind": "agent_missing_evidence",
+      "references": [
+        "0bbe56b1f163c5bfc090618c4bb076bbebfa0651c8141e1006b9b7bd95cc90fe",
+        "revision:1"
+      ],
+      "summary": "missing_receipt",
+      "transition": {
+        "action": "advanced",
+        "actorKind": "agent",
+        "after": {
+          "deadlineAt": 1793026280727,
+          "generation": 1,
+          "owner": "receiving_owner",
+          "reason": "missing_receipt",
+          "requirements": [
+            "agent-20261025-01-line-1"
+          ],
+          "role": "ap_clerk",
+          "stage": "missing_evidence",
+          "status": "waiting",
+          "waitSince": 1792939880727
+        },
+        "authority": "ap_clerk:guarded_case_progress",
+        "before": {
+          "deadlineAt": null,
+          "generation": 1,
+          "owner": "ap_clerk",
+          "reason": "New source case awaits agent policy check.",
+          "requirements": [],
+          "role": "ap_clerk",
+          "stage": "check_case",
+          "status": "leased",
+          "waitSince": null
+        },
+        "caseRevision": 1,
+        "changes": [
+          {
+            "after": "waiting",
+            "before": "leased",
+            "field": "status"
+          },
+          {
+            "after": "missing_evidence",
+            "before": "check_case",
+            "field": "stage"
+          },
+          {
+            "after": "receiving_owner",
+            "before": "ap_clerk",
+            "field": "owner"
+          },
+          {
+            "after": "missing_receipt",
+            "before": "New source case awaits agent policy check.",
+            "field": "reason"
+          },
+          {
+            "after": [
+              "agent-20261025-01-line-1"
+            ],
+            "before": [],
+            "field": "requirements"
+          },
+          {
+            "after": 1792939880727,
+            "before": null,
+            "field": "waitSince"
+          },
+          {
+            "after": 1793026280727,
+            "before": null,
+            "field": "deadlineAt"
+          }
+        ],
+        "contractVersion": "ap-work-v1",
+        "operationId": "work:kx78hv254wntmy4c6e4zndhmbd8gy0dj:advance:1",
+        "outcome": "committed",
+        "policyVersion": "hyphenate-local-governance-v1",
+        "snapshotHash": "0bbe56b1f163c5bfc090618c4bb076bbebfa0651c8141e1006b9b7bd95cc90fe",
+        "sourceBindings": [
+          {
+            "revision": 1,
+            "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+            "sourceId": "source-agent-20261025-01-contract"
+          },
+          {
+            "revision": 1,
+            "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+            "sourceId": "source-agent-20261025-01-invoice"
+          },
+          {
+            "revision": 1,
+            "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+            "sourceId": "source-agent-20261025-01-purchase_order"
+          }
+        ],
+        "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj",
+        "workerVersion": "ap-case-agent-v1"
+      }
+    },
+    {
+      "actor": "ap97-b3-ap",
+      "at": 1792939880791,
+      "eventId": "m17980v5xdcv0vzm4qjysmtqnn8gyvgw",
+      "kind": "agent_missing_evidence",
+      "references": [
+        "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "revision:2"
+      ],
+      "summary": "Scoped worker claimed the current work lease.",
+      "transition": {
+        "action": "claimed",
+        "actorKind": "agent",
+        "after": {
+          "deadlineAt": 1793026280727,
+          "generation": 2,
+          "owner": "receiving_owner",
+          "reason": "missing_receipt",
+          "requirements": [
+            "agent-20261025-01-line-1"
+          ],
+          "role": "ap_clerk",
+          "stage": "missing_evidence",
+          "status": "leased",
+          "waitSince": 1792939880727
+        },
+        "authority": "seat:ap_clerk",
+        "before": {
+          "deadlineAt": 1793026280727,
+          "generation": 1,
+          "owner": "receiving_owner",
+          "reason": "missing_receipt",
+          "requirements": [
+            "agent-20261025-01-line-1"
+          ],
+          "role": "ap_clerk",
+          "stage": "missing_evidence",
+          "status": "waiting",
+          "waitSince": 1792939880727
+        },
+        "caseRevision": 2,
+        "changes": [
+          {
+            "after": "leased",
+            "before": "waiting",
+            "field": "status"
+          },
+          {
+            "after": 2,
+            "before": 1,
+            "field": "generation"
+          }
+        ],
+        "contractVersion": "ap-work-v1",
+        "operationId": "work:kx78hv254wntmy4c6e4zndhmbd8gy0dj:claim:a85e9d3c-dfa1-42d3-9c32-3810088b5579",
+        "outcome": "committed",
+        "policyVersion": "hyphenate-local-governance-v1",
+        "snapshotHash": "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "sourceBindings": [
+          {
+            "revision": 1,
+            "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+            "sourceId": "source-agent-20261025-01-contract"
+          },
+          {
+            "revision": 1,
+            "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+            "sourceId": "source-agent-20261025-01-invoice"
+          },
+          {
+            "revision": 1,
+            "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+            "sourceId": "source-agent-20261025-01-purchase_order"
+          },
+          {
+            "revision": 1,
+            "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+            "sourceId": "source-agent-20261025-01-receipt"
+          }
+        ],
+        "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj",
+        "workerVersion": "ap-case-agent-v1"
+      }
+    },
+    {
+      "actor": "ap97-b3-ap",
+      "at": 1792939880811,
+      "eventId": "m170wsa4xw0e3kc834gq17vtss8gzezp",
+      "kind": "agent_field_review",
+      "references": [
+        "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "revision:2"
+      ],
+      "summary": "Current original fields require the existing independent review.",
+      "transition": {
+        "action": "advanced",
+        "actorKind": "agent",
+        "after": {
+          "deadlineAt": 1793026280811,
+          "generation": 2,
+          "owner": "human_field_reviewer",
+          "reason": "Current original fields require the existing independent review.",
+          "requirements": [
+            "current_source_field_review"
+          ],
+          "role": "ap_clerk",
+          "stage": "field_review",
+          "status": "waiting",
+          "waitSince": 1792939880811
+        },
+        "authority": "ap_clerk:guarded_case_progress",
+        "before": {
+          "deadlineAt": 1793026280727,
+          "generation": 2,
+          "owner": "receiving_owner",
+          "reason": "missing_receipt",
+          "requirements": [
+            "agent-20261025-01-line-1"
+          ],
+          "role": "ap_clerk",
+          "stage": "missing_evidence",
+          "status": "leased",
+          "waitSince": 1792939880727
+        },
+        "caseRevision": 2,
+        "changes": [
+          {
+            "after": "waiting",
+            "before": "leased",
+            "field": "status"
+          },
+          {
+            "after": "field_review",
+            "before": "missing_evidence",
+            "field": "stage"
+          },
+          {
+            "after": "human_field_reviewer",
+            "before": "receiving_owner",
+            "field": "owner"
+          },
+          {
+            "after": "Current original fields require the existing independent review.",
+            "before": "missing_receipt",
+            "field": "reason"
+          },
+          {
+            "after": [
+              "current_source_field_review"
+            ],
+            "before": [
+              "agent-20261025-01-line-1"
+            ],
+            "field": "requirements"
+          },
+          {
+            "after": 1792939880811,
+            "before": 1792939880727,
+            "field": "waitSince"
+          },
+          {
+            "after": 1793026280811,
+            "before": 1793026280727,
+            "field": "deadlineAt"
+          }
+        ],
+        "contractVersion": "ap-work-v1",
+        "operationId": "work:kx78hv254wntmy4c6e4zndhmbd8gy0dj:advance:2",
+        "outcome": "committed",
+        "policyVersion": "hyphenate-local-governance-v1",
+        "snapshotHash": "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "sourceBindings": [
+          {
+            "revision": 1,
+            "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+            "sourceId": "source-agent-20261025-01-contract"
+          },
+          {
+            "revision": 1,
+            "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+            "sourceId": "source-agent-20261025-01-invoice"
+          },
+          {
+            "revision": 1,
+            "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+            "sourceId": "source-agent-20261025-01-purchase_order"
+          },
+          {
+            "revision": 1,
+            "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+            "sourceId": "source-agent-20261025-01-receipt"
+          }
+        ],
+        "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj",
+        "workerVersion": "ap-case-agent-v1"
+      }
+    },
+    {
+      "actor": "https://ap-demo.invalid|ap97-b3-governor",
+      "at": 1792939923628,
+      "eventId": "m175md26sq2zg07rg8qwpqd8q98gzqty",
+      "kind": "agent_paused",
+      "references": [
+        "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "revision:2"
+      ],
+      "summary": "Synthetic demo: pause this work item to inspect the restored receipt and recorded ownership. No bill or payment approval.",
+      "transition": {
+        "action": "paused",
+        "actorKind": "human",
+        "after": {
+          "deadlineAt": null,
+          "generation": 3,
+          "owner": "ap_clerk",
+          "reason": "Synthetic demo: pause this work item to inspect the restored receipt and recorded ownership. No bill or payment approval.",
+          "requirements": [],
+          "role": "ap_clerk",
+          "stage": "paused",
+          "status": "paused",
+          "waitSince": null
+        },
+        "authority": "human_cfo:work_control",
+        "before": {
+          "deadlineAt": 1793026280811,
+          "generation": 2,
+          "owner": "human_field_reviewer",
+          "reason": "Current original fields require the existing independent review.",
+          "requirements": [
+            "current_source_field_review"
+          ],
+          "role": "ap_clerk",
+          "stage": "field_review",
+          "status": "waiting",
+          "waitSince": 1792939880811
+        },
+        "caseRevision": 2,
+        "changes": [
+          {
+            "after": "paused",
+            "before": "waiting",
+            "field": "status"
+          },
+          {
+            "after": "paused",
+            "before": "field_review",
+            "field": "stage"
+          },
+          {
+            "after": "ap_clerk",
+            "before": "human_field_reviewer",
+            "field": "owner"
+          },
+          {
+            "after": "Synthetic demo: pause this work item to inspect the restored receipt and recorded ownership. No bill or payment approval.",
+            "before": "Current original fields require the existing independent review.",
+            "field": "reason"
+          },
+          {
+            "after": [],
+            "before": [
+              "current_source_field_review"
+            ],
+            "field": "requirements"
+          },
+          {
+            "after": 3,
+            "before": 2,
+            "field": "generation"
+          },
+          {
+            "after": null,
+            "before": 1792939880811,
+            "field": "waitSince"
+          },
+          {
+            "after": null,
+            "before": 1793026280811,
+            "field": "deadlineAt"
+          }
+        ],
+        "contractVersion": "ap-work-v1",
+        "operationId": "work:kx78hv254wntmy4c6e4zndhmbd8gy0dj:control:fd6f1be8-8f51-4597-9f3b-9ccb5171c2a5",
+        "outcome": "committed",
+        "policyVersion": "hyphenate-local-governance-v1",
+        "snapshotHash": "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "sourceBindings": [
+          {
+            "revision": 1,
+            "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+            "sourceId": "source-agent-20261025-01-contract"
+          },
+          {
+            "revision": 1,
+            "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+            "sourceId": "source-agent-20261025-01-invoice"
+          },
+          {
+            "revision": 1,
+            "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+            "sourceId": "source-agent-20261025-01-purchase_order"
+          },
+          {
+            "revision": 1,
+            "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+            "sourceId": "source-agent-20261025-01-receipt"
+          }
+        ],
+        "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj",
+        "workerVersion": "ap-case-agent-v1"
+      }
+    },
+    {
+      "actor": "https://ap-demo.invalid|ap97-b3-governor",
+      "at": 1792939926224,
+      "eventId": "m17bhxbkg7gayjz3ap0f6g4wvs8gybq3",
+      "kind": "agent_check_case",
+      "references": [
+        "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "revision:2"
+      ],
+      "summary": "Synthetic demo: resume inspection on the same revised case. The current original still requires independent field review; no bill or payment approval is granted.",
+      "transition": {
+        "action": "resumed",
+        "actorKind": "human",
+        "after": {
+          "deadlineAt": null,
+          "generation": 4,
+          "owner": "ap_clerk",
+          "reason": "Synthetic demo: resume inspection on the same revised case. The current original still requires independent field review; no bill or payment approval is granted.",
+          "requirements": [],
+          "role": "ap_clerk",
+          "stage": "check_case",
+          "status": "queued",
+          "waitSince": null
+        },
+        "authority": "human_cfo:work_control",
+        "before": {
+          "deadlineAt": null,
+          "generation": 3,
+          "owner": "ap_clerk",
+          "reason": "Synthetic demo: pause this work item to inspect the restored receipt and recorded ownership. No bill or payment approval.",
+          "requirements": [],
+          "role": "ap_clerk",
+          "stage": "paused",
+          "status": "paused",
+          "waitSince": null
+        },
+        "caseRevision": 2,
+        "changes": [
+          {
+            "after": "queued",
+            "before": "paused",
+            "field": "status"
+          },
+          {
+            "after": "check_case",
+            "before": "paused",
+            "field": "stage"
+          },
+          {
+            "after": "Synthetic demo: resume inspection on the same revised case. The current original still requires independent field review; no bill or payment approval is granted.",
+            "before": "Synthetic demo: pause this work item to inspect the restored receipt and recorded ownership. No bill or payment approval.",
+            "field": "reason"
+          },
+          {
+            "after": 4,
+            "before": 3,
+            "field": "generation"
+          }
+        ],
+        "contractVersion": "ap-work-v1",
+        "operationId": "work:kx78hv254wntmy4c6e4zndhmbd8gy0dj:control:a5784412-9497-47d7-98c0-bb08c8d24c6b",
+        "outcome": "committed",
+        "policyVersion": "hyphenate-local-governance-v1",
+        "snapshotHash": "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "sourceBindings": [
+          {
+            "revision": 1,
+            "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+            "sourceId": "source-agent-20261025-01-contract"
+          },
+          {
+            "revision": 1,
+            "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+            "sourceId": "source-agent-20261025-01-invoice"
+          },
+          {
+            "revision": 1,
+            "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+            "sourceId": "source-agent-20261025-01-purchase_order"
+          },
+          {
+            "revision": 1,
+            "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+            "sourceId": "source-agent-20261025-01-receipt"
+          }
+        ],
+        "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj",
+        "workerVersion": "ap-case-agent-v1"
+      }
+    },
+    {
+      "actor": "ap97-b3-ap",
+      "at": 1792939932523,
+      "eventId": "m1761s8dnjrczp191xeck7w9ed8gz6tc",
+      "kind": "agent_check_case",
+      "references": [
+        "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "revision:2"
+      ],
+      "summary": "Scoped worker claimed the current work lease.",
+      "transition": {
+        "action": "claimed",
+        "actorKind": "agent",
+        "after": {
+          "deadlineAt": null,
+          "generation": 5,
+          "owner": "ap_clerk",
+          "reason": "Synthetic demo: resume inspection on the same revised case. The current original still requires independent field review; no bill or payment approval is granted.",
+          "requirements": [],
+          "role": "ap_clerk",
+          "stage": "check_case",
+          "status": "leased",
+          "waitSince": null
+        },
+        "authority": "seat:ap_clerk",
+        "before": {
+          "deadlineAt": null,
+          "generation": 4,
+          "owner": "ap_clerk",
+          "reason": "Synthetic demo: resume inspection on the same revised case. The current original still requires independent field review; no bill or payment approval is granted.",
+          "requirements": [],
+          "role": "ap_clerk",
+          "stage": "check_case",
+          "status": "queued",
+          "waitSince": null
+        },
+        "caseRevision": 2,
+        "changes": [
+          {
+            "after": "leased",
+            "before": "queued",
+            "field": "status"
+          },
+          {
+            "after": 5,
+            "before": 4,
+            "field": "generation"
+          }
+        ],
+        "contractVersion": "ap-work-v1",
+        "operationId": "work:kx78hv254wntmy4c6e4zndhmbd8gy0dj:claim:bce919de-084a-4553-b523-adaccb086170",
+        "outcome": "committed",
+        "policyVersion": "hyphenate-local-governance-v1",
+        "snapshotHash": "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "sourceBindings": [
+          {
+            "revision": 1,
+            "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+            "sourceId": "source-agent-20261025-01-contract"
+          },
+          {
+            "revision": 1,
+            "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+            "sourceId": "source-agent-20261025-01-invoice"
+          },
+          {
+            "revision": 1,
+            "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+            "sourceId": "source-agent-20261025-01-purchase_order"
+          },
+          {
+            "revision": 1,
+            "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+            "sourceId": "source-agent-20261025-01-receipt"
+          }
+        ],
+        "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj",
+        "workerVersion": "ap-case-agent-v1"
+      }
+    },
+    {
+      "actor": "ap97-b3-ap",
+      "at": 1792939935375,
+      "eventId": "m17ezr2a6ar07tncbxk4b31x358gzknh",
+      "kind": "agent_field_review",
+      "references": [
+        "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "revision:2"
+      ],
+      "summary": "Source review and bill approval are missing; the blocking business_plan_required exception remains open and requires controller-provided evidence.",
+      "transition": {
+        "action": "advanced",
+        "actorKind": "agent",
+        "after": {
+          "deadlineAt": 1793026335375,
+          "generation": 5,
+          "owner": "human_field_reviewer",
+          "reason": "Source review and bill approval are missing; the blocking business_plan_required exception remains open and requires controller-provided evidence.",
+          "requirements": [
+            "current_source_field_review"
+          ],
+          "role": "ap_clerk",
+          "stage": "field_review",
+          "status": "waiting",
+          "waitSince": 1792939935375
+        },
+        "authority": "ap_clerk:guarded_case_progress",
+        "before": {
+          "deadlineAt": null,
+          "generation": 5,
+          "owner": "ap_clerk",
+          "reason": "Synthetic demo: resume inspection on the same revised case. The current original still requires independent field review; no bill or payment approval is granted.",
+          "requirements": [],
+          "role": "ap_clerk",
+          "stage": "check_case",
+          "status": "leased",
+          "waitSince": null
+        },
+        "caseRevision": 2,
+        "changes": [
+          {
+            "after": "waiting",
+            "before": "leased",
+            "field": "status"
+          },
+          {
+            "after": "field_review",
+            "before": "check_case",
+            "field": "stage"
+          },
+          {
+            "after": "human_field_reviewer",
+            "before": "ap_clerk",
+            "field": "owner"
+          },
+          {
+            "after": "Source review and bill approval are missing; the blocking business_plan_required exception remains open and requires controller-provided evidence.",
+            "before": "Synthetic demo: resume inspection on the same revised case. The current original still requires independent field review; no bill or payment approval is granted.",
+            "field": "reason"
+          },
+          {
+            "after": [
+              "current_source_field_review"
+            ],
+            "before": [],
+            "field": "requirements"
+          },
+          {
+            "after": 1792939935375,
+            "before": null,
+            "field": "waitSince"
+          },
+          {
+            "after": 1793026335375,
+            "before": null,
+            "field": "deadlineAt"
+          }
+        ],
+        "contractVersion": "ap-work-v1",
+        "decision": {
+          "action": "wait",
+          "evidenceIds": [],
+          "inputHash": "cf53de8d4127118abd853cde0b55cd3cc1639812a1e014c87ba5a354ffacb706",
+          "inspectedRevision": 2,
+          "inspectedSnapshotHash": "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+          "latencyMs": 2787,
+          "mode": "model",
+          "model": "gpt-6.1-sol",
+          "provider": "openai",
+          "reason": "Source review and bill approval are missing; the blocking business_plan_required exception remains open and requires controller-provided evidence.",
+          "runId": "3a495e65-bc3c-4f7f-b076-713f37794fa7",
+          "usage": {
+            "costMicros": 6308,
+            "inputTokens": 2939,
+            "outputTokens": 43
+          },
+          "version": "ap-model-decision-v1"
+        },
+        "operationId": "work:kx78hv254wntmy4c6e4zndhmbd8gy0dj:advance:5",
+        "outcome": "committed",
+        "policyVersion": "hyphenate-local-governance-v1",
+        "snapshotHash": "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+        "sourceBindings": [
+          {
+            "revision": 1,
+            "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+            "sourceId": "source-agent-20261025-01-contract"
+          },
+          {
+            "revision": 1,
+            "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+            "sourceId": "source-agent-20261025-01-invoice"
+          },
+          {
+            "revision": 1,
+            "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+            "sourceId": "source-agent-20261025-01-purchase_order"
+          },
+          {
+            "revision": 1,
+            "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+            "sourceId": "source-agent-20261025-01-receipt"
+          }
+        ],
+        "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj",
+        "workerVersion": "ap-case-agent-v1"
+      }
+    }
+  ]
+}

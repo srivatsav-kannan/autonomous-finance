@@ -2,6 +2,7 @@ import { z } from "zod";
 import { makeFunctionReference } from "convex/server";
 import type { KernelTransport } from "../payments/adapters/convex-transport";
 import type { BankScope } from "../payments/contracts";
+import { modelDecisionSchema } from "../ap-system/agent-decision";
 import { caseDetailSchema } from "../ap-system/contracts";
 
 export const apAgentToolSchemas = {
@@ -10,6 +11,7 @@ export const apAgentToolSchemas = {
     .object({
       caseId: z.string().min(1),
       generation: z.number().int().positive(),
+      decision: modelDecisionSchema.optional(),
     })
     .strict(),
 };

@@ -1,0 +1,75 @@
+{
+  "caseId": "kd71y1v3ytahfa7drqewcsj94d8gygt6",
+  "inputPacketKey": "hyphenate-work-demo-v1",
+  "before": {
+    "revision": 1,
+    "snapshotHash": "0bbe56b1f163c5bfc090618c4bb076bbebfa0651c8141e1006b9b7bd95cc90fe",
+    "work": {
+      "caseId": "kd71y1v3ytahfa7drqewcsj94d8gygt6",
+      "deadlineAt": 1793026280727,
+      "generation": 1,
+      "owner": "receiving_owner",
+      "reason": "missing_receipt",
+      "requirements": [
+        "agent-20261025-01-line-1"
+      ],
+      "role": "ap_clerk",
+      "stage": "missing_evidence",
+      "status": "waiting",
+      "updatedAt": 1792939880727,
+      "version": "ap-case-agent-v1",
+      "waitSince": 1792939880727,
+      "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj"
+    },
+    "states": {
+      "accounting": "unposted",
+      "authorization": "not_requested",
+      "business": "held",
+      "document": "review_required",
+      "execution": "not_started",
+      "reconciliation": "unmatched"
+    },
+    "exceptionCodes": [
+      "missing_receipt",
+      "business_plan_required"
+    ]
+  },
+  "after": {
+    "revision": 2,
+    "snapshotHash": "04f36864c05226d6ccc5058fb8d99a5c37a781ac1eb2a24aaff44f1c0bddce3f",
+    "work": {
+      "caseId": "kd71y1v3ytahfa7drqewcsj94d8gygt6",
+      "deadlineAt": 1793026280811,
+      "generation": 2,
+      "owner": "human_field_reviewer",
+      "reason": "Current original fields require the existing independent review.",
+      "requirements": [
+        "current_source_field_review"
+      ],
+      "role": "ap_clerk",
+      "stage": "field_review",
+      "status": "waiting",
+      "updatedAt": 1792939880811,
+      "version": "ap-case-agent-v1",
+      "waitSince": 1792939880811,
+      "workId": "kx78hv254wntmy4c6e4zndhmbd8gy0dj"
+    },
+    "states": {
+      "accounting": "unposted",
+      "authorization": "not_requested",
+      "business": "held",
+      "document": "review_required",
+      "execution": "not_started",
+      "reconciliation": "unmatched"
+    },
+    "exceptionCodes": [
+      "business_plan_required"
+    ]
+  },
+  "caseApprovalsPerformed": false,
+  "supplierGovernance": "simulated_independent",
+  "verification": {
+    "missingReceiptObserved": true,
+    "resumedToFieldReview": true
+  }
+}

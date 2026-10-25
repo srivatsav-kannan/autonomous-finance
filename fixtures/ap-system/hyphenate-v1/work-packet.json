@@ -1,0 +1,1438 @@
+{
+  "contractVersion": "ap-evidence-v1",
+  "idempotencyKey": "hyphenate-work-demo-v1",
+  "documents": [
+    {
+      "byteLength": 2345.0,
+      "deliveryId": "upload-agent-20261025-01-invoice",
+      "extractedText": "AP AGENT SANDBOX - SYNTHETIC\nINVOICE INV-AGENT-20261025-01\nEngineering test only. Not an actual supplier invoice or business transaction.\nSupplier: Golden State Produce Co.\nInvoice number: INV-AGENT-20261025-01\nInvoice date: 2026-10-25\nDue date: 2026-11-08\nPayment terms: Net 14\nCurrency: USD\nSKU: KALE-24\nDescription: Organic Kale, 24ct case\nQuantity: 2\nUnit: case\nUnit price: 38.50\nLine amount: 77.00\nSubtotal: 77.00\nTax: 0.00\nFreight: 0.00\nDiscount: 0.00\nTotal: 77.00\nBill to: Sweetgreen simulation - Hayes Valley / sf-hayes-valley\nPO reference: PO-AGENT-20261025-01\nReceipt reference: RCPT-AGENT-20261025-01\nContract reference: CONTRACT-AGENT-20261025-01\nAll counterparties, people and transactions shown are synthetic. Page 1 of 1.",
+      "kind": "invoice",
+      "mimeType": "application/pdf",
+      "name": "invoice.pdf",
+      "originalRef": "retained-synthetic-source:b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+      "pageCount": 1.0,
+      "pageStatus": [
+        {
+          "page": 1.0,
+          "reason": null,
+          "status": "complete"
+        }
+      ],
+      "parser": {
+        "configArtifact": {
+          "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+          "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+        },
+        "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+        "implementationVersion": "ap-agent-fixture-v1",
+        "jobId": null,
+        "model": null,
+        "provider": "pdfplumber",
+        "rasterArtifact": null,
+        "rawArtifact": null,
+        "resolvedVersion": "0.11.9",
+        "tokenArtifact": null,
+        "traineddata": null,
+        "version": "0.11.9"
+      },
+      "provenance": {
+        "description": "New project-authored synthetic AP agent missing-evidence/resume sandbox fixture. Native PDF extraction; not supplier data, not practitioner sign-off.",
+        "kind": "synthetic",
+        "license": "Synthetic project fixture; no external supplier data",
+        "originalFilename": "invoice.pdf"
+      },
+      "replaces": null,
+      "revision": 1.0,
+      "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+      "sourceId": "source-agent-20261025-01-invoice",
+      "originalBase64": "JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgOCAwIFIgL01lZGlhQm94IFsgMCAwIDYxMiA3OTIgXSAvUGFyZW50IDcgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL1BhZ2VNb2RlIC9Vc2VOb25lIC9QYWdlcyA3IDAgUiAvVHlwZSAvQ2F0YWxvZwo+PgplbmRvYmoKNiAwIG9iago8PAovQXV0aG9yIChBdXRvbm9tb3VzIEZpbmFuY2Ugc3ludGhldGljIGZpeHR1cmUgZ2VuZXJhdG9yKSAvQ3JlYXRpb25EYXRlIChEOjIwMDAwMTAxMDAwMDAwKzAwJzAwJykgL0NyZWF0b3IgKGFub255bW91cykgL0tleXdvcmRzICgpIC9Nb2REYXRlIChEOjIwMDAwMTAxMDAwMDAwKzAwJzAwJykgL1Byb2R1Y2VyIChSZXBvcnRMYWIgUERGIExpYnJhcnkgLSBcKG9wZW5zb3VyY2VcKSkgCiAgL1N1YmplY3QgKHVuc3BlY2lmaWVkKSAvVGl0bGUgKFNZTlRIRVRJQyBJTlZPSUNFIElOVi1BR0VOVC0yMDI2MTAyNS0wMSkgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iago3IDAgb2JqCjw8Ci9Db3VudCAxIC9LaWRzIFsgNCAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggODk0Cj4+CnN0cmVhbQpHYXQ9aj8jU0ZOJ1NjKVIvJ2Q2NzI1dEdVJjotaEtyRDUiUC0qPVVLMm43QDlZYFw9W2o1ODIkVlBAb1dqcDI4PU10PVVNblplLGMjJVRzLnJOOTAkQi1qKDxBJiY1aTgmLl1kNV48SWxudSxoQUpGaS5oXy9dMG0qSUMxQFRWIURWPTdCY1xLQWpkbztTbWZAKTRhS081UXBcTlBPYGEhPzU2aEBxdXUya0k7JSZkQVRAXShQaSo9JzI3XT5jJ2s9Sl87K2xyVStyTmlxTj1jKVVNSUZqdWQzbTpXMFBJLmlaL2dLa2BQaUd1ZGZ1VkgyX2UiJSFAaVYjVlAsbTJCImI/LTtvJEFZajpxY3JpMVxPVjpocWJCJD5vZ2FWMjQkbEcvLU8yQmpKcnJfITFfUTBQVXBUSTY5Z1onbFk+XiJWV1JLZTFkNz1cUy8oZjZBP0ZPSFokJDhVN3RkUkZLcjZrcihqOiVIS3BWT1NlYTYpRSg6dFRvYXRVSE9Za1xwRy9uUk9GTEMkLWMycyMmKmJsaT1cRWMjSVJoWlVWKmEjaHVfKjMlLCNyRDs/ImFlPkdgQDJfJVImRHElbmZEYS8qc0hGLVxbc0tHR04jaGtwM0xzPk5fIkVLViFrPjBGSlxiWUhlWkZpR2ZFXTdXU2VMcmUhXzlaOExhZldlTF0+Y2IkKlRwTCdrZ21MSXVkayN1c2FrZTxOakwnPEpiUW1aTVVSLSpQMWk8amlzI2JCbFcxTyZIYW9UPURVWUBwOzFFUSMmakRyJnBoNE8mPENmNk11SytAJjBLPVxATW9lO2IrIUNRMVQ6MVlgRDNuRkYxUmE9UWJTM2pcdHI/bik/RUNWbGo8Ylw/N21DSE8mYVtoSylEbGxyPDpWb1M5aDwxYSlJcUNLPilcWS8vMVhSKGs9ZVFBWD9NNmg9O1ZkcW9XJktBQGowMEZkY2BZMVgiUzVYLl82Z1FoITU/JFJzNGNVW3NkUnQ+KzFEIzlPJjtqXjhpYm1TayhQLlIzKmI6NysubmlsNkZSJEFoamJdVWNoJDlRTzVEYyJEcDtWaG5BSz1MPDdbYVhkKVBNbktEZUpSJD1DZWtbQkNUN2VVcUFAZFdZJXVjaGArIjRkZT1gR3BNayowTCIyLDwvTSZCWD0wVl85UU06Ki9YSiVnUTE1NzlmcUJFfj5lbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCA5CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTAyIDAwMDAwIG4gCjAwMDAwMDAyMDkgMDAwMDAgbiAKMDAwMDAwMDMyMSAwMDAwMCBuIAowMDAwMDAwNTE0IDAwMDAwIG4gCjAwMDAwMDA1ODIgMDAwMDAgbiAKMDAwMDAwMDkxMSAwMDAwMCBuIAowMDAwMDAwOTcwIDAwMDAwIG4gCnRyYWlsZXIKPDwKL0lEIApbPGIzODEyZWI5ZTAzNTQxYzNhNGQ4NDE2NTVhNDU0Yzk4PjxiMzgxMmViOWUwMzU0MWMzYTRkODQxNjU1YTQ1NGM5OD5dCiUgUmVwb3J0TGFiIGdlbmVyYXRlZCBQREYgZG9jdW1lbnQgLS0gZGlnZXN0IChvcGVuc291cmNlKQoKL0luZm8gNiAwIFIKL1Jvb3QgNSAwIFIKL1NpemUgOQo+PgpzdGFydHhyZWYKMTk1NAolJUVPRgo="
+    },
+    {
+      "byteLength": 2421.0,
+      "deliveryId": "upload-agent-20261025-01-purchase_order",
+      "extractedText": "AP AGENT SANDBOX - SYNTHETIC\nPURCHASE ORDER PO-AGENT-20261025-01\nEngineering test only. Not an actual supplier invoice or business transaction.\nSupplier: Golden State Produce Co.\nInvoice number: INV-AGENT-20261025-01\nInvoice date: 2026-10-25\nDue date: 2026-11-08\nPayment terms: Net 14\nCurrency: USD\nSKU: KALE-24\nDescription: Organic Kale, 24ct case\nQuantity: 2\nUnit: case\nUnit price: 38.50\nLine amount: 77.00\nSubtotal: 77.00\nTax: 0.00\nFreight: 0.00\nDiscount: 0.00\nTotal: 77.00\nBill to: Sweetgreen simulation - Hayes Valley / sf-hayes-valley\nPO reference: PO-AGENT-20261025-01\nReceipt reference: RCPT-AGENT-20261025-01\nContract reference: CONTRACT-AGENT-20261025-01\nAuthorized purchasing owner: Fixture Purchasing Operator (simulated).\nAll counterparties, people and transactions shown are synthetic. Page 1 of 1.",
+      "kind": "purchase_order",
+      "mimeType": "application/pdf",
+      "name": "purchase_order.pdf",
+      "originalRef": "retained-synthetic-source:b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+      "pageCount": 1.0,
+      "pageStatus": [
+        {
+          "page": 1.0,
+          "reason": null,
+          "status": "complete"
+        }
+      ],
+      "parser": {
+        "configArtifact": {
+          "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+          "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+        },
+        "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+        "implementationVersion": "ap-agent-fixture-v1",
+        "jobId": null,
+        "model": null,
+        "provider": "pdfplumber",
+        "rasterArtifact": null,
+        "rawArtifact": null,
+        "resolvedVersion": "0.11.9",
+        "tokenArtifact": null,
+        "traineddata": null,
+        "version": "0.11.9"
+      },
+      "provenance": {
+        "description": "New project-authored synthetic AP agent missing-evidence/resume sandbox fixture. Native PDF extraction; not supplier data, not practitioner sign-off.",
+        "kind": "synthetic",
+        "license": "Synthetic project fixture; no external supplier data",
+        "originalFilename": "purchase_order.pdf"
+      },
+      "replaces": null,
+      "revision": 1.0,
+      "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+      "sourceId": "source-agent-20261025-01-purchase_order",
+      "originalBase64": "JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgOCAwIFIgL01lZGlhQm94IFsgMCAwIDYxMiA3OTIgXSAvUGFyZW50IDcgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL1BhZ2VNb2RlIC9Vc2VOb25lIC9QYWdlcyA3IDAgUiAvVHlwZSAvQ2F0YWxvZwo+PgplbmRvYmoKNiAwIG9iago8PAovQXV0aG9yIChBdXRvbm9tb3VzIEZpbmFuY2Ugc3ludGhldGljIGZpeHR1cmUgZ2VuZXJhdG9yKSAvQ3JlYXRpb25EYXRlIChEOjIwMDAwMTAxMDAwMDAwKzAwJzAwJykgL0NyZWF0b3IgKGFub255bW91cykgL0tleXdvcmRzICgpIC9Nb2REYXRlIChEOjIwMDAwMTAxMDAwMDAwKzAwJzAwJykgL1Byb2R1Y2VyIChSZXBvcnRMYWIgUERGIExpYnJhcnkgLSBcKG9wZW5zb3VyY2VcKSkgCiAgL1N1YmplY3QgKHVuc3BlY2lmaWVkKSAvVGl0bGUgKFNZTlRIRVRJQyBQVVJDSEFTRSBPUkRFUiBQTy1BR0VOVC0yMDI2MTAyNS0wMSkgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iago3IDAgb2JqCjw8Ci9Db3VudCAxIC9LaWRzIFsgNCAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggOTY0Cj4+CnN0cmVhbQpHYXQ9ajlsSyNGJjtLWk4vKj5LZVJhYTVlI2VkJyI1TF4kQjg/NiRxKEg4a148SCcvOkMhNk1QMjAhPG9kWWAxI2A1Ky5ScWJHLWUpJT1UNkU7Yz8wITciTSZddGYuKVVlY0xDNUNpQUFMP1oyRFMsZVIuazYxXDBxYC9PKiFKLC1FK0MyZlwxNGVNLDMoZFZGTiFBSipUQVtRUGYtbjxOVlV0Y1Y4Ok8jJ0kyPGdPQFpfYV4lT0pXPjpAPiJYWCg0LEFuVDZJVF9JVyNgKUJNMGlfTUVqZF9aLW5yb1AtNVohWmdyWzIwcFlkPlZJTTg9RmIhVTZRdSQuJiMyR24nZ09RXGQyWitjUThyUmpcOUtXTmBoOEZfPT1Gb14nUEwnbDE0U0E9bkZuXyRpMV8xPy9uVSpZZm1YaFZlSEUwIjpDcWdTPlNkLiokKCxHLCksK1FxWURnWVJpR0woMWVAYilvOyxPRzpnWHQ0aDdlX1syRmpPJ0JJLi9zTzNQJTplKzwpQ0Q3Tk1sLEQuJV0uIz89dDklRFovXypmPTVUS0tcKCMnPXFMKVUhODpWLyo2LC05LFRJJClVUi8pQS9oRlI4XWFCL0cqZCtJR0kpayxGcUVET1xbY2RKRC43RkhnUyUtbWRqQUApSUFTZEFiPiNJWD5BK2pgXFkrT2VFJ25caSFbUGlEQTVrOXI5LjZmWzU6Uy0+Zi5BSyIhL1JbciY7Ul1JSm5vI0xEL2J1L0suKHNYTC9PSVNpJUVuMDNqQmJOQkRvV2tbOUdIYEpaYWwmWylnIWpGTHNfVzJhQnEqX0thUmFWUmE8YiIpK1RtbGlddUdYMU48YU1kIz1mQFFVaEksaWFmWnFdayI8XCdiY1JcL0s9T1tBcnM6Y3E6clxMSzwtL2YlXUNhQ09La15sPGxdVGM/WiI2MCRba3VfTytZI0IlQEMwPSZpIVMxWE40ST0qMlwkZ3NcQXVDSClMamo9Tjs8aEsrLDk7MEo6ZVJXbUYlLF5YIWlHNnBBLk80QStRNiI4Uz87akstb1AnOHE4clpsVjA3PFQ9OyRYcVZzbGlYN1AqaTc+XW10OydiYWNmPU0kZCZGUTNMI2ZRUTtoX1BiaTInWVBtVC89WDAvOE9mJXRsb1FWOjpvUUhQJllqcTRycV9zdVJyTFM8U0RIWEVsNlRyaVdNbDtsZUUtOyxnR0JCZlVsPGc6Ll8+W2tGWltPUCpIQGddL1NVWGhhYlJIQm5KJz1xUys9STthZUNCOzBKIm5KMkdEdX4+ZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgOQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwNjEgMDAwMDAgbiAKMDAwMDAwMDEwMiAwMDAwMCBuIAowMDAwMDAwMjA5IDAwMDAwIG4gCjAwMDAwMDAzMjEgMDAwMDAgbiAKMDAwMDAwMDUxNCAwMDAwMCBuIAowMDAwMDAwNTgyIDAwMDAwIG4gCjAwMDAwMDA5MTcgMDAwMDAgbiAKMDAwMDAwMDk3NiAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9JRCAKWzw3YTZjMjcxOGQ5ZTBlN2ZiNjI0ZjBjNjUwY2VmNWVjYT48N2E2YzI3MThkOWUwZTdmYjYyNGYwYzY1MGNlZjVlY2E+XQolIFJlcG9ydExhYiBnZW5lcmF0ZWQgUERGIGRvY3VtZW50IC0tIGRpZ2VzdCAob3BlbnNvdXJjZSkKCi9JbmZvIDYgMCBSCi9Sb290IDUgMCBSCi9TaXplIDkKPj4Kc3RhcnR4cmVmCjIwMzAKJSVFT0YK"
+    },
+    {
+      "byteLength": 2419.0,
+      "deliveryId": "upload-agent-20261025-01-contract",
+      "extractedText": "AP AGENT SANDBOX - SYNTHETIC\nSUPPLY CONTRACT CONTRACT-AGENT-20261025-01\nEngineering test only. Not an actual supplier invoice or business transaction.\nSupplier: Golden State Produce Co.\nInvoice number: INV-AGENT-20261025-01\nInvoice date: 2026-10-25\nDue date: 2026-11-08\nPayment terms: Net 14\nCurrency: USD\nSKU: KALE-24\nDescription: Organic Kale, 24ct case\nQuantity: 2\nUnit: case\nUnit price: 38.50\nLine amount: 77.00\nSubtotal: 77.00\nTax: 0.00\nFreight: 0.00\nDiscount: 0.00\nTotal: 77.00\nBill to: Sweetgreen simulation - Hayes Valley / sf-hayes-valley\nPO reference: PO-AGENT-20261025-01\nReceipt reference: RCPT-AGENT-20261025-01\nContract reference: CONTRACT-AGENT-20261025-01\nEffective 2026-01-01 through 2026-12-31. Unit price USD 38.50; Net 14.\nAll counterparties, people and transactions shown are synthetic. Page 1 of 1.",
+      "kind": "contract",
+      "mimeType": "application/pdf",
+      "name": "contract.pdf",
+      "originalRef": "retained-synthetic-source:ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+      "pageCount": 1.0,
+      "pageStatus": [
+        {
+          "page": 1.0,
+          "reason": null,
+          "status": "complete"
+        }
+      ],
+      "parser": {
+        "configArtifact": {
+          "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+          "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+        },
+        "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+        "implementationVersion": "ap-agent-fixture-v1",
+        "jobId": null,
+        "model": null,
+        "provider": "pdfplumber",
+        "rasterArtifact": null,
+        "rawArtifact": null,
+        "resolvedVersion": "0.11.9",
+        "tokenArtifact": null,
+        "traineddata": null,
+        "version": "0.11.9"
+      },
+      "provenance": {
+        "description": "New project-authored synthetic AP agent missing-evidence/resume sandbox fixture. Native PDF extraction; not supplier data, not practitioner sign-off.",
+        "kind": "synthetic",
+        "license": "Synthetic project fixture; no external supplier data",
+        "originalFilename": "contract.pdf"
+      },
+      "replaces": null,
+      "revision": 1.0,
+      "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+      "sourceId": "source-agent-20261025-01-contract",
+      "originalBase64": "JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgOCAwIFIgL01lZGlhQm94IFsgMCAwIDYxMiA3OTIgXSAvUGFyZW50IDcgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL1BhZ2VNb2RlIC9Vc2VOb25lIC9QYWdlcyA3IDAgUiAvVHlwZSAvQ2F0YWxvZwo+PgplbmRvYmoKNiAwIG9iago8PAovQXV0aG9yIChBdXRvbm9tb3VzIEZpbmFuY2Ugc3ludGhldGljIGZpeHR1cmUgZ2VuZXJhdG9yKSAvQ3JlYXRpb25EYXRlIChEOjIwMDAwMTAxMDAwMDAwKzAwJzAwJykgL0NyZWF0b3IgKGFub255bW91cykgL0tleXdvcmRzICgpIC9Nb2REYXRlIChEOjIwMDAwMTAxMDAwMDAwKzAwJzAwJykgL1Byb2R1Y2VyIChSZXBvcnRMYWIgUERGIExpYnJhcnkgLSBcKG9wZW5zb3VyY2VcKSkgCiAgL1N1YmplY3QgKHVuc3BlY2lmaWVkKSAvVGl0bGUgKFNZTlRIRVRJQyBTVVBQTFkgQ09OVFJBQ1QgQ09OVFJBQ1QtQUdFTlQtMjAyNjEwMjUtMDEpIC9UcmFwcGVkIC9GYWxzZQo+PgplbmRvYmoKNyAwIG9iago8PAovQ291bnQgMSAvS2lkcyBbIDQgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iago4IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDk1NQo+PgpzdHJlYW0KR2F0PSpkO0lZbCdSZkZPZ3JGOEg7Vk5ILlxnTCphM3UoJV5kVj0yUEspbmNhNis1NyZeUnA/V1J1VU9uJlE0PWFoSy4hKGc/MExjYUYldCoyZFpZbEE4bF5HIT5FTmlKPjRmTUNeZCoqVWNwL1ZQTUo3OEBKQi4vNCxBXFgwMU0mKmlRRT90Xz1fSylfLyhnOV1VOFxNIStxOlVsdDJMXChrLjIqMmU6ZzdUTVxHNyU/bGk9JCpIUixwTHVbO0tdLiQ5aCRvK2xsXis5QSQ0JWhdTig9cDJyJUE1LklhKkMsQEhkRl4yOF9zOVxSOCpPWWxyPTlML0pgPyYxNDRYLlktWm1VJzdLMVpSSWt0XnI6QjpFc0FJb1ZiM0BEVipJWydQa2RnVU1YW2p0LDpcIyVtRilaOysxP190TkJlIT4jc3RmcWY0P1tMIWJSbTkjLHMwOlB1ME9tcjw6MDIpWGlHczwpaTFdMlI8JDFQREExbjNpXS9IaEomRkoqclFnNk9JX0MzVU9eOz4xOWVIVVFXNzVyJV90XVAhRDdfY2AtcU82O1MkLWlVITg6VkNaVlsuTyJ0LnRdTC1USD8ySlNxUSc9dSc+Q1VyKEUnTHUsaylMKU8+XTAkL0JqTCxuP3AiZFBKKHBjM1ZwQTxwcS5CQlRyP1hGXldFYD87RjFBJU0zcz84WSlLTWpGW2o5SippSTRnLEJXYlE1Xz50M1Rqc1opUiNSL2k6WFNfITgvUCJYXFBvKUYtXDpIbFhLQk9SaE40ZXMybFlDIT9yQlN0Ry0hS3MwMFJDRERxJFM9YC9XOyZfQzBMRD00K01NQGE/IUVtczdkOD4+MUEvNVA/Pmw6UClNJXFyXWc0bV4oa2oubUhUazhdW2FbaCEzTz0oZiFNX2BaZWVjNTM5dCZUV0lxPFU/MT1RZz8oU3QjS2VeOSpiZXNxL2YyWStcKmJcSS4lR2BjQyYlIWI7KD0jL3NLJTk5N0djamohZGwtYFlnTFg8RkNyKDssS1VrSWs0ZEhtJiYxIk02bCZPbEw9RTUpPERPO0lTTStzZUtGaSVROTlVcztgNjJiYGFDci9Vbj5WNmY5Ik4ralZwIS0nPmtAO2poPV1XXzI0aS9LLmkiNGNDJSpWbi5nNyxnLz8taWZvJVJaZi5xayIjXmZGRT07YGA/R0stOSJuPWNJPTpaPUxmbD5FSlxyc1s0NSJSbyM2OGZhWnNdcz84OV5yJjVwKU0jLWciL1VhWj0+clc3VXFpQCJ+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDkKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDYxIDAwMDAwIG4gCjAwMDAwMDAxMDIgMDAwMDAgbiAKMDAwMDAwMDIwOSAwMDAwMCBuIAowMDAwMDAwMzIxIDAwMDAwIG4gCjAwMDAwMDA1MTQgMDAwMDAgbiAKMDAwMDAwMDU4MiAwMDAwMCBuIAowMDAwMDAwOTI0IDAwMDAwIG4gCjAwMDAwMDA5ODMgMDAwMDAgbiAKdHJhaWxlcgo8PAovSUQgCls8MTI4MWI3ZDE2NmQxZTcyZWY4ZmNjNTExZDA4YzJmMjE+PDEyODFiN2QxNjZkMWU3MmVmOGZjYzUxMWQwOGMyZjIxPl0KJSBSZXBvcnRMYWIgZ2VuZXJhdGVkIFBERiBkb2N1bWVudCAtLSBkaWdlc3QgKG9wZW5zb3VyY2UpCgovSW5mbyA2IDAgUgovUm9vdCA1IDAgUgovU2l6ZSA5Cj4+CnN0YXJ0eHJlZgoyMDI4CiUlRU9GCg=="
+    },
+    {
+      "byteLength": 2475.0,
+      "deliveryId": "upload-agent-20261025-01-receipt",
+      "extractedText": "AP AGENT SANDBOX - SYNTHETIC\nGOODS RECEIPT RCPT-AGENT-20261025-01\nEngineering test only. Not an actual supplier invoice or business transaction.\nSupplier: Golden State Produce Co.\nInvoice number: INV-AGENT-20261025-01\nInvoice date: 2026-10-25\nDue date: 2026-11-08\nPayment terms: Net 14\nCurrency: USD\nSKU: KALE-24\nDescription: Organic Kale, 24ct case\nQuantity: 2\nUnit: case\nUnit price: 38.50\nLine amount: 77.00\nSubtotal: 77.00\nTax: 0.00\nFreight: 0.00\nDiscount: 0.00\nTotal: 77.00\nBill to: Sweetgreen simulation - Hayes Valley / sf-hayes-valley\nPO reference: PO-AGENT-20261025-01\nReceipt reference: RCPT-AGENT-20261025-01\nContract reference: CONTRACT-AGENT-20261025-01\nReceived and accepted: 2 case of KALE-24.\nReceiving owner: Fixture Receiving Operator (simulated)\nAcceptance recorded: 2026-10-25T10:00:00Z\nAll counterparties, people and transactions shown are synthetic. Page 1 of 1.",
+      "kind": "receipt",
+      "mimeType": "application/pdf",
+      "name": "receipt.pdf",
+      "originalRef": "retained-synthetic-source:0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+      "pageCount": 1.0,
+      "pageStatus": [
+        {
+          "page": 1.0,
+          "reason": null,
+          "status": "complete"
+        }
+      ],
+      "parser": {
+        "configArtifact": {
+          "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+          "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+        },
+        "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+        "implementationVersion": "ap-agent-fixture-v1",
+        "jobId": null,
+        "model": null,
+        "provider": "pdfplumber",
+        "rasterArtifact": null,
+        "rawArtifact": null,
+        "resolvedVersion": "0.11.9",
+        "tokenArtifact": null,
+        "traineddata": null,
+        "version": "0.11.9"
+      },
+      "provenance": {
+        "description": "New project-authored synthetic AP agent missing-evidence/resume sandbox fixture. Native PDF extraction; not supplier data, not practitioner sign-off.",
+        "kind": "synthetic",
+        "license": "Synthetic project fixture; no external supplier data",
+        "originalFilename": "receipt.pdf"
+      },
+      "replaces": null,
+      "revision": 1.0,
+      "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+      "sourceId": "source-agent-20261025-01-receipt",
+      "originalBase64": "JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgOCAwIFIgL01lZGlhQm94IFsgMCAwIDYxMiA3OTIgXSAvUGFyZW50IDcgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL1BhZ2VNb2RlIC9Vc2VOb25lIC9QYWdlcyA3IDAgUiAvVHlwZSAvQ2F0YWxvZwo+PgplbmRvYmoKNiAwIG9iago8PAovQXV0aG9yIChBdXRvbm9tb3VzIEZpbmFuY2Ugc3ludGhldGljIGZpeHR1cmUgZ2VuZXJhdG9yKSAvQ3JlYXRpb25EYXRlIChEOjIwMDAwMTAxMDAwMDAwKzAwJzAwJykgL0NyZWF0b3IgKGFub255bW91cykgL0tleXdvcmRzICgpIC9Nb2REYXRlIChEOjIwMDAwMTAxMDAwMDAwKzAwJzAwJykgL1Byb2R1Y2VyIChSZXBvcnRMYWIgUERGIExpYnJhcnkgLSBcKG9wZW5zb3VyY2VcKSkgCiAgL1N1YmplY3QgKHVuc3BlY2lmaWVkKSAvVGl0bGUgKFNZTlRIRVRJQyBHT09EUyBSRUNFSVBUIFJDUFQtQUdFTlQtMjAyNjEwMjUtMDEpIC9UcmFwcGVkIC9GYWxzZQo+PgplbmRvYmoKNyAwIG9iago8PAovQ291bnQgMSAvS2lkcyBbIDQgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iago4IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDEwMTYKPj4Kc3RyZWFtCkdhdD1rOWxvI0ImO0taUCdtamFYWzNIIUlZOFtNKkFzKjA1Z2VRVmc3NTVhVU5mY0sxUzxTTTErYzFrL2J0cl1cMyFmL2htcVNdTFJLPjJzQzs5P0xeZl5sPms3Zj1zbGpkXEEtXWhXTzFqYGxVKTo4QSNTQytrRDRBSiRgQEYuWFJBL2ZiWD4vOT8yM20xbmtSU0QpaWhdUk80cEtAMyhSVShxTCtTdT5xTEk1YGFgT14naGhiWmNvb086IlYvRSgyJVNtRiQpXC8/cyphR05CRVlWJTRRTjxvSiU6MTdQYGo6LTlWMFgwb0M+UlFDZUtOcy9MPiFqYHNEJSphSyIuLWZFaD0oTDJWUSd1UyRBPGRUNz8xMW9cOD50OloqJEFDL28xJks7OUpaVkxkdF9CJydqI2siYnM0dVRZcUpxbGhRTCQtYnIvUlhBSGMzRixkRCNqZjEkZmEoO2NTWnQiQko1I0JwS0RWTmd0QHFLKS9Wczo0WSVYWy9LQVJaJ2xqPDZULCZMQSNeSzVGR28pXmU/YSRRZTRXZCJxPF0vWWlKbWFxZkI6NilpK2A8TFomJWEuPiVSRCwrS0NMVFdddWoka0pecSkyTDciMjY8Nl86aEs8KkxFZltpTmRxI2VgXzt0WjErdSNjWGUzYT5gITM+Zzs+TGVgYSNYVidLS0ZnIV4/YFpFWGIlNDEiWy0nPjI4OnE5LmI3RDlSJE9GPEROQ2k5OyolXD1FUWo9OXVvbWJHblBqKFI7KjljbWgpKz5TPEA6WWA3OzgyO3UyJmBiIXJncWhfVFNsUiJRRGRiWzIzcl0lIkB1PTguNWdsR1FdLE47akEocDJgZTVoK2xqLVhFMCkpSTM2MmFxdFtBJDtjZytLVTxbISlIT2pkOWhKa3Q3Q1IrNWFtIW4wbz1HLCtzWSNxNk9VJlxJL0BKUF9YZipZNkE7MlwuSW42SEpbclM4ajhgPlpKXVU7L0BONkBCWyttbWEjVjQ3WjtDT0FHZFsyQCJxW1xAWUNRI2BKTWBJYzE6Q3FYLFdiQCNoKjArKi5AWThOXDhAPnBVSldkXjQpayRlMERiYkFLZjArQyRbSDJZTVlPZG42JylTbiJVOjIkQE83NGQ6MEswO0o7WlAmRlBFQyJLL0hPNCNqcUUlWlYqN05qbm8wWCI7bUQqJC48bXNUWShwJS42XTEzSS9RQThRPCJXWDFePmVdS3EjbEIzbnBMMUwmWG5UaztqN3RTUHI6QltaT0hSI2tEbSgjRF5FTVdpaSsvLVFXLmFUZmo2MVw+S0k7YV0+RFBGLz87VyI1YkdtayhwN1JLImo3MVlea2hZZEpJSmQ2Zn4+ZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgOQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwNjEgMDAwMDAgbiAKMDAwMDAwMDEwMiAwMDAwMCBuIAowMDAwMDAwMjA5IDAwMDAwIG4gCjAwMDAwMDAzMjEgMDAwMDAgbiAKMDAwMDAwMDUxNCAwMDAwMCBuIAowMDAwMDAwNTgyIDAwMDAwIG4gCjAwMDAwMDA5MTggMDAwMDAgbiAKMDAwMDAwMDk3NyAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9JRCAKWzxmMTEzN2RkZjI1MjA3Yzc0ZTQxYzdlOTQzMjdiNmFiYT48ZjExMzdkZGYyNTIwN2M3NGU0MWM3ZTk0MzI3YjZhYmE+XQolIFJlcG9ydExhYiBnZW5lcmF0ZWQgUERGIGRvY3VtZW50IC0tIGRpZ2VzdCAob3BlbnNvdXJjZSkKCi9JbmZvIDYgMCBSCi9Sb290IDUgMCBSCi9TaXplIDkKPj4Kc3RhcnR4cmVmCjIwODQKJSVFT0YK"
+    }
+  ],
+  "candidate": {
+    "appliesToBillId": null,
+    "candidateId": "candidate-agent-20261025-01",
+    "currency": "USD",
+    "discountAllocations": [],
+    "discountCents": 0.0,
+    "dueDate": "2026-11-08",
+    "evidence": [
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-0",
+        "fieldPath": "extractedSupplierName",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 116.73000000000002,
+              "x": 200.0,
+              "y": 110.07000000000005
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": "Golden State Produce Co.",
+        "quote": "Golden State Produce Co.",
+        "rawValue": "Golden State Produce Co.",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-1",
+        "fieldPath": "invoiceNumber",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 116.71000000000004,
+              "x": 200.0,
+              "y": 131.07000000000005
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": "INV-AGENT-20261025-01",
+        "quote": "INV-AGENT-20261025-01",
+        "rawValue": "INV-AGENT-20261025-01",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-2",
+        "fieldPath": "invoiceDate",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 51.140000000000015,
+              "x": 200.0,
+              "y": 152.07000000000005
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": "2026-10-25",
+        "quote": "2026-10-25",
+        "rawValue": "2026-10-25",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-3",
+        "fieldPath": "dueDate",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 51.140000000000015,
+              "x": 200.0,
+              "y": 173.07000000000005
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": "2026-11-08",
+        "quote": "2026-11-08",
+        "rawValue": "2026-11-08",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-4",
+        "fieldPath": "terms",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 29.460000000000008,
+              "x": 200.0,
+              "y": 194.07000000000005
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": "Net 14",
+        "quote": "Net 14",
+        "rawValue": "Net 14",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-5",
+        "fieldPath": "currency",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 21.109999999999985,
+              "x": 200.0,
+              "y": 215.07000000000005
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": "USD",
+        "quote": "USD",
+        "rawValue": "USD",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-6",
+        "fieldPath": "lines.agent-20261025-01-line-1.sku",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 40.02000000000001,
+              "x": 200.0,
+              "y": 236.07000000000005
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": "KALE-24",
+        "quote": "KALE-24",
+        "rawValue": "KALE-24",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-7",
+        "fieldPath": "lines.agent-20261025-01-line-1.description",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 106.16000000000003,
+              "x": 200.0,
+              "y": 257.07000000000005
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": "Organic Kale, 24ct case",
+        "quote": "Organic Kale, 24ct case",
+        "rawValue": "Organic Kale, 24ct case",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-8",
+        "fieldPath": "lines.agent-20261025-01-line-1.quantity",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 9.999999999999943,
+              "tokenRefs": [],
+              "width": 5.560000000000002,
+              "x": 200.0,
+              "y": 278.07000000000005
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": "2",
+        "quote": "2",
+        "rawValue": "2",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-9",
+        "fieldPath": "lines.agent-20261025-01-line-1.unit",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 21.120000000000005,
+              "x": 200.0,
+              "y": 299.07
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": "case",
+        "quote": "case",
+        "rawValue": "case",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-10",
+        "fieldPath": "lines.agent-20261025-01-line-1.unitPriceCents",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 25.02000000000001,
+              "x": 200.0,
+              "y": 320.07
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": 3850.0,
+        "quote": "38.50",
+        "rawValue": "38.50",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-11",
+        "fieldPath": "lines.agent-20261025-01-line-1.amountCents",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 25.02000000000001,
+              "x": 200.0,
+              "y": 341.07
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": 7700.0,
+        "quote": "77.00",
+        "rawValue": "77.00",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-12",
+        "fieldPath": "subtotalCents",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 25.02000000000001,
+              "x": 200.0,
+              "y": 362.07
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": 7700.0,
+        "quote": "77.00",
+        "rawValue": "77.00",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-13",
+        "fieldPath": "taxCents",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 19.460000000000008,
+              "x": 200.0,
+              "y": 383.07
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": 0.0,
+        "quote": "0.00",
+        "rawValue": "0.00",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-14",
+        "fieldPath": "freightCents",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 19.460000000000008,
+              "x": 200.0,
+              "y": 404.07
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": 0.0,
+        "quote": "0.00",
+        "rawValue": "0.00",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-15",
+        "fieldPath": "discountCents",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 19.460000000000008,
+              "x": 200.0,
+              "y": 425.07
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": 0.0,
+        "quote": "0.00",
+        "rawValue": "0.00",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      },
+      {
+        "contentStatus": "supported",
+        "evidenceId": "e-agent-20261025-01-16",
+        "fieldPath": "totalCents",
+        "grounding": {
+          "contextRegions": [],
+          "elementPath": null,
+          "failureReason": null,
+          "frame": {
+            "height": 792.0,
+            "origin": "top_left",
+            "rotation": 0.0,
+            "transform": [
+              1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "units": "point",
+            "width": 612.0
+          },
+          "method": "native",
+          "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+          "page": 1.0,
+          "processor": {
+            "configArtifact": {
+              "ref": "artifact:244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+              "sha256": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193"
+            },
+            "configHash": "244c3e9387a0abd2cca40466b143959332e0ea703fdd7ec082f6d614f1b01193",
+            "implementationVersion": "ap-agent-fixture-v1",
+            "jobId": null,
+            "model": null,
+            "provider": "pdfplumber",
+            "rasterArtifact": null,
+            "rawArtifact": null,
+            "resolvedVersion": "0.11.9",
+            "tokenArtifact": null,
+            "traineddata": null,
+            "version": "0.11.9"
+          },
+          "regions": [
+            {
+              "granularity": "line",
+              "height": 10.0,
+              "tokenRefs": [],
+              "width": 25.02000000000001,
+              "x": 200.0,
+              "y": 446.07
+            }
+          ],
+          "status": "native"
+        },
+        "normalizedValue": 7700.0,
+        "quote": "77.00",
+        "rawValue": "77.00",
+        "source": {
+          "revision": 1.0,
+          "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+          "sourceId": "source-agent-20261025-01-invoice"
+        }
+      }
+    ],
+    "extractedSupplierName": "Golden State Produce Co.",
+    "freightAllocations": [],
+    "freightCents": 0.0,
+    "invoiceDate": "2026-10-25",
+    "invoiceNumber": "INV-AGENT-20261025-01",
+    "kind": "invoice",
+    "lines": [
+      {
+        "allocations": [
+          {
+            "account": "5000",
+            "amountCents": 7700.0,
+            "department": null,
+            "period": "2026-10",
+            "project": null,
+            "store": "sf-hayes-valley",
+            "treatment": "expense"
+          }
+        ],
+        "amountCents": 7700.0,
+        "description": "Organic Kale, 24ct case",
+        "evidenceIds": [
+          "e-agent-20261025-01-6",
+          "e-agent-20261025-01-7",
+          "e-agent-20261025-01-8",
+          "e-agent-20261025-01-9",
+          "e-agent-20261025-01-10",
+          "e-agent-20261025-01-11"
+        ],
+        "lineId": "agent-20261025-01-line-1",
+        "poLineId": "po-agent-20261025-01-line-1",
+        "quantity": {
+          "decimal": "2",
+          "unit": "case"
+        },
+        "receiptLineIds": [
+          "receipt-agent-20261025-01-line-1"
+        ],
+        "sku": "KALE-24",
+        "taxCents": 0.0,
+        "unitPriceCents": 3850.0
+      }
+    ],
+    "parseWarnings": [
+      "Project-authored synthetic fixture. Candidate assembled from frozen fixture facts and grounded by native PDF text extraction; no live parser evaluation claimed."
+    ],
+    "revision": 2.0,
+    "sources": [
+      {
+        "revision": 1.0,
+        "sha256": "b096f9e4e7f3bec295373baf7585aa529fc8a06d6be32de33c2f8019cfbb36cf",
+        "sourceId": "source-agent-20261025-01-invoice"
+      },
+      {
+        "revision": 1.0,
+        "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+        "sourceId": "source-agent-20261025-01-purchase_order"
+      },
+      {
+        "revision": 1.0,
+        "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+        "sourceId": "source-agent-20261025-01-receipt"
+      },
+      {
+        "revision": 1.0,
+        "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+        "sourceId": "source-agent-20261025-01-contract"
+      }
+    ],
+    "subtotalCents": 7700.0,
+    "supplierId": "golden-state-produce",
+    "taxCents": 0.0,
+    "terms": "Net 14",
+    "totalCents": 7700.0
+  },
+  "extraction": {
+    "evidence": [],
+    "reasons": [],
+    "status": "complete"
+  },
+  "purchasingEvidence": [
+    {
+      "acceptedAt": null,
+      "acceptedBy": null,
+      "kind": "purchase_order",
+      "lines": [
+        {
+          "invoiceLineId": "agent-20261025-01-line-1",
+          "lineId": "po-agent-20261025-01-line-1",
+          "quantity": {
+            "decimal": "2",
+            "unit": "case"
+          },
+          "sku": "KALE-24",
+          "unitPriceCents": 3850.0
+        }
+      ],
+      "reference": "PO-AGENT-20261025-01",
+      "source": {
+        "revision": 1.0,
+        "sha256": "b57a8258afb488f5f5070b5cc6e3bb7f62f5887908ecdac3727f079bd5264749",
+        "sourceId": "source-agent-20261025-01-purchase_order"
+      },
+      "supplierId": "golden-state-produce"
+    },
+    {
+      "acceptedAt": "2026-10-25T10:00:00Z",
+      "acceptedBy": "Fixture Receiving Operator (simulated)",
+      "kind": "receipt",
+      "lines": [
+        {
+          "invoiceLineId": "agent-20261025-01-line-1",
+          "lineId": "receipt-agent-20261025-01-line-1",
+          "quantity": {
+            "decimal": "2",
+            "unit": "case"
+          },
+          "sku": "KALE-24",
+          "unitPriceCents": 3850.0
+        }
+      ],
+      "reference": "RCPT-AGENT-20261025-01",
+      "source": {
+        "revision": 1.0,
+        "sha256": "0b74212852708837684026a360cf7ab21cc21008c362eb8c4e83ddd7541451fd",
+        "sourceId": "source-agent-20261025-01-receipt"
+      },
+      "supplierId": "golden-state-produce"
+    },
+    {
+      "acceptedAt": null,
+      "acceptedBy": null,
+      "kind": "contract",
+      "lines": [
+        {
+          "invoiceLineId": "agent-20261025-01-line-1",
+          "lineId": "contract-agent-20261025-01-line-1",
+          "quantity": {
+            "decimal": "2",
+            "unit": "case"
+          },
+          "sku": "KALE-24",
+          "unitPriceCents": 3850.0
+        }
+      ],
+      "reference": "CONTRACT-AGENT-20261025-01",
+      "source": {
+        "revision": 1.0,
+        "sha256": "ff0c2b46c29073a14771861a352e344c488e62d84d8d5cc3e9462e865e99e991",
+        "sourceId": "source-agent-20261025-01-contract"
+      },
+      "supplierId": "golden-state-produce"
+    }
+  ],
+  "explicitRevisionOf": null
+}

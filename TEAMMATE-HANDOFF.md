@@ -4,7 +4,7 @@ The AP work is available in the same GitHub repository across the branches below
 
 | Branch | Contents |
 | --- | --- |
-| [`codex/ap-system-live-auth0`](https://github.com/srivatsav-kannan/autonomous-finance/tree/codex/ap-system-live-auth0) | Auth0 runtime and the completed $77 sandbox flow, original synthetic PDFs, provider readbacks and reconciliation screenshots |
+| [`codex/ap-system-live-auth0`](https://github.com/srivatsav-kannan/autonomous-finance/tree/codex/ap-system-live-auth0) | Auth0 runtime and completed $77 sandbox flow; Hyphenate shared-work/model/learning demo; console navigation, source PDF and traceability dependencies; synthetic originals and sanitized evidence |
 | [`codex/ap-case-agent`](https://github.com/srivatsav-kannan/autonomous-finance/tree/codex/ap-case-agent) — [PR 109](https://github.com/srivatsav-kannan/autonomous-finance/pull/109) | Broader AP implementation, durable case worker, tax/physical/dimension support and the prepared Claude review packet |
 | [`codex/qbo-sandbox-settlement`](https://github.com/srivatsav-kannan/autonomous-finance/tree/codex/qbo-sandbox-settlement) — [PR 106](https://github.com/srivatsav-kannan/autonomous-finance/pull/106) | Earlier QBO integration and $678.60 sandbox settlement evidence; base of PR 109 |
 
@@ -20,6 +20,10 @@ git worktree add --detach ../autonomous-finance-ap-full origin/codex/ap-case-age
 
 Use Node >=24.18.0 and run `npm ci` in each checkout you intend to run. The lockfile is committed; `node_modules` is generated locally. These branches have different validated scopes; integrating them is separate work, not an already-tested merge.
 
+## Hyphenate demo addition
+
+Start with [the demo walkthrough](docs/ap-orchestration/HYPHENATE-DEMO.md) and [run results](docs/ap-orchestration/evidence/hyphenate-20261025/RESULTS.md). The local learning surface is `http://127.0.0.1:5196/ap-system?apWorkspace=learning`; existing external acceptance remains on the separate 5192 environment. New console source/PDF/traceability and navigation files are intentionally included together so imports are complete. No private runtime data or provider keys are in Git.
+
 ## Start with the verified evidence
 
 - [Final live result and limitations](docs/ap-orchestration/evidence/agent-live-20261025/ROLLOUT.md)
@@ -30,7 +34,7 @@ Use Node >=24.18.0 and run `npm ci` in each checkout you intend to run. The lock
 - [Issue 108 remaining work](docs/ap-orchestration/evidence/agent-live-20261025/ISSUE-108-REMAINING.md)
 - [Claude review packet on the broader branch](https://github.com/srivatsav-kannan/autonomous-finance/tree/codex/ap-case-agent/docs/ap-orchestration/claude-review)
 
-The $77 case passed missing-evidence wait, evidence resumption, user bill approval, separate user payment authorization, Increase sandbox settlement, QBO Bill 147 / BillPayment 148 and bank reconciliation with zero unresolved items. The current case worker is deterministic; a real model/tool loop and the other issue 108 gaps remain. The prepared review packet is not a completed Claude review or practitioner sign-off. CI was intentionally skipped.
+The $77 case passed missing-evidence wait, evidence resumption, user bill approval, separate user payment authorization, Increase sandbox settlement, QBO Bill 147 / BillPayment 148 and bank reconciliation with zero unresolved items. The earlier $77 acceptance used the deterministic worker. The new [Hyphenate demo](docs/ap-orchestration/HYPHENATE-DEMO.md) adds shared work/diffs, a bounded optional model decision adapter and a synthetic precedent lab. A real OpenAI decision was executed and retained in an isolated local run; this does not revalidate the external transaction under the new code. The prepared review packet is not a completed Claude review or practitioner sign-off. CI was intentionally skipped.
 
 ## Running on another laptop
 

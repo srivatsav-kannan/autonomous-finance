@@ -1,0 +1,254 @@
+{
+  "authority": {
+    "policyReady": true,
+    "reviewGroup": "govern"
+  },
+  "candidates": [
+    {
+      "coding": {
+        "accountCode": "5000",
+        "allocations": [
+          {
+            "basisPoints": 10000,
+            "code": "sf-hayes-valley",
+            "dimension": "store"
+          }
+        ]
+      },
+      "contradictions": [],
+      "createdAt": 1792939825018,
+      "hash": "37a6fb79f699be2ff4fff143b89546bd2b0c5f03e6251d8776b2d520040196ed",
+      "historyIds": [
+        "n17a7t0x0c6kn312tt1feq61t98gyd26"
+      ],
+      "humanReview": {
+        "approvedScope": {
+          "category": "routine_cleaning",
+          "effectiveFrom": "2026-10-01",
+          "effectiveUntil": "2026-12-31",
+          "locations": [
+            "sf-hayes-valley"
+          ],
+          "supplierId": "hyphenate-demo-cleaning"
+        },
+        "outcome": "accept",
+        "policyHash": "59f68501f349d1cf82ee51a5f2ed61e75a7922d3035a32b0af53ad8f11ee5e4c",
+        "reason": "Synthetic local governor review: retained history A supports routine cleaning as expense 5000, allocated 100% to SF Hayes Valley in Q4 2026. Approve this narrow recommendation only. Capital renovation remains outside scope. This is a simulated engineering demonstration, not practitioner sign-off.",
+        "reviewedAt": 1792939845708,
+        "reviewer": "https://ap-demo.invalid|ap97-b3-governor",
+        "reviewerSeatId": "ap97-b3-governor"
+      },
+      "id": "ms7087c618p72w9rynmfrrdnms8gyr5m",
+      "inferenceMode": "deterministic_demo",
+      "missingContext": [],
+      "proposedBy": "ap97-b3-ap",
+      "reason": "Deterministic candidate from synthetic correction A; independent human review required before reuse on held-out B. Counterexample C is capital renovation and must remain held.",
+      "scope": {
+        "category": "routine_cleaning",
+        "effectiveFrom": "2026-10-01",
+        "effectiveUntil": "2026-12-31",
+        "locations": [
+          "sf-hayes-valley"
+        ],
+        "supplierId": "hyphenate-demo-cleaning"
+      },
+      "status": "approved",
+      "support": [
+        {
+          "historyId": "n17a7t0x0c6kn312tt1feq61t98gyd26",
+          "reason": "Routine cleaning is period expense rather than inventory; preserve the store allocation. Capital renovation is outside this rule.",
+          "revision": 1,
+          "sourceBindings": [
+            {
+              "revision": 1,
+              "sha256": "e4c8075f7fd830c2e2e542a8f67c8f37b8ccf6e9d1bc7a339c108012afa7c65e",
+              "sourceId": "hyphenate-history-a-v1"
+            }
+          ],
+          "sourceCaseId": "synthetic-historical-case-A"
+        }
+      ]
+    }
+  ],
+  "demoCases": [
+    {
+      "context": {
+        "amountCents": 8500,
+        "category": "routine_cleaning",
+        "currency": "USD",
+        "effectiveOn": "2026-10-25",
+        "location": "sf-hayes-valley",
+        "supplierId": "hyphenate-demo-cleaning"
+      },
+      "key": "B"
+    },
+    {
+      "context": {
+        "amountCents": 250000,
+        "category": "capital_renovation",
+        "currency": "USD",
+        "effectiveOn": "2026-10-25",
+        "location": "sf-hayes-valley",
+        "supplierId": "hyphenate-demo-cleaning"
+      },
+      "key": "C"
+    }
+  ],
+  "evaluations": [
+    {
+      "coding": null,
+      "context": {
+        "amountCents": 8500,
+        "category": "routine_cleaning",
+        "currency": "USD",
+        "effectiveOn": "2026-10-25",
+        "location": "sf-hayes-valley",
+        "supplierId": "hyphenate-demo-cleaning"
+      },
+      "evaluatedAt": 1792939835145,
+      "id": "mx77ytec18pp9ntehbjckmytwn8gz4k2",
+      "inferenceMode": "deterministic_demo",
+      "reason": "No currently approved rule matches this supplier, category, location and effective date; retain the human coding review",
+      "requiresHumanReview": true,
+      "ruleIds": [],
+      "status": "held"
+    },
+    {
+      "coding": null,
+      "context": {
+        "amountCents": 250000,
+        "category": "capital_renovation",
+        "currency": "USD",
+        "effectiveOn": "2026-10-25",
+        "location": "sf-hayes-valley",
+        "supplierId": "hyphenate-demo-cleaning"
+      },
+      "evaluatedAt": 1792939837775,
+      "id": "mx7b6bwe47ckaczwkn0tm2jtgd8gz4gt",
+      "inferenceMode": "deterministic_demo",
+      "reason": "No currently approved rule matches this supplier, category, location and effective date; retain the human coding review",
+      "requiresHumanReview": true,
+      "ruleIds": [],
+      "status": "held"
+    },
+    {
+      "coding": {
+        "accountCode": "5000",
+        "allocations": [
+          {
+            "basisPoints": 10000,
+            "code": "sf-hayes-valley",
+            "dimension": "store"
+          }
+        ]
+      },
+      "context": {
+        "amountCents": 8500,
+        "category": "routine_cleaning",
+        "currency": "USD",
+        "effectiveOn": "2026-10-25",
+        "location": "sf-hayes-valley",
+        "supplierId": "hyphenate-demo-cleaning"
+      },
+      "evaluatedAt": 1792939848843,
+      "id": "mx779vbs0ep1wm51wdqgs6fsrn8gz8j1",
+      "inferenceMode": "deterministic_demo",
+      "reason": "Current independently approved precedent matches exact scope. Coding is a recommendation; bill review and separate payment authorization remain required.",
+      "requiresHumanReview": true,
+      "ruleIds": [
+        "ms7087c618p72w9rynmfrrdnms8gyr5m"
+      ],
+      "status": "recommendation"
+    },
+    {
+      "coding": null,
+      "context": {
+        "amountCents": 250000,
+        "category": "capital_renovation",
+        "currency": "USD",
+        "effectiveOn": "2026-10-25",
+        "location": "sf-hayes-valley",
+        "supplierId": "hyphenate-demo-cleaning"
+      },
+      "evaluatedAt": 1792939855360,
+      "id": "mx7912gt6a889v4bmr1bsqzm6x8gzd56",
+      "inferenceMode": "deterministic_demo",
+      "reason": "No currently approved rule matches this supplier, category, location and effective date; retain the human coding review",
+      "requiresHumanReview": true,
+      "ruleIds": [],
+      "status": "held"
+    }
+  ],
+  "histories": [
+    {
+      "context": {
+        "amountCents": 8000,
+        "category": "routine_cleaning",
+        "currency": "USD",
+        "effectiveOn": "2026-10-20",
+        "location": "sf-hayes-valley",
+        "supplierId": "hyphenate-demo-cleaning"
+      },
+      "contradictions": [],
+      "correctionReason": "Routine cleaning is period expense rather than inventory; preserve the store allocation. Capital renovation is outside this rule.",
+      "externalId": "hyphenate-history-a-v1",
+      "finalCoding": {
+        "accountCode": "5000",
+        "allocations": [
+          {
+            "basisPoints": 10000,
+            "code": "sf-hayes-valley",
+            "dimension": "store"
+          }
+        ]
+      },
+      "hash": "4175721880717da5a1390e825cc71414590befe4e88c4f61fc9ec1d48aab5264",
+      "id": "n17a7t0x0c6kn312tt1feq61t98gyd26",
+      "importedAt": 1792939825018,
+      "importedBy": "ap97-b3-ap",
+      "missingContext": [],
+      "originalCoding": {
+        "accountCode": "1200",
+        "allocations": [
+          {
+            "basisPoints": 10000,
+            "code": "sf-hayes-valley",
+            "dimension": "store"
+          }
+        ]
+      },
+      "proposedCoding": {
+        "accountCode": "5000",
+        "allocations": [
+          {
+            "basisPoints": 10000,
+            "code": "sf-hayes-valley",
+            "dimension": "store"
+          }
+        ]
+      },
+      "provenance": "synthetic",
+      "recordPurpose": "non_posting_historical_evidence",
+      "sourceBindings": [
+        {
+          "revision": 1,
+          "sha256": "e4c8075f7fd830c2e2e542a8f67c8f37b8ccf6e9d1bc7a339c108012afa7c65e",
+          "sourceId": "hyphenate-history-a-v1"
+        }
+      ],
+      "sourceCaseId": "synthetic-historical-case-A",
+      "sourceCaseRevision": 1,
+      "sourceCaseSnapshotHash": "50ce15c2130f06a3d0290d5350081d8838c8947cb1b237a255eaedc87607cd8f",
+      "sources": [
+        {
+          "name": "Synthetic history A — original and correction record.txt",
+          "provenance": "synthetic",
+          "revision": 1,
+          "sha256": "e4c8075f7fd830c2e2e542a8f67c8f37b8ccf6e9d1bc7a339c108012afa7c65e",
+          "sourceId": "hyphenate-history-a-v1",
+          "text": "SYNTHETIC TRAINING HISTORY A — not a payable. CleanCo routine store cleaning, SF Hayes Valley, 2026-10-20, USD 80.00. Original imported coding: inventory 1200, 100% SF Hayes Valley. Proposal and finalized historical outcome: expense 5000, 100% SF Hayes Valley. Reason: routine cleaning consumed in the current period; no inventory or capital improvement. This is a supplied synthetic correction example, not a real model inference or practitioner sign-off."
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,8 @@ import type { QueryCtx } from "../../_generated/server";
 import type { Doc } from "../../_generated/dataModel";
 import { intakeSchema, type APException } from "../../../src/ap-system/contracts";
 import { domainRequestSchema, domainCaseProjectionSchema, type DomainCaseProjection } from "../../../src/ap-system/domain-contracts";
-import { businessEvidenceProblems, businessException, evaluateBusinessAcceptance } from "../../../src/ap-system/business-policy";
+import { businessEvidenceProblems, businessException, businessSourceKey, evaluateBusinessAcceptance } from "../../../src/ap-system/business-policy";
+import { quantityMicros } from "../../../src/ap-system/accounting";
 import { activeBusinessPolicy, currentSupplier, assertApprovalCurrent, assertRetainedApprovalVotes, type BusinessVote } from "./businessAuthority";
 /** Derive from recognized ledgers and consumed reservations, never the latest candidate's guessed balance. */
 export async function businessProjection(ctx: QueryCtx, row: Doc<"apCaseRecords">, bill: Doc<"demoBills"> | null, versions: Doc<"demoVersions">[]) {
@@ -28,6 +29,27 @@ export async function businessProjection(ctx: QueryCtx, row: Doc<"apCaseRecords"
       if (status !== "approved") exceptions.push(businessException("business_approval_pending", "The configured sequential approval route must complete before recognition or payment.", "controller"));
     } else {
       exceptions.push(...businessEvidenceProblems(input, row.documentStatus === "reviewed"));
+      // Before an acceptance is proposed, surface absent receiving evidence without
+      // assuming a quantity has been accepted. Full quantity/capacity validation stays
+      // in evaluateBusinessAcceptance and the independent business approval path.
+      if (input.candidate?.kind === "invoice") {
+        const c = input.candidate;
+        const documents = new Map(input.documents.map(d => [businessSourceKey(d), d]));
+        for (const line of c.lines) {
+          const receiving = input.purchasingEvidence.filter(p =>
+            (p.kind === "receipt" || p.kind === "service_acceptance") &&
+            p.supplierId === c.supplierId &&
+            documents.get(businessSourceKey(p.source))?.kind === "receipt" &&
+            !!p.acceptedBy?.trim() && !!p.acceptedAt && Number.isFinite(Date.parse(p.acceptedAt))
+          );
+          const present = receiving.some(p => p.lines.some(l =>
+            l.invoiceLineId === line.lineId && l.sku === line.sku &&
+            l.quantity.unit === line.quantity.unit && quantityMicros(l.quantity.decimal) > 0n &&
+            receiving.flatMap(r => businessSourceKey(r.source) === businessSourceKey(p.source) ? r.lines : []).filter(r => r.lineId === l.lineId).length === 1
+          ));
+          if (!present) exceptions.push(businessException("missing_receipt", "Retain a current receipt or service acceptance identifying this supplier, invoice line, SKU, units and receiving acknowledgment before proposing accepted quantities.", "receiving_owner", line.lineId));
+        }
+      }
       exceptions.push(businessException("business_plan_required", "Propose explicit accepted quantities, cost allocations and any linked credit before group approval.", "controller"));
     }
   } catch (error) {

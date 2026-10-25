@@ -1,3 +1,5 @@
+import {readAPCaseWork} from "./agentWork";
+import {workTransitionSchema} from "../../../src/ap-system/work-contracts";
 import { businessProjection } from "./businessProjection";
 import type { QueryCtx } from "../../_generated/server";
 import type { Doc } from "../../_generated/dataModel";
@@ -38,6 +40,7 @@ export async function projectCase(
   row: Doc<"apCaseRecords">,
 ): Promise<APCaseDetail & { currentSourceBindings: SourceBinding[] }> {
   const input = intakeSchema.parse(row.intake);
+  const work = await readAPCaseWork(ctx,row);
   const agentEvents = await ctx.db.query("apCaseWorkEvents").withIndex("by_case", q=>q.eq("scope.runId",row.scope.runId).eq("caseId",row._id)).collect();
   const config = await getPaymentConfig(ctx, row.scope);
   const decisions = (
@@ -147,6 +150,7 @@ export async function projectCase(
     });
   const approved = bill?.approvedCents ?? business?.credit?.amountCents ?? null;
   return {
+    work,
     ...(business ? { domain: business.domain } : {}),
     contractVersion: AP_CONTRACT_VERSION,
     caseId: row._id,
@@ -266,7 +270,7 @@ export async function projectCase(
       duplicateOfCaseId: null,
     },
     timeline: [
-      ...agentEvents.map(e=>({eventId:e._id,at:e.at,actor:e.actor,kind:`agent_${e.stage}`,summary:e.reason,references:[e.snapshotHash,`revision:${e.revision}`]})),
+      ...agentEvents.map(e=>({eventId:e._id,at:e.at,actor:e.actor,kind:`agent_${e.stage}`,summary:e.reason,references:[e.snapshotHash,`revision:${e.revision}`],...(e.transition?{transition:workTransitionSchema.parse(e.transition)}:{})})),
       ...revisions.map((r) => ({
         eventId: r._id,
         at: r.at,

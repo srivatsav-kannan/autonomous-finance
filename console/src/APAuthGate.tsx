@@ -1,3 +1,4 @@
+import { apRequestPath, isUnifiedApexRuntime } from "./apRuntime";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Auth0Client } from "@auth0/auth0-spa-js";
 import { z } from "zod";
@@ -15,15 +16,17 @@ export function apAuthReturnUrl(appState: unknown) {
 }
 const authConfig = z.object({ mode: z.literal("auth0"), domain: z.string().regex(/^[a-z0-9.-]+\.auth0\.com$/), clientId: z.string().min(1) });
 const simulationConfig=z.object({mode:z.literal("local_simulation"),actors:z.array(z.object({id:z.string().regex(/^[-a-z0-9]{1,80}$/),name:z.string().trim().min(1).max(120)})).min(1).max(20)});
+const hyphenateRuntimeSchema=z.object({identityMode:z.literal("simulated_human"),runId:z.string().regex(/^ap97-b3-hyphenate-/),scope:z.object({runId:z.string(),provider:z.literal("fake"),environment:z.literal("local")})}).refine(value=>value.scope.runId===value.runId);
+export function isHyphenateDemoRuntime(runtime:unknown,origin:string){return origin==="http://127.0.0.1:5196"&&hyphenateRuntimeSchema.safeParse(runtime).success;}
 type Boot = { mode: "local" } | { mode: "auth0"; client: Auth0Client } | z.infer<typeof simulationConfig>;
 let boot: Promise<Boot> | undefined;
 async function initialize(): Promise<Boot> {
-  const response = await fetch("/api/ap-system/runtime", { credentials: "same-origin", redirect: "error", signal: AbortSignal.timeout(10_000) });
+  const response = await fetch(apRequestPath("/api/ap-system/runtime"), { credentials: "same-origin", redirect: "error", signal: AbortSignal.timeout(10_000) });
   if (!response.ok) throw new Error("AP service unavailable. Start the configured gateway, then retry.");
   const runtime = await response.json();
   if (!runtime.auth && runtime.identityMode === "simulated_human") return { mode: "local" };
   if(runtime.auth?.mode==="local_simulation"){
-    if(runtime.identityMode!=="simulated_human"||location.origin!=="http://127.0.0.1:5193")throw new Error("Local multi-human simulation must use its isolated UI on127.0.0.1:5193.");
+    if(!isUnifiedApexRuntime(runtime) && !isHyphenateDemoRuntime(runtime,location.origin) && (runtime.identityMode!=="simulated_human"||location.origin!=="http://127.0.0.1:5193"))throw new Error("Local multi-human simulation must use its configured isolated UI.");
     return simulationConfig.parse(runtime.auth);
   }
   const config = authConfig.safeParse(runtime.auth);

@@ -1,9 +1,11 @@
+import {apPrecedentTables} from "./apPrecedentSchema";
 import { defineTable } from "convex/server";
 import { v } from "convex/values";
 import { scopeValidator } from "./demoSchema";
 
 /** Shared payloads are validated with ap-evidence-v1 before storage. */
 export const apSystemTables = {
+  ...apPrecedentTables,
   apCaseWork: defineTable({
     scope:scopeValidator, caseId:v.id("apCaseRecords"), version:v.string(),
     status:v.union(v.literal("queued"),v.literal("leased"),v.literal("waiting"),v.literal("complete"),v.literal("escalated"),v.literal("paused")),
@@ -16,6 +18,7 @@ export const apSystemTables = {
   apCaseWorkEvents: defineTable({
     scope:scopeValidator, caseId:v.id("apCaseRecords"), actor:v.string(), stage:v.string(), reason:v.string(),
     revision:v.number(), snapshotHash:v.string(), generation:v.number(), at:v.number(),
+    transition:v.optional(v.any()),
   }).index("by_case",["scope.runId","caseId"]),
   apSupplierStatements: defineTable({
     scope: scopeValidator,

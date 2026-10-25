@@ -1,3 +1,5 @@
+import {precedentContextSchema,precedentReviewSchema,type PrecedentOverview,type PrecedentReviewInput,type PrecedentContext,type PrecedentEvaluation} from "../../src/ap-system/precedent-contracts";
+import {workControlSchema} from "../../src/ap-system/work-contracts";
 import {sandboxFundingSchema,type SandboxFundingInput,type BankReconciliationView} from "../../src/ap-system/bank-reconciliation";
 import {contactChangeOperationSchemas,type ContactChangeOperation,type ContactChangeInputs} from "../../src/ap-system/supplier-contact-contracts";
 import type {SupplierContactWorkspaceView} from "../../src/ap-system/supplier-contact-operations";
@@ -57,15 +59,19 @@ export async function loadPage(source: SourceBinding, page: number, signal: Abor
   if (!["image/png", "image/jpeg", "image/webp"].includes(blob.type)) throw new Error("The source preview is not a supported page image.");
   return blob;
 }
-export async function downloadOriginal(source: SourceDocument): Promise<void> {
-  const { response, assertCurrent } = await apProtectedFetch(apSourceUrl(source), { signal: AbortSignal.timeout(30_000) });
+export async function loadOriginal(source: SourceDocument, signal: AbortSignal): Promise<Blob> {
+  const { response, assertCurrent } = await apProtectedFetch(apSourceUrl(source), { signal });
   if (!response.ok) throw new Error("The original file could not be retrieved. Please retry.");
   const blob = await response.blob();
   const bytes = await blob.arrayBuffer();
   const digest = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)), b => b.toString(16).padStart(2, "0")).join("");
   assertCurrent();
-  if (digest !== source.sha256) throw new Error("The downloaded bytes do not match this source version. Download was blocked.");
-  const url = URL.createObjectURL(new Blob([bytes], { type: "application/octet-stream" }));
+  if (digest !== source.sha256) throw new Error("The original bytes do not match this source version. Preview and download were blocked.");
+  return new Blob([bytes], { type: source.mimeType });
+}
+export async function downloadOriginal(source: SourceDocument): Promise<void> {
+  const blob = await loadOriginal(source, AbortSignal.timeout(30_000));
+  const url = URL.createObjectURL(blob);
   const link = document.createElement("a"); link.href = url; link.download = source.name.replace(/[\\/\u0000-\u001f]/g, "_"); link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -83,6 +89,11 @@ export function accountingSelection(value?:APAccountingSelection|string):APAccou
  return input;
 }
 export const apSystemApi = {
+  learning:(signal?:AbortSignal)=>request<PrecedentOverview>("/learning",undefined,signal),
+  seedLearningDemo:(idempotencyKey:string)=>request<unknown>("/learning/seed-demo",{idempotencyKey}),
+  reviewPrecedent:(input:PrecedentReviewInput)=>request<unknown>("/learning/review",precedentReviewSchema.parse(input)),
+  evaluatePrecedent:(context:PrecedentContext,idempotencyKey:string)=>request<PrecedentEvaluation>("/learning/evaluate",{context:precedentContextSchema.parse(context),idempotencyKey}),
+  workControl:(input:import("zod").infer<typeof workControlSchema>)=>request<{ok:boolean;code?:string}>(`/cases/${encodeURIComponent(input.caseId)}/work/control`,workControlSchema.parse(input)),
   bankEvidence:(signal?:AbortSignal)=>request<BankReconciliationView>("/bank-evidence",undefined,signal),
   classifySandboxFunding:(input:SandboxFundingInput)=>request<{entryId:string;replayed:boolean}>("/bank-evidence/funding",sandboxFundingSchema.parse(input)),
 

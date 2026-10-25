@@ -1,3 +1,4 @@
+import {workViewSchema,workTransitionSchema} from "./work-contracts";
 import { z } from "zod";
 import {domainCaseProjectionSchema} from "./domain-contracts";
 export * from "./domain-contracts";
@@ -131,6 +132,7 @@ export const statesSchema = z.object({
 });
 export const caseDetailSchema = z.object({
   domain:domainCaseProjectionSchema.optional(),
+  work:workViewSchema.nullable().optional(),
   contractVersion:z.literal(AP_CONTRACT_VERSION), caseId:id, runId:id, organizationId:id,
   revision:z.number().int().positive(), candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), sources:z.array(sourceDocumentSchema),
   currentSourceBindings:z.array(sourceBindingSchema).min(1),
@@ -141,7 +143,7 @@ export const caseDetailSchema = z.object({
   payments:z.array(z.object({versionId:id,commandId:z.string().nullable(),amountCents:centsSchema,status:id,beneficiaryVersion:id,providerTransferId:z.string().nullable(),authorizedBy:z.array(id)})),
   journals:z.array(z.object({entryId:id,kind:z.enum(["recognition","settlement","credit","return","correction"]),date:date,lines:z.array(z.object({account:id,debit:centsSchema,credit:centsSchema})),bankTransactionId:z.string().nullable()})),
   links:z.object({ billId:z.string().nullable(), billVersion:z.number().int().positive().nullable(), recognitionJournalId:z.string().nullable(), paymentVersionIds:z.array(id), commandIds:z.array(id), bankTransactionIds:z.array(id), settlementJournalIds:z.array(id), externalAccountingIds:z.array(id), duplicateOfCaseId:z.string().nullable() }),
-  timeline:z.array(z.object({eventId:id, at:z.number(), actor:id, kind:id, summary:id, references:z.array(id)})),
+  timeline:z.array(z.object({eventId:id, at:z.number(), actor:id, kind:id, summary:id, references:z.array(id), transition:workTransitionSchema.optional()})),
   createdAt:z.number(), updatedAt:z.number(),
 });
 export const fixtureManifestSchema = z.object({
