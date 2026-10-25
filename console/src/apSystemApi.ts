@@ -1,3 +1,4 @@
+import type {QBOPreview,QBOSubmit,QBOVerify} from "../../src/ap-system/quickbooks/runtime";
 import { domainOperationSchemas, type DomainOperation, type DomainInputs, type GovernanceView, type BusinessProposal } from "../../src/ap-system/domain-operations";
 import { caseDetailSchema, type APCaseDetail, type BillApprovalRequest, type ReviewRequest, type SourceBinding, type SourceDocument } from "../../src/ap-system/contracts";
 import type { PaymentApproval, PaymentSnapshot } from "../../src/payments/contracts";
@@ -88,9 +89,9 @@ export const apSystemApi = {
   authorizeRun: (runId:string,snapshotHash:string) => request<{commandIds:string[]}>(`/payment-runs/${encodeURIComponent(runId)}/authorize`,{snapshotHash}),
   cancelRun: (runId:string,snapshotHash:string) => request<{ok:true}>(`/payment-runs/${encodeURIComponent(runId)}/cancel`,{snapshotHash}),
   accountingStatus: (caseId:string,signal?:AbortSignal) => request<AccountingStatus>(`/cases/${encodeURIComponent(caseId)}/accounting`,undefined,signal),
-  accountingPreview: (caseId:string,paymentVersionId?:string) => request<{plan:Plan;planHash:string;externalWrites:0}>(`/cases/${encodeURIComponent(caseId)}/accounting/preview`,{paymentVersionId}),
-  accountingSubmit: (caseId:string,expectedPlanHash:string,paymentVersionId?:string) => request<{operation:QBOReceipt}>(`/cases/${encodeURIComponent(caseId)}/accounting/submit`,{expectedPlanHash,paymentVersionId}),
-  accountingVerify: (caseId:string,paymentVersionId?:string) => request<{operation:QBOReceipt;verifiedAt:number}>(`/cases/${encodeURIComponent(caseId)}/accounting/verify`,{paymentVersionId}),
+  accountingPreview: (caseId:string,paymentVersionId?:string) => request<QBOPreview>(`/cases/${encodeURIComponent(caseId)}/accounting/preview`,{paymentVersionId}),
+  accountingSubmit: (caseId:string,expectedPlanHash:string,paymentVersionId?:string) => request<QBOSubmit>(`/cases/${encodeURIComponent(caseId)}/accounting/submit`,{expectedPlanHash,paymentVersionId}),
+  accountingVerify: (caseId:string,paymentVersionId?:string) => request<QBOVerify>(`/cases/${encodeURIComponent(caseId)}/accounting/verify`,{paymentVersionId}),
   intake: (files: { file: File; kind: SourceDocument["kind"] }[], key: string) => {
     const data = new FormData(); files.forEach(({ file }) => data.append("documents", file));
     data.append("kinds", JSON.stringify(files.map(f => f.kind))); data.append("idempotencyKey", key);
