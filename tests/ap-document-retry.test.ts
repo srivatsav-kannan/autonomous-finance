@@ -34,7 +34,7 @@ function fixture(mode: "approve" | "hold" | "reject") {
   const rt = new SeatRuntime("test", { seatId: "ap-1", role: "ap_clerk", name: "AP" }, "token", mem);
   const item = vendor.contractPrices[0]!;
   const invoice: ParsedInvoice = {
-    vendorName: vendor.legalName, invoiceNumber: "INV-42", invoiceDate: "2026-01-05", dueDate: "2026-02-05", storeId, deliveryId: null,
+    vendorName: vendor.legalName, invoiceNumber: "INV-42", invoiceDate: "2026-01-05", dueDate: "2026-02-05", storeId, deliveryId: "DEL-42",
     lines: [{ sku: item.sku, description: item.description, quantity: 1, unitCents: item.unitCents, amountCents: item.unitCents }],
     totalCents: item.unitCents, remitBank: vendor.remitTo.bank, remitLast4: vendor.remitTo.accountLast4, note: null,
   };
@@ -48,6 +48,7 @@ function fixture(mode: "approve" | "hold" | "reject") {
   const task = { _id: "document-task", payload: { eventId: "source-document", externalId: "external-invoice" } } as Task;
   vi.spyOn(rt, "event").mockResolvedValue({ _id: "source-document", externalId: "external-invoice", payload: { kind: "invoice", from: vendor.contacts[0]!.email, text: "fixture invoice" } } as Doc<"events">);
   vi.spyOn(rt, "simDate").mockResolvedValue("2026-01-05");
+  vi.spyOn(rt, "eventsOfType").mockResolvedValue([{ _id: "receiving-event", externalId: "receipt-42", payload: { deliveryId: "DEL-42", items: [{ sku: item.sku, qtyReceived: 1 }] } } as Doc<"events">]);
   vi.spyOn(rt, "parsersNow").mockResolvedValue([{ id: "fixture", origin: "builtin", detect: () => true, parse: () => invoice }]);
   vi.spyOn(rt.kernel.client, "query").mockImplementation(async (...call) => {
     const [ref] = call;
@@ -92,6 +93,16 @@ function fixture(mode: "approve" | "hold" | "reject") {
 }
 
 describe("AP document retry after kernel acceptance", () => {
+  it("holds an invoice with no delivery reference instead of calling it a clean match", async () => {
+    const f=fixture("approve");f.invoice.deliveryId=null;
+    const result=await f.run();expect(result.outcome).toBe("held");
+    expect(f.bills[0]!.exceptions).toEqual(expect.arrayContaining([expect.stringContaining("missing_delivery_reference")]));
+  });
+  it("holds unknown SKUs even when receiving records claim a matching quantity", async () => {
+    const f=fixture("approve");f.invoice.lines[0]!.sku="UNKNOWN";
+    const result=await f.run();expect(result.outcome).toBe("held");
+    expect(f.bills[0]!.exceptions).toEqual(expect.arrayContaining([expect.stringContaining("unknown_sku")]));
+  });
   it.each([
     ["approve", "decision mirror"], ["hold", "decision mirror"], ["reject", "decision mirror"],
     ["approve", "bill request"], ["hold", "bill request"], ["reject", "bill request"],

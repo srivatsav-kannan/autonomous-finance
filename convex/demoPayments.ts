@@ -1,3 +1,4 @@
+import { requireNonAPCaseBill } from "./lib/apSystem/legacyGate";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
@@ -113,6 +114,7 @@ export const resolveBillExceptions = mutation({
       : (await requirePaymentHuman(ctx, args.scope)).seat;
     const bill = await ctx.db.get(args.billId); assertRowScope(bill, args.scope);
     const typed = bill as Doc<"demoBills">;
+    await requireNonAPCaseBill(ctx, args.scope, args.billId);
     if (typed.createdBy === actor.seatId) throw new Error("Bill creator cannot resolve their own exceptions");
     if (typed.version !== args.expectedVersion) throw new Error("Stale bill exception review");
     if (!args.reason.trim() || !args.flags.length || new Set(args.flags).size !== args.flags.length ||
@@ -131,6 +133,7 @@ export const resolveBillExceptions = mutation({
 async function accept(ctx: MutationCtx, args: {scope: Doc<"demoConfigs">["scope"]; billId: Id<"demoBills">; approvedCents: number}, actor: string, limit: number) {
   const bill = await ctx.db.get(args.billId); assertRowScope(bill, args.scope);
   const typed = bill as Doc<"demoBills">;
+  await requireNonAPCaseBill(ctx, args.scope, args.billId);
   dollars(args.approvedCents);
   if (args.approvedCents > typed.originalCents || args.approvedCents > limit || typed.createdBy === actor) throw new Error("Bill approval amount/authority/segregation violation");
   if (typed.reservedVersionId || typed.paidCents > 0) throw new Error("Cannot revise reserved or paid bill");
