@@ -39,6 +39,8 @@ export type AccountingExport = {
   recognizedCredit?: RecognizedCredit;
   creditApplication?: CreditApplication;
   holds?: AccountingHold[];
+  correction?: AccountingCorrection;
+  requiredCorrections?: BankReturnCorrection[];
 };
 export type CreditExport = {
   creditId: string;
@@ -88,6 +90,7 @@ export type ExportRequest = {
   caseId: string;
   paymentVersionId?: string;
   creditApplicationId?: string;
+  correctionId?: string;
 };
 /** Inject a request-bound authenticated backend query, never a browser-supplied export. */
 export type ExportLoader = (
@@ -102,7 +105,7 @@ export type Mappings = {
   apAccount: string;
   bankAccount: string;
 };
-export type Entity = "Bill" | "BillPayment" | "VendorCredit";
+export type Entity = "Bill" | "BillPayment" | "VendorCredit" | "JournalEntry";
 export type LocalLinks = {
   caseId: string;
   billId: string;
@@ -114,6 +117,8 @@ export type LocalLinks = {
   creditId: string | null;
   creditApplicationId?: string;
   appliedCreditIds?: string[];
+  correctionId?: string;
+  restoredCorrectionIds?: string[];
 };
 export type Plan = {
   version: "ap-qbo-operation-v1";
@@ -145,3 +150,48 @@ export type Operation = Plan & {
   lastError: string | null;
   responseHash: string | null;
 };
+
+/** Exact already-posted bank return and its approved external replication authority. */
+export type BankReturnEvidence = {
+  kind: "bank_return";
+  caseId: string;
+  billId: string;
+  supplierId: string;
+  recognitionJournalId: string;
+  amountCents: number;
+  currency: "USD";
+  date: string;
+  bankAccount: "1000";
+  apAccount: "2000";
+  original: Settlement;
+  originalJournalHash: string;
+  returnTransactionId: string;
+  returnTransactionRowId: string;
+  observationId: string;
+  returnJournalId: string;
+  returnJournalHash: string;
+};
+export type CorrectionApproval = {
+  correctionId: string;
+  proposalHash: string;
+  policyHash: string;
+  approvedAt: number;
+};
+export type BankReturnCorrection = BankReturnEvidence & CorrectionApproval;
+export type PaymentAllocationEvidence = {
+  kind: "payment_allocation";
+  caseId: string;
+  billId: string;
+  supplierId: string;
+  amountCents: number;
+  settlement: Settlement;
+  originalBillCents: number;
+  restoredPayables: Array<{
+    correction: BankReturnCorrection;
+    amountCents: number;
+  }>;
+};
+export type PaymentAllocationCorrection = PaymentAllocationEvidence &
+  CorrectionApproval;
+export type AccountingCorrection =
+  BankReturnCorrection | PaymentAllocationCorrection;
