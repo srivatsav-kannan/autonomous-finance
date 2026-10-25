@@ -3,7 +3,7 @@ import type { Doc } from "../../_generated/dataModel";
 import { intakeSchema, type APException } from "../../../src/ap-system/contracts";
 import { domainRequestSchema, domainCaseProjectionSchema, type DomainCaseProjection } from "../../../src/ap-system/domain-contracts";
 import { businessEvidenceProblems, businessException, evaluateBusinessAcceptance } from "../../../src/ap-system/business-policy";
-import { activeBusinessPolicy, currentSupplier, assertApprovalCurrent, type BusinessVote } from "./businessAuthority";
+import { activeBusinessPolicy, currentSupplier, assertApprovalCurrent, assertRetainedApprovalVotes, type BusinessVote } from "./businessAuthority";
 /** Derive from recognized ledgers and consumed reservations, never the latest candidate's guessed balance. */
 export async function businessProjection(ctx: QueryCtx, row: Doc<"apCaseRecords">, bill: Doc<"demoBills"> | null, versions: Doc<"demoVersions">[]) {
   const policy = await activeBusinessPolicy(ctx, row.scope);
@@ -21,7 +21,10 @@ export async function businessProjection(ctx: QueryCtx, row: Doc<"apCaseRecords"
     if (approval && request) {
       if (request.snapshotHash !== row.snapshotHash || request.expectedRevision !== row.currentRevision || approval.policyHash !== policy.hash || approval.supplierHash !== supplier.hash) throw Error("Case, policy or supplier changed after the proposed authority");
       if (approval.status === "approved") await assertApprovalCurrent(ctx, row.scope, row, approval);
-      else if (request.acceptance) exceptions.push(...evaluateBusinessAcceptance(input, request.acceptance, policy.value, supplier.value, row.documentStatus === "reviewed", request.accountingDate).exceptions);
+      else {
+        if (approval.status === "pending") await assertRetainedApprovalVotes(ctx, row.scope, policy.value, approval);
+        if (request.acceptance) exceptions.push(...evaluateBusinessAcceptance(input, request.acceptance, policy.value, supplier.value, row.documentStatus === "reviewed", request.accountingDate).exceptions);
+      }
       if (status !== "approved") exceptions.push(businessException("business_approval_pending", "The configured sequential approval route must complete before recognition or payment.", "controller"));
     } else {
       exceptions.push(...businessEvidenceProblems(input, row.documentStatus === "reviewed"));

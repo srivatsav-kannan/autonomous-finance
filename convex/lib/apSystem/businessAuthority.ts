@@ -263,7 +263,15 @@ export async function assertIndependentVotes(ctx: QueryCtx, scope: BankScope, vo
     for (const seat of seats) occupied.add(seat);
   }
 }
-export async function assertApprovalVotes(ctx: QueryCtx, scope: BankScope, policy: BusinessPolicy, approval: Pick<Doc<"apApprovalProposals">, "route" | "votes" | "amountCents">) {
+type RetainedApproval = Pick<Doc<"apApprovalProposals">, "route" | "votes" | "amountCents">;
+/** Pending routes need valid retained authority, without requiring future quorum. */
+export async function assertRetainedApprovalVotes(ctx: QueryCtx, scope: BankScope, policy: BusinessPolicy, approval: RetainedApproval) {
+  await validateApprovalVotes(ctx, scope, policy, approval, false);
+}
+export async function assertApprovalVotes(ctx: QueryCtx, scope: BankScope, policy: BusinessPolicy, approval: RetainedApproval) {
+  await validateApprovalVotes(ctx, scope, policy, approval, true);
+}
+async function validateApprovalVotes(ctx: QueryCtx, scope: BankScope, policy: BusinessPolicy, approval: RetainedApproval, requireComplete: boolean) {
   const votes = approval.votes as BusinessVote[];
   const route = approval.route as ApprovalStep[];
   await assertIndependentVotes(ctx, scope, votes);
@@ -278,7 +286,7 @@ export async function assertApprovalVotes(ctx: QueryCtx, scope: BankScope, polic
     );
   for (const [stage, step] of route.entries()) {
     const stageVotes = votes.filter((v) => v.stage === stage);
-    if (stageVotes.length < step.quorum)
+    if (requireComplete && stageVotes.length < step.quorum)
       deny(
         "approval_incomplete",
         "Required sequential approval quorum is incomplete",
