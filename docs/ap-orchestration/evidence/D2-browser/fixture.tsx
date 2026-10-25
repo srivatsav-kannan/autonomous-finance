@@ -3,6 +3,7 @@ import {createRoot} from "react-dom/client";
 import {APSystemWorkspace} from "../../../../console/src/APSystemWorkspace";
 import {configureAPSession} from "../../../../console/src/apAuthSession";
 import {caseDetailSchema} from "../../../../src/ap-system/contracts";
+import {closeUIFixture} from "../../../../tests/ap-system-close-ui.fixture";
 import raw from "./data.json";
 import "../../../../console/src/styles.css";
 import "../../../../console/src/apSystem.css";
@@ -15,7 +16,8 @@ configureAPSession({mode:"local"});
 window.fetch=async(input,init)=>{
  const url=new URL(String(input),location.href),path=url.pathname.replace('/api/ap-system','');
  const reply=(value:unknown,status=200)=>Promise.resolve(new Response(JSON.stringify(value),{status,headers:{"Content-Type":"application/json"}}));
- if(init?.method==="POST"){action=`Synthetic only: ${path}. No backend or external request sent.`;window.dispatchEvent(new Event("fixture-action"));if(path==="/payment-runs")return reply({runId:run.runId,snapshotHash:run.snapshotHash});if(path.endsWith("/authorize")){run.items.forEach(i=>i.payment.status="queued");return reply({commandIds:["synthetic-command-a","synthetic-command-b"]});}if(path.endsWith("/cancel")){run.items.forEach(i=>i.payment.status="cancelled");return reply({ok:true});}if(path.startsWith("/business/"))return reply({ok:true});return reply({error:{code:"fixture_read_only",reason:"This fixture does not simulate accounting or bank writes."}},409);}
+ if(init?.method==="POST"){action=`Synthetic only: ${path}. No backend or external request sent.`;window.dispatchEvent(new Event("fixture-action"));if(path==="/payment-runs")return reply({runId:run.runId,snapshotHash:run.snapshotHash});if(path.endsWith("/authorize")){run.items.forEach(i=>i.payment.status="queued");return reply({commandIds:["synthetic-command-a","synthetic-command-b"]});}if(path.endsWith("/cancel")){run.items.forEach(i=>i.payment.status="cancelled");return reply({ok:true});}if(path.startsWith("/business/")||path.startsWith("/close/"))return reply({ok:true});return reply({error:{code:"fixture_read_only",reason:"This fixture does not simulate accounting or bank writes."}},409);}
+ if(path.startsWith("/close/"))return reply(closeUIFixture());
  if(path==="/cases")return reply(cases);
  if(path==="/business")return reply(raw.governance);
  if(path==="/payment-runs")return reply([{runId:run.runId,snapshotHash:run.snapshotHash,caseIds:run.items.map(i=>i.caseId),executionDate:run.executionDate,createdAt:run.createdAt}]);

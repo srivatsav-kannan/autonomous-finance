@@ -8,6 +8,7 @@ import {billApprovalRequestSchema,reviewRequestSchema,type APCaseDetail,type API
 
 import type { PaymentRunOperations, AccountingOperations } from "./workspace-operations";
 import { domainOperationSchemas, type DomainOperations, type DomainOperation } from "./domain-operations";
+import { closeOperationSchemas, periodSchema, type CloseOperations, type CloseOperation } from "./close-operations";
 import { QboError } from "./quickbooks/private-store";
 const PREFIX="/api/ap-system";
 const MAX_ORIGINAL_BYTES=8*1024*1024;
@@ -30,6 +31,7 @@ export interface APWorkspaceService {
  paymentRuns?:PaymentRunOperations;
  accounting?:AccountingOperations;
  domain?:DomainOperations;
+ close?:CloseOperations;
  runtime():unknown;
 }
 export type APExternalAuthentication = {
@@ -107,6 +109,16 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
    }
    // A browser cookie alone never authenticates an external human.
    if(req.method==="GET"&&!sessionValid(req,subject))throw new APHttpError("session_required",403,"Open the AP workspace before reading source or case details.");
+   const close=/^\/api\/ap-system\/close\/([^/]+)$/.exec(url.pathname);
+   if(close){
+    if(!service.close)throw new APHttpError("capability_unavailable",503,"Period close is not available on this AP service.");
+    if(req.method==="GET")return send(res,await service.close.view(periodSchema.parse(decodeURIComponent(close[1]!))));
+    if(req.method==="POST"&&Object.hasOwn(closeOperationSchemas,close[1]!)){
+     const operation=close[1] as CloseOperation,data=await json(req);
+     if(data&&typeof data==="object"&&["actor","subject","scope","seatId","token","approvedBy"].some(k=>k in data))throw new APHttpError("invalid_request",400,"Caller identity and scope cannot be supplied in close requests.");
+     return send(res,await service.close.execute(operation,closeOperationSchemas[operation].parse(data)));
+    }
+   }
    const domain=/^\/api\/ap-system\/business(?:\/([a-zA-Z]+))?$/.exec(url.pathname);
    if(domain){
     if(!service.domain)throw new APHttpError("capability_unavailable",503,"Business governance is not available on this AP service.");

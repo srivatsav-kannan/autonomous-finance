@@ -2,10 +2,11 @@ import type {ConvexHttpClient} from "convex/browser";
 import {makeFunctionReference} from "convex/server";
 import type {BankScope} from "../payments/contracts";
 import {createAPCasePayments} from "./payment";
-import {caseDetailSchema,intakeSchema,type APIntake,type SourceDocument} from "./contracts";
+import {caseDetailSchema,intakeSchema,sourceDocumentSchema,type APIntake,type SourceDocument} from "./contracts";
 import { createQBOBridge } from "./quickbooks/runtime";
 import { APHttpError } from "./server";
 import { domainOperationSchemas, type DomainOperations } from "./domain-operations";
+import { closeOperationSchemas,periodSchema,type CloseOperations } from "./close-operations";
 import type { PaymentRunOperations } from "./workspace-operations";
 import type {APWorkspaceService} from "./server";
 /** Per-run composition with a request-owned human client in external mode. Agent credentials never reach the browser or human client. */
@@ -35,8 +36,23 @@ export function createAPWorkspaceService(options:{
    return (credential?agent:human).mutation(makeFunctionReference<"mutation">(`${business?"apBusiness":"apBusinessConfig"}:${operation}`),{scope,...(credential??{}),...(nested?{input:parsed}:parsed)});
   },
  };
+ const close:CloseOperations={
+  view:async period=>({...await human.query(makeFunctionReference<"query">("apClose:view"),{scope,period:periodSchema.parse(period)}),controllerProposalAvailable:!!options.controllerCredential}),
+  execute:async(operation,input)=>{
+   const parsed=closeOperationSchemas[operation].parse(input);
+   if(operation==="retainEvidence"){
+    const {source:binding}=parsed as import("./close-operations").CloseInputs["retainEvidence"];
+    const source=sourceDocumentSchema.parse(await human.query(makeFunctionReference<"query">("apCases:source"),{scope,...binding}));
+    if(source.sourceId!==binding.sourceId||source.revision!==binding.revision||source.sha256!==binding.sha256)throw new APHttpError("source_binding",409,"The retained original does not match the selected source revision.");
+    return agent.mutation(makeFunctionReference<"mutation">("apClose:retainEvidence"),{scope,...options.apCredential,source});
+   }
+   const proposed=operation==="propose"||operation==="proposeStatement",credential=proposed?options.controllerCredential:undefined;
+   if(proposed&&!credential)throw new APHttpError("controller_unavailable",503,"A separate scoped controller agent must be configured before proposing close actions or statements.");
+   return (credential?agent:human).mutation(makeFunctionReference<"mutation">(`apClose:${operation}`),{scope,...(credential??{}),...(operation==="proposeStatement"?parsed:{input:parsed})});
+  },
+ };
  return{
-  paymentRuns,domain,
+  paymentRuns,domain,close,
   accounting:{status:async caseId=>({...await qbo.status(caseId),externalWritesAllowed}),preview:qbo.preview,submit:(request,hash)=>{requireExternal();return qbo.submit(request,hash);},verify:request=>{requireExternal();return qbo.verify(request);}},
   async list(){const rows=await human.query(makeFunctionReference<"query">("apCases:list"),{scope});return caseDetailSchema.array().parse(rows);},
   async detail(caseId){return caseDetailSchema.parse(await human.query(makeFunctionReference<"query">("apCases:detail"),{scope,caseId}));},

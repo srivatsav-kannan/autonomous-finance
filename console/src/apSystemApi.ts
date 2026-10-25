@@ -1,3 +1,4 @@
+import {closeOperationSchemas,periodSchema,type CloseOperation,type CloseInputs,type CloseView} from "../../src/ap-system/close-operations";
 import type {QBOPreview,QBOSubmit,QBOVerify} from "../../src/ap-system/quickbooks/runtime";
 import { ZodError } from "zod";
 import { domainOperationSchemas, type DomainOperation, type DomainInputs, type GovernanceView, type BusinessProposal } from "../../src/ap-system/domain-operations";
@@ -73,6 +74,8 @@ export function accountingSelection(value?:APAccountingSelection|string):APAccou
  return input;
 }
 export const apSystemApi = {
+  closeView:(period:string,signal?:AbortSignal)=>request<CloseView>(`/close/${periodSchema.parse(period)}`,undefined,signal),
+  close:<K extends CloseOperation>(operation:K,input:CloseInputs[K])=>request<unknown>(`/close/${operation}`,closeOperationSchemas[operation].parse(input)),
   governance: (signal?:AbortSignal) => request<GovernanceView>("/business",undefined,signal),
   businessProposals: (signal?:AbortSignal) => request<BusinessProposal[]>("/business/proposals",undefined,signal),
   business: <K extends DomainOperation>(operation:K,input:DomainInputs[K]) => request<unknown>(`/business/${operation}`,domainOperationSchemas[operation].parse(input)),

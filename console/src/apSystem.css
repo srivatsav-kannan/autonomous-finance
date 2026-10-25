@@ -226,3 +226,10 @@
 .aps-accounting-hold { border: 1px solid var(--line); padding: var(--space-md); margin-block: var(--space-md); background: var(--bg); }
 .aps-accounting-hold h4 { margin-top: 0; }
 .aps-accounting-hold code { display: block; }
+
+.aps-close > details { border-top: 1px solid var(--line); padding-block: var(--space-lg); }
+.aps-close .aps-business-editor > label { display: grid; gap: var(--space-xs); margin-block: var(--space-md); }
+.aps-close .aps-business-editor > .aps-check { display: flex; }
+.aps-close .aps-evidence-picker { max-height: 22rem; overflow: auto; padding: var(--space-sm); }
+.aps-close-action { overflow-wrap: anywhere; }
+.aps-close :is(input,select,textarea) { max-width: 100%; }
