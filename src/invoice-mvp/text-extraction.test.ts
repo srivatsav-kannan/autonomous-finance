@@ -33,4 +33,13 @@ describe("printed invoice extraction — public development regressions", () => 
     }
     for (const text of ["--$20.00", "(-20.00)", "$1,23.00", "1e6", "90,071,992,547,409.92"]) expect(signedDecimalCents(text)).toBeUndefined();
   });
+  it("does not silently discard oversized competing financial fields", () => {
+    const routine = extractionFixtures.find((f) => f.id === "routine")!.source;
+    for (const separator of [": ", "\n"]) {
+      const source = { ...routine, text: `${routine.text}\nGrand Total${separator}USD ${"9".repeat(5000)}` };
+      const result = parseSupportedSource(source, { documentId: "oversized-total", version: 1, contentHash: "test" }, extractionCustomers);
+      expect(result.conclusion).toMatchObject({ treatment: "needs_evidence" });
+      expect(result.conclusion.amountCents).toBeUndefined();
+    }
+  });
 });

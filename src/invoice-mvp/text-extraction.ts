@@ -27,7 +27,6 @@ export function extractTextDocument(source: SourceInput, ref: EvidenceRef, custo
   const titleQuotes = new Set<string>();
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]!;
-    if (line.value.length > 2000) continue;
     const title = titlePattern.exec(line.value);
     if (title && !/^(?:date|number|no\.?|total|amount|status|currency|due|reference)$/i.test(title[3] ?? "")) {
       titles.push({ kind: /credit/i.test(title[2]!) ? "credit" : "invoice", draft: Boolean(title[1]), quote: line.raw });
@@ -35,13 +34,13 @@ export function extractTextDocument(source: SourceInput, ref: EvidenceRef, custo
       if (title[3]) add("documentNumber", title[3], line.raw);
       continue;
     }
-    const inline = /^(.+?)\s*(?::|\t+| {2,})\s*(\S.*?)\s*$/.exec(line.value);
+    const inline = /^([A-Za-z][A-Za-z ._#-]{0,40}?)\s*(?::|\t+| {2,})\s*(\S.*?)\s*$/.exec(line.value);
     const field = LABELS[labelKey(inline?.[1] ?? line.value)];
     if (!field) continue;
     if (inline) add(field, inline[2]!, line.raw);
     else {
       const next = lines[i + 1];
-      if (next && next.value.length <= 2000 && !LABELS[labelKey(next.value)] && !/^=== Page|^Page \d+|^\f/.test(next.value)) {
+      if (next && !LABELS[labelKey(next.value)] && !/^=== Page|^Page \d+|^\f/.test(next.value)) {
         add(field, next.value, source.text.slice(line.start, next.end)); i++;
       }
     }
