@@ -24,6 +24,17 @@ export function buildCostCorrection(state:CostState,rows:CostDraftRow[],policy:B
   const total=(used.get(row.share)??0)+amountCents;if(total>original.remainingCents)throw Error("The proposed shares exceed the remaining original capacity.");used.set(row.share,total);
   return {originalLineId:original.originalLineId,allocationIndex:original.allocationIndex,account:row.account,store:original.store,treatment:account.treatment,side:original.side,amountCents};
  });
+ const signed=new Map<string,number>();
+ for(const allocation of allocations){
+  const key=JSON.stringify([allocation.account,allocation.store]);
+  const amount=(signed.get(key)??0)+(allocation.side==="credit"?allocation.amountCents:-allocation.amountCents);
+  if(!Number.isSafeInteger(amount))throw Error("Signed cost allocation exceeds safe cent precision.");
+  signed.set(key,amount);
+ }
+ for(const [key,amount] of signed){
+  const available=state.positions.find(p=>JSON.stringify([p.account,p.store])===key)?.balanceCents??0;
+  if(!Number.isSafeInteger(available)||(amount>0&&available<amount)||(amount<0&&available>amount))throw Error("Signed shares exceed the current corrected cost balance for this account and store.");
+ }
  return costCorrectionSchema.parse({snapshotHash:state.snapshotHash,allocations,evidence,reason});
 }
 type Props={originalEntryId?:string;context:string;policy?:BusinessPolicy;sources:CostSource[];busy:boolean;onChange:(review:CostReview)=>void};

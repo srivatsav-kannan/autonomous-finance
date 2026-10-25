@@ -43,3 +43,11 @@ Validation: 32 focused period core/runtime/UI tests pass, including the actual i
 - Fixes general accounting amount inputs that incorrectly passed `null` into the payment-only outstanding balance parser. General amounts now require explicit safe-cent values; blank payment amount retains its existing full-outstanding meaning and payment limits are unchanged.
 - Checks: 55 focused UI/transport/cost-core tests pass; main, test and backend TypeScript checks pass; console production build passes (existing chunk-size advisory); design check: 0 failures, 0 warnings, 1 existing answered finding. No real provider calls or backend mutations. CUA verification remains Master-owned and pending for this checkpoint.
 - Synthetic fixture journey: open the close workspace at `5191`, expand **Propose a supported period treatment**, choose **Reverse an existing accrual**, choose the synthetic accrual and enter quantity/date. The cost review shows an approved synthetic correction and requires exact allocation entry. Fixture transport never forwards requests. Fixture approvals are illustrative data, not evidence of live approval or practitioner acceptance.
+
+### V6 correction follow-up
+
+The cost editor now checks signed net consumption for each current account/store position, after combining positive credit reversals and offsetting discount debits. It rejects 3,651 minus 50 cents against a 3,600-cent balance and accepts the exact 3,650 minus 50 boundary; negative discount positions and store separation have regression coverage. Original-share capacity checks remain separate.
+
+Governed credit proposals now expose their own posting-date input. The original credit document date remains visible and unchanged. Posting date participates in the existing cost-review context, so changing it invalidates that review before the proposal can be submitted. Backend open-period/date/cost authority checks are unchanged. The restored-credit UI fixture also supplies explicit nullable store dimensions required by the integrated accounting contract.
+
+Validation: 20 focused cost/UI tests, all test TypeScript (including integrated store types), main TypeScript, console build and design check pass. Browser date-edit invalidation is left to Master CUA; no provider calls were made.
