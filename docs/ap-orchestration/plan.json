@@ -30,7 +30,7 @@
   "external_gates": {
     "openai": "Existing evaluation-worktree key reused in ignored var/ap-environment/providers.env; authentication and one gpt-6.1-sol Responses request verified 2026-10-25. Config import verified in main-browser-recovery; application workflow not run.",
     "llamaparse": "Existing Default-project key reused. Five agentic_plus parse jobs verified 2026-10-25 across three rounds. Clean PDF passes selected content/native grounding. Genuine scan content passes; native description bbox still absent with raw word output, whose OCR has two transcription mismatches. Local Tesseract 5.5.2 eng PSM 6 uniquely matched both description lines and passed original-image overlay review; this is derived geometry on one sample, not a native box or completed adapter. See LLAMAPARSE-GROUNDING.md and prior reports. App adapter/fallback packaging, broader formats and integration acceptance remain pending.",
-    "increase": "Standalone API sandbox provisioned 2026-10-25 with synthetic Entity (validation simulated valid), open source account and active external account; authentication/resource reads verified. Balance 0 USD; no funding/transfer, webhook or recovery test. Dashboard association not established.",
+    "increase": "Sandbox API/resources available. User selected Auth0 development tenant for real browser login; tenant/app/owner binding not configured. Independent human payment authorization remains required. No outbound transfer yet.",
     "erp_selection_and_access": "QuickBooks Online US sandbox selected by user; official Accounting API + OAuth 2.0. No account or authorization yet. Credential-free implementation and setup guide authorized; external workflow remains BLOCKED until access.",
     "domain_review": "No practitioner currently available. User directs engineering, automated and independent agent verification to continue; prepare practitioner packet, retain external sign-off as pending."
   },
@@ -279,7 +279,8 @@
       "owner": "C",
       "title": "Verify external Increase sandbox and optional webhook delivery separately",
       "depends_on": [
-        "V2"
+        "V2",
+        "C2-Auth0"
       ],
       "external_gate": "increase",
       "acceptance": "Same-case sandbox operation evidence; no claim of webhook success from polling; local/external results separated.",
@@ -418,6 +419,23 @@
       "evidence": [],
       "blocker": null,
       "next_action": "Implement remaining issue97 section4 formats independently of first-case integration"
+    },
+    {
+      "id": "C2-Auth0",
+      "owner": "D",
+      "title": "Implement normal Auth0 browser login for real sandbox human approval",
+      "depends_on": [
+        "C0"
+      ],
+      "acceptance": "Official SDK browser login, per-request Convex identity, approved human binding, expiry/logout/negative tests; real login and user payment approval remain external until Auth0 setup. No simulated identity for external Increase.",
+      "status": "in_progress",
+      "session_id": "/root/experience",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-experience/calhacks",
+      "branch": "codex/ap-system-auth0",
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": "Credential-independent implementation and registration/application/login guide authorized by user"
     }
   ],
   "registry": {
@@ -463,7 +481,11 @@
     "max_original_packet_bytes": 8388608,
     "backend_exec_session": 18961,
     "ap_server_exec_session": 59605,
-    "frontend_exec_session": 59299
+    "frontend_exec_session": 59299,
+    "increase_frontend_reserved_port": 5192,
+    "increase_backend_reserved_port": 3252,
+    "increase_backend_site_reserved_port": 3253,
+    "increase_ap_server_reserved_port": 8825
   },
   "contracts": {
     "version": "ap-evidence-v1",
@@ -499,5 +521,12 @@
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true
   },
-  "last_updated_at": "2026-10-25T09:00:34.273698+00:00"
+  "last_updated_at": "2026-10-25T09:05:17.269820+00:00",
+  "human_identity": {
+    "provider": "Auth0",
+    "environment": "development tenant",
+    "status": "selected_access_pending",
+    "flow": "official browser login; Convex issuer/audience validation; no manual JWT sharing",
+    "user_authorizes_sandbox_payment": true
+  }
 }
