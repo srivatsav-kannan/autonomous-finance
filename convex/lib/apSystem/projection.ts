@@ -103,6 +103,10 @@ export async function projectCase(
   ).filter(
     (t) => t.commandRowId && commands.some((c) => c._id === t.commandRowId),
   );
+  // Proven never-dispatched cancellations have no bank outcome to reconcile.
+  // Preserve every historical command, and retain any canceled command with attempts or activity.
+  const reconciliationCommands = commands.filter(c => !(c.execution === "cancelled" && c.attemptCount === 0 &&
+    c.firstAttemptAt === undefined && !c.providerTransferId && !transactions.some(t => t.commandRowId === c._id)));
   const journalIds = [
     ...new Set(
       [bill?.entryId, business?.credit?.entryId, ...(business?.domain.creditLinks.map((l) => l.entryId as NonNullable<typeof bill>["entryId"]) ?? []), ...transactions.map((t) => t.entryId)].filter(
@@ -206,7 +210,7 @@ export async function projectCase(
             : "authorized",
       execution: latest?.execution ?? "not_started",
       reconciliation:
-        commands.length && commands.every((c) => c.reconciliation === "matched")
+        reconciliationCommands.length && reconciliationCommands.every((c) => c.reconciliation === "matched")
           ? "matched"
           : "unmatched",
     },
