@@ -1,0 +1,13 @@
+{
+ "baseline": "2ea9555a77412ff1bae944df5320bf114858ff1f",
+ "productionBaseline": "3c834ae",
+ "reviewedSources": ["533fecc8e3cc01c81824b558dceb1aabd7c42ed1", "8725f63c415e459fdb6060d1ca585eeba9ef9ada"],
+ "expectations": [
+  "The approved 7700 cost and100 discount produce a76-dollar Bill with77 and-1 lines; the3850 cost and50 credit discount produce a38-dollar VendorCredit with38.5 and-0.5. Every specified store line retains the exact Class, including negative contra-cost lines; changed/removed external Classes conflict.",
+  "Repairing a missing Class mapping removes only the current mapping blocker, preserves its historical record and successful immutable receipt, and requires no provider reads. Changing the Class after successful export cannot rewrite or mint another operation.",
+  "Applying2500 of recognized credit after a2000 cash return allocates500 original and2000 restored principal with zero cash. No new local journal or bank command is allowed; external representation is BillPayment TotalAmt0 with Bill5, JournalEntry20 and VendorCredit25 dollar links.",
+  "A successful local accounting receipt does not release the restored-application hold until explicit exact external readback. Unrelated application holds remain; changed readback restores a current hold without another POST.",
+  "A classless approved return journal must reject an externally added Class dimension when verifying the exact return proof; it cannot silently certify changed dimensions."
+ ],
+ "limits": ["independent engineering review only", "synthetic configured humans and bank-row fixtures", "no actual provider calls or practitioner sign-off"]
+}

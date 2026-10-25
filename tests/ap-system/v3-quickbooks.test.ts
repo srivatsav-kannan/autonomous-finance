@@ -55,6 +55,7 @@ const mapping: Mappings = {
   version: "v3-reviewed",
   realmId: "123",
   country: "US",
+  classes: { "sf-hayes-valley": { id: "9", name: "SF Hayes Valley" } },
   vendors: {
     "golden-state-produce": {
       id: "5",
@@ -167,6 +168,8 @@ async function protocol(
       await options.onMapping?.();
       return json({ CompanyInfo: { Country: "US" } });
     }
+    if (u.pathname.endsWith("/class/9"))
+      return json({ Class: { Id: "9", Name: "SF Hayes Valley", Active: true } });
     if (u.pathname.endsWith("/vendor/5"))
       return json({
         Vendor: {
@@ -253,6 +256,7 @@ describe("V3 independent credential-free QBO boundaries", () => {
         DetailType: "AccountBasedExpenseLineDetail",
         AccountBasedExpenseLineDetail: {
           AccountRef: { value: "7" },
+          ClassRef: { value: "9" },
           BillableStatus: "NotBillable",
         },
       },

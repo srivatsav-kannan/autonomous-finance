@@ -11,7 +11,7 @@ import { creditFixture, promoteIncrease, seedSettled } from "./quickbooks-busine
 import { returnedFixture } from "./quickbooks-corrections-fixture";
 const paths: string[] = [];
 afterEach(async () => { vi.unstubAllEnvs(); await Promise.all(paths.splice(0).map(path => rm(path,{recursive:true,force:true}))); });
-const mappings: Mappings = { version:"v5-reviewed",realmId:"123",country:"US",vendors:{"golden-state-produce":{id:"5",displayName:"Golden State Produce Co."}},accounts:{"2000":{id:"33",name:"AP",type:"Accounts Payable"},"1000":{id:"35",name:"Bank",type:"Bank"},"5000":{id:"7",name:"Produce",type:"Expense"},"5100":{id:"8",name:"Discount",type:"Expense"}},apAccount:"2000",bankAccount:"1000" };
+const mappings: Mappings = { version:"v5-reviewed",realmId:"123",country:"US",classes:{"sf-hayes-valley":{id:"9",name:"SF Hayes Valley"}},vendors:{"golden-state-produce":{id:"5",displayName:"Golden State Produce Co."}},accounts:{"2000":{id:"33",name:"AP",type:"Accounts Payable"},"1000":{id:"35",name:"Bank",type:"Bank"},"5000":{id:"7",name:"Produce",type:"Expense"},"5100":{id:"8",name:"Discount",type:"Expense"}},apAccount:"2000",bankAccount:"1000" };
 const json = (x: unknown) => new Response(JSON.stringify(x), { headers:{"Content-Type":"application/json"} });
 // Test-owned HTTP protocol only. Original accounting expectations are literal assertions below.
 async function protocol(load: ExportLoader) {
@@ -24,6 +24,7 @@ async function protocol(load: ExportLoader) {
     expect(u.origin).toBe("https://sandbox-quickbooks.api.intuit.com"); expect(init.redirect).toBe("error");
     const bits=u.pathname.split("/"), last=bits.at(-1)!;
     if(u.pathname.includes("/companyinfo/"))return json({CompanyInfo:{Id:"123",Country:"US"}});
+    if(u.pathname.includes("/class/"))return json({Class:{Id:"9",Name:"SF Hayes Valley",Active:true}});
     if(u.pathname.includes("/vendor/"))return json({Vendor:{Id:"5",Active:true,DisplayName:"Golden State Produce Co."}});
     if(u.pathname.includes("/account/")){const a=Object.values(mappings.accounts).find(a=>a.id===last)!;return json({Account:{Id:a.id,Name:a.name,AccountType:a.type,Active:true}});}
     if(last==="query") {
