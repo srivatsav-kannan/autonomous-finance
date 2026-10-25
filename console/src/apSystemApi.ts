@@ -1,4 +1,5 @@
 import type {QBOPreview,QBOSubmit,QBOVerify} from "../../src/ap-system/quickbooks/runtime";
+import { ZodError } from "zod";
 import { domainOperationSchemas, type DomainOperation, type DomainInputs, type GovernanceView, type BusinessProposal } from "../../src/ap-system/domain-operations";
 import { caseDetailSchema, type APCaseDetail, type BillApprovalRequest, type ReviewRequest, type SourceBinding, type SourceDocument } from "../../src/ap-system/contracts";
 import type { PaymentApproval, PaymentSnapshot } from "../../src/payments/contracts";
@@ -98,4 +99,4 @@ export const apSystemApi = {
     return request<{ caseId: string }>("/intake", data);
   },
 };
-export const apError = (error: unknown) => error instanceof Error ? error.message : "The request failed. Please retry.";
+export const apError = (error: unknown) => error instanceof ZodError ? `Check the proposed values: ${error.issues.slice(0,3).map(issue=>`${issue.path.join(" / ") || "Request"}: ${issue.message}`).join("; ")}` : error instanceof Error ? error.message : "The request failed. Please retry.";
