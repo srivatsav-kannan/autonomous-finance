@@ -160,17 +160,18 @@
         "C0"
       ],
       "acceptance": "Separate payment authorization, configured beneficiary and preserved request/reservation semantics.",
-      "status": "in_progress",
+      "status": "accepted",
       "session_id": "01a1722e-2f26-7130-bfe6-9480c7d2883f",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
       "branch": "codex/ap-system-integration",
-      "commit": "5d8bc55",
+      "commit": "91198cf",
       "evidence": [
         "tests/ap-case-payments.test.ts",
-        "docs/ap-orchestration/evidence/C1-component.json"
+        "docs/ap-orchestration/evidence/C1-component.json",
+        "docs/ap-orchestration/evidence/V-C1.md"
       ],
       "blocker": null,
-      "next_action": "Independent review then same-case I1; component checks do not establish integrated payment"
+      "next_action": "I1/V2 exercise B revision cancellation and same-case bank outcome; component review passed"
     },
     {
       "id": "D1",
@@ -426,8 +427,8 @@
     "version": "ap-evidence-v1",
     "owner": "master",
     "files": {
-      "src/ap-system/contracts.ts": "21fbf634514f8c51b4e7e155d20c73f5478367177a794121bf32bc55fdf233b6",
-      "docs/ap-orchestration/CONTRACTS.md": "fcb37ebc9dac7c0b2989ddf392e38ddbee8c3ab774eaf3dafd5d9bf679152f7b"
+      "src/ap-system/contracts.ts": "0808b9cca6602453cf5f43a9e9d21906884d2292f556613ccec75f58f7cc275b",
+      "docs/ap-orchestration/CONTRACTS.md": "69a9df862fa423eb3ab1d56eab69810f2d04e0e0755f08d09ab12c71a8a13d27"
     },
     "independent_review": {
       "reviewer": "/root/p0_inventory",
@@ -443,7 +444,8 @@
         "command": "npx vitest run src/ap-system/contracts.test.ts",
         "result": "6 passed"
       }
-    ]
+    ],
+    "transport_addendum": "61158be: explicit currentSourceBindings distinguishes current review from historical originals"
   },
   "external_accounting": {
     "provider": "QuickBooks Online",
@@ -455,5 +457,5 @@
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true
   },
-  "last_updated_at": "2026-10-25T08:44:44.002703+00:00"
+  "last_updated_at": "2026-10-25T08:46:20.679914+00:00"
 }
