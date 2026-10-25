@@ -217,14 +217,17 @@
         "B1"
       ],
       "acceptance": "Review identity/type/version recorded; policy-derived versus AP-practitioner reviewed labels remain distinct. Content expectations and grounding expectations/status are separately reviewed against originals; runtime/parser output is not the answer key. Preserve licensing and reviewer independence.",
-      "status": "in_progress",
+      "status": "accepted",
       "session_id": "/root/verifier",
       "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks",
       "branch": "codex/ap-system-verification-v1",
-      "commit": null,
-      "evidence": [],
+      "commit": "0cf23c2",
+      "evidence": [
+        "docs/ap-orchestration/evidence/V1.md",
+        "docs/ap-orchestration/evidence/V1-independent-evaluation.json"
+      ],
       "blocker": null,
-      "next_action": "Independent expected outcomes from original PDFs, policy and accounting; no practitioner claim",
+      "next_action": "I1 same original packet; practitioner sign-off remains external",
       "source_sha": "be98772"
     },
     {
@@ -241,14 +244,14 @@
         "V1"
       ],
       "acceptance": "Fresh uploaded PDF reaches same-case bill, authorized payment, bank evidence and linked journal/reconciliation; actual results saved.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "01a1722e-2f26-7130-bfe6-9480c7d2883f",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
+      "branch": "codex/ap-system-integration",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": null
+      "next_action": "Fresh multipart originals, inspect source UI, separate reviews, FakeBank outcome and exact journals"
     },
     {
       "id": "V2",
@@ -447,14 +450,16 @@
     "gateway_port": 8820,
     "document_port": 8821,
     "fakebank_port": 8822,
-    "runtime_state": "local_backend_ready",
+    "runtime_state": "ap_server_and_ui_ready",
     "provider_file": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/providers.env",
     "private_data_root": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks/var/ap97-20261025-01a1722e",
     "ap_system_port": 8823,
     "qbo_oauth_reserved_port": 8824,
     "backend_version": "precompiled-2026-10-10-72ce13c",
     "max_original_packet_bytes": 8388608,
-    "backend_exec_session": 18961
+    "backend_exec_session": 18961,
+    "ap_server_exec_session": 91856,
+    "frontend_exec_session": 59299
   },
   "contracts": {
     "version": "ap-evidence-v1",
@@ -490,5 +495,5 @@
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true
   },
-  "last_updated_at": "2026-10-25T08:51:21.685090+00:00"
+  "last_updated_at": "2026-10-25T08:53:36.098451+00:00"
 }

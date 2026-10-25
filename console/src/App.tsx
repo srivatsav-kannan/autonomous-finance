@@ -71,17 +71,18 @@ function Workbench({ runs, simulationAvailable, connected = false }: { runs?: { 
   const company = isAP ? "Accounts payable" : isInvoice ? invoiceContext?.company ?? "Invoice workspace" : "Sweetgreen, Inc.";
   const companyCaption = isAP ? "Evidence and obligations" : isInvoice ? "Local simulated identity · USD" : "Simulated company";
   useEffect(() => {
-    if (!runId && runs?.length) {
+    if (!isAP && !runId && runs?.length) {
       const first = runs[0]!.runId;
       const url = new URL(location.href);
       url.hash = encodeURIComponent(first);
       history.replaceState(null, "", url);
       setRunId(first);
     }
-  }, [runs, runId]);
+  }, [runs, runId, isAP]);
   useEffect(() => {
     const url = new URL(location.href);
     url.searchParams.set("view", tab);
+    if (tab === "ap-system") url.hash = "";
     history.replaceState(null, "", url);
     document.title = `${TABS.find(t => t.id === tab)?.label} · Autonomous Finance`;
   }, [tab]);
