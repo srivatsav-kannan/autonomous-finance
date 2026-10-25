@@ -115,7 +115,7 @@ async function serve() {
     services.set(actorId, service);
     return service;
   };
-  const server = createAPSystemServer({ runtime: () => runtimeInfo }, { port: GATEWAY_PORT, runId: RUN, storageRoot: SOURCES, allowedOrigins: [ORIGIN, GATEWAY], auth: {
+  const server = createAPSystemServer({ runtime: () => runtimeInfo }, { port: GATEWAY_PORT, runId: RUN, storageRoot: SOURCES, allowedOrigins: [ORIGIN, GATEWAY, "http://127.0.0.1:5192"], auth: {
     publicConfig: { mode: "local_simulation", actors: ACTORS.map(({ id, name }) => ({ id, name })) },
     authenticate: async token => {
       const actor = token.startsWith("local:") ? ACTORS.find(a => a.id === token.slice(6)) : undefined;
