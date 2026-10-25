@@ -1,0 +1,36 @@
+{
+  "classification": "actual child CLI processes and HTTP; retained Convex-test backend in parent; lease expiry advanced by fixture; no external provider",
+  "caseId": "0000000000000010007apCaseRecords",
+  "scope": {
+    "organizationId": "ap-org",
+    "runId": "ap97-b-unit",
+    "provider": "fake",
+    "environment": "local",
+    "accountId": "account-b"
+  },
+  "killedSignal": "SIGKILL",
+  "restartExitCode": 0,
+  "recoveredWorkerOutput": [
+    {
+      "caseId": "0000000000000010007apCaseRecords",
+      "replayed": false,
+      "stage": "field_review",
+      "status": "waiting"
+    }
+  ],
+  "rpcCalls": 7,
+  "finalWork": {
+    "status": "waiting",
+    "stage": "payment_authorization",
+    "generation": 4,
+    "owner": "human_payment_authorizer"
+  },
+  "proposalCount": 1,
+  "commandCount": 0,
+  "checks": {
+    "actualProcessKilledAfterClaim": true,
+    "newProcessRecovered": true,
+    "oneProposal": true,
+    "independentPaymentAuthorizationStillRequired": true
+  }
+}

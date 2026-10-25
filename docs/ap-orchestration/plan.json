@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "mode": "executing",
+  "mode": "bounded_agent_integration_verified",
   "prepared_date": "2026-10-25",
   "issue": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97",
   "spec_file": "issue-97.snapshot.md",
@@ -30,9 +30,9 @@
   "external_gates": {
     "openai": "Existing evaluation-worktree key reused in ignored var/ap-environment/providers.env; authentication and one gpt-6.1-sol Responses request verified 2026-10-25. Config import verified in main-browser-recovery; application workflow not run.",
     "llamaparse": "Actual original Golden State and held-out synthetic provider jobs retained. Independent cached repair replay: 4/4 complete held-out candidates, content104/104 and strict geometry102/104;2 Copper currency fields explicitly unresolved. Original0/4 baseline preserved. This is two project-authored suppliers/four representations, not blind production validation. Container OCR packaging build and two-scan bounded runtime smoke PASS; A4 evidence and issue comment 6396729954 retain scope. Complete application OCR integration and production accuracy are not promoted by this gate.",
-    "increase": "Actual normal Auth0 login and explicit single-human binding verified; the authenticated browser can inspect its scoped synthetic case and original raster. Source account/destination read-verified. No user payment authorization, funding, worker or outbound Increase transfer yet.",
-    "erp_selection_and_access": "Actual OAuth and authorized eight sandbox reference mappings verified with zero-create replay. Real Auth0 workspace access now verified. Synthetic INV-1001 prepared for actual operator field/bill review; no accounting transaction written yet.",
-    "domain_review": "User replaced practitioner gate with Claude 独立模型评审 on2026-10-25. Packet ready; recipient has Claude and will execute blind derivation then comparison. Retain findings/fixes/re-review; no practitioner required or claimed. External QBO/Increase unchanged."
+    "increase": "One synthetic INV-1001 USD678.60 happy path passed with actual Auth0 user authorization, one Increase sandbox transfer/debit, verified polling settlement, one local settlement journal and zero case outstanding. Official simulator used; inbound ACH test-funding now classified once with both bank rows matched and cash GL/provider balance0. No formal period-close, QBO funding-export or live webhook claim. See docs/ap-orchestration/evidence/C4-live-happy-path.json",
+    "erp_selection_and_access": "QBO US sandbox Bill145 and BillPayment146 created once and read-back verified; Bill balance0. Optional BillPayment APAccountRef omission repaired and unknown original operation recovered without another POST. Broader credits/corrections/partial-payment external acceptance remains separate. See docs/ap-orchestration/evidence/C4-live-happy-path.json",
+    "domain_review": "User replaced practitioner gate with Claude \u72ec\u7acb\u6a21\u578b\u8bc4\u5ba1 on2026-10-25. Packet ready; recipient has Claude and will execute blind derivation then comparison. Retain findings/fixes/re-review; no practitioner required or claimed. External QBO/Increase unchanged."
   },
   "tasks": [
     {
@@ -229,7 +229,7 @@
         "docs/ap-orchestration/evidence/V1-independent-evaluation.json"
       ],
       "blocker": null,
-      "next_action": "I1 same original packet; practitioner sign-off remains external",
+      "next_action": "Historical independent engineering review retained. Current final domain gate is external Claude independent model review; practitioner not required.",
       "source_sha": "be98772"
     },
     {
@@ -278,7 +278,7 @@
         "tests/ap-system/v2-independent.test.ts"
       ],
       "blocker": null,
-      "next_action": "15 independent integrated tests re-run successfully after A3/D merge; proceed B3/C3/C4; external identity/provider/practitioner gates separate",
+      "next_action": "Historical 15-test independent replay retained. Subsequent C4 positive external flow passed; broader provider negatives and Claude review remain separate.",
       "source_sha": "190201f"
     },
     {
@@ -296,9 +296,12 @@
       "worktree": null,
       "branch": null,
       "commit": null,
-      "evidence": [],
+      "evidence": [
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+        "docs/ap-orchestration/evidence/C4-funding-reconciliation.json"
+      ],
       "blocker": null,
-      "next_action": "Actual user payment authorization and bounded funding/worker/evidence workflow pending; account/destination read checks and real Auth0 positive login pass."
+      "next_action": "Requested synthetic USD happy path and bank-to-local-ledger reconciliation PASS. Funding inbound ACH classified once to Dr1000/Cr3000; two matched bank rows, cash GL/provider balance0, no unresolved evidence. Formal period close, QBO funding export, webhook, credits/returns and successive partial-payment acceptance remain unclaimed."
     },
     {
       "id": "B3",
@@ -323,7 +326,7 @@
         "docs/ap-orchestration/evidence/B4-cost-corrections.md"
       ],
       "blocker": null,
-      "next_action": "B3 lifecycle and corrected-cost controls accepted in V4–V6; contact/physical identity repairs accepted in V8–V9; E01/E02 extensions tracked by B5. No unresolved reproduced defects remain in these tests.",
+      "next_action": "B3 lifecycle and corrected-cost controls accepted in V4\u2013V6; contact/physical identity repairs accepted in V8\u2013V9; E01/E02 extensions tracked by B5. No unresolved reproduced defects remain in these tests.",
       "source_sha": "4f7d76d",
       "acceptance_scope": "Declared USD capabilities; synthetic/local independent engineering verification, not external provider or practitioner acceptance."
     },
@@ -376,10 +379,12 @@
         "tests/ap-system/quickbooks-close-runtime.test.ts",
         "tests/ap-system/quickbooks-query-envelope.test.ts",
         "docs/ap-orchestration/evidence/C4-live-mappings.json",
-        "docs/ap-orchestration/evidence/C4-store-dimensions.md"
+        "docs/ap-orchestration/evidence/C4-store-dimensions.md",
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+        "docs/ap-orchestration/evidence/C4-funding-reconciliation.json"
       ],
-      "blocker": "Actual operator field and bill review for INV-1001 is pending before accounting transaction submission. Auth0 login and reference mappings are already verified.",
-      "next_action": "Existing USD case awaits actual user review, then authorized QBO accounting transaction readback. Local dimensions, settlements and tax reclassification/recovery are independently verified in V10–V14. Optional live policy/catalog/mapping activation remains explicit; 1000-row discovery bound retained.",
+      "blocker": null,
+      "next_action": "Requested synthetic USD happy path and bank-to-local-ledger reconciliation PASS. Funding inbound ACH classified once to Dr1000/Cr3000; two matched bank rows, cash GL/provider balance0, no unresolved evidence. Formal period close, QBO funding export, webhook, credits/returns and successive partial-payment acceptance remain unclaimed.",
       "source_sha": "4f7d76d"
     },
     {
@@ -430,10 +435,12 @@
         "docs/ap-orchestration/evidence/D2-root-browser-review.md",
         "docs/ap-orchestration/evidence/D2-tax-desktop-review.md",
         "docs/ap-orchestration/evidence/I3-process-recovery.md",
-        "docs/ap-orchestration/I3-RUNBOOK.md"
+        "docs/ap-orchestration/I3-RUNBOOK.md",
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+        "docs/ap-orchestration/evidence/C4-funding-reconciliation.json"
       ],
       "blocker": null,
-      "next_action": "I3 actual same-case receipt arrival, worker SIGKILL, recovery, duplicate replay and desktop navigation complete. External operator-to-QBO/Increase journey remains pending; no mobile work.",
+      "next_action": "I3 desktop recovery and C4 actual operator/QBO/Increase happy path plus bank reconciliation complete. Final desktop handoff remains; no additional mobile work.",
       "source_sha": "6114a03"
     },
     {
@@ -464,10 +471,12 @@
         "docs/ap-orchestration/evidence/FINAL-review-checkpoint.md",
         "docs/ap-orchestration/evidence/FINAL-publication-receipt.json",
         "docs/ap-orchestration/CLAUDE-REVIEW.md",
-        "docs/ap-orchestration/claude-review/04-component-supplement/CAPTURE-RECEIPT.json"
+        "docs/ap-orchestration/claude-review/04-component-supplement/CAPTURE-RECEIPT.json",
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+        "docs/ap-orchestration/evidence/C4-funding-reconciliation.json"
       ],
       "blocker": null,
-      "next_action": "Hand off frozen two-phase packet to external recipient with Claude; await real review record and remediate findings. Retain current QBO/Increase gates; do not repair/rerun deferred CI."
+      "next_action": "External Claude review/findings pending; PR106 and the bounded AP agent follow-up await review/merge. AGENT1 closes the requested local wait/advance gap, while full matrix and external acceptance remain in ISSUE-97-GAP-MAP.md. CI deferred."
     },
     {
       "id": "A3",
@@ -512,10 +521,12 @@
         "tests/ap-system-auth-ui.test.tsx",
         "docs/ap-orchestration/evidence/C2-auth0-live.md",
         "docs/ap-orchestration/evidence/C2-auth0-live.json",
-        "docs/ap-orchestration/evidence/V6-extension.md"
+        "docs/ap-orchestration/evidence/V6-extension.md",
+        "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+        "docs/ap-orchestration/evidence/C4-funding-reconciliation.json"
       ],
-      "blocker": "Actual positive login/binding verified. Live logout/expiry/negative-provider controls and operator workflow remain separate acceptance.",
-      "next_action": "Continue normal-browser operator review and QBO round trip. No manual token or first-user enrollment. Keep payment approval user-owned."
+      "blocker": "Live logout/expiry/negative-provider controls remain a separate acceptance gap; positive login/binding and operator bill/payment journey passed.",
+      "next_action": "Retain actual positive flow evidence; verify live identity negatives when resuming broader acceptance. Preserve independent payment authorization."
     },
     {
       "id": "V3",
@@ -631,7 +642,7 @@
       "title": "Complete broader accounting policies and remaining supported business repair paths",
       "status": "accepted",
       "acceptance": "Explicit policies and tests before enabling additional currency/tax/dimensions; governed trusted-contact replacement and stable repeated physical-line identity; preserve exact capacity and authority through journals/payment/export.",
-      "next_action": "E03/E04 repaired in V8/V9; dimensions and frozen settlement verified V10–V12; tax recognition/header/adjustments verified V13; QBO tax/immutable recovery verified V14. Multicurrency deferred with user agreement to #104. Actual operator/provider and external Claude model-review gates remain separate; practitioner no longer required.",
+      "next_action": "E03/E04 repaired in V8/V9; dimensions and frozen settlement verified V10\u2013V12; tax recognition/header/adjustments verified V13; QBO tax/immutable recovery verified V14. Multicurrency deferred with user agreement to #104. Actual operator/provider and external Claude model-review gates remain separate; practitioner no longer required.",
       "blocker": null,
       "depends_on": [
         "B3"
@@ -833,6 +844,20 @@
       "commit": "39bcf93",
       "runtime_commit": "e1147850f98882630653b98b988e30e86a399143",
       "browser_ui_commit": "996e930"
+    },
+    {
+      "id": "AGENT1",
+      "owner": "master",
+      "title": "Connect new scoped AP cases to persistent agent advancement",
+      "status": "accepted",
+      "acceptance_scope": "Bounded deterministic inspect/advance, missing-evidence wait/resume, shared payment proposal and observed local settlement; existing field/bill/payment human requirements retained",
+      "evidence": [
+        "docs/ap-orchestration/AP-CASE-AGENT.md",
+        "docs/ap-orchestration/evidence/agent-case-v1/manifest.json",
+        "tests/ap-system/agent-workflow.test.ts",
+        "tests/ap-system/agent-process.test.ts"
+      ],
+      "next_action": "Runtime rollout and separate external acceptance; full capability registry, messages, delegated business decisions and APEX107 remain separate."
     }
   ],
   "registry": {
@@ -905,18 +930,20 @@
       "backend_port": 3252,
       "backend_site_port": 3253,
       "backend_exec_session": 70466,
-      "state": "real_auth0_login_bound_case_awaiting_human_review",
+      "state": "settled_matched_qbo_verified_funding_reconciled",
       "human_run_binding": "explicit_one_verified_subject",
       "bootstrap_code": "c135f6c",
       "run_id": "ap97-auth0-live-20261025",
       "gateway_port": 8825,
       "frontend_port": 5192,
-      "gateway_exec_session": 51435,
+      "gateway_exec_session": 20992,
       "frontend_exec_session": 89903,
-      "code": "b3c3bc6",
+      "code": "71853508db2bb95d6d87929ab46c79db1d7b2a0f",
       "case_id": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
       "private_evidence": "var/auth0-acceptance",
-      "payment_worker_started": false
+      "payment_worker_started": true,
+      "payment_worker_state": "bounded dispatch/settlement/replay completed; no continuous worker claimed",
+      "code_scope": "isolated runtime baseline plus validated QBO and funding fixes; not all review-head features"
     },
     "synthetic_ui": {
       "port": 5194,
@@ -976,33 +1003,32 @@
     "environment": "sandbox",
     "protocol": "Accounting API + OAuth 2.0",
     "credential_storage": "server-only private configuration",
-    "status": "reference_mappings_created_readback_and_replay_verified",
+    "status": "one_synthetic_usd_bill_and_billpayment_roundtrip_verified",
     "payment_execution_provider": "Increase sandbox",
     "user_confirmed": true,
     "read_only_verified_at": "2026-10-25T09:45:48.270727+00:00",
     "account_count": 89,
     "vendor_count": 26,
-    "external_writes": 8,
+    "external_writes": 10,
     "mappings": "verified",
     "followup_api": "owner_authorized_sandbox_mapping_and_accounting_verification",
     "reference_writes": 8,
-    "accounting_transaction_writes": 0,
-    "mapping_hash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff"
+    "accounting_transaction_writes": 2,
+    "mapping_hash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff",
+    "happy_path_evidence": "docs/ap-orchestration/evidence/C4-live-happy-path.json"
   },
-  "last_updated_at": "2026-10-25T11:23:37.869154+00:00",
+  "last_updated_at": "2026-10-25T12:09:39.180330+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",
     "status": "real_browser_login_and_explicit_scoped_binding_verified",
     "flow": "official browser login; Convex issuer/audience validation; no manual JWT sharing",
     "user_authorizes_sandbox_payment": true,
-    "next_action": "User reviews the prepared synthetic INV-1001 fields and bill in the normal browser; actual payment authorization remains separate. No JWT requested/extracted or simulated identity used.",
+    "next_action": "Actual login, field/bill approval and user-click payment authorization completed for INV-1001. Negative/expiry/logout identity acceptance remains separate.",
     "last_browser_check": {
-      "at": "2026-10-25T11:23:37.869154+00:00",
+      "at": "2026-10-25T11:41:11.375312+00:00",
       "case_id": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
-      "state": "signed_in; field_review_required; bill_held_unposted; payment_not_requested; execution_not_started",
-      "decision_reason": "empty",
-      "review_confirmation": false
+      "state": "reviewed; bill_approved_recognized; payment_authorized; settled_matched; outstanding0; QBO_Bill145_BillPayment146_verified"
     }
   },
   "verification_checkpoint": {
@@ -1018,7 +1044,7 @@
       "workers": 4
     },
     "report": "docs/ap-orchestration/evidence/FINAL-review-checkpoint.md",
-    "limits": "Revision-bound local results. CI deferred after Linux failure. Actual operator/QBO transaction/Increase execution and external Claude model review pending; practitioner no longer required."
+    "limits": "Historical revision-bound local results; not rerun for PR106. Subsequent C4 synthetic Auth0/Increase/QBO happy path and local funding reconciliation passed. Wider external tests and Claude review remain pending; CI deferred and practitioner not required."
   },
   "ui_acceptance_scope": {
     "target": "laptop desktop web browser",
@@ -1029,7 +1055,7 @@
   "scope_decisions": [
     {
       "date": "2026-10-25",
-      "user_statement": "先完成当前 USD，多币种移到后续 issue",
+      "user_statement": "\u5148\u5b8c\u6210\u5f53\u524d USD\uff0c\u591a\u5e01\u79cd\u79fb\u5230\u540e\u7eed issue",
       "current_delivery": "USD only",
       "deferred": "multicurrency and FX accounting",
       "followup": "https://github.com/srivatsav-kannan/autonomous-finance/issues/104",
@@ -1038,8 +1064,8 @@
     },
     {
       "date": "2026-10-25",
-      "user_statement": "本轮改用 Claude 独立评审；不再让真人评审阻塞交付",
-      "current_delivery": "Claude 独立模型评审; practitioner not required",
+      "user_statement": "\u672c\u8f6e\u6539\u7528 Claude \u72ec\u7acb\u8bc4\u5ba1\uff1b\u4e0d\u518d\u8ba9\u771f\u4eba\u8bc4\u5ba1\u963b\u585e\u4ea4\u4ed8",
+      "current_delivery": "Claude \u72ec\u7acb\u6a21\u578b\u8bc4\u5ba1; practitioner not required",
       "method": "Freeze independent derivation from originals/policy before revealing implementation results; preserve findings, fixes and rechecks",
       "executor": "External recipient with existing Claude account, per user: they will do it. they have claude",
       "external_providers": "QuickBooks/Increase acceptance unchanged",
@@ -1061,14 +1087,27 @@
   },
   "publication": {
     "receipt": "docs/ap-orchestration/evidence/FINAL-publication-receipt.json",
-    "draft_pr": "https://github.com/srivatsav-kannan/autonomous-finance/pull/105",
-    "head": "11244eefe69c7d29bff5c870977abf893bcb982d",
+    "draft_pr": "https://github.com/srivatsav-kannan/autonomous-finance/pull/106",
+    "head": "28837a9fd502a87df615429860137c4f39ee09f9",
     "ci_run": "https://github.com/srivatsav-kannan/autonomous-finance/actions/runs/40187986581",
-    "status": "published_draft_ci_deferred_by_user",
-    "ci_result": "failure retained; no repair/rerun requested"
+    "status": "pr106_draft_open_implementation_verified_ci_deferred",
+    "ci_result": "failure retained; no repair/rerun requested",
+    "historical_pr105": {
+      "receipt": "docs/ap-orchestration/evidence/FINAL-publication-receipt.json",
+      "draft_pr": "https://github.com/srivatsav-kannan/autonomous-finance/pull/105",
+      "head": "11244eefe69c7d29bff5c870977abf893bcb982d",
+      "ci_run": "https://github.com/srivatsav-kannan/autonomous-finance/actions/runs/40187986581",
+      "status": "published_draft_ci_deferred_by_user",
+      "ci_result": "failure retained; no repair/rerun requested"
+    },
+    "head_scope": "implementation checkpoint before this documentation commit",
+    "pr105_merged_at": "2026-10-25T11:36:25Z",
+    "pr105_merge_commit": "b48885fcfa3282c31c1123b204055b1be9e9a3a4",
+    "ci_scope": "Historical PR105 run; no PR106 CI acceptance claimed.",
+    "receipt_scope": "Historical PR105 publication receipt; current PR106 status is recorded in CURRENT-STATUS.md."
   },
   "model_review": {
-    "label": "Claude 独立模型评审",
+    "label": "Claude \u72ec\u7acb\u6a21\u578b\u8bc4\u5ba1",
     "status": "awaiting_external_reviewer",
     "packet": "docs/ap-orchestration/CLAUDE-REVIEW.md",
     "phase1": "not_executed",
@@ -1083,6 +1122,33 @@
       "policyFiles": 12,
       "sourceChunkScopeMismatches": 14,
       "classification": "owner-prepared actual local records including C02 original-PDF discrepancy; external Claude review pending"
-    }
+    },
+    "live_supplement": "docs/ap-orchestration/claude-live-supplement/MANIFEST.json"
+  },
+  "external_happy_path": {
+    "status": "passed",
+    "scope": "one synthetic USD678.60 INV-1001; official provider sandboxes",
+    "evidence": "docs/ap-orchestration/evidence/C4-live-happy-path.json",
+    "bank_close": "bank_reconciled_locally; formal_period_close_not_executed",
+    "webhook_delivery": "not_claimed",
+    "claude_review": "pending",
+    "funding_reconciliation_evidence": "docs/ap-orchestration/evidence/C4-funding-reconciliation.json",
+    "qbo_funding_export": "not_executed"
+  },
+  "current_status": "docs/ap-orchestration/CURRENT-STATUS.md",
+  "roadmap_gap_map": "docs/ap-orchestration/ISSUE-97-GAP-MAP.md",
+  "issue_state_observed": {
+    "state": "CLOSED",
+    "updatedAt": "2026-10-25T11:44:51Z",
+    "receipt": "docs/ap-orchestration/evidence/issue-97-status-receipt.json",
+    "all_acceptance_passed": false
+  },
+  "current_task": {
+    "request": "Connect new AP cases to agents with automatic advancement, missing-evidence waiting/resume and independent payment authorization; skip CI",
+    "status": "implemented_locally_verified",
+    "runbook": "docs/ap-orchestration/AP-CASE-AGENT.md",
+    "broad_goal_complete": false,
+    "live_runtime_rollout": "not_performed",
+    "external_provider_calls": "none"
   }
 }

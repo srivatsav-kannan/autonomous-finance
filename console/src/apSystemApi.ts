@@ -1,3 +1,4 @@
+import {sandboxFundingSchema,type SandboxFundingInput,type BankReconciliationView} from "../../src/ap-system/bank-reconciliation";
 import type {TaxState} from "../../src/ap-system/tax-adjustment-contracts";
 import {physicalLineOperationSchemas,type PhysicalLineInputs} from "../../src/ap-system/physical-line-contracts";
 import type {PhysicalLineOperation,PhysicalLineWorkspaceView} from "../../src/ap-system/physical-line-operations";
@@ -85,6 +86,8 @@ export function accountingSelection(value?:APAccountingSelection|string):APAccou
  return input;
 }
 export const apSystemApi = {
+  bankEvidence:(signal?:AbortSignal)=>request<BankReconciliationView>("/bank-evidence",undefined,signal),
+  classifySandboxFunding:(input:SandboxFundingInput)=>request<{entryId:string;replayed:boolean}>("/bank-evidence/funding",sandboxFundingSchema.parse(input)),
   physicalLines:(caseId?:string,signal?:AbortSignal)=>request<PhysicalLineWorkspaceView>(`/physical-lines${caseId?`?caseId=${encodeURIComponent(caseId)}`:""}`,undefined,signal),
   physicalLine:<K extends PhysicalLineOperation>(operation:K,input:PhysicalLineInputs[K])=>request<unknown>(`/physical-lines/${operation}`,physicalLineOperationSchemas[operation].parse(input)),
   supplierContacts:(signal?:AbortSignal)=>request<SupplierContactWorkspaceView>("/supplier-contacts",undefined,signal),

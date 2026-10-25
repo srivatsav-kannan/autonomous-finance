@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-25",
+  "baseRevision": "6438103",
+  "runtime": "Node 26.8.1, macOS MacBook",
+  "scope": "Local Convex-test, SQLite FakeBank, simulated human identities, synthetic text originals. No external provider or model execution.",
+  "sourceHashes": {
+    "convex/apCaseAgent.ts": "9e8dd790da333a24483f5dedc0fbcc14df1383dabe7ea35c8e27952de61a6f74",
+    "convex/apSystemSchema.ts": "71c37c8e7a8e3afda77525a03ce05e31f0214c9c2bb621d5fff8097f11ea350c",
+    "convex/lib/apSystem/agentAudit.ts": "ab7fee0d2692522b1cee33eac03ce9181b168ddde4519fd13284a08dcf26afc5",
+    "convex/lib/apSystem/projection.ts": "d3834688ac39b4bee58673326cb7cc5f585b3fd01d583509dc364f42c15d1459",
+    "src/ap-system/contracts.ts": "03759999d0da293cf70d1cd2583cc52f1c5cf13e99396eb8babca3b53f50de46",
+    "tests/ap-system/agent-workflow.test.ts": "577684858d7a831e754e378290492da8173b09c49f33b035721a830926c44c64",
+    "tests/ap-system/agent-process.test.ts": "44e4b1e4cc82c0fc5ee48a3c91d87cd53f822a04123b8e45b2177cbd3a698fc6"
+  },
+  "results": {
+    "apRegression": {
+      "filesPassed": 117,
+      "testsPassed": 893
+    },
+    "savedAgentRun": {
+      "filesPassed": 2,
+      "testsPassed": 20
+    },
+    "typechecks": [
+      "application passed",
+      "backend passed",
+      "tests passed"
+    ]
+  },
+  "records": {
+    "case-transitions.json": "2e06f2af051db55eb273d3abc4ba9924f6851effc1dd1d36424de78000a520dc",
+    "process-recovery.json": "6b13338601dbd81d316f93e4aea546273db835d526afd05492cdb1c96848aa9f"
+  },
+  "recordTransform": "case-transitions.json retains the actual events, versions, commands, journals and checks from agent-case-flow.json; counts are measured from the saved arrays. Original bodies and duplicate copies in case.timeline are omitted. process-recovery.json is copied unchanged. bankRecords retains safe identity, amount and status fields from the actual FakeBank records; the pending record and posted debit are counted separately.",
+  "rawSourceHashes": {
+    "agent-case-flow.json": "fb82feedd8b0d4c8655f2e217401736496a0a2656de135db68d9805ad4ae376b",
+    "agent-process-recovery.json": "6b13338601dbd81d316f93e4aea546273db835d526afd05492cdb1c96848aa9f"
+  },
+  "reproduce": "mkdir -p var/agent-transition-evidence && AP_AGENT_EVIDENCE_DIR=$PWD/var/agent-transition-evidence npm exec vitest run tests/ap-system/agent-workflow.test.ts tests/ap-system/agent-process.test.ts",
+  "limitations": [
+    "No independent model/practitioner review.",
+    "No new external sandbox or actual model-selected tool verification.",
+    "Process restart keeps the parent Convex-test state and advances lease expiry; not a database restart.",
+    "Existing source-only events are not backfilled.",
+    "Every denied API attempt is not audited."
+  ]
+}

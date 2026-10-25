@@ -5,6 +5,20 @@ import { scopeValidator } from "./demoSchema";
 
 /** Shared payloads are validated with ap-evidence-v1 before storage. */
 export const apSystemTables = {
+  apCaseWork: defineTable({
+    scope:scopeValidator, caseId:v.id("apCaseRecords"), version:v.string(),
+    status:v.union(v.literal("queued"),v.literal("leased"),v.literal("waiting"),v.literal("complete"),v.literal("escalated"),v.literal("paused")),
+    role:v.union(v.literal("ap_clerk"),v.literal("payments")), stage:v.string(), owner:v.string(), reason:v.string(), requirements:v.array(v.string()),
+    fingerprint:v.optional(v.string()), attemptFingerprint:v.optional(v.string()), nextCheckAt:v.number(), waitSince:v.optional(v.number()), deadlineAt:v.optional(v.number()),
+    generation:v.number(), attempts:v.number(), transitions:v.number(), leaseOwner:v.optional(v.string()), leaseUntil:v.optional(v.number()),
+    claimRequestId:v.optional(v.string()), lastCompletedGeneration:v.optional(v.number()), lastCompletedBy:v.optional(v.string()),
+    createdAt:v.number(), updatedAt:v.number(),
+  }).index("by_case",["scope.runId","caseId"]).index("by_due",["scope.runId","nextCheckAt"]),
+  apCaseWorkEvents: defineTable({
+    scope:scopeValidator, caseId:v.id("apCaseRecords"), actor:v.string(), stage:v.string(), reason:v.string(),
+    revision:v.number(), snapshotHash:v.string(), generation:v.number(), at:v.number(),
+    transition:v.optional(v.any()), // Validated by agentTransitionSchema; historical stage-only events remain valid.
+  }).index("by_case",["scope.runId","caseId"]),
   apPhysicalSources: defineTable({
     scope:scopeValidator, sourceHash:v.string(), supplierId:v.string(), purpose:v.string(),
     payload:v.any(), hash:v.string(), reviewId:v.id("apPhysicalLineReviews"), createdAt:v.number(),

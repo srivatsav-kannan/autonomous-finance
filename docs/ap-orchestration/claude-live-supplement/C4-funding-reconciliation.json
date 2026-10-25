@@ -1,0 +1,193 @@
+{
+  "version": "ap97-sandbox-funding-reconciliation-v1",
+  "checkedAt": "2026-10-25T11:50:40.082Z",
+  "result": "PASS: sandbox bank reconciliation",
+  "scope": {
+    "organizationId": "ap97-synthetic-company",
+    "runId": "ap97-auth0-live-20261025",
+    "provider": "increase",
+    "environment": "sandbox",
+    "accountId": "sandbox_account_goevsyhcl5ojovi38xba"
+  },
+  "funding": {
+    "transactionId": "sandbox_transaction_7in7uo3dooxz3307i4cu",
+    "amountCents": 67860,
+    "sourceCategory": "inbound_ach_transfer",
+    "entryId": "rx73vfsg1t42av182g987kn3c58gytxg",
+    "reason": "User requested classification of the exact USD 678.60 sandbox test funding. Increase readback confirms posted inbound ACH sandbox_transaction_7in7uo3dooxz3307i4cu, from simulator transfer sandbox_inbound_ach_transfer_dv1kh0uole1qcljp2rdm. Simulated contributed test capital only: Dr bank 1000 / Cr equity 3000. No revenue, supplier payment, or real funds created by this classification."
+  },
+  "bankBalance": {
+    "scope": {
+      "organizationId": "ap97-synthetic-company",
+      "runId": "ap97-auth0-live-20261025",
+      "provider": "increase",
+      "environment": "sandbox",
+      "accountId": "sandbox_account_goevsyhcl5ojovi38xba"
+    },
+    "currency": "USD",
+    "currentCents": 0,
+    "availableCents": 0,
+    "asOf": "2026-10-25T11:50:39.569Z"
+  },
+  "cashLedgerCents": 0,
+  "transactions": [
+    {
+      "id": "sandbox_transaction_02j4j1ax6a81pw5y034h",
+      "amountCents": -67860,
+      "state": "posted",
+      "entryId": "rx71arac24mhdfs13bvcmwy1a18gzheq"
+    },
+    {
+      "id": "sandbox_transaction_7in7uo3dooxz3307i4cu",
+      "amountCents": 67860,
+      "state": "posted",
+      "entryId": "rx73vfsg1t42av182g987kn3c58gytxg"
+    }
+  ],
+  "journals": [
+    {
+      "id": "rx73vfsg1t42av182g987kn3c58gytxg",
+      "sequence": 3,
+      "date": "2026-10-25",
+      "source": {
+        "kind": "bank_match",
+        "ref": "demo:funding:ap97-auth0-live-20261025:sandbox_transaction_7in7uo3dooxz3307i4cu"
+      },
+      "lines": [
+        {
+          "account": "1000",
+          "credit": 0,
+          "debit": 67860
+        },
+        {
+          "account": "3000",
+          "credit": 67860,
+          "debit": 0
+        }
+      ],
+      "hash": "946b0e00379a860c226dbd07df87977e1288469cf6bda192259d9ee89babf5b1",
+      "prevHash": "efad128854e6f526f054f5064d75b2e0aadbba858ccd4f7010641de9f3499210"
+    },
+    {
+      "id": "rx71arac24mhdfs13bvcmwy1a18gzheq",
+      "sequence": 2,
+      "date": "2026-10-25",
+      "source": {
+        "kind": "payment_settlement",
+        "ref": "ap97-synthetic-company:ap97-auth0-live-20261025:increase:sandbox:sandbox_account_goevsyhcl5ojovi38xba:sandbox_transaction_02j4j1ax6a81pw5y034h:debit"
+      },
+      "lines": [
+        {
+          "account": "2000",
+          "credit": 0,
+          "debit": 67860
+        },
+        {
+          "account": "1000",
+          "credit": 67860,
+          "debit": 0
+        }
+      ],
+      "hash": "efad128854e6f526f054f5064d75b2e0aadbba858ccd4f7010641de9f3499210",
+      "prevHash": "f49485ef9496d391e67bb2ac013d0a4f1a8d716797cc10c8b2954d85f3bef3f8"
+    },
+    {
+      "id": "rx713kw9r8sbgn06y8sc9sqe8d8gzrx9",
+      "sequence": 1,
+      "date": "2026-10-19",
+      "source": {
+        "kind": "bill",
+        "ref": "ns741jys5gph4fyfr44j66tdc58gyvxg"
+      },
+      "lines": [
+        {
+          "account": "5000",
+          "credit": 0,
+          "debit": 19250,
+          "dims": {
+            "store": "sf-hayes-valley",
+            "vendor": "golden-state-produce"
+          },
+          "memo": "expense; period 2026-10"
+        },
+        {
+          "account": "5000",
+          "credit": 0,
+          "debit": 17100,
+          "dims": {
+            "store": "sf-hayes-valley",
+            "vendor": "golden-state-produce"
+          },
+          "memo": "expense; period 2026-10"
+        },
+        {
+          "account": "5000",
+          "credit": 0,
+          "debit": 20670,
+          "dims": {
+            "store": "sf-hayes-valley",
+            "vendor": "golden-state-produce"
+          },
+          "memo": "expense; period 2026-10"
+        },
+        {
+          "account": "5000",
+          "credit": 0,
+          "debit": 10840,
+          "dims": {
+            "store": "sf-hayes-valley",
+            "vendor": "golden-state-produce"
+          },
+          "memo": "expense; period 2026-10"
+        },
+        {
+          "account": "2000",
+          "credit": 67860,
+          "debit": 0,
+          "dims": {
+            "vendor": "golden-state-produce"
+          }
+        }
+      ],
+      "hash": "f49485ef9496d391e67bb2ac013d0a4f1a8d716797cc10c8b2954d85f3bef3f8",
+      "prevHash": "genesis"
+    }
+  ],
+  "replay": {
+    "posted": 0,
+    "errors": []
+  },
+  "checks": {
+    "twoImportedTransactions": true,
+    "allMatched": true,
+    "noBlockers": true,
+    "oneFundingJournal": true,
+    "fundingJournalCorrect": true,
+    "cashMatchesBank": true,
+    "noReplayWrites": true,
+    "oneSettledPayment": true,
+    "threeJournals": true
+  },
+  "limits": [
+    "Bank reconciliation of this synthetic run only; no formal period-close signature.",
+    "Test capital journal is local; QuickBooks Bill145/BillPayment146 remain the prior verified AP round trip. This does not assert QBO bank reconciliation.",
+    "No production money, real-document or webhook/return acceptance."
+  ],
+  "validation": {
+    "targetedTests": 26,
+    "files": 3,
+    "applicationTypecheck": "passed",
+    "backendTypecheck": "passed",
+    "testTypecheck": "passed",
+    "consoleBuild": "passed",
+    "designCheck": "passed",
+    "desktopBrowser": "passed via authenticated live sandbox",
+    "CI": "deferred by user"
+  },
+  "evidenceHashes": {
+    "funding-receipt.json": "7fa20c6a23a3496dca75d6cc7f2421f09022948ed42098b24c44a6565e4c7a72",
+    "funding-before-classification.json": "58be3c38f4a6058cefcb58d654d8265d7af7b5369bf3321d290cefe8f9f56104",
+    "funding-reconciliation-final.json": "e977d678218518b99af58d1a3729d2c162639287726612d5e50afa944936b514",
+    "funding-reconciled.jpg": "9baaf87fdee19c22cb3431639f10eccb945242adfb2caa2adbf58a8ff4fbd25f"
+  }
+}

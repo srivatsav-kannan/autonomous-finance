@@ -1,6 +1,6 @@
 # QuickBooks Online US sandbox — runnable C4 operator setup
 
-Status on 2026-10-25: connector and independent protocol/backend tests are implemented. The operator has configured Development credentials and selected a US sandbox privately; configuration presence is not proof of valid credentials or consent. Master reached the real company consent page, with the owner’s Connect action still pending at this checkpoint. Live OAuth completion, company reads, Bill/VendorCredit/BillPayment writes and external reconciliation remain separately evidenced acceptance steps. Mock success is not sandbox acceptance. Increase sandbox remains the payment rail; this connector only records accounting after independent settlement evidence.
+Status on 2026-10-25: Development OAuth consent, company/reference reads and the synthetic INV-1001 accounting round trip passed. QBO Bill145 and BillPayment146 were each created once and read-back verified; bill balance is zero. An omitted optional APAccountRef response was verified against the exact linked bill, recovering the original unknown operation without another POST. See [actual evidence](evidence/C4-live-happy-path.md). Broader credits, returns, corrections and successive partial-payment live acceptance remain open. Increase remains the payment rail; this connector records accounting. Test-funding classification is local only; no QBO funding export or QBO bank reconciliation is claimed. Instructions below support recreation, not a pending initial Connect action.
 
 ## 1. Register and select the sandbox
 

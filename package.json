@@ -45,7 +45,8 @@
     "controls": "tsx scripts/control-tests.ts",
     "invoice-mvp:server": "tsx scripts/invoice-mvp-server.ts",
     "invoice-mvp:test": "vitest run src/invoice-mvp",
-    "invoice-mvp:init": "tsx scripts/invoice-workspace-init.ts"
+    "invoice-mvp:init": "tsx scripts/invoice-workspace-init.ts",
+    "agents:ap": "tsx scripts/ap-case-agent.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

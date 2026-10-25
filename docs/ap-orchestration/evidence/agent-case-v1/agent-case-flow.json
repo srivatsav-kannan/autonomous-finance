@@ -1,0 +1,2546 @@
+{
+  "classification": "owner local integration test; Convex-test plus SQLite FakeBank; simulated human; synthetic text originals; no parser or external provider call",
+  "clock": "controlled test clock",
+  "scope": {
+    "organizationId": "ap-org",
+    "runId": "ap97-b-unit",
+    "provider": "fake",
+    "environment": "local",
+    "accountId": "account-b"
+  },
+  "sourcePacket": {
+    "contractVersion": "ap-evidence-v1",
+    "idempotencyKey": "ingest-GS-1042",
+    "documents": [
+      {
+        "sourceId": "invoice-GS-1042",
+        "revision": 1,
+        "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "deliveryId": "delivery-invoice-GS-1042-GS-1042",
+        "name": "invoice-GS-1042.pdf",
+        "kind": "invoice",
+        "mimeType": "application/pdf",
+        "originalRef": "/private/ap/invoice-GS-1042.pdf",
+        "originalBase64": "R29sZGVuIFN0YXRlIFByb2R1Y2UgQ28uCkludm9pY2UgR1MtMTA0MgoyMDI2LTEwLTE5CktBTEUtMjQgT3JnYW5pYyBLYWxlLCAyNGN0IGNhc2UgMiBjYXNlIDM4NTAgNzcwMApUb3RhbCA3NzAwIGNlbnRz",
+        "byteLength": 117,
+        "extractedText": "Golden State Produce Co.\nInvoice GS-1042\n2026-10-19\nKALE-24 Organic Kale, 24ct case 2 case 3850 7700\nTotal 7700 cents",
+        "provenance": {
+          "kind": "synthetic",
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "replaces": null,
+        "pageCount": 1,
+        "pageStatus": [
+          {
+            "page": 1,
+            "status": "complete",
+            "reason": null
+          }
+        ],
+        "parser": null
+      },
+      {
+        "sourceId": "po-GS-1042",
+        "revision": 1,
+        "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "deliveryId": "delivery-po-GS-1042-GS-1042",
+        "name": "po-GS-1042.pdf",
+        "kind": "purchase_order",
+        "mimeType": "application/pdf",
+        "originalRef": "/private/ap/po-GS-1042.pdf",
+        "originalBase64": "UE8gR29sZGVuIFN0YXRlIEtBTEUtMjQgMiBjYXNlIHVuaXQgMzg1MA==",
+        "byteLength": 40,
+        "extractedText": "PO Golden State KALE-24 2 case unit 3850",
+        "provenance": {
+          "kind": "synthetic",
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "replaces": null,
+        "pageCount": 1,
+        "pageStatus": [
+          {
+            "page": 1,
+            "status": "complete",
+            "reason": null
+          }
+        ],
+        "parser": null
+      },
+      {
+        "sourceId": "receipt-GS-1042",
+        "revision": 1,
+        "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "deliveryId": "delivery-receipt-GS-1042-GS-1042",
+        "name": "receipt-GS-1042.pdf",
+        "kind": "receipt",
+        "mimeType": "application/pdf",
+        "originalRef": "/private/ap/receipt-GS-1042.pdf",
+        "originalBase64": "QWNjZXB0ZWQgYnkgcmVjZWl2aW5nLW93bmVyIG9uIDIwMjYtMTAtMTk6IEtBTEUtMjQgMiBjYXNl",
+        "byteLength": 57,
+        "extractedText": "Accepted by receiving-owner on 2026-10-19: KALE-24 2 case",
+        "provenance": {
+          "kind": "synthetic",
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "replaces": null,
+        "pageCount": 1,
+        "pageStatus": [
+          {
+            "page": 1,
+            "status": "complete",
+            "reason": null
+          }
+        ],
+        "parser": null
+      }
+    ],
+    "candidate": {
+      "candidateId": "candidate-GS-1042",
+      "revision": 1,
+      "sources": [
+        {
+          "sourceId": "invoice-GS-1042",
+          "revision": 1,
+          "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+        },
+        {
+          "sourceId": "po-GS-1042",
+          "revision": 1,
+          "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f"
+        },
+        {
+          "sourceId": "receipt-GS-1042",
+          "revision": 1,
+          "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931"
+        }
+      ],
+      "extractedSupplierName": "Golden State Produce Co.",
+      "supplierId": "golden-state-produce",
+      "invoiceNumber": "GS-1042",
+      "invoiceDate": "2026-10-19",
+      "dueDate": "2026-11-02",
+      "terms": "Net 14",
+      "currency": "USD",
+      "kind": "invoice",
+      "appliesToBillId": null,
+      "lines": [
+        {
+          "lineId": "line-1",
+          "sku": "KALE-24",
+          "description": "Organic Kale, 24ct case",
+          "quantity": {
+            "decimal": "2",
+            "unit": "case"
+          },
+          "unitPriceCents": 3850,
+          "amountCents": 7700,
+          "taxCents": 0,
+          "evidenceIds": [
+            "field-lines.line-1.sku",
+            "field-lines.line-1.description",
+            "field-lines.line-1.quantity",
+            "field-lines.line-1.unitPriceCents",
+            "field-lines.line-1.amountCents"
+          ],
+          "poLineId": "po-line-1",
+          "receiptLineIds": [
+            "receipt-line-1"
+          ],
+          "allocations": [
+            {
+              "account": "5000",
+              "amountCents": 7700,
+              "store": "sf-hayes-valley",
+              "department": null,
+              "project": null,
+              "period": "2026-10",
+              "treatment": "expense"
+            }
+          ]
+        }
+      ],
+      "freightAllocations": [],
+      "discountAllocations": [],
+      "subtotalCents": 7700,
+      "taxCents": 0,
+      "freightCents": 0,
+      "discountCents": 0,
+      "totalCents": 7700,
+      "evidence": [
+        {
+          "evidenceId": "field-extractedSupplierName",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "extractedSupplierName",
+          "rawValue": "Golden State Produce Co.",
+          "normalizedValue": "Golden State Produce Co.",
+          "contentStatus": "supported",
+          "quote": "Golden State Produce Co.",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-invoiceNumber",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "invoiceNumber",
+          "rawValue": "GS-1042",
+          "normalizedValue": "GS-1042",
+          "contentStatus": "supported",
+          "quote": "GS-1042",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-invoiceDate",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "invoiceDate",
+          "rawValue": "2026-10-19",
+          "normalizedValue": "2026-10-19",
+          "contentStatus": "supported",
+          "quote": "2026-10-19",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-totalCents",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "totalCents",
+          "rawValue": "7700",
+          "normalizedValue": 7700,
+          "contentStatus": "supported",
+          "quote": "7700",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-lines.line-1.sku",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "lines.line-1.sku",
+          "rawValue": "KALE-24",
+          "normalizedValue": "KALE-24",
+          "contentStatus": "supported",
+          "quote": "KALE-24",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-lines.line-1.description",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "lines.line-1.description",
+          "rawValue": "Organic Kale, 24ct case",
+          "normalizedValue": "Organic Kale, 24ct case",
+          "contentStatus": "supported",
+          "quote": "Organic Kale, 24ct case",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-lines.line-1.quantity",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "lines.line-1.quantity",
+          "rawValue": "2",
+          "normalizedValue": "2",
+          "contentStatus": "supported",
+          "quote": "2",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-lines.line-1.unitPriceCents",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "lines.line-1.unitPriceCents",
+          "rawValue": "3850",
+          "normalizedValue": 3850,
+          "contentStatus": "supported",
+          "quote": "3850",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-lines.line-1.amountCents",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "lines.line-1.amountCents",
+          "rawValue": "7700",
+          "normalizedValue": 7700,
+          "contentStatus": "supported",
+          "quote": "7700",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        }
+      ],
+      "parseWarnings": []
+    },
+    "extraction": {
+      "status": "complete",
+      "evidence": [
+        {
+          "evidenceId": "field-extractedSupplierName",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "extractedSupplierName",
+          "rawValue": "Golden State Produce Co.",
+          "normalizedValue": "Golden State Produce Co.",
+          "contentStatus": "supported",
+          "quote": "Golden State Produce Co.",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-invoiceNumber",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "invoiceNumber",
+          "rawValue": "GS-1042",
+          "normalizedValue": "GS-1042",
+          "contentStatus": "supported",
+          "quote": "GS-1042",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-invoiceDate",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "invoiceDate",
+          "rawValue": "2026-10-19",
+          "normalizedValue": "2026-10-19",
+          "contentStatus": "supported",
+          "quote": "2026-10-19",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-totalCents",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "totalCents",
+          "rawValue": "7700",
+          "normalizedValue": 7700,
+          "contentStatus": "supported",
+          "quote": "7700",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-lines.line-1.sku",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "lines.line-1.sku",
+          "rawValue": "KALE-24",
+          "normalizedValue": "KALE-24",
+          "contentStatus": "supported",
+          "quote": "KALE-24",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-lines.line-1.description",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "lines.line-1.description",
+          "rawValue": "Organic Kale, 24ct case",
+          "normalizedValue": "Organic Kale, 24ct case",
+          "contentStatus": "supported",
+          "quote": "Organic Kale, 24ct case",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-lines.line-1.quantity",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "lines.line-1.quantity",
+          "rawValue": "2",
+          "normalizedValue": "2",
+          "contentStatus": "supported",
+          "quote": "2",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-lines.line-1.unitPriceCents",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "lines.line-1.unitPriceCents",
+          "rawValue": "3850",
+          "normalizedValue": 3850,
+          "contentStatus": "supported",
+          "quote": "3850",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        },
+        {
+          "evidenceId": "field-lines.line-1.amountCents",
+          "source": {
+            "sourceId": "invoice-GS-1042",
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+          },
+          "fieldPath": "lines.line-1.amountCents",
+          "rawValue": "7700",
+          "normalizedValue": 7700,
+          "contentStatus": "supported",
+          "quote": "7700",
+          "grounding": {
+            "status": "unresolved",
+            "method": "none",
+            "page": 1,
+            "frame": null,
+            "regions": [],
+            "contextRegions": [],
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "processor": {
+              "provider": "test",
+              "model": null,
+              "version": "v1",
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "jobId": null,
+              "resolvedVersion": "v1",
+              "implementationVersion": "test-v1",
+              "configArtifact": null,
+              "rawArtifact": null,
+              "tokenArtifact": null,
+              "rasterArtifact": null,
+              "traineddata": null
+            },
+            "failureReason": "no coordinates in test text fixture",
+            "elementPath": null
+          }
+        }
+      ],
+      "reasons": []
+    },
+    "purchasingEvidence": [
+      {
+        "supplierId": "golden-state-produce",
+        "source": {
+          "sourceId": "po-GS-1042",
+          "revision": 1,
+          "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f"
+        },
+        "kind": "purchase_order",
+        "reference": "PO-1",
+        "lines": [
+          {
+            "lineId": "po-line-1",
+            "sku": "KALE-24",
+            "quantity": {
+              "decimal": "2",
+              "unit": "case"
+            },
+            "unitPriceCents": 3850,
+            "invoiceLineId": "line-1"
+          }
+        ],
+        "acceptedBy": null,
+        "acceptedAt": null
+      },
+      {
+        "supplierId": "golden-state-produce",
+        "source": {
+          "sourceId": "receipt-GS-1042",
+          "revision": 1,
+          "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931"
+        },
+        "kind": "receipt",
+        "reference": "GR-1",
+        "lines": [
+          {
+            "lineId": "receipt-line-1",
+            "sku": "KALE-24",
+            "quantity": {
+              "decimal": "2",
+              "unit": "case"
+            },
+            "unitPriceCents": null,
+            "invoiceLineId": "line-1"
+          }
+        ],
+        "acceptedBy": "receiving-owner",
+        "acceptedAt": "2026-10-19T12:00:00Z"
+      }
+    ],
+    "explicitRevisionOf": null
+  },
+  "case": {
+    "amounts": {
+      "acceptedCents": 7700,
+      "creditedCents": 0,
+      "disputedCents": 0,
+      "instructedCents": 7700,
+      "invoicedCents": 7700,
+      "outstandingCents": 0,
+      "settledCents": 7700
+    },
+    "candidate": {
+      "appliesToBillId": null,
+      "candidateId": "candidate-GS-1042",
+      "currency": "USD",
+      "discountAllocations": [],
+      "discountCents": 0,
+      "dueDate": "2026-11-02",
+      "evidence": [
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-extractedSupplierName",
+          "fieldPath": "extractedSupplierName",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "Golden State Produce Co.",
+          "quote": "Golden State Produce Co.",
+          "rawValue": "Golden State Produce Co.",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-invoiceNumber",
+          "fieldPath": "invoiceNumber",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "GS-1042",
+          "quote": "GS-1042",
+          "rawValue": "GS-1042",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-invoiceDate",
+          "fieldPath": "invoiceDate",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "2026-10-19",
+          "quote": "2026-10-19",
+          "rawValue": "2026-10-19",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-totalCents",
+          "fieldPath": "totalCents",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": 7700,
+          "quote": "7700",
+          "rawValue": "7700",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-lines.line-1.sku",
+          "fieldPath": "lines.line-1.sku",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "KALE-24",
+          "quote": "KALE-24",
+          "rawValue": "KALE-24",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-lines.line-1.description",
+          "fieldPath": "lines.line-1.description",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "Organic Kale, 24ct case",
+          "quote": "Organic Kale, 24ct case",
+          "rawValue": "Organic Kale, 24ct case",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-lines.line-1.quantity",
+          "fieldPath": "lines.line-1.quantity",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "2",
+          "quote": "2",
+          "rawValue": "2",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-lines.line-1.unitPriceCents",
+          "fieldPath": "lines.line-1.unitPriceCents",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": 3850,
+          "quote": "3850",
+          "rawValue": "3850",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-lines.line-1.amountCents",
+          "fieldPath": "lines.line-1.amountCents",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": 7700,
+          "quote": "7700",
+          "rawValue": "7700",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        }
+      ],
+      "extractedSupplierName": "Golden State Produce Co.",
+      "freightAllocations": [],
+      "freightCents": 0,
+      "invoiceDate": "2026-10-19",
+      "invoiceNumber": "GS-1042",
+      "kind": "invoice",
+      "lines": [
+        {
+          "allocations": [
+            {
+              "account": "5000",
+              "amountCents": 7700,
+              "department": null,
+              "period": "2026-10",
+              "project": null,
+              "store": "sf-hayes-valley",
+              "treatment": "expense"
+            }
+          ],
+          "amountCents": 7700,
+          "description": "Organic Kale, 24ct case",
+          "evidenceIds": [
+            "field-lines.line-1.sku",
+            "field-lines.line-1.description",
+            "field-lines.line-1.quantity",
+            "field-lines.line-1.unitPriceCents",
+            "field-lines.line-1.amountCents"
+          ],
+          "lineId": "line-1",
+          "poLineId": "po-line-1",
+          "quantity": {
+            "decimal": "2",
+            "unit": "case"
+          },
+          "receiptLineIds": [
+            "receipt-line-1"
+          ],
+          "sku": "KALE-24",
+          "taxCents": 0,
+          "unitPriceCents": 3850
+        }
+      ],
+      "parseWarnings": [],
+      "revision": 2,
+      "sources": [
+        {
+          "revision": 1,
+          "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+          "sourceId": "invoice-GS-1042"
+        },
+        {
+          "revision": 1,
+          "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+          "sourceId": "po-GS-1042"
+        },
+        {
+          "revision": 1,
+          "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+          "sourceId": "receipt-GS-1042"
+        }
+      ],
+      "subtotalCents": 7700,
+      "supplierId": "golden-state-produce",
+      "taxCents": 0,
+      "terms": "Net 14",
+      "totalCents": 7700
+    },
+    "caseId": "0000000000000010007apCaseRecords",
+    "contractVersion": "ap-evidence-v1",
+    "createdAt": 1792929600001,
+    "currentSourceBindings": [
+      {
+        "revision": 1,
+        "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "sourceId": "invoice-GS-1042"
+      },
+      {
+        "revision": 1,
+        "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "sourceId": "po-GS-1042"
+      },
+      {
+        "revision": 1,
+        "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "sourceId": "receipt-GS-1042"
+      }
+    ],
+    "decisions": [
+      {
+        "actor": "https://ap-demo.invalid|reviewer",
+        "actorKind": "human",
+        "at": 1792929625006,
+        "authority": "configured_human_cfo",
+        "candidateRevision": 2,
+        "decisionId": "0000000000000010007apCaseRecords:field:review-2",
+        "evidenceIds": [
+          "field-extractedSupplierName",
+          "field-invoiceNumber",
+          "field-invoiceDate",
+          "field-totalCents",
+          "field-lines.line-1.sku",
+          "field-lines.line-1.description",
+          "field-lines.line-1.quantity",
+          "field-lines.line-1.unitPriceCents",
+          "field-lines.line-1.amountCents"
+        ],
+        "kind": "field_review",
+        "outcome": "approved",
+        "policyVersion": "golden-state-ap-v1",
+        "reason": "Compared every field to the immutable original and reviewed coding",
+        "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+        "sourceBindings": [
+          {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          },
+          {
+            "revision": 1,
+            "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+            "sourceId": "po-GS-1042"
+          },
+          {
+            "revision": 1,
+            "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+            "sourceId": "receipt-GS-1042"
+          }
+        ]
+      },
+      {
+        "actor": "https://ap-demo.invalid|reviewer",
+        "actorKind": "human",
+        "at": 1792929630007,
+        "authority": "configured_human_cfo",
+        "candidateRevision": 2,
+        "decisionId": "0000000000000010007apCaseRecords:bill:bill-2",
+        "evidenceIds": [
+          "field-extractedSupplierName",
+          "field-invoiceNumber",
+          "field-invoiceDate",
+          "field-totalCents",
+          "field-lines.line-1.sku",
+          "field-lines.line-1.description",
+          "field-lines.line-1.quantity",
+          "field-lines.line-1.unitPriceCents",
+          "field-lines.line-1.amountCents"
+        ],
+        "kind": "bill_approval",
+        "outcome": "approved",
+        "policyVersion": "golden-state-ap-v1",
+        "reason": "Compared every field to the immutable original and reviewed coding",
+        "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+        "sourceBindings": [
+          {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          },
+          {
+            "revision": 1,
+            "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+            "sourceId": "po-GS-1042"
+          },
+          {
+            "revision": 1,
+            "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+            "sourceId": "receipt-GS-1042"
+          }
+        ]
+      }
+    ],
+    "exceptions": [],
+    "extraction": {
+      "evidence": [
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-extractedSupplierName",
+          "fieldPath": "extractedSupplierName",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "Golden State Produce Co.",
+          "quote": "Golden State Produce Co.",
+          "rawValue": "Golden State Produce Co.",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-invoiceNumber",
+          "fieldPath": "invoiceNumber",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "GS-1042",
+          "quote": "GS-1042",
+          "rawValue": "GS-1042",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-invoiceDate",
+          "fieldPath": "invoiceDate",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "2026-10-19",
+          "quote": "2026-10-19",
+          "rawValue": "2026-10-19",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-totalCents",
+          "fieldPath": "totalCents",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": 7700,
+          "quote": "7700",
+          "rawValue": "7700",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-lines.line-1.sku",
+          "fieldPath": "lines.line-1.sku",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "KALE-24",
+          "quote": "KALE-24",
+          "rawValue": "KALE-24",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-lines.line-1.description",
+          "fieldPath": "lines.line-1.description",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "Organic Kale, 24ct case",
+          "quote": "Organic Kale, 24ct case",
+          "rawValue": "Organic Kale, 24ct case",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-lines.line-1.quantity",
+          "fieldPath": "lines.line-1.quantity",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": "2",
+          "quote": "2",
+          "rawValue": "2",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-lines.line-1.unitPriceCents",
+          "fieldPath": "lines.line-1.unitPriceCents",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": 3850,
+          "quote": "3850",
+          "rawValue": "3850",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        },
+        {
+          "contentStatus": "supported",
+          "evidenceId": "field-lines.line-1.amountCents",
+          "fieldPath": "lines.line-1.amountCents",
+          "grounding": {
+            "contextRegions": [],
+            "elementPath": null,
+            "failureReason": "no coordinates in test text fixture",
+            "frame": null,
+            "method": "none",
+            "normalization": "html_decode+nfc+whitespace+casefold;no_character_substitution",
+            "page": 1,
+            "processor": {
+              "configArtifact": null,
+              "configHash": "b79606fb3afea5bd1609ed40b622142f1c98125abcfe89a76a661b0e8e343910",
+              "implementationVersion": "test-v1",
+              "jobId": null,
+              "model": null,
+              "provider": "test",
+              "rasterArtifact": null,
+              "rawArtifact": null,
+              "resolvedVersion": "v1",
+              "tokenArtifact": null,
+              "traineddata": null,
+              "version": "v1"
+            },
+            "regions": [],
+            "status": "unresolved"
+          },
+          "normalizedValue": 7700,
+          "quote": "7700",
+          "rawValue": "7700",
+          "source": {
+            "revision": 1,
+            "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+            "sourceId": "invoice-GS-1042"
+          }
+        }
+      ],
+      "reasons": [],
+      "status": "complete"
+    },
+    "identityMode": "simulated_human",
+    "journals": [
+      {
+        "bankTransactionId": null,
+        "date": "2026-10-19",
+        "entryId": "000000000000010034journalEntries",
+        "kind": "recognition",
+        "lines": [
+          {
+            "account": "5000",
+            "credit": 0,
+            "debit": 7700
+          },
+          {
+            "account": "2000",
+            "credit": 7700,
+            "debit": 0
+          }
+        ]
+      },
+      {
+        "bankTransactionId": "txn_1a6c1fa9c9717f99462d5a1d",
+        "date": "2026-10-25",
+        "entryId": "000000000000010055journalEntries",
+        "kind": "settlement",
+        "lines": [
+          {
+            "account": "2000",
+            "credit": 0,
+            "debit": 7700
+          },
+          {
+            "account": "1000",
+            "credit": 7700,
+            "debit": 0
+          }
+        ]
+      }
+    ],
+    "links": {
+      "bankTransactionIds": [
+        "txn_1a6c1fa9c9717f99462d5a1d"
+      ],
+      "billId": "00000000000000000010033demoBills",
+      "billVersion": 2,
+      "commandIds": [
+        "00000000000000010046demoCommands"
+      ],
+      "duplicateOfCaseId": null,
+      "externalAccountingIds": [],
+      "paymentVersionIds": [
+        "00000000000000010043demoVersions"
+      ],
+      "recognitionJournalId": "000000000000010034journalEntries",
+      "settlementJournalIds": [
+        "000000000000010055journalEntries"
+      ]
+    },
+    "organizationId": "ap-org",
+    "payments": [
+      {
+        "amountCents": 7700,
+        "authorizedBy": [
+          "https://ap-demo.invalid|reviewer"
+        ],
+        "beneficiaryVersion": "v1",
+        "commandId": "00000000000000010046demoCommands",
+        "providerTransferId": "transfer_338c487c21b6a99a645ce5ec",
+        "status": "settled",
+        "versionId": "00000000000000010043demoVersions"
+      }
+    ],
+    "policyVersion": "golden-state-ap-v1",
+    "purchasingEvidence": [
+      {
+        "acceptedAt": null,
+        "acceptedBy": null,
+        "kind": "purchase_order",
+        "lines": [
+          {
+            "invoiceLineId": "line-1",
+            "lineId": "po-line-1",
+            "quantity": {
+              "decimal": "2",
+              "unit": "case"
+            },
+            "sku": "KALE-24",
+            "unitPriceCents": 3850
+          }
+        ],
+        "reference": "PO-1",
+        "source": {
+          "revision": 1,
+          "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+          "sourceId": "po-GS-1042"
+        },
+        "supplierId": "golden-state-produce"
+      },
+      {
+        "acceptedAt": "2026-10-19T12:00:00Z",
+        "acceptedBy": "receiving-owner",
+        "kind": "receipt",
+        "lines": [
+          {
+            "invoiceLineId": "line-1",
+            "lineId": "receipt-line-1",
+            "quantity": {
+              "decimal": "2",
+              "unit": "case"
+            },
+            "sku": "KALE-24",
+            "unitPriceCents": null
+          }
+        ],
+        "reference": "GR-1",
+        "source": {
+          "revision": 1,
+          "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+          "sourceId": "receipt-GS-1042"
+        },
+        "supplierId": "golden-state-produce"
+      }
+    ],
+    "revision": 2,
+    "runId": "ap97-b-unit",
+    "scope": {
+      "accountId": "account-b",
+      "environment": "local",
+      "organizationId": "ap-org",
+      "provider": "fake",
+      "runId": "ap97-b-unit"
+    },
+    "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+    "sources": [
+      {
+        "byteLength": 117,
+        "deliveryId": "delivery-invoice-GS-1042-GS-1042",
+        "extractedText": "Golden State Produce Co.\nInvoice GS-1042\n2026-10-19\nKALE-24 Organic Kale, 24ct case 2 case 3850 7700\nTotal 7700 cents",
+        "kind": "invoice",
+        "mimeType": "application/pdf",
+        "name": "invoice-GS-1042.pdf",
+        "originalRef": "source:invoice-GS-1042:1:c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "pageCount": 1,
+        "pageStatus": [
+          {
+            "page": 1,
+            "reason": null,
+            "status": "complete"
+          }
+        ],
+        "parser": null,
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "invoice-GS-1042.pdf"
+        },
+        "replaces": null,
+        "revision": 1,
+        "sha256": "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "sourceId": "invoice-GS-1042"
+      },
+      {
+        "byteLength": 40,
+        "deliveryId": "delivery-po-GS-1042-GS-1042",
+        "extractedText": "PO Golden State KALE-24 2 case unit 3850",
+        "kind": "purchase_order",
+        "mimeType": "application/pdf",
+        "name": "po-GS-1042.pdf",
+        "originalRef": "source:po-GS-1042:1:8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "pageCount": 1,
+        "pageStatus": [
+          {
+            "page": 1,
+            "reason": null,
+            "status": "complete"
+          }
+        ],
+        "parser": null,
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "po-GS-1042.pdf"
+        },
+        "replaces": null,
+        "revision": 1,
+        "sha256": "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "sourceId": "po-GS-1042"
+      },
+      {
+        "byteLength": 57,
+        "deliveryId": "delivery-receipt-GS-1042-GS-1042",
+        "extractedText": "Accepted by receiving-owner on 2026-10-19: KALE-24 2 case",
+        "kind": "receipt",
+        "mimeType": "application/pdf",
+        "name": "receipt-GS-1042.pdf",
+        "originalRef": "source:receipt-GS-1042:1:1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "pageCount": 1,
+        "pageStatus": [
+          {
+            "page": 1,
+            "reason": null,
+            "status": "complete"
+          }
+        ],
+        "parser": null,
+        "provenance": {
+          "description": "Policy unit-test text stand-in; not a parser/PDF verification fixture",
+          "kind": "synthetic",
+          "license": "test only",
+          "originalFilename": "receipt-GS-1042.pdf"
+        },
+        "replaces": null,
+        "revision": 1,
+        "sha256": "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931",
+        "sourceId": "receipt-GS-1042"
+      }
+    ],
+    "states": {
+      "accounting": "recognized",
+      "authorization": "authorized",
+      "business": "approved",
+      "document": "reviewed",
+      "execution": "settled",
+      "reconciliation": "matched"
+    },
+    "timeline": [
+      {
+        "actor": "ap_clerk",
+        "at": 1792929600001,
+        "eventId": "00000000000010014apCaseRevisions",
+        "kind": "source_revision",
+        "references": [
+          "c3af165af65e53ccc46585d9c6dca609d0cdca9ac4255c010ca9ee0a0cab0b5c"
+        ],
+        "summary": "Source case revision 1 retained"
+      },
+      {
+        "actor": "ap_clerk",
+        "at": 1792929600001,
+        "eventId": "0000000000010010apCaseDeliveries",
+        "kind": "source_delivery",
+        "references": [
+          "invoice-GS-1042",
+          "c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da"
+        ],
+        "summary": "Received invoice-GS-1042.pdf"
+      },
+      {
+        "actor": "ap_clerk",
+        "at": 1792929600001,
+        "eventId": "0000000000010013apCaseDeliveries",
+        "kind": "source_delivery",
+        "references": [
+          "po-GS-1042",
+          "8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f"
+        ],
+        "summary": "Received po-GS-1042.pdf"
+      },
+      {
+        "actor": "ap_clerk",
+        "at": 1792929605001,
+        "eventId": "0000000000010019apCaseWorkEvents",
+        "kind": "agent_missing_evidence",
+        "references": [
+          "c3af165af65e53ccc46585d9c6dca609d0cdca9ac4255c010ca9ee0a0cab0b5c",
+          "revision:1"
+        ],
+        "summary": "missing_receipt Required: accepted_receiving_evidence"
+      },
+      {
+        "actor": "ap_clerk",
+        "at": 1792929620005,
+        "eventId": "00000000000010023apCaseRevisions",
+        "kind": "source_revision",
+        "references": [
+          "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3"
+        ],
+        "summary": "Source case revision 2 retained"
+      },
+      {
+        "actor": "ap_clerk",
+        "at": 1792929620005,
+        "eventId": "0000000000010022apCaseDeliveries",
+        "kind": "source_delivery",
+        "references": [
+          "receipt-GS-1042",
+          "1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931"
+        ],
+        "summary": "Received receipt-GS-1042.pdf"
+      },
+      {
+        "actor": "ap_clerk",
+        "at": 1792929625005,
+        "eventId": "0000000000010027apCaseWorkEvents",
+        "kind": "agent_field_review",
+        "references": [
+          "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+          "revision:2"
+        ],
+        "summary": "Current original fields require the existing independent review. Required: current_source_field_review"
+      },
+      {
+        "actor": "https://ap-demo.invalid|reviewer",
+        "at": 1792929625006,
+        "eventId": "0000000000000010007apCaseRecords:field:review-2",
+        "kind": "field_review",
+        "references": [
+          "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3"
+        ],
+        "summary": "Compared every field to the immutable original and reviewed coding"
+      },
+      {
+        "actor": "ap_clerk",
+        "at": 1792929630006,
+        "eventId": "0000000000010032apCaseWorkEvents",
+        "kind": "agent_bill_approval",
+        "references": [
+          "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+          "revision:2"
+        ],
+        "summary": "Current bill and coding require the configured approval route before recognition. Required: current_bill_approval"
+      },
+      {
+        "actor": "https://ap-demo.invalid|reviewer",
+        "at": 1792929630007,
+        "eventId": "0000000000000010007apCaseRecords:bill:bill-2",
+        "kind": "bill_approval",
+        "references": [
+          "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3"
+        ],
+        "summary": "Compared every field to the immutable original and reviewed coding"
+      },
+      {
+        "actor": "payments",
+        "at": 1792929635008,
+        "eventId": "0000000000010045apCaseWorkEvents",
+        "kind": "agent_payment_authorization",
+        "references": [
+          "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+          "revision:2"
+        ],
+        "summary": "Exact payment proposal awaits independent human authorization. Required: independent_payment_authorization"
+      },
+      {
+        "actor": "ap_clerk",
+        "at": 1792929640008,
+        "eventId": "0000000000010050apCaseWorkEvents",
+        "kind": "agent_bank_settlement",
+        "references": [
+          "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+          "revision:2"
+        ],
+        "summary": "Observe the original authorized command until bank evidence is posted and matched. Required: verified_bank_debit, settlement_journal"
+      },
+      {
+        "actor": "ap_clerk",
+        "at": 1792929645009,
+        "eventId": "0000000000010060apCaseWorkEvents",
+        "kind": "agent_reconciled",
+        "references": [
+          "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+          "revision:2"
+        ],
+        "summary": "Verified bank settlement and local accounting match; no outstanding payable."
+      }
+    ],
+    "updatedAt": 1792929630007
+  },
+  "work": [
+    {
+      "_creationTime": 1792929600001.0088,
+      "_id": "0000000000000000010016apCaseWork",
+      "attemptFingerprint": "5a49cf49ba46cc5bdddf0f6a298ec7decd9cbd40a55c0f692af3aaef3ec45ecf",
+      "attempts": 0,
+      "caseId": "0000000000000010007apCaseRecords",
+      "claimRequestId": "4105ccfa-b983-4a5b-a87c-8922c8af0999",
+      "createdAt": 1792929600001,
+      "fingerprint": "5a49cf49ba46cc5bdddf0f6a298ec7decd9cbd40a55c0f692af3aaef3ec45ecf",
+      "generation": 6,
+      "lastCompletedBy": "ap_clerk",
+      "lastCompletedGeneration": 6,
+      "nextCheckAt": 1792929665012,
+      "owner": "accountant",
+      "reason": "Verified bank settlement and local accounting match; no outstanding payable.",
+      "requirements": [],
+      "role": "ap_clerk",
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "stage": "reconciled",
+      "status": "complete",
+      "transitions": 6,
+      "updatedAt": 1792929645009,
+      "version": "ap-case-agent-v1"
+    }
+  ],
+  "events": [
+    {
+      "_creationTime": 1792929605001.001,
+      "_id": "0000000000010019apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929605001,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 1,
+      "reason": "missing_receipt Required: accepted_receiving_evidence",
+      "revision": 1,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "c3af165af65e53ccc46585d9c6dca609d0cdca9ac4255c010ca9ee0a0cab0b5c",
+      "stage": "missing_evidence"
+    },
+    {
+      "_creationTime": 1792929625005.001,
+      "_id": "0000000000010027apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929625005,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 2,
+      "reason": "Current original fields require the existing independent review. Required: current_source_field_review",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "field_review"
+    },
+    {
+      "_creationTime": 1792929630006.001,
+      "_id": "0000000000010032apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929630006,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 3,
+      "reason": "Current bill and coding require the configured approval route before recognition. Required: current_bill_approval",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "bill_approval"
+    },
+    {
+      "_creationTime": 1792929635008.002,
+      "_id": "0000000000010045apCaseWorkEvents",
+      "actor": "payments",
+      "at": 1792929635008,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 4,
+      "reason": "Exact payment proposal awaits independent human authorization. Required: independent_payment_authorization",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "payment_authorization"
+    },
+    {
+      "_creationTime": 1792929640008.001,
+      "_id": "0000000000010050apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929640008,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 5,
+      "reason": "Observe the original authorized command until bank evidence is posted and matched. Required: verified_bank_debit, settlement_journal",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "bank_settlement"
+    },
+    {
+      "_creationTime": 1792929645009.001,
+      "_id": "0000000000010060apCaseWorkEvents",
+      "actor": "ap_clerk",
+      "at": 1792929645009,
+      "caseId": "0000000000000010007apCaseRecords",
+      "generation": 6,
+      "reason": "Verified bank settlement and local accounting match; no outstanding payable.",
+      "revision": 2,
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "snapshotHash": "2ad14d7fc519ce2679bd1b08c7e6b57254ab2fdc50e760856c0bf54a3b7914a3",
+      "stage": "reconciled"
+    }
+  ],
+  "bills": [
+    {
+      "_creationTime": 1792929630007,
+      "_id": "00000000000000000010033demoBills",
+      "approvedCents": 7700,
+      "createdAt": 1792929630007,
+      "createdBy": "ap_clerk",
+      "entryId": "000000000000010034journalEntries",
+      "evidence": [
+        "invoice-GS-1042:1:c0d89bb48db2bddd70b3be1d8de01c8cb417f29d4a72c871f1d218feb3d774da",
+        "po-GS-1042:1:8482a34e4c9415bed8f3e644cd07c138f4303417f92c24581269923a34fdb86f",
+        "receipt-GS-1042:1:1cda36a0ecfa5a918ebb6a2bd3454e49f464788f0a23e186bc01069bc1e77931"
+      ],
+      "expenseAccount": "5000",
+      "flags": [],
+      "invoiceDate": "2026-10-19",
+      "invoiceNumber": "GS1042",
+      "originalCents": 7700,
+      "paidCents": 7700,
+      "recordHash": "ef06a6b356d4d1f339c48eca6a7f4f75bdd8fc6d736e39d0c4fe62263989379e",
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "status": "paid",
+      "vendor": "golden-state-produce",
+      "version": 2
+    }
+  ],
+  "versions": [
+    {
+      "scope": {
+        "accountId": "account-b",
+        "environment": "local",
+        "organizationId": "ap-org",
+        "provider": "fake",
+        "runId": "ap97-b-unit"
+      },
+      "id": "00000000000000010043demoVersions",
+      "status": "settled",
+      "snapshotHash": "ef9a3ea06dddb0706463951478b064643fec4de89a4e133b2775009dddd045db",
+      "approvals": [
+        {
+          "at": 1792929635008,
+          "kind": "human",
+          "seatId": "human_cfo",
+          "snapshotHash": "ef9a3ea06dddb0706463951478b064643fec4de89a4e133b2775009dddd045db",
+          "subject": "https://ap-demo.invalid|reviewer"
+        }
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "id": "00000000000000010046demoCommands",
+      "operationId": "00000000000000010043demoVersions",
+      "execution": "settled",
+      "posting": "posted",
+      "reconciliation": "matched",
+      "attemptCount": 1
+    }
+  ],
+  "journals": [
+    {
+      "id": "000000000000010034journalEntries",
+      "date": "2026-10-19",
+      "source": {
+        "kind": "bill",
+        "ref": "00000000000000000010033demoBills"
+      },
+      "lines": [
+        {
+          "account": "5000",
+          "credit": 0,
+          "debit": 7700,
+          "dims": {
+            "store": "sf-hayes-valley",
+            "vendor": "golden-state-produce"
+          },
+          "memo": "expense; period 2026-10"
+        },
+        {
+          "account": "2000",
+          "credit": 7700,
+          "debit": 0,
+          "dims": {
+            "vendor": "golden-state-produce"
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000000000010055journalEntries",
+      "date": "2026-10-25",
+      "source": {
+        "kind": "payment_settlement",
+        "ref": "ap-org:ap97-b-unit:fake:local:account-b:txn_1a6c1fa9c9717f99462d5a1d:debit"
+      },
+      "lines": [
+        {
+          "account": "2000",
+          "credit": 0,
+          "debit": 7700
+        },
+        {
+          "account": "1000",
+          "credit": 7700,
+          "debit": 0
+        }
+      ]
+    }
+  ],
+  "bank": {
+    "transfers": [
+      {
+        "id": "transfer_338c487c21b6a99a645ce5ec",
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "commandId": "00000000000000010043demoVersions",
+        "requestHash": "6d5ef4452a7ceb8beb4474cbdd2c4f7b294fa0ffe142b81cf8aae5bf67ddda7f",
+        "idempotencyKey": "demo:00000000000000010043demoVersions",
+        "amountCents": 7700,
+        "currency": "USD",
+        "destination": {
+          "externalAccountId": "synthetic-beneficiary",
+          "version": "v1"
+        },
+        "status": "settled",
+        "createdAt": "2026-10-25T12:00:00.000Z",
+        "updatedAt": "2026-10-25T12:00:00.000Z",
+        "pendingTransactionId": "pending_e5d71ea31ac5b7ce0ae8e7b9",
+        "originalTransactionId": "txn_1a6c1fa9c9717f99462d5a1d"
+      }
+    ],
+    "transactions": [
+      {
+        "id": "pending_e5d71ea31ac5b7ce0ae8e7b9",
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "transferId": "transfer_338c487c21b6a99a645ce5ec",
+        "commandId": "00000000000000010043demoVersions",
+        "amountCents": -7700,
+        "currency": "USD",
+        "status": "complete",
+        "purpose": "debit",
+        "createdAt": "2026-10-25T12:00:00.000Z",
+        "completedAt": "2026-10-25T12:00:00.000Z"
+      },
+      {
+        "id": "txn_1a6c1fa9c9717f99462d5a1d",
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "transferId": "transfer_338c487c21b6a99a645ce5ec",
+        "commandId": "00000000000000010043demoVersions",
+        "amountCents": -7700,
+        "currency": "USD",
+        "status": "posted",
+        "purpose": "debit",
+        "createdAt": "2026-10-25T12:00:00.000Z",
+        "postedAt": "2026-10-25T12:00:00.000Z"
+      }
+    ],
+    "events": [
+      {
+        "id": "evt_08f27ebfb5efebc1577f09c9",
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "transferId": "transfer_338c487c21b6a99a645ce5ec",
+        "resourceType": "ach_transfer",
+        "createdAt": "2026-10-25T12:00:00.000Z"
+      },
+      {
+        "id": "evt_c91e48666f5b78806f6dfc83",
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "transferId": "transfer_338c487c21b6a99a645ce5ec",
+        "resourceType": "ach_transfer",
+        "createdAt": "2026-10-25T12:00:00.000Z"
+      }
+    ],
+    "calls": {
+      "createTransfer": 1,
+      "listTransactions": 2,
+      "getTransfer": 2,
+      "getTransaction": 2
+    }
+  },
+  "checks": {
+    "sameCaseResumed": true,
+    "waitedForEvidence": true,
+    "noCommandBeforeHumanAuthorization": true,
+    "oneBill": true,
+    "oneProposal": true,
+    "oneCommand": true,
+    "oneBankTransfer": true,
+    "twoJournals": true,
+    "replayPostedZero": true
+  }
+}
