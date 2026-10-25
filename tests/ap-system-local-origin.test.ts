@@ -6,6 +6,10 @@ describe("isolated local rehearsal origin", () => {
     expect(isLocalSimulationOrigin(runtime, "http://127.0.0.1:5193", false)).toBe(true);
     expect(isLocalSimulationOrigin(runtime, "http://127.0.0.1:5195", true)).toBe(true);
   });
+  it("admits the combined console from npm run demo, only for simulated identities", () => {
+    expect(isLocalSimulationOrigin(runtime, "http://127.0.0.1:5173", false)).toBe(true);
+    expect(isLocalSimulationOrigin({ ...runtime, identityMode: "auth0" }, "http://127.0.0.1:5173", true)).toBe(false);
+  });
   it("rejects production builds, external origins and the real Auth0 origin", () => {
     expect(isLocalSimulationOrigin(runtime, "http://127.0.0.1:5195", false)).toBe(false);
     for (const origin of ["http://127.0.0.1:5192", "http://localhost:5195", "https://127.0.0.1:5195", "https://example.com"]) expect(isLocalSimulationOrigin(runtime, origin, true)).toBe(false);

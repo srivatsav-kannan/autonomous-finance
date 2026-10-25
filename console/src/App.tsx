@@ -17,6 +17,8 @@ import { APSystemWorkspace, type APSystemContext, type APWorkspaceSection } from
 import { APDemo } from "./APDemo";
 import { APDecisions } from "./APDecisions";
 import { Connectors, ProofGroups } from "./Proof";
+// Shared header and context styles that used to arrive with the old invoice page.
+import "./invoice.css";
 
 const $ = (cents: number) => (cents < 0 ? "-" : "") + "$" + (Math.abs(cents) / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const ago = (t: number) => {
