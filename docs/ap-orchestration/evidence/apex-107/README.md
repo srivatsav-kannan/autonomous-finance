@@ -91,6 +91,8 @@ APEX's own GL account for these bills is `5000 Contract Attorney Fees - Matter D
 
 ## Gaps found
 
+This is the original #107 run record. Issue #112 adds a durable historical-payment hold and stricter replay assertions; its separate validation is in [apex-112](../apex-112/README.md). The original IDs and screenshots below are preserved as the pre-fix evidence.
+
 - **The product cannot record a historical payment.** Case 2 is protected today because the importer refuses to propose approval for a source-paid invoice and the backend refuses payment without an approved bill. The UI still offers "Propose business approval" on case 2. A person could approve it, and nothing in the system knows it was paid in 2024. A follow-up should add an explicit external or historical settlement record that blocks new payment.
 - **HTTP intake overwrites provenance.** Every upload is labeled "User uploaded original". The dataset, license and revision live in this evidence and `run.json`, not on the source record.
 - **Data quirks in APEX.** In all 21 PDFs the description text overlaps the Hours, Rate and Amount columns. The parser reads the numbers by right-edge alignment and records a warning. Only 6 of 21 invoices multiply exactly. All 12 Kao invoices print 24.2 h × $165.00 = $4,000.00 (actual $3,993.00) and all 3 Westfield invoices print 27.6 h × $145.00 = $4,000.00 (actual $4,002.00). The business policy's arithmetic check would hold those. Westfield's printed name lacks the "LLC" in the vendor master, so its supplier stays unbound.

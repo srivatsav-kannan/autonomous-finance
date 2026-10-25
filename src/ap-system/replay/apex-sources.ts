@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import ExcelJS from "exceljs";
+import { intakeSchema, type APIntake } from "../contracts";
 
 export const APEX_SOURCE = {
   dataset: "mercor/apex-accounting-harbor",
@@ -86,6 +87,36 @@ export const cents = (amount: string | undefined) => {
 /** GL amounts are stored as floats in the workbook; compare to the cent. */
 export const glCents = (amount: string | undefined) => (amount?.trim() ? Math.round(Number(amount) * 100) : 0);
 
+/** Apply a restrictive historical-source hold after PDF parsing, never ledger-derived extraction or new settlement. */
+export function withApexHistoricalPaymentHold(input: APIntake, world: ApexWorld): APIntake {
+  const c = input.candidate;
+  if (!c) return input;
+  const rows = world.apLedger.filter(r => r.docnumber === c.invoiceNumber && r.vendor_name === c.extractedSupplierName);
+  if (!rows.some(r => r.payment_status === "Paid")) return input;
+  const row = rows[0]!;
+  if (rows.length !== 1 || !c.supplierId || cents(row.bill_amount) !== c.totalCents || cents(row.amount_paid) !== c.totalCents || cents(row.outstanding_balance) !== 0)
+    throw Error("apex_historical_payment_ambiguous");
+  const original = input.documents.find(d => d.kind === "invoice");
+  if (!original) throw Error("apex_historical_invoice_missing");
+  return intakeSchema.parse({ ...input, historicalPaymentHold: {
+    version: "historical-payment-hold-v1", supplierId: c.supplierId, invoiceNumber: c.invoiceNumber,
+    currency: c.currency, amountCents: c.totalCents, invoiceSourceSha256: original.sha256,
+    paidDate: row.payment_date, reference: row.bill_id,
+    sourceSystem: APEX_SOURCE.dataset, sourceRevision: APEX_SOURCE.revision, sourceRecordId: row.bill_id,
+    evidence: [{ name: APEX_FILES.apLedger, sha256: world.hashes[APEX_FILES.apLedger] }],
+  } });
+}
+
+/** APEX check rows print date, payee, reference, debit, then running balance on one line. */
+export function statementPaymentMatches(text: string, reference: string, date: string, payee: string, amountCents: number): boolean {
+  const rows = text.split(/\r?\n/).filter(line => line.trim().split(/\s+/).includes(reference));
+  if (rows.length !== 1) return false;
+  const row = /^\s*(\d{2}\/\d{2})\s+CHECK\s+-\s+(.+?)\s+(CHK-[A-Z0-9-]+)\s+(\$(?:\d{1,3}(?:,\d{3})*|\d+)\.\d{2})\s+(\$(?:\d{1,3}(?:,\d{3})*|\d+)\.\d{2})\s*$/.exec(rows[0]!);
+  const normalized = (s: string) => s.trim().replace(/\s+/g, " ").toUpperCase();
+  return !!row && row[1] === date.slice(5).replace("-", "/") && normalized(row[2]!) === normalized(payee)
+    && row[3] === reference && cents(row[4]!.replace(/[$,]/g, "")) === amountCents;
+}
+
 /** Checks a source-paid bill against the bank export, GL detail, AP aging and bank statement text. Read-only. */
 export function historicalPaymentChecks(world: ApexWorld, input: { billId: string; bankTransactionId: string; reference: string; statementText: string }) {
   const bill = world.apLedger.filter(r => r.bill_id === input.billId);
@@ -106,7 +137,7 @@ export function historicalPaymentChecks(world: ApexWorld, input: { billId: strin
     { check: "GL has one AP credit for the bill", passed: glBill.length === 1 && glCents(glBill[0]!.Credit) === (b ? cents(b.bill_amount) : -1) },
     { check: "GL payment entry debits AP and credits operating cash by the bill amount", passed: glPayment.some(r => r["Account #"] === "2000" && glCents(r.Debit) === (b ? cents(b.bill_amount) : -1)) && glPayment.some(r => r["Account #"] === "1000" && glCents(r.Credit) === (b ? cents(b.bill_amount) : -1)) },
     { check: "Bill is absent from the Dec 31, 2024 AP aging open bills", passed: !world.openBills.some(r => r["Bill ID"] === input.billId) },
-    { check: "Monthly bank statement prints the reference and amount", passed: input.statementText.includes(input.reference) && !!b && input.statementText.includes(`$${(cents(b.bill_amount) / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`) },
+    { check: "Monthly bank statement has exactly one check row with matching reference, date, payee and debit", passed: !!b && !!t && statementPaymentMatches(input.statementText, input.reference, t.txn_date!, b.vendor_name!, cents(b.bill_amount)) },
   ];
   return {
     billId: input.billId, bankTransactionId: input.bankTransactionId, reference: input.reference, checks,

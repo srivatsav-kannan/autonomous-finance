@@ -85,12 +85,24 @@ export const purchasingEvidenceSchema = z.object({
   lines:z.array(z.object({lineId:id, sku:id, quantity:quantitySchema, unitPriceCents:centsSchema.nullable(), invoiceLineId:id})),
   acceptedBy:z.string().nullable(), acceptedAt:z.string().nullable(),
 });
+/** Additive v1 restriction: a reported historical payment is evidence to hold, never authority to post cash. */
+export const historicalPaymentHoldSchema = z.object({
+  version:z.literal("historical-payment-hold-v1"),
+  supplierId:id, invoiceNumber:id, currency:z.literal("USD"), amountCents:centsSchema.positive(),
+  invoiceSourceSha256:hash, paidDate:date, reference:id,
+  sourceSystem:id, sourceRevision:id, sourceRecordId:id,
+  evidence:z.array(z.object({name:id,sha256:hash})).min(1).max(20),
+});
+export type HistoricalPaymentHold = z.infer<typeof historicalPaymentHoldSchema>;
 export const intakeSchema = z.object({
   contractVersion:z.literal(AP_CONTRACT_VERSION), idempotencyKey:id, documents:z.array(sourceDocumentSchema).min(1),
   candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), purchasingEvidence:z.array(purchasingEvidenceSchema),
   explicitRevisionOf:z.string().nullable(),
+  historicalPaymentHold:historicalPaymentHoldSchema.optional(),
 }).superRefine((input,ctx) => {
   const fail=(message:string)=>ctx.addIssue({code:"custom",message});
+  const held=input.historicalPaymentHold,c=input.candidate;
+  if(held&&(!c||c.kind!=="invoice"||held.supplierId!==c.supplierId||held.invoiceNumber!==c.invoiceNumber||held.currency!==c.currency||held.amountCents!==c.totalCents||!input.documents.some(d=>d.kind==="invoice"&&d.sha256===held.invoiceSourceSha256))) fail("Historical payment hold must bind the candidate invoice, supplier, amount and original bytes");
   if ((input.extraction.status === "complete") !== (input.candidate !== null)) fail("Complete extraction requires a candidate; incomplete extraction must not invent one");
   if (input.extraction.status !== "complete" && !input.extraction.reasons.length) fail("Incomplete extraction requires reasons");
   const key=(s:SourceBinding)=>`${s.sourceId}:${s.revision}:${s.sha256}`;
@@ -131,6 +143,7 @@ export const statesSchema = z.object({
 });
 export const caseDetailSchema = z.object({
   domain:domainCaseProjectionSchema.optional(),
+  historicalPaymentHold:historicalPaymentHoldSchema.optional(),
   contractVersion:z.literal(AP_CONTRACT_VERSION), caseId:id, runId:id, organizationId:id,
   revision:z.number().int().positive(), candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), sources:z.array(sourceDocumentSchema),
   currentSourceBindings:z.array(sourceBindingSchema).min(1),
