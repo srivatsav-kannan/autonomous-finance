@@ -1,5 +1,7 @@
 # 新 AP case 的持久 agent 流程
 
+后续：持久化的操作前后证据、handoff replay 修复和本地验证见 [AP-AGENT-TRANSITIONS.md](AP-AGENT-TRANSITIONS.md)。
+
 2026-10-25：本轮完成受控的 USD case 自动推进、缺证等待与恢复；CI 继续跳过。实现采用现有 Convex 业务操作和 agent ControlPlane，使用单独的 account-scoped 队列。旧 `tasks` API 明确拒绝 scoped demo run，因此不绕过其边界，也不把旧场景任务冒充新 AP case。
 
 ## 实际行为

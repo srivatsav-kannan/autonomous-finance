@@ -12,6 +12,7 @@ import { caseRow, readAuth, replay, receipt } from "./lib/apSystem/shared";
 import { projectCase } from "./lib/apSystem/projection";
 import { ensureAPCaseWork } from "./lib/apSystem/agentWork";
 import { prepareAPCasePayment } from "./lib/apSystem/casePayment";
+import { recordAgentTransition } from "./lib/apSystem/agentAudit";
 import {
   AP_AGENT_VERSION,
   apCaseProgress,
@@ -35,32 +36,13 @@ async function facts(ctx: MutationCtx, w: Work) {
     fingerprint: await sha256Hex(canonical(apCaseProgress(detail))),
   };
 }
-async function event(
-  ctx: MutationCtx,
-  w: Work,
-  actor: string,
-  stage: string,
-  reason: string,
-) {
-  const row = await caseRow(ctx, w.scope, w.caseId);
-  await ctx.db.insert("apCaseWorkEvents", {
-    scope: w.scope,
-    caseId: w.caseId,
-    actor,
-    stage,
-    reason,
-    revision: row.currentRevision,
-    snapshotHash: row.snapshotHash,
-    generation: w.generation,
-    at: Date.now(),
-  });
-}
 async function escalate(
   ctx: MutationCtx,
   w: Work,
   actor: string,
   reason: string,
 ) {
+  const before = await facts(ctx, w);
   await ctx.db.patch(w._id, {
     status: "escalated",
     stage: "operator_resolution",
@@ -71,7 +53,15 @@ async function escalate(
     nextCheckAt: Number.MAX_SAFE_INTEGER,
     updatedAt: Date.now(),
   });
-  await event(ctx, w, actor, "escalated", reason);
+  await recordAgentTransition(
+    ctx,
+    w,
+    actor,
+    "escalate",
+    "escalated",
+    reason,
+    before.detail,
+  );
 }
 export const enroll = mutation({
   args: { ...agent, caseId: v.string() },
@@ -180,15 +170,36 @@ export const claim = mutation({
       // Any authenticated role can discover work, but only its named owner can claim it.
       const role = f.plan.role;
       if (role !== seat.role) {
+        const handoff =
+          old.status !== "queued" ||
+          old.role !== role ||
+          old.stage !== f.plan.stage ||
+          recoveryChanged;
         await ctx.db.patch(old._id, {
           status: "queued",
           role,
+          stage: f.plan.stage,
+          owner: f.plan.owner,
+          reason: f.plan.reason,
+          requirements: f.plan.requirements,
+          generation: old.generation + (handoff ? 1 : 0),
           attemptFingerprint: f.fingerprint,
           attempts: recoveryChanged ? 0 : old.attempts,
           leaseOwner: undefined,
           leaseUntil: undefined,
           nextCheckAt: now,
+          updatedAt: handoff ? now : old.updatedAt,
         });
+        if (handoff)
+          await recordAgentTransition(
+            ctx,
+            old,
+            seat.seatId,
+            "handoff",
+            "handoff",
+            f.plan.reason,
+            f.detail,
+          );
         continue;
       }
       const generation = old.generation + 1;
@@ -215,6 +226,15 @@ export const claim = mutation({
         `agent-claim:${args.requestId}`,
         op.payloadHash,
         result,
+      );
+      await recordAgentTransition(
+        ctx,
+        old,
+        seat.seatId,
+        "claim",
+        "claimed",
+        "Agent claimed the current case under a fenced lease.",
+        f.detail,
       );
       return result;
     }
@@ -253,16 +273,31 @@ export const advance = mutation({
     )
       throw Error("Stale or foreign AP case lease");
     let f = await facts(ctx, w);
+    const beforeCase = f.detail;
     if (f.plan.role !== seat.role) {
       await ctx.db.patch(w._id, {
         status: "queued",
         role: f.plan.role,
+        stage: f.plan.stage,
+        owner: f.plan.owner,
+        reason: f.plan.reason,
+        requirements: f.plan.requirements,
         leaseOwner: undefined,
         leaseUntil: undefined,
         nextCheckAt: Date.now(),
         lastCompletedGeneration: args.generation,
         lastCompletedBy: seat.seatId,
+        updatedAt: Date.now(),
       });
+      await recordAgentTransition(
+        ctx,
+        w,
+        seat.seatId,
+        "handoff",
+        "handoff",
+        f.plan.reason,
+        beforeCase,
+      );
       return { status: "queued", stage: f.plan.stage, replayed: false };
     }
     if (f.plan.action === "prepare_payment") {
@@ -308,14 +343,16 @@ export const advance = mutation({
       lastCompletedBy: seat.seatId,
       updatedAt: now,
     });
-    if (!unchanged)
-      await event(
-        ctx,
-        w,
-        seat.seatId,
-        f.plan.stage,
-        `${f.plan.reason}${f.plan.requirements.length ? " Required: " + f.plan.requirements.join(", ") : ""}`,
-      );
+    await recordAgentTransition(
+      ctx,
+      w,
+      seat.seatId,
+      "advance",
+      f.plan.stage,
+      `${f.plan.reason}${f.plan.requirements.length ? " Required: " + f.plan.requirements.join(", ") : ""}`,
+      beforeCase,
+      f.detail,
+    );
     return { status, stage: f.plan.stage, replayed: false };
   },
 });
@@ -366,6 +403,7 @@ export const control = mutation({
     const row = await caseRow(ctx, args.scope, args.caseId),
       id = await ensureAPCaseWork(ctx, row),
       w = (await ctx.db.get(id))!;
+    const beforeCase = await projectCase(ctx, row);
     await ctx.db.patch(id, {
       status: args.action === "pause" ? "paused" : "queued",
       stage: args.action === "pause" ? "paused" : "check_case",
@@ -387,7 +425,15 @@ export const control = mutation({
         args.action === "pause" ? Number.MAX_SAFE_INTEGER : Date.now(),
       updatedAt: Date.now(),
     });
-    await event(ctx, w, subject, args.action, args.reason);
+    await recordAgentTransition(
+      ctx,
+      w,
+      subject,
+      args.action,
+      args.action,
+      args.reason,
+      beforeCase,
+    );
     return { ok: true };
   },
 });

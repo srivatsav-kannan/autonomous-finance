@@ -7,6 +7,7 @@ import { fixture, packet, refs } from "./accounting-fixture";
 import { APCaseAgentWorker } from "../../src/agents/ap-case-worker";
 import { createAPCaseAgentTools } from "../../src/agents/ap-case-tools";
 import { planAPCase } from "../../src/ap-system/agent-policy";
+import { caseDetailSchema } from "../../src/ap-system/contracts";
 import type { KernelTransport } from "../../src/payments/adapters/convex-transport";
 import { openFakeBank } from "../../src/integrations/banking/fake";
 import { ExecutePaymentEffect } from "../../src/payments/application/execute-payment-effect";
@@ -126,6 +127,7 @@ describe("new AP case agent integration", () => {
     });
     expect((await f.state()).versions).toHaveLength(0);
     const before = await f.state();
+    const missingEvent = before.events.at(-1)!;
     for (let n = 0; n < 3; n++) await f.tick();
     expect((await f.state()).events).toHaveLength(before.events.length); // idle polls are not progress
     const revision = {
@@ -137,6 +139,13 @@ describe("new AP case agent integration", () => {
     expect(await f.ingest(revision)).toBe(id);
     await f.tick();
     expect(await f.work(id)).toMatchObject({ stage: "field_review" });
+    expect(
+      (await f.state()).events.find((e) => e._id === missingEvent._id),
+    ).toEqual(missingEvent);
+    expect(missingEvent.transition.after.case.revision).toBe(1);
+    expect(
+      (await f.state()).events.at(-1)!.transition.after.case.revision,
+    ).toBe(2);
     await f.review(id);
     await f.tick();
     expect(await f.work(id)).toMatchObject({ stage: "bill_approval" });
@@ -195,6 +204,15 @@ describe("new AP case agent integration", () => {
         status: "complete",
         stage: "reconciled",
       });
+      const completed = (await f.state()).events.at(-1)!.transition;
+      expect(completed.after.case).toMatchObject({
+        states: { execution: "settled", reconciliation: "matched" },
+        amounts: { settledCents: 7700, outstandingCents: 0 },
+        providerTransferIds: [sent.providerTransferId],
+      });
+      expect(completed.after.case.commandIds).toHaveLength(1);
+      expect(completed.after.case.bankTransactionIds).toHaveLength(1);
+      expect(completed.after.case.journalIds).toHaveLength(2);
       for (let n = 0; n < 3; n++) await f.tick();
       expect((await evidence.tick()).posted).toBe(0);
       s = await f.state();
@@ -331,6 +349,226 @@ describe("new AP case agent integration", () => {
     });
     expect((await f.state()).versions).toHaveLength(1);
     expect((await f.state()).commands).toHaveLength(0);
+  });
+  it("retains exact proposal before/after evidence across replay and later approval", async () => {
+    const f = await setup(),
+      id = await f.recognized();
+    const lease = await f.take(f.payments);
+    const claimed = (await f.state()).events.at(-1)!;
+    expect(claimed.transition).toMatchObject({
+      action: "claim",
+      outcome: "applied",
+      before: { work: { status: "queued", generation: 0 } },
+      after: {
+        work: {
+          status: "leased",
+          generation: lease.generation,
+          leaseOwner: "payments",
+        },
+      },
+    });
+    await f.advanceLease(lease, f.payments);
+    const s = await f.state(),
+      event = s.events.at(-1)!;
+    expect(event.actor).toBe("payments");
+    expect(event.transition).toMatchObject({
+      action: "advance",
+      outcome: "applied",
+      before: {
+        work: { status: "leased" },
+        case: {
+          revision: 1,
+          states: { accounting: "recognized", authorization: "not_requested" },
+          amounts: {
+            invoicedCents: 7700,
+            acceptedCents: 7700,
+            outstandingCents: 7700,
+          },
+          paymentVersionIds: [],
+          commandIds: [],
+        },
+      },
+      after: {
+        work: {
+          status: "waiting",
+          stage: "payment_authorization",
+          leaseOwner: null,
+        },
+        case: {
+          states: { authorization: "awaiting_approval" },
+          paymentVersionIds: [s.versions[0]!._id],
+          commandIds: [],
+          journalIds: [s.journals[0]!._id],
+        },
+      },
+    });
+    expect(event.transition.after.case.sourceBindings).toEqual(
+      (await f.get(id)).currentSourceBindings,
+    );
+    expect(event.transition.after.case.decisionIds).toHaveLength(2);
+    expect(event.transition.after.case.policyVersion).toBe(
+      (await f.get(id)).policyVersion,
+    );
+    const serialized = JSON.stringify(event);
+    for (const forbidden of [
+      "originalBase64",
+      "extractedText",
+      "Golden State Produce",
+      "token-payments",
+      "token-ap_clerk",
+      "routingNumber",
+      "accountNumber",
+    ])
+      expect(serialized).not.toContain(forbidden);
+    await f.advanceLease(lease, f.payments);
+    expect((await f.state()).events).toHaveLength(s.events.length);
+    const d = await f.get(id),
+      p = s.versions[0]!;
+    await f.human.mutation(authorize, {
+      scope: f.scope,
+      caseId: id,
+      expectedRevision: d.revision,
+      snapshotHash: d.snapshotHash,
+      versionId: p._id,
+      paymentSnapshotHash: p.snapshotHash,
+    });
+    await f.tick();
+    const observed = (await f.state()).events.at(-1)!;
+    expect(observed.transition.before.case.commandIds).toHaveLength(1);
+    expect(observed.transition.before.case.states.authorization).toBe(
+      "authorized",
+    );
+    expect(
+      JSON.stringify((await f.state()).events.find((e) => e._id === event._id)),
+    ).toBe(serialized);
+    // The validated API exposes the saved evidence instead of reconstructing it from current authorization.
+    const history = caseDetailSchema
+      .parse(await f.get(id))
+      .timeline.find((e) => e.eventId === event._id)!;
+    expect(history.agentTransition).toEqual(event.transition);
+    expect(history.references).toContain(event.transition.operationId);
+    expect(
+      new Set((await f.state()).events.map((e) => e.transition.operationId))
+        .size,
+    ).toBe((await f.state()).events.length);
+  });
+  it("records handoff and pause/resume with the committed owner, stage and lease generation", async () => {
+    const f = await setup(),
+      id = await f.ingest(),
+      lease = await f.take();
+    await f.review(id);
+    await f.approve(id);
+    await f.advanceLease(lease);
+    const handoff = (await f.state()).events.at(-1)!;
+    expect(handoff.transition).toMatchObject({
+      action: "handoff",
+      before: { work: { role: "ap_clerk", status: "leased" } },
+      after: {
+        work: {
+          role: "payments",
+          stage: "prepare_payment",
+          status: "queued",
+          leaseOwner: null,
+        },
+      },
+    });
+    expect(await f.advanceLease(lease)).toMatchObject({
+      stage: "prepare_payment",
+      replayed: true,
+    });
+    const paymentLease = await f.take(f.payments);
+    await f.human.mutation(control, {
+      scope: f.scope,
+      caseId: id,
+      action: "pause",
+      reason: "Review source evidence",
+    });
+    const paused = (await f.state()).events.at(-1)!;
+    expect(paused.transition).toMatchObject({
+      action: "pause",
+      before: {
+        work: { status: "leased", generation: paymentLease.generation },
+      },
+      after: {
+        work: {
+          status: "paused",
+          generation: paymentLease.generation + 1,
+          leaseOwner: null,
+        },
+      },
+    });
+    expect(paused.generation).toBe(paymentLease.generation + 1);
+    await expect(f.advanceLease(paymentLease, f.payments)).rejects.toThrow(
+      /lease/,
+    );
+    expect((await f.state()).events.at(-1)).toEqual(paused);
+    await f.human.mutation(control, {
+      scope: f.scope,
+      caseId: id,
+      action: "resume",
+      reason: "Evidence checked",
+    });
+    expect((await f.state()).events.at(-1)!.transition).toMatchObject({
+      action: "resume",
+      before: { work: { status: "paused" } },
+      after: { work: { status: "queued" } },
+    });
+    expect((await f.state()).commands).toHaveLength(0);
+  });
+  it("rolls back a proposed payment when its audit snapshot cannot be committed", async () => {
+    const f = await setup();
+    await f.recognized();
+    const lease = await f.take(f.payments);
+    // A malformed legacy counter is legal to the old database schema, but invalid audit evidence.
+    await f.t.run(async (ctx) => {
+      const w = (await ctx.db.query("apCaseWork").collect())[0]!;
+      await ctx.db.patch(w._id, { transitions: -2 });
+    });
+    const before = await f.state();
+    await expect(f.advanceLease(lease, f.payments)).rejects.toThrow();
+    const after = await f.state();
+    expect(after.versions).toHaveLength(0);
+    expect(after.commands).toHaveLength(0);
+    expect(after.work).toEqual(before.work);
+    expect(after.events).toEqual(before.events);
+    expect(after.journals).toEqual(before.journals);
+  });
+  it("keeps legacy stage-only events readable without inventing historical evidence", async () => {
+    const f = await setup(),
+      id = await f.ingest(),
+      d = await f.get(id);
+    const eventId = await f.t.run((ctx) =>
+      ctx.db.insert("apCaseWorkEvents", {
+        scope: f.scope,
+        caseId: ctx.db.normalizeId("apCaseRecords", id)!,
+        actor: "ap_clerk",
+        stage: "missing_evidence",
+        reason: "Historical wait",
+        revision: d.revision,
+        snapshotHash: d.snapshotHash,
+        generation: 1,
+        at: Date.now(),
+      }),
+    );
+    await f.tick();
+    const event = caseDetailSchema
+      .parse(await f.get(id))
+      .timeline.find((e) => e.eventId === eventId)!;
+    expect(event.summary).toBe("Historical wait");
+    expect(event.agentTransition).toBeUndefined();
+  });
+  it("does not manufacture new handoffs when the wrong role polls unchanged work", async () => {
+    const f = await setup();
+    await f.recognized();
+    expect(await f.take()).toBeNull();
+    const first = await f.state();
+    expect(first.events.at(-1)!.transition.action).toBe("handoff");
+    for (let n = 0; n < 3; n++) expect(await f.take()).toBeNull();
+    expect((await f.state()).events).toEqual(first.events);
+    expect((await f.state()).work[0]!.generation).toBe(
+      first.work[0]!.generation,
+    );
+    expect((await f.state()).versions).toHaveLength(0);
   });
   it("fences an expired worker and allows a fresh worker to resume", async () => {
     const f = await setup();
@@ -472,6 +710,15 @@ describe("new AP case agent integration", () => {
     await f.tick();
     expect(await f.work(id)).toMatchObject({ status: "escalated" });
     expect((await f.state()).versions).toHaveLength(0);
+    expect((await f.state()).events.at(-1)!.transition).toMatchObject({
+      action: "escalate",
+      outcome: "blocked",
+      before: { work: { status: "leased" } },
+      after: {
+        work: { status: "escalated", owner: "controller" },
+        case: { paymentVersionIds: [], commandIds: [] },
+      },
+    });
     const other = await f.ingest(packet("OTHER-CASE"));
     await f.tick();
     expect(await f.work(other)).toMatchObject({ stage: "field_review" });

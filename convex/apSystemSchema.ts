@@ -17,6 +17,7 @@ export const apSystemTables = {
   apCaseWorkEvents: defineTable({
     scope:scopeValidator, caseId:v.id("apCaseRecords"), actor:v.string(), stage:v.string(), reason:v.string(),
     revision:v.number(), snapshotHash:v.string(), generation:v.number(), at:v.number(),
+    transition:v.optional(v.any()), // Validated by agentTransitionSchema; historical stage-only events remain valid.
   }).index("by_case",["scope.runId","caseId"]),
   apPhysicalSources: defineTable({
     scope:scopeValidator, sourceHash:v.string(), supplierId:v.string(), purpose:v.string(),

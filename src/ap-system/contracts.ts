@@ -129,6 +129,28 @@ export const statesSchema = z.object({
   execution:z.enum(["not_started","queued","in_flight","pending","unknown","settled","rejected","returned","cancelled","exception"]),
   reconciliation:z.enum(["unmatched","matched","exception"]),
 });
+export const agentWorkStateSchema = z.object({
+  version:id, status:z.enum(["queued","leased","waiting","complete","escalated","paused"]),
+  stage:id, role:z.enum(["ap_clerk","payments"]), owner:id, requirements:z.array(id),
+  generation:z.number().int().nonnegative(), attempts:z.number().int().nonnegative(), transitions:z.number().int().nonnegative(),
+  leaseOwner:id.nullable(), leaseUntil:z.number().nullable(), nextCheckAt:z.number(),
+  waitSince:z.number().nullable(), deadlineAt:z.number().nullable(),
+});
+const agentCaseStateSchema = z.object({
+  revision:z.number().int().positive(), snapshotHash:hash, policyVersion:id,
+  sourceBindings:z.array(sourceBindingSchema), states:statesSchema, amounts:amountsSchema,
+  billId:id.nullable(), paymentVersionIds:z.array(id), commandIds:z.array(id),
+  providerTransferIds:z.array(id), bankTransactionIds:z.array(id), journalIds:z.array(id), decisionIds:z.array(id),
+});
+const agentTransitionStateSchema = z.object({work:agentWorkStateSchema, case:agentCaseStateSchema});
+/** Retained observations of committed operations; never reconstructed from the latest case. */
+export const agentTransitionSchema = z.object({
+  version:z.literal("ap-agent-transition-v1"), operationId:id,
+  action:z.enum(["claim","advance","handoff","escalate","pause","resume"]),
+  outcome:z.enum(["applied","blocked"]),
+  before:agentTransitionStateSchema, after:agentTransitionStateSchema,
+});
+export type APAgentTransition = z.infer<typeof agentTransitionSchema>;
 export const caseDetailSchema = z.object({
   domain:domainCaseProjectionSchema.optional(),
   contractVersion:z.literal(AP_CONTRACT_VERSION), caseId:id, runId:id, organizationId:id,
@@ -141,7 +163,7 @@ export const caseDetailSchema = z.object({
   payments:z.array(z.object({versionId:id,commandId:z.string().nullable(),amountCents:centsSchema,status:id,beneficiaryVersion:id,providerTransferId:z.string().nullable(),authorizedBy:z.array(id)})),
   journals:z.array(z.object({entryId:id,kind:z.enum(["recognition","settlement","credit","return","correction"]),date:date,lines:z.array(z.object({account:id,debit:centsSchema,credit:centsSchema})),bankTransactionId:z.string().nullable()})),
   links:z.object({ billId:z.string().nullable(), billVersion:z.number().int().positive().nullable(), recognitionJournalId:z.string().nullable(), paymentVersionIds:z.array(id), commandIds:z.array(id), bankTransactionIds:z.array(id), settlementJournalIds:z.array(id), externalAccountingIds:z.array(id), duplicateOfCaseId:z.string().nullable() }),
-  timeline:z.array(z.object({eventId:id, at:z.number(), actor:id, kind:id, summary:id, references:z.array(id)})),
+  timeline:z.array(z.object({eventId:id, at:z.number(), actor:id, kind:id, summary:id, references:z.array(id), agentTransition:agentTransitionSchema.optional()})),
   createdAt:z.number(), updatedAt:z.number(),
 });
 export const fixtureManifestSchema = z.object({
