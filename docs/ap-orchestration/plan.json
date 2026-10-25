@@ -1,0 +1,428 @@
+{
+  "schema_version": 1,
+  "mode": "executing",
+  "prepared_date": "2026-10-25",
+  "issue": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97",
+  "spec_file": "issue-97.snapshot.md",
+  "source_sha_observed": "5e1126bd20765bad45c22007bb1f67ef25e2375e",
+  "baseline_action": "Reconfirm main and pin isolated implementation checkout at launch.",
+  "entrypoint": "/goal",
+  "model_policy": "inherit_user_selection",
+  "delegation": {
+    "logical_owners": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "max_active_delegates_initial": 3,
+    "master_updates_registry_only": true,
+    "worker_subdelegation": "Only within available slots and a distinct assigned scope; owner also implements; never occupy all slots with managers waiting for children.",
+    "mode": "single_master_goal_bounded_subagents",
+    "initial_cohort": [
+      "A",
+      "B",
+      "D"
+    ],
+    "independent_verifier_reports_to": "master"
+  },
+  "activation": "Authorized implementation launch in Master chat 01a1722e-2f26-7130-bfe6-9480c7d2883f",
+  "external_gates": {
+    "openai": "Existing evaluation-worktree key reused in ignored var/ap-environment/providers.env; authentication and one gpt-6.1-sol Responses request verified 2026-10-25. Config import verified in main-browser-recovery; application workflow not run.",
+    "llamaparse": "Existing Default-project key reused. Five agentic_plus parse jobs verified 2026-10-25 across three rounds. Clean PDF passes selected content/native grounding. Genuine scan content passes; native description bbox still absent with raw word output, whose OCR has two transcription mismatches. Local Tesseract 5.5.2 eng PSM 6 uniquely matched both description lines and passed original-image overlay review; this is derived geometry on one sample, not a native box or completed adapter. See LLAMAPARSE-GROUNDING.md and prior reports. App adapter/fallback packaging, broader formats and integration acceptance remain pending.",
+    "increase": "Standalone API sandbox provisioned 2026-10-25 with synthetic Entity (validation simulated valid), open source account and active external account; authentication/resource reads verified. Balance 0 USD; no funding/transfer, webhook or recovery test. Dashboard association not established.",
+    "erp_selection_and_access": "BLOCKED: provider/access requested asynchronously; other engineering continues",
+    "domain_review": "BLOCKED: actual AP practitioner and review evidence requested asynchronously; agent verification is distinct"
+  },
+  "tasks": [
+    {
+      "id": "P0",
+      "owner": "master",
+      "title": "Pin source/spec, preserve local work, map existing contributions and isolated environments",
+      "depends_on": [],
+      "acceptance": "Recorded main SHA, adopted issue snapshot, ownership, worktrees, ports/run IDs and no unrelated user changes. Adopt the untracked launch pack by allowlisted copy, record document/spec hashes and one canonical registry absolute path; exclude secrets and private artifacts.",
+      "status": "accepted",
+      "session_id": "01a1722e-2f26-7130-bfe6-9480c7d2883f",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
+      "branch": "codex/ap-system-integration",
+      "commit": null,
+      "evidence": [
+        "docs/ap-orchestration/adoption.json",
+        "docs/ap-orchestration/P0-evidence.json"
+      ],
+      "blocker": null,
+      "next_action": "Complete C0 contract review"
+    },
+    {
+      "id": "C0",
+      "owner": "master",
+      "title": "Freeze case/evidence/decision/bill/payment contracts and ownership",
+      "depends_on": [
+        "P0"
+      ],
+      "acceptance": "Versioned input/output/state contracts accepted by A/B/C/D; one owner for shared files. Evidence contract separates content/geometry and native/derived/unresolved states, with source revision/hash, page/frame/units/orientation/transform, region granularity, token refs, normalization, parser/OCR versions/config and failure reason.",
+      "status": "accepted",
+      "session_id": "01a1722e-2f26-7130-bfe6-9480c7d2883f",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
+      "branch": "codex/ap-system-integration",
+      "commit": null,
+      "evidence": [
+        "src/ap-system/contracts.ts",
+        "docs/ap-orchestration/CONTRACTS.md",
+        "src/ap-system/contracts.test.ts",
+        "docs/ap-orchestration/C0-acceptance.json"
+      ],
+      "blocker": null,
+      "next_action": "Dispatch A/B/D with exclusive ownership"
+    },
+    {
+      "id": "A1",
+      "owner": "A",
+      "title": "Export Golden State PDF/PO/receipt packet and provenance",
+      "depends_on": [
+        "C0"
+      ],
+      "acceptance": "Reproducible source files and relationships; synthetic provenance and missing evidence explicit.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "A2",
+      "owner": "A",
+      "title": "Implement and verify LlamaParse evidence adapter with bounded grounding fallback",
+      "depends_on": [
+        "C0"
+      ],
+      "external_gate": "llamaparse",
+      "acceptance": "Actual PDF yields supported candidate fields and source grounding; reimport/version tests pass. Native -> exact unique raw-word -> bounded local OCR -> unresolved fallback preserves provenance and separate line regions. Pin/package OCR binary/traineddata; verify positive, mismatched/ambiguous/missing text, unavailable/timeout fallback, supported rotation/page frames and stale revisions; no forced character repair or value substitution.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "B1",
+      "owner": "B",
+      "title": "Implement company policy and owned exceptions",
+      "depends_on": [
+        "C0"
+      ],
+      "acceptance": "Missing receipt/price/quantity cases follow authority rules; no implicit short-pay or fabricated notification. Explicit evidence-gap policy defines which steps hold and who resolves them; geometry is not business approval.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "B2",
+      "owner": "B",
+      "title": "Connect reviewed candidate to AP bill and journal recognition",
+      "depends_on": [
+        "C0"
+      ],
+      "acceptance": "Same case/source/review binds to bill; replay, stale review, identity and posting tests pass. Source/review version changes invalidate stale evidence bindings; derived geometry does not bypass review or authority.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "C1",
+      "owner": "C",
+      "title": "Connect approved bill to existing durable payment engine",
+      "depends_on": [
+        "C0"
+      ],
+      "acceptance": "Separate payment authorization, configured beneficiary and preserved request/reservation semantics.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "D1",
+      "owner": "D",
+      "title": "Implement case workspace against frozen contracts",
+      "depends_on": [
+        "C0"
+      ],
+      "acceptance": "Source evidence, blockers, decisions, bill/payment/journal status remain visibly linked. Native/derived/unresolved states, correct frame/rotation mapping, separate multiline highlights and honestly labeled coarse context are visible; no amount-only box substituted for description.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "V1",
+      "owner": "independent-verifier",
+      "title": "Review expected fields, decisions and accounting outcomes independently",
+      "depends_on": [
+        "A1",
+        "B1"
+      ],
+      "acceptance": "Review identity/type/version recorded; policy-derived versus AP-practitioner reviewed labels remain distinct. Content expectations and grounding expectations/status are separately reviewed against originals; runtime/parser output is not the answer key. Preserve licensing and reviewer independence.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "I1",
+      "owner": "master",
+      "title": "Integrate first full PDF-to-AP-to-FakeBank case",
+      "depends_on": [
+        "A1",
+        "A2",
+        "B1",
+        "B2",
+        "C1",
+        "D1",
+        "V1"
+      ],
+      "acceptance": "Fresh uploaded PDF reaches same-case bill, authorized payment, bank evidence and linked journal/reconciliation; actual results saved.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "V2",
+      "owner": "independent-verifier",
+      "title": "Verify negative cases and interruption/recovery",
+      "depends_on": [
+        "I1"
+      ],
+      "acceptance": "Missing/contradictory evidence, revisions, duplicates, stale/self approval, lost bank response and interrupted posting have expected outcomes. Add mismatched/duplicate/missing OCR text, wrong page/frame, stale geometry and interrupted fallback/retry cases; no wrong binding or duplicate economic effect.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "C2",
+      "owner": "C",
+      "title": "Verify external Increase sandbox and optional webhook delivery separately",
+      "depends_on": [
+        "V2"
+      ],
+      "external_gate": "increase",
+      "acceptance": "Same-case sandbox operation evidence; no claim of webhook success from polling; local/external results separated.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "B3",
+      "owner": "B",
+      "title": "Expand suppliers, non-PO, partial receipts, credits and allocations",
+      "depends_on": [
+        "V2"
+      ],
+      "acceptance": "Supported-capability cases are independently evaluated with exact accounting and explicit unsupported paths.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "C3",
+      "owner": "C",
+      "title": "Implement business payment scheduling",
+      "depends_on": [
+        "V2"
+      ],
+      "acceptance": "Due-date scheduling is distinct from retries, preserves payment authorization and durable execution controls, and is verified without requiring an external ERP connector.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "C4",
+      "owner": "C",
+      "title": "Implement and verify the selected external accounting connector",
+      "depends_on": [
+        "V2"
+      ],
+      "external_gate": "erp_selection_and_access",
+      "acceptance": "Selected provider access and idempotent external sync are verified with external record IDs and reconciliation evidence; internal journals alone do not satisfy external sync.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "B4",
+      "owner": "B",
+      "title": "Complete period-close controls and unpaid-AP carryforward",
+      "depends_on": [
+        "B3"
+      ],
+      "acceptance": "Accurate AP/GL reconciliation, blockers, signatures, locked-period enforcement and legitimate unpaid AP carryforward.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "D2",
+      "owner": "D",
+      "title": "Polish demo, audit history and operations evidence",
+      "depends_on": [
+        "V2",
+        "B3"
+      ],
+      "acceptance": "Browser-verified case journey, accounting vocabulary, reliable source highlights and operational recovery instructions. Browser evidence exercises native, derived and unresolved states using saved source-version-correct regions; screenshots alone do not establish integration.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    },
+    {
+      "id": "FINAL",
+      "owner": "master",
+      "title": "Independent integrated capability matrix and final acceptance",
+      "depends_on": [
+        "C2",
+        "C3",
+        "C4",
+        "B4",
+        "D2"
+      ],
+      "external_gate": "domain_review",
+      "acceptance": "Full issue97 scope accounted for with evidence; missing credentials or domain review remain explicit blockers, not silent scope cuts.",
+      "status": "pending",
+      "session_id": null,
+      "worktree": null,
+      "branch": null,
+      "commit": null,
+      "evidence": [],
+      "blocker": null,
+      "next_action": null
+    }
+  ],
+  "registry": {
+    "bootstrap_path": "/Users/junjiexiong/Desktop/calhacks/docs/ap-orchestration/plan.json",
+    "canonical_path": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks/docs/ap-orchestration/plan.json",
+    "adoption": "P0 copies the reviewed untracked launch pack into the owned integration worktree, records hashes and names one canonical registry; bootstrap remains a reference after handoff. Master is the sole registry writer."
+  },
+  "grounding_strategy": {
+    "status": "diagnostic_verified_not_integrated",
+    "evidence_report": "LLAMAPARSE-GROUNDING.md",
+    "order": [
+      "valid_native_regions",
+      "unique_exact_raw_word_alignment",
+      "bounded_local_ocr_alignment",
+      "explicit_location_unresolved"
+    ],
+    "provenance_states": [
+      "native",
+      "derived",
+      "unresolved"
+    ],
+    "content_and_geometry_scored_separately": true,
+    "fallback_candidate": "Tesseract 5.5.2 eng; PSM 6 succeeded on one original scan after PSM 3 failed. Pin runtime binary/traineddata and validate a bounded strategy; no universal PSM 6 guarantee.",
+    "rejection": "No fuzzy character/number repair to force grounding; reject missing, ambiguous, stale-source or invalid geometry and preserve review policy."
+  },
+  "spec_snapshot_sha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "spec_updated_at": "2026-10-25T08:14:38Z",
+  "source_sha_adopted": "d24f22007a36722831a521d7387ee8f5c92c5803",
+  "environment": {
+    "run_id": "ap97-20261025-01a1722e",
+    "backend_url": "http://127.0.0.1:3250",
+    "backend_site_port": 3251,
+    "frontend_port": 5190,
+    "gateway_port": 8820,
+    "document_port": 8821,
+    "fakebank_port": 8822,
+    "runtime_state": "allocated_not_started",
+    "provider_file": "/Users/junjiexiong/Desktop/calhacks/var/ap-environment/providers.env",
+    "private_data_root": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks/var/ap97-20261025-01a1722e"
+  },
+  "contracts": {
+    "version": "ap-evidence-v1",
+    "owner": "master",
+    "files": {
+      "src/ap-system/contracts.ts": "21fbf634514f8c51b4e7e155d20c73f5478367177a794121bf32bc55fdf233b6",
+      "docs/ap-orchestration/CONTRACTS.md": "fcb37ebc9dac7c0b2989ddf392e38ddbee8c3ab774eaf3dafd5d9bf679152f7b"
+    },
+    "independent_review": {
+      "reviewer": "/root/p0_inventory",
+      "result": "accepted",
+      "scope": "contract readiness only"
+    },
+    "checks": [
+      {
+        "command": "npm run typecheck",
+        "result": "passed"
+      },
+      {
+        "command": "npx vitest run src/ap-system/contracts.test.ts",
+        "result": "6 passed"
+      }
+    ]
+  }
+}
