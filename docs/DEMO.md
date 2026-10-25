@@ -18,7 +18,7 @@ The track asks for "one corner of the finance team". We deliberately run the who
   - idempotent and hash-chained
   - segregation of duties enforced in code
   - git memory, so every decision has a reason and an author
-- **We prove the speed claim instead of asserting it.** The spreadsheet-versus-kernel benchmark is in [Evidence](#evidence-we-quote-not-run).
+- **We prove the speed claim instead of asserting it.** The spreadsheet-versus-kernel benchmark is in [Evidence](#evidence-we-quote-not-run). Say it honestly: about 10× faster on compute, about 6× fewer tool calls per operation, and the spreadsheet slows as the books grow. The big gap is safety.
 - **We go deep where the judging "moment" lives.** That's AP (bills in every format, a bank-detail change the day before a large payment) and close. Every other seat does real work in the same run.
 
 ## How the judging criteria map to what we show
@@ -78,8 +78,8 @@ npm run agents -- --run demo
 | Controls hold | 20/20 control tests (16 attacks refused, the hash chain verifies, 3 legitimate paths still work) | [docs/evals/control-tests.json](evals/control-tests.json) |
 | Cheaper than one generalist agent | On the same world: ours $0.15 and 87 s; one plain agent $7.80 and 42 min. One seed only; the accuracy gap is one missed duplicate. | docs/evals/README.md |
 | Works on outside benchmarks | APEX accounting through our team (specialist plus controller review in the real kernel): AR reconciliation 100%, AR aging 100%, payroll reconciliation ran out of turns. DABstep is pending. | #67 |
-| Faster than an agent forced into spreadsheets | Kernel versus `.xlsx` workbook on the same event stream: time per operation, actions per operation, and invariants caught | docs/evals/spreadsheet-vs-kernel.md (being built) |
-| Adapted outside benchmarks | Invoice Sandbox and FinBalance adapters for the same full-team harness, built but not yet run | docs/EXTERNAL_EVALS.md (being built) |
+| Faster and safer than an agent forced into spreadsheets | On the same 156 bookkeeping operations: **1 tool call per operation vs about 6** (156 vs 902). The kernel stays flat at 0.12 ms per operation while the workbook slows from 0.20 to 2.23 ms as the books grow, about 10× faster on compute. Of 18 injected bad operations, **the kernel stopped 18; the workbook accepted all 18 and its own checks missed 10**, including self-approval, approval over the limit and posting to a closed period. | [docs/evals/spreadsheet-vs-kernel.md](evals/spreadsheet-vs-kernel.md) |
+| Adapted outside benchmarks | Invoice Sandbox (18 customers) and 6 FinBalance records run through the same full-team harness. In FinBalance, the controller's entries are posted through our real ledger kernel and the balance sheet comes from the kernel. The scorers match the official ones exactly on saved runs. Built and checked with the free rules mode, but not yet run with a model. | [docs/EXTERNAL_EVALS.md](EXTERNAL_EVALS.md) |
 
 **How we adapted outside evals.** A benchmark's source files become a read-only evidence database. The task is assigned to the matching seat; for example, AR reconciliation goes to the revenue accountant. From there:
 1. The specialist drafts an answer with evidence tools.
