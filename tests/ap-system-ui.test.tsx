@@ -1,6 +1,9 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { APSystemWorkspace, APOperationalMetrics, APCaseStatus, APActions, APMatching, APAccounting } from "../console/src/APSystemWorkspace";
+import { APAccountingPlan, APAccountingHold, APAccountingReceipt, accountingTarget, receiptTarget } from "../console/src/APSystemQuickBooks";
+import type { Plan } from "../src/ap-system/quickbooks/types";
+import type { QBOReceipt } from "../src/ap-system/quickbooks/runtime";
 import { acceptanceDraft, APAcceptanceSummary, APSystemBusiness } from "../console/src/APSystemBusiness";
 import { APPaymentRunReview, runEligible } from "../console/src/APSystemRuns";
 import type { PaymentRunDetail } from "../src/ap-system/workspace-operations";
@@ -44,6 +47,16 @@ describe("AP case workspace evidence boundaries",()=>{
     const html=renderToStaticMarkup(<APActions detail={c} busy={false} onBusy={()=>{}} onChanged={()=>{}}/>)+renderToStaticMarkup(<APSystemBusiness detail={c} cases={[c]} busy={false} onBusy={()=>{}} onChanged={()=>{}} onOpenCase={()=>{}}/>);
     expect(html).not.toContain(">Approve bill");expect(html).toContain("2 distinct approvals");expect(html).toContain("Approve current business stage");expect(html).toContain(c.snapshotHash);
     const summary=renderToStaticMarkup(<APAcceptanceSummary acceptance={draft}/>);expect(summary).toContain("$38.50");expect(summary).toContain("1 accepted");
+  });
+  it("distinguishes credit recognition, gross credit application and preserved historical receipt authority",()=>{
+    const plan:Plan={version:"ap-qbo-operation-v1",realmId:"synthetic-realm",minorVersion:75,entity:"BillPayment",identity:"fixture",mappingHash:"a".repeat(64),links:{caseId:"c",billId:"b",recognitionJournalId:"r",paymentVersionId:null,commandId:null,bankTransactionId:null,settlementJournalId:null,creditId:null,creditApplicationId:"application"},payload:{TotalAmt:0,TxnDate:"2026-10-25",Line:[{Amount:100,LinkedTxn:[{TxnId:"bill",TxnType:"Bill"}]},{Amount:100,LinkedTxn:[{TxnId:"credit",TxnType:"VendorCredit"}]}]}};
+    const html=renderToStaticMarkup(<APAccountingPlan plan={plan}/>);
+    expect(html).toContain("Record an applied supplier credit");expect(html).toContain("Net cash recorded");expect(html).toContain("$0.00");expect(html).toContain("Gross obligation discharged");expect(html).toContain("$100.00");
+    expect(renderToStaticMarkup(<APAccountingPlan plan={{...plan,entity:"VendorCredit"}}/>)).toContain("Record the approved supplier credit");
+    const receipt:QBOReceipt={entity:"BillPayment",requestId:"request",state:"succeeded",externalId:"synthetic-external-record",syncToken:"0",links:plan.links,updatedAt:1,lastError:null,submissionAuthorization:{subject:"original-approver",planHash:"b".repeat(64),decidedAt:1}};
+    expect(accountingTarget("credit:application")).toEqual({creditApplicationId:"application"});expect(receiptTarget(receipt)).toEqual({creditApplicationId:"application"});
+    const hold=renderToStaticMarkup(<APAccountingHold hold={{code:"returned_cash",owner:"controller",reason:"Current return needs an approved correction",relatedIds:["return-event"]}}/>)+renderToStaticMarkup(<APAccountingReceipt receipt={receipt} busy={false} canVerify={false} onVerify={()=>{}}/>);
+    expect(hold).toContain("Historical external record");expect(hold).toContain("original-approver");expect(hold).toContain("They do not resolve the current return");expect(hold).toMatch(/disabled="">Verify external record/);
   });
   it("names source fields for readers and formats cents without altering raw citations",()=>{
     expect(apFieldLabel("totalCents")).toBe("Total amount");

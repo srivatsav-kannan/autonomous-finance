@@ -137,8 +137,8 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
     const caseId=decodeURIComponent(accounting[1]!);
     if(req.method==="GET"&&!accounting[2])return send(res,await service.accounting.status(caseId));
     if(req.method==="POST"&&accounting[2]){
-     const input=z.object({paymentVersionId:z.string().min(1).optional(),expectedPlanHash:binding.shape.snapshotHash.optional()}).strict().parse(await json(req));
-     const request={caseId,...(input.paymentVersionId?{paymentVersionId:input.paymentVersionId}:{})};
+     const input=z.object({paymentVersionId:z.string().trim().min(1).optional(),creditApplicationId:z.string().trim().min(1).optional(),expectedPlanHash:binding.shape.snapshotHash.optional()}).strict().refine(value=>!(value.paymentVersionId&&value.creditApplicationId),"Choose exactly one accounting event selector").parse(await json(req));
+     const request={caseId,...(input.paymentVersionId?{paymentVersionId:input.paymentVersionId}:{}),...(input.creditApplicationId?{creditApplicationId:input.creditApplicationId}:{})};
      if(accounting[2]==="submit"){if(!input.expectedPlanHash)throw new APHttpError("approved_preview_required",400,"Preview and confirm the current accounting plan before submitting.");return send(res,await service.accounting.submit(request,input.expectedPlanHash));}
      return send(res,await service.accounting[accounting[2] as "preview"|"verify"](request));
     }

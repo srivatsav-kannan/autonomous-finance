@@ -66,6 +66,12 @@ export function validatePaymentRequest(input: APPaymentRequest) {
   if ((input.amountCents !== undefined && !cents(input.amountCents)) || input.credits?.some(c => !c.creditId.trim() || !cents(c.amountCents)) || new Set(input.credits?.map(c => c.creditId)).size !== (input.credits?.length ?? 0)) throw new APSystemApiError("Payment and credit amounts must be positive whole cents with unique credit references.", 400, "invalid_request");
   return input;
 }
+export type APAccountingSelection={paymentVersionId?:string;creditApplicationId?:string};
+export function accountingSelection(value?:APAccountingSelection|string):APAccountingSelection{
+ const input=typeof value==="string"?{paymentVersionId:value}:value??{};
+ if(input.paymentVersionId&&input.creditApplicationId||Object.values(input).some(value=>typeof value!=="string"||!value.trim()))throw new APSystemApiError("Choose one recorded settlement or credit application.",400,"invalid_request");
+ return input;
+}
 export const apSystemApi = {
   governance: (signal?:AbortSignal) => request<GovernanceView>("/business",undefined,signal),
   businessProposals: (signal?:AbortSignal) => request<BusinessProposal[]>("/business/proposals",undefined,signal),
@@ -90,9 +96,9 @@ export const apSystemApi = {
   authorizeRun: (runId:string,snapshotHash:string) => request<{commandIds:string[]}>(`/payment-runs/${encodeURIComponent(runId)}/authorize`,{snapshotHash}),
   cancelRun: (runId:string,snapshotHash:string) => request<{ok:true}>(`/payment-runs/${encodeURIComponent(runId)}/cancel`,{snapshotHash}),
   accountingStatus: (caseId:string,signal?:AbortSignal) => request<AccountingStatus>(`/cases/${encodeURIComponent(caseId)}/accounting`,undefined,signal),
-  accountingPreview: (caseId:string,paymentVersionId?:string) => request<QBOPreview>(`/cases/${encodeURIComponent(caseId)}/accounting/preview`,{paymentVersionId}),
-  accountingSubmit: (caseId:string,expectedPlanHash:string,paymentVersionId?:string) => request<QBOSubmit>(`/cases/${encodeURIComponent(caseId)}/accounting/submit`,{expectedPlanHash,paymentVersionId}),
-  accountingVerify: (caseId:string,paymentVersionId?:string) => request<QBOVerify>(`/cases/${encodeURIComponent(caseId)}/accounting/verify`,{paymentVersionId}),
+  accountingPreview: (caseId:string,selection?:APAccountingSelection|string) => request<QBOPreview>(`/cases/${encodeURIComponent(caseId)}/accounting/preview`,accountingSelection(selection)),
+  accountingSubmit: (caseId:string,expectedPlanHash:string,selection?:APAccountingSelection|string) => request<QBOSubmit>(`/cases/${encodeURIComponent(caseId)}/accounting/submit`,{expectedPlanHash,...accountingSelection(selection)}),
+  accountingVerify: (caseId:string,selection?:APAccountingSelection|string) => request<QBOVerify>(`/cases/${encodeURIComponent(caseId)}/accounting/verify`,accountingSelection(selection)),
   intake: (files: { file: File; kind: SourceDocument["kind"] }[], key: string) => {
     const data = new FormData(); files.forEach(({ file }) => data.append("documents", file));
     data.append("kinds", JSON.stringify(files.map(f => f.kind))); data.append("idempotencyKey", key);

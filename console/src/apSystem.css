@@ -223,3 +223,6 @@
 .aps-receipt-claim { margin-block: var(--space-sm); }
 .aps-related { margin-top: var(--space-sm); }
 @media(max-width:760px) { .aps-form-grid { grid-template-columns: minmax(0,1fr); } }
+.aps-accounting-hold { border: 1px solid var(--line); padding: var(--space-md); margin-block: var(--space-md); background: var(--bg); }
+.aps-accounting-hold h4 { margin-top: 0; }
+.aps-accounting-hold code { display: block; }
