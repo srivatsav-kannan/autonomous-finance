@@ -42,13 +42,13 @@ const configSchema = z
         runId: z.string().regex(/^ap97-[A-Za-z0-9-]+$/),
         provider: z.literal("increase"),
         environment: z.literal("sandbox"),
-        accountId: z.string().regex(/^account_[A-Za-z0-9]+$/),
+        accountId: z.string().regex(/^(?:sandbox_)?account_[A-Za-z0-9]+$/),
       })
       .strict(),
     beneficiary: z
       .object({
         vendor: nonempty,
-        externalAccountId: z.string().regex(/^external_account_[A-Za-z0-9]+$/),
+        externalAccountId: z.string().regex(/^(?:sandbox_)?external_account_[A-Za-z0-9]+$/),
         version: nonempty,
       })
       .strict(),

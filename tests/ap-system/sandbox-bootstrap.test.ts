@@ -146,6 +146,17 @@ async function fixture() {
   };
 }
 describe("explicit Auth0 sandbox operator bootstrap (offline)", () => {
+  it("accepts exact sandbox resource prefixes without relaxing scope or path validation", async () => {
+    const env = input(), scope = JSON.parse(env.AP_BANK_SCOPE), beneficiary = JSON.parse(env.AP_SANDBOX_BENEFICIARY);
+    env.AP_BANK_SCOPE = JSON.stringify({...scope, accountId:"sandbox_account_fixture"});
+    env.AP_SANDBOX_BENEFICIARY = JSON.stringify({...beneficiary, externalAccountId:"sandbox_external_account_fixture"});
+    expect(parseBootstrapConfig(env).scope.accountId).toBe("sandbox_account_fixture");
+    for (const accountId of ["sandbox_account_", "sandbox_account_fixture/other", "sandbox_account_fixture?x=1", "sandbox_account_fixture%2fother"])
+      expect(()=>parseBootstrapConfig({...env,AP_BANK_SCOPE:JSON.stringify({...scope,accountId})})).toThrow();
+    expect(()=>parseBootstrapConfig({...env,AP_BANK_SCOPE:JSON.stringify({...scope,environment:"production"})})).toThrow();
+    const f=await fixture(); await expect(f.run("prepare",env)).resolves.toMatchObject({stage:"prepared",humanBound:false});
+  });
+
   it("prepares only reserved deployment settings, private distinct credentials, and identity-only gateway configuration", async () => {
     const f = await fixture(),
       result = await f.run("prepare");
