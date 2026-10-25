@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "mode": "paused_handoff",
+  "mode": "bounded_agent_integration_verified",
   "prepared_date": "2026-10-25",
   "issue": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97",
   "spec_file": "issue-97.snapshot.md",
@@ -476,7 +476,7 @@
         "docs/ap-orchestration/evidence/C4-funding-reconciliation.json"
       ],
       "blocker": null,
-      "next_action": "External recipient runs Claude blind derivation then comparison; retain findings/fixes/rechecks. Review/merge PR106 and complete desktop handoff. Full issue97 agent-tool/case-advancement/messaging/matrix gaps are in ISSUE-97-GAP-MAP.md. Broad goal paused; CI deferred."
+      "next_action": "External Claude review/findings pending; PR106 and the bounded AP agent follow-up await review/merge. AGENT1 closes the requested local wait/advance gap, while full matrix and external acceptance remain in ISSUE-97-GAP-MAP.md. CI deferred."
     },
     {
       "id": "A3",
@@ -844,6 +844,20 @@
       "commit": "39bcf93",
       "runtime_commit": "e1147850f98882630653b98b988e30e86a399143",
       "browser_ui_commit": "996e930"
+    },
+    {
+      "id": "AGENT1",
+      "owner": "master",
+      "title": "Connect new scoped AP cases to persistent agent advancement",
+      "status": "accepted",
+      "acceptance_scope": "Bounded deterministic inspect/advance, missing-evidence wait/resume, shared payment proposal and observed local settlement; existing field/bill/payment human requirements retained",
+      "evidence": [
+        "docs/ap-orchestration/AP-CASE-AGENT.md",
+        "docs/ap-orchestration/evidence/agent-case-v1/manifest.json",
+        "tests/ap-system/agent-workflow.test.ts",
+        "tests/ap-system/agent-process.test.ts"
+      ],
+      "next_action": "Runtime rollout and separate external acceptance; full capability registry, messages, delegated business decisions and APEX107 remain separate."
     }
   ],
   "registry": {
@@ -1003,7 +1017,7 @@
     "mapping_hash": "bcf31360c77300818651dea6c9a4fdb42a2a3dc57b93385c3ee67c4f3df972ff",
     "happy_path_evidence": "docs/ap-orchestration/evidence/C4-live-happy-path.json"
   },
-  "last_updated_at": "2026-10-25T11:58:08.398208+00:00",
+  "last_updated_at": "2026-10-25T12:09:39.180330+00:00",
   "human_identity": {
     "provider": "Auth0",
     "environment": "development tenant",
@@ -1128,5 +1142,13 @@
     "updatedAt": "2026-10-25T11:44:51Z",
     "receipt": "docs/ap-orchestration/evidence/issue-97-status-receipt.json",
     "all_acceptance_passed": false
+  },
+  "current_task": {
+    "request": "Connect new AP cases to agents with automatic advancement, missing-evidence waiting/resume and independent payment authorization; skip CI",
+    "status": "implemented_locally_verified",
+    "runbook": "docs/ap-orchestration/AP-CASE-AGENT.md",
+    "broad_goal_complete": false,
+    "live_runtime_rollout": "not_performed",
+    "external_provider_calls": "none"
   }
 }

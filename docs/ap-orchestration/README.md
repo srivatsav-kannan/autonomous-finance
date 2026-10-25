@@ -5,6 +5,7 @@
 | 文件 | 用途 |
 | --- | --- |
 | [当前状态](CURRENT-STATUS.md) | 实测结果、三笔分录、交付边界、剩余事项和运行来源 |
+| [新 AP case agent](AP-CASE-AGENT.md) | 缺证等待、恢复、自动付款提案、独立授权边界及运行说明 |
 | [#97 差距表](ISSUE-97-GAP-MAP.md) | 原 roadmap 与最新 agent 能力矩阵的证据/缺口 |
 | [plan.json](plan.json) / [CAPABILITIES.md](CAPABILITIES.md) | 机器可读登记表与详细能力记录 |
 | [Claude 独立模型评审](CLAUDE-REVIEW.md) | 原件/政策先行的两阶段评审，发现、修复和复核记录 |
@@ -15,4 +16,4 @@
 
 本轮使用 USD、笔记本网页和合成原件；CI、多币种、额外手机适配和托管延后。外部接收者执行 Claude 独立模型评审；真人 practitioner 不再阻塞本轮交付，尚未收到 Claude 结果。
 
-`LAUNCH.md`、`MASTER.md`、`WORKSTREAMS.md`、冻结的 `issue-97.snapshot.*` 及早期 parser/checkpoint 报告是历史启动/验证材料，不能用其中的“尚未启动”或“等待付款”判断当前状态。原始报告和 Claude 冻结包按其版本保留；补充实测记录单独打包。没有重新启动完整 goal、运行 CI、部署 production 或发起新付款。
+`LAUNCH.md`、`MASTER.md`、`WORKSTREAMS.md`、冻结的 `issue-97.snapshot.*` 及早期 parser/checkpoint 报告是历史启动/验证材料，不能用其中的“尚未启动”或“等待付款”判断当前状态。原始报告和 Claude 冻结包按其版本保留；补充实测记录单独打包。随后用户授权的新 AP case agent 已完成窄范围本地实现与验证；完整 goal、CI、production 部署和新增外部付款不在本轮执行范围。

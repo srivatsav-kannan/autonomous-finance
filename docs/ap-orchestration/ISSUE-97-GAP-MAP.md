@@ -2,6 +2,12 @@
 
 Reviewed 2026-10-25 against review implementation 28837a9 and the current [issue](https://github.com/srivatsav-kannan/autonomous-finance/issues/97), including its [agent capability matrix](https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396801545) and [agent abstraction](https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6397213862). The issue is CLOSED; this review does not infer complete acceptance from that state. [Read receipt](evidence/issue-97-status-receipt.json) preserves source hashes and timestamps without changing the frozen launch specification.
 
+## Subsequent bounded implementation
+
+The user's next request authorized new AP case automation while retaining separate human payment approval and skipping CI. [The implementation](AP-CASE-AGENT.md) now adds a scoped persistent queue, typed inspect/advance tools, deterministic next-step policy, missing-evidence waits, automatic resume, shared guarded payment preparation and settlement observation. Fifteen new tests and107 relevant local regression tests pass, including actual CLI SIGKILL/HTTP recovery with retained Convex-test state. Human field/bill decisions are still required by current policy. No external runtime rollout or provider result is inferred from these tests.
+
+The gap statements below preserve the prior full-matrix comparison. The narrow C25 wait/advance path and guarded preparation now have this additional local evidence; a complete C01–C30 tool registry, messaging/replies, delegated autonomous business decisions, full T/U crosswalk and broader external acceptance remain open. Legacy handlers are unchanged; the new worker uses scoped APIs because legacy task APIs reject these runs.
+
 ## Original roadmap
 
 | Area | Retained implementation/evidence | Remaining proof |
