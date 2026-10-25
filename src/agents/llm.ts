@@ -74,11 +74,12 @@ export async function extract<T>(opts: {
   schema: z.ZodType<T>;
   effort?: Effort;
   usage?: Usage;
+  model?: string;
 }): Promise<T> {
   if (!llmAvailable()) throw new LlmUnavailable();
   const started = Date.now();
   const res = await sdk().beta.messages.parse({
-    model: MODEL,
+    model: opts.model ?? MODEL,
     max_tokens: 16000,
     betas: [...BETAS],
     ...(FALLBACKS ? { fallbacks: "default" as const } : {}),
