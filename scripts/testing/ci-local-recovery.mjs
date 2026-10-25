@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createServer } from 'node:net';
 import { spawn, execFileSync } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
-import { metadata } from './ci-report.mjs';
+import { metadata, diagnosticCollector, waitForRequiredStep } from './ci-report.mjs';
 import { recoveryEvidence } from './recovery-evidence.mjs';
 
 // Pinned separately from the npm CLI. Bump deliberately and rerun the recovery proof.
@@ -11,14 +12,29 @@ const backendVersion = 'precompiled-2026-10-10-72ce13c';
 const root = process.cwd();
 const output = path.join(root, 'var/ci/recovery.json');
 fs.mkdirSync(path.dirname(output), { recursive: true, mode: 0o700 });
-const result = { ...metadata(), backendVersion, status: 'FAILED', stage: 'isolation' };
+const result = { backendVersion, scenario: 'accepted-transfer-sigkill-lookup-polling', status: 'FAILED', stage: 'metadata' };
 const save = () => fs.writeFileSync(output, JSON.stringify(result, null, 2), { mode: 0o600 });
 save(); // A killed run must never leave yesterday's passing report.
 const abort = new AbortController();
-const timer = setTimeout(() => abort.abort(), 360_000);
-for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => abort.abort());
+const timer = setTimeout(() => abort.abort('timeout'), 360_000);
+for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => abort.abort('cancelled'));
 const children = [];
 let project;
+let sourceFiles = [];
+let commandDiagnostics = diagnosticCollector();
+
+async function availablePorts() {
+  const reservations = [];
+  try {
+    for (let i = 0; i < 2; i++) {
+      const server = createServer(); reservations.push(server);
+      await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
+    }
+    return reservations.map(server => server.address().port);
+  } finally {
+    await Promise.all(reservations.map(server => new Promise(resolve => server.close(resolve))));
+  }
+}
 
 // Deliberate allowlist: no bank/JWT/admin/deploy credentials or NODE_OPTIONS.
 const childEnv = {
@@ -26,14 +42,15 @@ const childEnv = {
   CONVEX_AGENT_MODE: 'anonymous', CONVEX_DISABLE_TELEMETRY: '1',
   CI: 'true', NO_COLOR: '1', NODE_NO_WARNINGS: '1',
 };
-function start(args) {
+function start(role, args) {
   const child = spawn(process.execPath, args, {
     cwd: project, env: childEnv, detached: true, stdio: ['ignore', 'pipe', 'pipe'],
   });
-  const state = { child, ready: false, failed: false };
+  const state = { child, role, ready: false, failed: false, diagnostics: diagnosticCollector(sourceFiles) };
   // Never print/persist raw CLI output: it may contain generated admin credentials.
   let tail = '';
   const consume = chunk => {
+    state.diagnostics.consume(chunk);
     tail = (tail + chunk.toString()).slice(-4096);
     if (tail.includes('Convex functions ready!')) state.ready = true;
   };
@@ -44,14 +61,7 @@ function start(args) {
   return state;
 }
 async function until(predicate, state, milliseconds) {
-  const deadline = Date.now() + milliseconds;
-  while (!await predicate()) {
-    if (abort.signal.aborted || Date.now() > deadline || state.failed || state.child.exitCode !== null || state.child.signalCode !== null) {
-      throw new Error('Step did not complete');
-    }
-    await delay(200);
-  }
-  if (abort.signal.aborted) throw new Error('Run interrupted');
+  await waitForRequiredStep(predicate, state, milliseconds, abort.signal);
 }
 function table(name) {
   const raw = execFileSync(process.execPath, [
@@ -64,6 +74,12 @@ function table(name) {
   return rows;
 }
 try {
+  Object.assign(result, metadata());
+  sourceFiles = execFileSync('git', ['ls-files', '-z', '--cached', '--others', '--exclude-standard'], {
+    encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+  }).split('\0');
+  commandDiagnostics = diagnosticCollector(sourceFiles);
+  result.stage = 'isolation'; save();
   if (!['linux', 'darwin'].includes(process.platform)) throw new Error('Requires POSIX process groups');
   // The pinned CLI may reuse a legacy global anonymous-agent deployment.
   // Refuse that layout and logged-in global CLI state, never delete or reuse it.
@@ -83,11 +99,13 @@ try {
   fs.symlinkSync(path.join(root, 'node_modules'), path.join(project, 'node_modules'), 'dir');
   result.stage = 'backend-start'; save();
   console.log('Starting a fresh anonymous local Convex backend (raw output withheld).');
-  const backend = start(['node_modules/convex/bin/main.js', 'dev', '--codegen', 'disable', '--typecheck', 'disable', '--tail-logs', 'disable', '--local-backend-version', backendVersion]);
+  const [cloudPort, sitePort] = await availablePorts();
+  const backend = start('backend', ['node_modules/convex/bin/main.js', 'dev', '--codegen', 'disable', '--typecheck', 'disable', '--tail-logs', 'disable', '--local-backend-version', backendVersion,
+    '--local-cloud-port', String(cloudPort), '--local-site-port', String(sitePort)]);
   const configPath = path.join(project, '.convex/local/default/config.json');
   await until(() => fs.existsSync(configPath), backend, 180_000);
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-  if (!Number.isInteger(config.ports.cloud) || config.ports.cloud < 1 || config.ports.cloud > 65535 || !config.adminKey || config.backendVersion !== backendVersion) throw new Error('Unexpected local backend configuration');
+  if (config.ports.cloud !== cloudPort || config.ports.site !== sitePort || !config.adminKey || config.backendVersion !== backendVersion) throw new Error('Unexpected local backend configuration');
   // The CLI writes config before the downloaded backend finishes starting.
   // Wait for this instance, not merely for its config file, before sending auth.
   result.stage = 'backend-ready'; save();
@@ -108,11 +126,11 @@ try {
       { name: 'AP_HUMAN_AUTH_AUDIENCE', value: 'ap-demo' },
     ] }),
   });
-  if (!response.ok) throw new Error('Fixture auth setup failed');
-  await until(() => backend.ready, backend, 90_000);
+  if (!response.ok) { result.httpStatus = response.status; throw new Error('Fixture auth setup failed'); }
+  await until(() => backend.ready && backend.child.exitCode === null, backend, 90_000);
   result.stage = 'crash-and-recovery'; save();
   console.log('Running the worker-crash and missing-webhook scenario; lease recovery takes about 31 seconds.');
-  const demo = start(['--import', 'tsx', 'scripts/ap-demo.ts', 'local']);
+  const demo = start('demo', ['--import', 'tsx', 'scripts/ap-demo.ts', 'local']);
   await until(() => demo.child.exitCode === 0, demo, 90_000);
   result.stage = 'verify-evidence'; save();
   const runs = fs.readdirSync(path.join(project, 'var/ap-demo'));
@@ -127,18 +145,31 @@ try {
   result.stage = 'verify-no-webhooks'; save();
   if (table('demoInbox').length !== 0) throw new Error('Unexpected webhook ingestion');
   if (abort.signal.aborted) throw new Error('Run interrupted');
+  if (backend.failed || backend.child.exitCode !== null || backend.child.signalCode !== null) throw new Error('Required backend stopped');
   result.status = 'PASSED';
   result.stage = 'complete';
 } catch (error) {
+  if (error?.stdout) commandDiagnostics.consume(error.stdout);
+  if (error?.stderr) commandDiagnostics.consume(error.stderr);
+  if (error?.code === 'RECOVERY_TIMEOUT' || abort.signal.reason === 'timeout') result.status = 'TIMED_OUT';
+  else if (abort.signal.aborted) result.status = 'CANCELLED';
   // Do not stringify errors: assertion diffs or HTTP/CLI errors can include secrets.
   result.failureKind = error?.code === 'ERR_ASSERTION' ? 'invariant' : 'runner';
   const line = String(error?.stack).match(/recovery-evidence\.mjs:(\d+):\d+/)?.[1];
   if (line) result.invariantLine = Number(line);
   if (Number.isInteger(error?.status)) result.childExitCode = error.status;
-  console.error(`Local recovery FAILED at ${result.stage}; raw backend/demo output is intentionally withheld. See docs/ci.md for diagnosis.`);
+  console.error(`Local recovery ${result.status} at ${result.stage}; allowlisted diagnostics are in var/ci/recovery.json. See docs/ci.md.`);
   process.exitCode = 1;
 } finally {
   clearTimeout(timer);
+  result.diagnostics = {
+    commands: commandDiagnostics.snapshot(),
+    processes: children.map(({ role, child, failed, diagnostics }) => ({
+      role, spawnFailed: failed, exitCode: child.exitCode,
+      signal: ['SIGKILL', 'SIGTERM', 'SIGINT'].includes(child.signalCode) ? child.signalCode : null,
+      ...diagnostics.snapshot(),
+    })),
+  };
   // Stop only the process groups created by this runner, including worker descendants.
   const stop = signal => {
     for (const { child } of children) if (child.pid) {
@@ -150,6 +181,10 @@ try {
     if (project) fs.rmSync(project, { recursive: true, force: true });
   } catch {
     result.status = 'FAILED'; result.stage = 'cleanup'; process.exitCode = 1;
+  }
+  if (abort.signal.aborted) {
+    result.status = abort.signal.reason === 'timeout' ? 'TIMED_OUT' : 'CANCELLED';
+    process.exitCode = 1;
   }
   save();
   console.log(`Local recovery ${result.status}: var/ci/recovery.json`);

@@ -1,0 +1,50 @@
+{
+  "revision": "794a10e48532fd4a306c3d0bb4db3f96f8069971",
+  "trackedChanges": false,
+  "recordedAt": "2026-10-24T21:25:03.415Z",
+  "runtime": {
+    "node": "v24.22.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "optionalValidation": {
+    "liveIncrease": "NOT_RUN",
+    "realJwt": "NOT_RUN",
+    "externalWebhookDelivery": "NOT_RUN"
+  },
+  "backendVersion": "precompiled-2026-10-10-72ce13c",
+  "status": "PASSED",
+  "stage": "complete",
+  "proof": {
+    "identityMode": "local_admin_simulated_human",
+    "attempts": 2,
+    "createTransferCalls": 1,
+    "lookupTransferCalls": 1,
+    "transfers": 1,
+    "postedDebits": 1,
+    "cashJournalEntries": 1,
+    "closeBlockers": 0,
+    "amountCents": 66290,
+    "sameCommandAndKey": true,
+    "acceptedTransferRecoveredWithoutResend": true,
+    "missingWebhookRecoveredByPolling": true,
+    "duplicateReconciliationPostedNothing": true,
+    "commandSha256": "5049bfc322b968a844aed6c8a3dc6e60040a19318429fcbfada42edbe716bff8",
+    "idempotencyKeySha256": "9867153e5acdfc6f7865dbb83fe78f346290de1b66176394b667221da947f500",
+    "requestHashSha256": "9f43d59bfdb22c442aa8023e5f070529adf59de6bba0961ac67b80838d84233b",
+    "transactionSha256": "17e986503feddbbf80e0899c0ae74b8ea7e70a2e02d87df0ff3b63f4da994b7c",
+    "journalEntrySha256": "41c641d7f14e044cb560f6a7db9947e7fd1c28ec02cfbe2d7d04ef0cc06ebab4",
+    "fixtureHashSha256": "702035b2927737b292407498b2413f9c6a67bfda0a1a023bd2094113789f3d3d"
+  },
+  "checks": {
+    "applicationTypecheck": "PASSED",
+    "backendTypecheck": "PASSED",
+    "testsTypecheck": "PASSED",
+    "tests": {
+      "status": "PASSED",
+      "count": 387,
+      "files": 35
+    },
+    "consoleBuild": "PASSED"
+  }
+}

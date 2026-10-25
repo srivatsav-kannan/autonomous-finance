@@ -16,7 +16,7 @@ describe("real dispatcher recovery against independent durable FakeBank", () => 
   it("concurrent dispatchers submit once, and operating capability has no simulator or credentials", async () => {
     const f=await demoFixture();await f.queued();const bank=openFakeBank({path:bankPath(),scope:f.scope,seed:39});
     try {
-      expect(Object.keys(bank.provider).sort()).toEqual(["createTransfer","getBalance","getTransfer","getTransaction","listTransactions"].sort());
+      expect(Object.keys(bank.provider).sort()).toEqual(["createTransfer","getBalance","getTransfer","getTransaction","listTransactions","lookupTransfer","recovery"].sort());
       expect("harness" in bank.provider).toBe(false);expect("settle" in bank.provider).toBe(false);expect("secret" in bank.provider).toBe(false);
       const results=await Promise.all(["one","two"].map(worker=>new PaymentDispatcher(f.t as KernelTransport,f.scope,f.dispatcherToken,bank.provider,worker).tick()));
       expect(results.filter(r=>r.dispatched)).toHaveLength(1);
@@ -38,7 +38,7 @@ describe("real dispatcher recovery against independent durable FakeBank", () => 
       const restarted=new PaymentDispatcher(f.t as KernelTransport,f.scope,f.dispatcherToken,bank.provider,"worker");
       expect(await restarted.tick()).toMatchObject({dispatched:true,providerTransferId:bank.harness.inspect().transfers[0]!.id});
       const after=await f.t.run(ctx=>ctx.db.get(q.commandId));expect(after!.command).toEqual(before!.command);expect(after!.attemptCount).toBe(2);expect(after!.posting).toBe("unposted");
-      expect(bank.harness.inspect().transfers).toHaveLength(1);expect(bank.harness.inspect().calls.createTransfer).toBe(2);
+      expect(bank.harness.inspect().transfers).toHaveLength(1);expect(bank.harness.inspect().calls.createTransfer).toBe(1);expect(bank.harness.inspect().calls.lookupTransfer).toBe(1);
     } finally {bank.close();}
   });
 

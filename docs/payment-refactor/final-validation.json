@@ -1,0 +1,228 @@
+{
+  "testedRevision": "28a270dd0d42d76ad55ed7f55105d4cd4b534c7c",
+  "scope": "Independent coordinator validation on the clean integrated source before this documentation-only commit",
+  "checks": {
+    "applicationTypecheck": "PASSED",
+    "backendTypecheck": "PASSED",
+    "testsTypecheck": "PASSED",
+    "fullTests": {
+      "status": "PASSED",
+      "tests": 400,
+      "files": 37
+    },
+    "consoleBuild": "PASSED",
+    "diffCheck": "PASSED"
+  },
+  "recovery": {
+    "backendVersion": "precompiled-2026-10-10-72ce13c",
+    "scenario": "accepted-transfer-sigkill-lookup-polling",
+    "status": "PASSED",
+    "stage": "complete",
+    "revision": "28a270dd0d42d76ad55ed7f55105d4cd4b534c7c",
+    "trackedChanges": false,
+    "recordedAt": "2026-10-24T21:35:30.379Z",
+    "runtime": {
+      "node": "v24.22.0",
+      "platform": "darwin",
+      "arch": "arm64"
+    },
+    "optionalValidation": {
+      "liveIncrease": "NOT_RUN",
+      "realJwt": "NOT_RUN",
+      "externalWebhookDelivery": "NOT_RUN"
+    },
+    "proof": {
+      "identityMode": "local_admin_simulated_human",
+      "attempts": 2,
+      "createTransferCalls": 1,
+      "lookupTransferCalls": 1,
+      "transfers": 1,
+      "postedDebits": 1,
+      "cashJournalEntries": 1,
+      "closeBlockers": 0,
+      "amountCents": 66290,
+      "sameCommandAndKey": true,
+      "acceptedTransferRecoveredWithoutResend": true,
+      "missingWebhookRecoveredByPolling": true,
+      "interruption": {
+        "signal": "SIGKILL",
+        "acceptedBeforeKill": true,
+        "completionAbsentBeforeKill": true,
+        "unpaidBeforeSettlement": true,
+        "frozenCommandSha256": "15618d43d24c1da411912ef84b157554c7daeba9fcd39c5ba3e4cd6337adcb40"
+      },
+      "duplicateReconciliationPostedNothing": true,
+      "commandSha256": "fab221efc6987a36074177800b8f364dd1d37ef8d6195ee2e0c5cc91364a7c47",
+      "idempotencyKeySha256": "93a418bb837a0e3f01002fe85bac088bb05a9fb2978e7b160f0098e74be319e0",
+      "requestHashSha256": "c2d5fa628cf66885915e45f3eb55bb6fb3b685b30950a8564b5d5ded2d203a47",
+      "transactionSha256": "700f1b8986751cb7eb3eb2ff96c255fcfa241e751a526358763eee6a0d2ff431",
+      "journalEntrySha256": "947f2bc2b109d5d218903a0b63b3f1c7752185cd27d87fe853eef14872d366df",
+      "fixtureHashSha256": "702035b2927737b292407498b2413f9c6a67bfda0a1a023bd2094113789f3d3d"
+    },
+    "diagnostics": {
+      "commands": {
+        "events": [],
+        "scannedBytes": 0,
+        "truncated": false,
+        "rawOutputRetained": false
+      },
+      "processes": [
+        {
+          "role": "backend",
+          "spawnFailed": false,
+          "exitCode": null,
+          "signal": null,
+          "events": [],
+          "scannedBytes": 3752,
+          "truncated": false,
+          "rawOutputRetained": false
+        },
+        {
+          "role": "demo",
+          "spawnFailed": false,
+          "exitCode": 0,
+          "signal": null,
+          "events": [],
+          "scannedBytes": 599,
+          "truncated": false,
+          "rawOutputRetained": false
+        }
+      ]
+    }
+  },
+  "browser": {
+    "summary": {
+      "revision": "28a270dd0d42d76ad55ed7f55105d4cd4b534c7c",
+      "trackedChanges": false,
+      "untrackedSource": false,
+      "recordedAt": "2026-10-24T21:35:30.507Z",
+      "mode": "local",
+      "status": "PASSED",
+      "stage": "complete",
+      "runtime": {
+        "node": "v24.22.0",
+        "platform": "darwin",
+        "arch": "arm64"
+      },
+      "identityMode": "signed_test_issuer_rs256_inline_jwks",
+      "optionalValidation": {
+        "staging": "NOT_RUN",
+        "externalIdentityProvider": "NOT_RUN",
+        "liveIncrease": "NOT_RUN",
+        "externalWebhooks": "NOT_RUN"
+      },
+      "backendVersion": "precompiled-2026-10-10-72ce13c",
+      "localJournal": {
+        "settlementEntries": 1,
+        "cashCreditCents": 66290
+      }
+    },
+    "results": {
+      "status": "passed",
+      "runnerErrors": 0,
+      "tests": [
+        {
+          "scenario": "console loads with human-only login and no persisted credentials",
+          "status": "passed",
+          "durationMs": 221,
+          "line": 34,
+          "errorCount": 0,
+          "failureLines": []
+        },
+        {
+          "scenario": "missing, invalid, unbound and cross-account identities cannot review or approve",
+          "status": "passed",
+          "durationMs": 378,
+          "line": 49,
+          "errorCount": 0,
+          "failureLines": []
+        },
+        {
+          "scenario": "human reviews invoice, approves, sees pending then verified settlement and journal history",
+          "status": "passed",
+          "durationMs": 634,
+          "line": 77,
+          "errorCount": 0,
+          "failureLines": []
+        }
+      ],
+      "redaction": "allowlisted metadata only; raw logs, DOM, JWTs and request headers omitted"
+    },
+    "proof": {
+      "status": "PASSED",
+      "stage": "complete",
+      "scenario": "human-approval-pending-verified-settlement",
+      "scope": {
+        "organizationId": "payment-browser-smoke",
+        "runId": "payment-browser-96f374d5-a5a8-4c27-968f-919743f257c0",
+        "provider": "fake",
+        "environment": "local",
+        "accountId": "payment-browser-account-96f374d5-a5a8-4c27-968f-919743f257c0"
+      },
+      "identityMode": "signed_test_issuer_rs256_inline_jwks",
+      "consoleLoad": "PASSED",
+      "authorization": {
+        "missing": "REJECTED",
+        "invalid": "REJECTED",
+        "unbound": "REJECTED",
+        "crossAccount": "REJECTED"
+      },
+      "pending": {
+        "execution": "pending",
+        "posting": "unposted",
+        "billPaidCents": 0,
+        "reserved": true,
+        "settlementEntries": 0
+      },
+      "settled": {
+        "execution": "settled",
+        "posting": "posted",
+        "reconciliation": "matched",
+        "externalTransfers": 1,
+        "createTransferCalls": 1,
+        "postedDebits": 1,
+        "settlementEntries": 1,
+        "billPaidCents": 66290,
+        "operationKeyUnchanged": true,
+        "requestBytesUnchanged": true,
+        "replayPosted": 0
+      },
+      "browser": {
+        "realBackendRequests": 9,
+        "pageErrors": 0,
+        "failedRequests": 0,
+        "storageEmpty": true,
+        "journalLinkVisible": true,
+        "transactionVisible": true,
+        "historyVisible": true
+      }
+    }
+  },
+  "staging": {
+    "revision": "28a270dd0d42d76ad55ed7f55105d4cd4b534c7c",
+    "trackedChanges": false,
+    "untrackedSource": false,
+    "recordedAt": "2026-10-24T21:36:01.773Z",
+    "mode": "staging",
+    "status": "NOT_RUN",
+    "stage": "missing-staging-opt-in-or-fixture",
+    "runtime": {
+      "node": "v24.22.0",
+      "platform": "darwin",
+      "arch": "arm64"
+    },
+    "identityMode": "staging_supplied_signed_jwt",
+    "optionalValidation": {
+      "staging": "NOT_RUN",
+      "externalIdentityProvider": "NOT_RUN",
+      "liveIncrease": "NOT_RUN",
+      "externalWebhooks": "NOT_RUN"
+    }
+  },
+  "limitations": [
+    "Staging target and signed authentication fixture were not supplied; staging exits 2 and is not a passing promotion check.",
+    "The local browser uses a real signed ephemeral test issuer, not an external identity provider.",
+    "Live Increase sandbox, external identity provider and external webhook delivery were not run.",
+    "GitHub Actions results belong to the PR and are separate from this local validation record."
+  ]
+}

@@ -26,6 +26,58 @@ async function bank(routes: Record<string, unknown>, overrides: { fetch?: typeof
 }
 
 describe("Increase sandbox adapter contracts", () => {
+  it("finds the original transfer by scoped operation key with GET and no resend authority", async () => {
+    const { provider, saved, http } = await bank({ "/ach_transfers": { data: [fixtures.pending], next_cursor: null } });
+    expect(await provider.lookupTransfer(saved)).toMatchObject({ kind: "found", scope, commandId: saved.commandId,
+      idempotencyKey: saved.idempotencyKey, requestHash: saved.requestHash, observation: { id: "ach_transfer_demo", status: "pending" } });
+    const [input, init] = http.mock.calls[0]!; const url = new URL(String(input));
+    expect(url.pathname).toBe("/ach_transfers");
+    expect(url.searchParams.get("account_id")).toBe(scope.accountId);
+    expect(url.searchParams.get("idempotency_key")).toBe(saved.idempotencyKey);
+    expect(init?.method).toBe("GET"); expect(init?.body).toBeUndefined();
+    expect(provider.recovery).toMatchObject({ lookup: "operation_key", sameKeyResend: { kind: "never" } });
+  });
+
+  it("finds a known transfer using the original command even without an evidence-service resolver", async () => {
+    const saved = await command();
+    const http = vi.fn<typeof fetch>(async () => response(fixtures.pending));
+    const provider = new IncreaseSandboxBank({ scope, apiKey: "private", resolveCommand: async () => null, fetch: http });
+    expect(await provider.lookupTransfer(saved, "ach_transfer_demo")).toMatchObject({ kind: "found", observation: { id: "ach_transfer_demo" } });
+    expect(http.mock.calls.map(([url, init]) => [new URL(String(url)).pathname, init?.method])).toEqual([["/ach_transfers/ach_transfer_demo", "GET"]]);
+  });
+
+  it("keeps missing known identity and incomplete key scans unresolved", async () => {
+    const missing = await bank({});
+    expect(await missing.provider.lookupTransfer(missing.saved, "ach_transfer_demo")).toMatchObject({ kind: "unknown" });
+    for (const result of [{ data: [], next_cursor: "more" }, { data: [fixtures.pending, fixtures.pending], next_cursor: null }]) {
+      const { provider, saved, http } = await bank({ "/ach_transfers": result });
+      expect(await provider.lookupTransfer(saved)).toMatchObject({ kind: "unknown" });
+      expect(http.mock.calls.every(([, init]) => init?.method === "GET")).toBe(true);
+    }
+    const absent = await bank({ "/ach_transfers": { data: [], next_cursor: null } });
+    expect(await absent.provider.lookupTransfer(absent.saved)).toMatchObject({ kind: "not_found", searchedBy: "operation_key" });
+  });
+
+  it("rejects malformed or conflicting lookup evidence for operator review", async () => {
+    for (const row of [{ ...fixtures.pending, amount: 1 }, { ...fixtures.pending, external_account_id: "external_account_other" },
+      { ...fixtures.pending, account_id: "account_other" }, { ...fixtures.pending, idempotency_key: "wrong" }, { id: "malformed" }]) {
+      const { provider, saved } = await bank({ "/ach_transfers": { data: [row], next_cursor: null } });
+      await expect(provider.lookupTransfer(saved)).rejects.toMatchObject({ errorClass: "configuration" });
+    }
+  });
+
+  it("validates every scope dimension before recovery HTTP and preserves failed reads", async () => {
+    const { provider, saved, http } = await bank({});
+    for (const field of ["organizationId", "runId", "accountId", "provider", "environment"] as const) {
+      await expect(provider.lookupTransfer({ ...saved, scope: { ...scope, [field]: "foreign" } as BankScope })).rejects.toThrow();
+    }
+    expect(http).not.toHaveBeenCalled();
+    for (const status of [429, 503]) {
+      const failed = await bank({}, { fetch: async () => response({}, status) });
+      await expect(failed.provider.lookupTransfer(failed.saved)).rejects.toMatchObject({ errorClass: status === 429 ? "rate_limit" : "unknown" });
+    }
+  });
+
   it("pins exact upstream subset and fixture hashes", () => {
     for (const [name, expected] of [["openapi.json", provenance.subsetSha256], ["lifecycle.json", provenance.fixtureSha256]]) {
       expect(createHash("sha256").update(readFileSync(new URL(`../fixtures/increase/${name}`, import.meta.url))).digest("hex")).toBe(expected);
