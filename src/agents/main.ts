@@ -1,6 +1,6 @@
 // Run the agent team for a scenario: npm run agents -- --run <runId>
 import "../core/env";
-import { llmAvailable, MODEL } from "./llm";
+import { llmAvailable, MODEL, PROVIDER } from "./llm";
 import { Team } from "./team";
 import { installShutdown } from "./shutdown";
 
@@ -10,7 +10,7 @@ if (!runId || args.indexOf("--run") < 0) {
   console.error("usage: npm run agents -- --run <runId> [--drain] [--drain-timeout-ms 300000]");
   process.exit(1);
 }
-console.log(`Agent team for ${runId} · Claude ${llmAvailable() ? `on (${MODEL})` : "off (deterministic paths only; set ANTHROPIC_API_KEY)"}`);
+console.log(`Agent team for ${runId} · model ${llmAvailable() ? `on (${PROVIDER} ${MODEL})` : `off (deterministic paths only; set ${PROVIDER === "openai" ? "OPENAI_API_KEY" : "ANTHROPIC_API_KEY"})`}`);
 const team = new Team(runId, { log: (s) => console.log(s) });
 const cleanup = installShutdown(team);
 try {

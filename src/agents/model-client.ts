@@ -55,9 +55,10 @@ export class BudgetedModelClient implements ModelClient {
       model: config.model, system, messages: history, ...extra,
       max_tokens: config.maxOutputTokens, output_config: { effort: config.effort, ...extra.output_config },
     };
-    // Visible UTF-8 bytes, prior opaque reasoning and protocol overhead form a
-    // conservative local input bound. Refuse oversized histories before dispatch.
-    const inputBound = Buffer.byteLength(JSON.stringify(body), "utf8") + priorOutputTokens + 4096;
+    // Visible UTF-8 bytes (at most one token per 3 bytes for JSON and English text), prior
+    // opaque reasoning and protocol overhead form a conservative local input bound in
+    // tokens. Refuse oversized histories before dispatch.
+    const inputBound = Math.ceil(Buffer.byteLength(JSON.stringify(body), "utf8") / 3) + priorOutputTokens + 4096;
     const reservation = this.#budget.reserve(config, inputBound);
     usage.costMicros += reservation.costMicros; // Retained if billing cannot be verified.
     usage.turns++;

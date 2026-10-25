@@ -42,7 +42,7 @@ function contractPrice(v: Vendor, sku: string, on: string): number | undefined {
 async function parseInvoice(rt: SeatRuntime, task: Task, text: string): Promise<{ invoice: ParsedInvoice; via: string } | { error: string; signature: string }> {
   const outcome = parseWith(await rt.parsersNow(), text);
   if (outcome.ok) return { invoice: outcome.invoice, via: outcome.parser };
-  if (!llmAvailable()) return { error: `${outcome.reason}; extraction unavailable (no Claude credentials)`, signature: outcome.signature };
+  if (!llmAvailable()) return { error: `${outcome.reason}; extraction unavailable (no model credentials)`, signature: outcome.signature };
   const invoice = await extract({ system: EXTRACT_SYSTEM, input: text, schema: ParsedInvoice, effort: "low", usage: rt.usage });
   const problem = checkInvoiceMath(invoice);
   if (problem) return { error: `extraction failed arithmetic check: ${problem}`, signature: outcome.signature };
@@ -50,7 +50,7 @@ async function parseInvoice(rt: SeatRuntime, task: Task, text: string): Promise<
   await rt.handoff("integrations.build_parser", "integrations_engineer",
     { signature: outcome.signature, sampleEventId: task.payload.eventId, sample: text, expected: invoice },
     `parser:${outcome.signature}`, task._id, 4);
-  return { invoice, via: "claude-extraction" };
+  return { invoice, via: "model-extraction" };
 }
 
 async function handleCreditMemo(rt: SeatRuntime, task: Task, payload: Record<string, unknown>) {
