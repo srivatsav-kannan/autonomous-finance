@@ -11,7 +11,7 @@ import {
 import { intakeSchema } from "../../../src/ap-system/contracts";
 import type { PhysicalLine } from "../../../src/ap-system/physical-line-contracts";
 import { quantityString } from "../../../src/ap-system/business-policy";
-import { quantityMicros, sumCents } from "../../../src/ap-system/accounting";
+import { quantityMicros, sumCents, lineCents } from "../../../src/ap-system/accounting";
 import { canonical, sha256Hex } from "../kernel";
 import { closeBlockers } from "../../demoEvidence";
 import { deny } from "./shared";
@@ -95,7 +95,8 @@ export async function periodFacts(
     reference: string,
     reason: string,
     owner: CloseBlocker["owner"] = "controller",
-  ) => blockers.push({ code, reference, reason, owner });
+    exposureCents?: number,
+  ) => blockers.push({ code, reference, reason, owner, ...(exposureCents!==undefined?{exposureCents}:{}) });
   const ap = (j: Doc<"journalEntries"> | undefined, account = "2000") =>
     j?.lines
       .filter((l) => l.account === account)
@@ -387,6 +388,7 @@ export async function periodFacts(
         `case:${row._id}`,
         "Received invoice/failed extraction has no recognized bill, accrual or reviewed disposition",
         "ap_clerk",
+        input.candidate?.totalCents,
       );
     const recognizedInPeriod =
       (row.billId && billRows.some((b) => b.billId === row.billId)) ||
@@ -413,6 +415,7 @@ export async function periodFacts(
         `case:${row._id}:disputed`,
         "Unaccepted invoice portion requires explicit period-end accrual or supported non-obligation/timing disposition",
         "purchasing_owner",
+        input.candidate.totalCents-(row.acceptedCents??0),
       );
   }
   const uses = await ctx.db
@@ -558,13 +561,17 @@ export async function periodFacts(
             .reduce((n, x) => n + quantityMicros(x.quantity), 0n),
         0n,
       );
-    if (invoiced + accrued < quantityMicros(r.quantity))
+    if (invoiced + accrued < quantityMicros(r.quantity)) {
+      const prices=sourceCases.filter(c=>c.intake.purchasingEvidence?.some((p:any)=>p.source.sha256===r.hash)).flatMap(c=>c.intake.purchasingEvidence??[]).filter((p:any)=>["purchase_order","contract"].includes(p.kind)).flatMap((p:any)=>p.lines).filter((l:any)=>l.sku===r.sku&&l.quantity.unit===r.unit&&Number.isSafeInteger(l.unitPriceCents)&&l.unitPriceCents>0).map((l:any)=>l.unitPriceCents as number);
+      const exposureCents=prices.length?lineCents(quantityString(quantityMicros(r.quantity)-invoiced-accrued),Math.max(...prices)):undefined;
       hold(
         "received_not_invoiced",
         `receipt:${key}`,
         "Received units remain outside invoice/accrual recognition",
         "purchasing_owner",
+        exposureCents,
       );
+    }
     if (invoiced + accrued > quantityMicros(r.quantity))
       hold(
         "received_overrecognized",

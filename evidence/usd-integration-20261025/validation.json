@@ -8,7 +8,24 @@
     "skipped": 4,
     "total": 1998,
     "command": "node node_modules/vitest/vitest.mjs run --maxWorkers=4",
-    "skips": []
+    "skips": [
+      {
+        "file": "adapters.integration.test.ts",
+        "test": "real kernel FinBalance booking (model stub) books the controller's entries through the kernel and reports the kernel's balance sheet"
+      },
+      {
+        "file": "adapters.integration.test.ts",
+        "test": "real kernel external adapter (model stub) routes specialist \u2192 controller, persists evidence, and isolates repeat runs"
+      },
+      {
+        "file": "adapters.integration.test.ts",
+        "test": "real kernel external adapter (model stub) runs APEX's large evidence files through revenue and payroll seats"
+      },
+      {
+        "file": "adapters.integration.test.ts",
+        "test": "real kernel external adapter (model stub) runs OpenAI Responses continuations through both real team seats using a mocked transport"
+      }
+    ]
   },
   "checks": {
     "typecheck": "passed",
