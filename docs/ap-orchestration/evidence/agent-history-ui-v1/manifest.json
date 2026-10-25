@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-25",
+  "classification": "Browser fixture and frontend presentation evidence only. No new financial workflow or backend run.",
+  "implementationRevision": "1b1c0ae1e840710cb58e64ae4d2791a814cf1dd1",
+  "baseRevision": "81dd714f4f8ea49e7795979605c174a6ac954819",
+  "basePullRequest": 113,
+  "runtime": "Node 26.8.1, macOS, installed Google Chrome, Playwright; America/Los_Angeles browser timezone",
+  "sourceHashes": {
+    "console/src/APAgentHistory.tsx": "7ab534dabe3500ecb9946226c853d2fb556fa89836d0ff79e7f42b42469308b7",
+    "console/src/apAgentHistoryView.ts": "555a44cb6e2c0c6665f098b595467eb755d1c836025d3d2dd96bab6f9189591f",
+    "console/src/apAgentHistory.css": "48a93a4479ce835f17d6fa7d9dfe831cd183d1d29e29095cce46e29b1d9bd8f0",
+    "console/src/APSystemWorkspace.tsx": "6f62fed68f26eb2d1ca217a3a648503979c9075cf46e0071f6a00c261462c599",
+    "tests/ap-system/agent-history.test.ts": "99f87dbc3432fb23eb95a881d333be14ba5113d7883389f7937cb9c539e09e51",
+    "tests/ap-system/agent-history.browser.test.ts": "ac111f85487918868444bb84dc16f531051c341e50cdd862b14ceced57adb83a",
+    "tests/ap-system/agent-history.fixture.ts": "28386ed4f14a042cab148f122d60baa0befcda17705b74ea7b5a893d25b9153a",
+    "tests/ap-system/agent-history.browser.fixture.tsx": "e3c549eb84be15d1b166e7702fed52b24da01ec745bdf599c1fb1a7c8d43e314",
+    "scripts/testing/ap-history-fixture-server.ts": "66c8988840054175f780a3474e8f496526c12b171ac55f0f7c45b1c3b811ecac"
+  },
+  "storedEvidenceHashes": {
+    "docs/ap-orchestration/evidence/agent-transition-v1/case-transitions.json": "2e06f2af051db55eb273d3abc4ba9924f6851effc1dd1d36424de78000a520dc",
+    "docs/ap-orchestration/evidence/agent-case-v1/agent-case-flow.json": "b2289824fbb3c4c8dd8cfbc8f80489572d97bd3655bb3adac0dcc3517150773f"
+  },
+  "results": {
+    "presentationTests": 8,
+    "mountedBrowserTests": 1,
+    "applicationTypecheck": "passed",
+    "testTypecheck": "passed",
+    "consoleBuild": "passed; existing bundle-size warning",
+    "staticDesignCheck": "0 FAIL, 0 WARN, 1 ANSWERED",
+    "renderedDesignReview": "0 FAIL, 1 font-weight WARN, 1 existing control-height WAIVED, 1 ANSWERED",
+    "apiNetworkRequests": 0
+  },
+  "viewportCoverage": {
+    "widths": [
+      1280,
+      1440,
+      390
+    ],
+    "height": 900,
+    "colorSchemes": [
+      "light",
+      "dark"
+    ],
+    "reducedMotion": "reduce"
+  },
+  "screenshots": {
+    "missing-receipt-light-1280.png": "a954621ec0a7f63c8fdac64bb2d8ed32ea85f313194c92c421ee781cda3a89ac",
+    "missing-receipt-light-1280-detail.png": "4da868efd8ddeee37ec67fedd50f0befacc5b4f103ba1a848fcae56dc95e8cbb",
+    "missing-receipt-light-1440.png": "a96d79944f5dfc67db57cdc62e80649357839ab7b522890b4e70e84fa626e66d",
+    "missing-receipt-light-390.png": "c8146b74847cad1c5a0d810931861a5455900dbed647602dbdaa098006948d31",
+    "missing-receipt-dark-1280.png": "b0c85556321691be010dc2bf8f73f581378bc184c02ebd73cc03edb71b5548ea",
+    "missing-receipt-dark-1440.png": "07b7250b213065339e365a8269e63d445fda43bd5a427e3b05b21b857518108b",
+    "missing-receipt-dark-390.png": "9a5ca24c4dbb73a5b5896a3926a47518ab70e64aac6a615a3c9bce88c4da5dd4",
+    "evidence-revision.png": "2c585322642606039b4d443b20432d946f0733cb325f6bf6fbd813461431639c",
+    "independent-approval.png": "ed686817f8a96aab0201ab27f1b357a36b80cc3adc2b407832b1cd501a59c7ef",
+    "payment-proposal.png": "c589e46aeabfa96975ea0d57023c6d89ee3305c7fa7015c2158573994c75a6c0",
+    "payment-proposal-detail.png": "f6fce7f47726f54b7b6f4a29b3ceaaea3607d7b23165a755982e25598513b8ae",
+    "settled-history.png": "6553d3656312d8bdc01ad31aa27ba3e24dec0f76b14bdf128526686f84d2b8c8",
+    "settled-history-detail.png": "14da609abf84f950c286cb8b1eea16bec0f218dd51a26ec69e7dbc22601282c9",
+    "legacy-history.png": "1e19a3b0e715f6b5bbd3b74b4506e5b3dabc408b0df50710300a474b55ba94cd",
+    "empty-history.png": "47731edb5092dd7c6fbc35cb3e799b8a0647a7faaed9e7e6edb14e8f68348269",
+    "long-ids-phone.png": "2c5cc0ec5e8a9a11c286cb63062a19695087b52e9882104a0a54e34783874346"
+  },
+  "limitations": [
+    "Stored fixture composition; no new backend, model, bank, accounting provider or human approval execution.",
+    "Case shell and decision context come from prior agent-case-v1 evidence; all worker transitions are copied without changes from #113.",
+    "The #113 export lacks a complete PaymentDetail/beneficiary record, so payment references remain non-actionable in the fixture.",
+    "The fixture viewer disables all external fetches and supplies only a local synthetic runtime response."
+  ]
+}
