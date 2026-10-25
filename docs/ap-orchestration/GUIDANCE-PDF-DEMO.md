@@ -1,6 +1,6 @@
 # Uploaded B/C guidance demo (#119 / #120)
 
-Base: PR #118 `integrate/one-console` at `396d6b13312bfe944affcb2e8fb7ff741de69c84`.
+Base: PR #118 `integrate/one-console`, initially `396d6b13312bfe944affcb2e8fb7ff741de69c84`, updated to `a22abce369e5a4938055b0ba05968cb21a82928d` (workspace settings and scenario selection) before delivery.
 This branch selectively ports the committed precedent contract, storage, matcher and tests from `6fa26ed63ed7ce5e376a9b595d6d2c66057a4910`. It does not merge the live-auth0 branch or PR #117, and does not copy any dirty worktree UI files. It uses #118's normal upload and case workspace.
 
 ## Run in this checkout
@@ -62,7 +62,7 @@ npm run build:console
 npx vitest run tests/ap-case-guidance.test.ts tests/ap-precedents.test.ts \
   tests/ap-system/guidance-pdf-intake.test.ts tests/ap-system/intake-requests.test.ts \
   tests/ap-system/agent-workflow.test.ts tests/ap-system-local-origin.test.ts \
-  tests/ap-system-local-simulation-auth.test.ts
+  tests/ap-system-local-simulation-auth.test.ts tests/finance-scenario.test.ts
 node scripts/ap-system/verify-guidance-browser.mjs
 # Restart only this checkout's gateway and 3260/3261 backend, then:
 node scripts/ap-system/verify-guidance-persistence.mjs
