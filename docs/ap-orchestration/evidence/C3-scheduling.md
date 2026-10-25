@@ -17,3 +17,7 @@ Measured component evidence:
 - TypeScript, console build and static design checks passed; console build has its existing >500 kB bundle warning. Browser visual verification of the new selection controls remains pending, distinct from D1 cold-session verification.
 
 These tests use simulated human identities and local bank evidence. They do not establish real Auth0 login, Increase settlement, QuickBooks synchronization, or AP practitioner sign-off.
+
+## Payment runs checkpoint
+
+`apPaymentRuns` groups one to 25 reviewed cases into an immutable manifest. It prepares existing per-case payment versions in one atomic mutation; no second payment engine or aggregated cross-supplier bank instruction is introduced. Human run authorization binds the run hash and every current case/payment hash. A stale or cancelled member rolls back all newly queued commands. Cancelling a batch is atomic only while every member is provably unsent; a possible send prevents blanket cancellation. Individual bank commands and outcomes remain visible through the case/payment records. Seven component tests pass for replay, duplicates, rollback, authority, rescheduling, possible-send preservation and manifest corruption. The run controls still require D2 UI/API wiring.
