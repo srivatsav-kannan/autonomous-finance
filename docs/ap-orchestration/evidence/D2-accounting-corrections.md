@@ -31,3 +31,19 @@ Own preview5191 fixture path:
 `/@fs/Users/junjiexiong/.codex/worktrees/ap-system-experience/calhacks/docs/ap-orchestration/evidence/D2-browser/fixture.html?case=synthetic-approved&apView=accounting&apFixture=corrections`
 
 This displays one explicitly synthetic approved return correction. Select **Approved return journal**, then **Preview accounting plan** to inspect the synthetic balanced $52.75 JournalEntry. External writes remain disabled. `apFixture=correction-review` shows the pending synthetic correction with disabled vote controls until explicit reason/confirmation. The fixture owns all mocked fetches and never forwards requests. CUA screenshots remain a pending Master-owned review at this commit; these tests are not live provider or practitioner evidence.
+
+## Restored supplier-credit allocation — D completion
+
+The correction editor now supports the final `credit_allocation` contract. A human selects an existing same-case credit receipt, reads its whole authoritative application group, then enters the exact original-bill and restored-payable portions. Those portions must sum to the recorded gross total. Net bank cash is shown as zero; no credit is consumed again and no bank command is created by this flow. A controller proposal, independent human vote, external preview/approval and explicit verification remain distinct steps.
+
+A receipt row is not necessarily the group total. The new read-only `apAccountingCorrections:creditApplication({scope,caseId,creditApplicationId})` query requires the current human, verifies the scoped recognized invoice and reuses `accountingCredits.creditApplication`. The HTTP bridge is `GET /api/ap-system/cases/:caseId/credit-applications/:applicationId`; browser method `apSystemApi.creditApplication`. It returns the exact existing application IDs, total and credited original recognitions. No mapping, provider request, approval or export rule changes during the read.
+
+The immutable proposal review and accounting plan now distinguish restored-credit allocation from a later cash settlement. Receipt verification continues to prefer `correctionId` over the aliased credit application ID. Neither a local approval nor a historical external receipt is presented as verified current synchronization.
+
+Validation: 64 focused UI, HTTP/service, period and cost tests pass, including a real test-backend application of two synthetic recognized credits. Both component IDs read the same $11.00 group; unauthenticated, cross-case, cross-scope and revoked-human reads fail. The read creates no journal, command or correction. Main/tests/backend TypeScript, console build and design checks pass (0 failures / 0 warnings; existing chunk-size advisory). No real provider operation was performed. Browser acceptance remains Master-owned.
+
+Synthetic browser routes at the D `5191` preview:
+- `.../D2-browser/fixture.html?case=synthetic-approved&apView=accounting&apFixture=credit-review` shows an immutable pending credit allocation and the new proposal form. Select **Allocate an existing supplier credit application**, then either receipt component: the group is $52.75 ($25.00 + $27.75), with zero cash. An example explicit allocation is $32.75 original plus $20.00 restored.
+- `...&apFixture=credit-allocation` provides an approved synthetic allocation selector for a provider-free zero-cash BillPayment preview. All mock requests remain intercepted; this is component/transport demonstration, not integrated or live accounting evidence.
+
+The cost browser fixture was also corrected to match its separate period example: a $20 accrual with no discount or store, $10 still in expense and $10 in inventory. Signed-discount tests now use a separate bill-only fixture and cannot appear as an inconsistent $19 accrual browser example.

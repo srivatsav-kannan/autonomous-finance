@@ -4,15 +4,16 @@ import {createRoot} from "react-dom/client";
 import {APSystemWorkspace} from "../../../../console/src/APSystemWorkspace";
 import {configureAPSession} from "../../../../console/src/apAuthSession";
 import {caseDetailSchema} from "../../../../src/ap-system/contracts";
-import {correctionUIFixture,correctionPlanFixture} from "../../../../tests/ap-system-correction-ui.fixture";
+import {correctionUIFixture,correctionPlanFixture,creditApplicationUIFixture,creditCorrectionUIFixture,creditCorrectionPlanFixture} from "../../../../tests/ap-system-correction-ui.fixture";
 import {closeUIFixture} from "../../../../tests/ap-system-close-ui.fixture";
 import raw from "./data.json";
 import "../../../../console/src/styles.css";
 import "../../../../console/src/apSystem.css";
 import tokens from "../../../../console/src/tokens.css?raw";
 import "./fixture.css";
-const fixtureMode=new URLSearchParams(location.search).get("apFixture"),correctionMode=fixtureMode==="corrections"||fixtureMode==="correction-review";
+const fixtureMode=new URLSearchParams(location.search).get("apFixture"),creditMode=fixtureMode==="credit-allocation"||fixtureMode==="credit-review",correctionMode=creditMode||fixtureMode==="corrections"||fixtureMode==="correction-review";
 const cases=caseDetailSchema.array().parse(raw.cases),run=structuredClone(raw.run);
+if(creditMode){const c=cases.find(c=>c.caseId==="synthetic-approved")!;if(c.domain)c.domain.creditApplications=[2500,2775].map((amountCents,i)=>({applicationId:`synthetic-application-${i===0?"a":"b"}`,billId:c.links.billId!,creditId:`synthetic-credit-${i}`,amountCents,actor:"synthetic-human",at:1792886400000}));}
 let action="No fixture action yet.";
 // This fixture owns its entire mocked transport. It never forwards requests.
 configureAPSession({mode:"local"});
@@ -25,14 +26,15 @@ window.fetch=async(input,init)=>{
   if(path.endsWith("/preview")){const plan=correctionPlanFixture();plan.links={...plan.links,caseId:null,billId:null,correctionId:undefined,closeExportId:"accrual:synthetic-accrual-journal",closeJournalId:"synthetic-accrual-journal",closeActionId:selection.request?.actionId};plan.payload={TxnDate:"2026-10-18",Line:[{Amount:20,JournalEntryLineDetail:{PostingType:"Debit",AccountRef:{value:"synthetic-cost"}}},{Amount:20,JournalEntryLineDetail:{PostingType:"Credit",AccountRef:{value:"synthetic-accrued-liability"}}}]};return reply({plan,planHash:"8".repeat(64),externalWrites:0});}
   return reply({error:{code:"fixture_no_external_write",reason:"Synthetic fixture external writes and readback are disabled."}},403);
  }
- if(init?.method==="POST"){action=`Synthetic only: ${path}. No backend or external request sent.`;window.dispatchEvent(new Event("fixture-action"));if(path==="/payment-runs")return reply({runId:run.runId,snapshotHash:run.snapshotHash});if(path.endsWith("/authorize")){run.items.forEach(i=>i.payment.status="queued");return reply({commandIds:["synthetic-command-a","synthetic-command-b"]});}if(path.endsWith("/cancel")){run.items.forEach(i=>i.payment.status="cancelled");return reply({ok:true});}if(path.startsWith("/business/")||path.startsWith("/close/")||path.includes("/corrections/"))return reply({ok:true});if(correctionMode&&path.endsWith("/accounting/preview"))return reply({plan:correctionPlanFixture(path.split("/")[2]),planHash:"f".repeat(64),externalWrites:0});return reply({error:{code:"fixture_read_only",reason:"This fixture does not simulate accounting or bank writes."}},409);}
+ if(init?.method==="POST"){action=`Synthetic only: ${path}. No backend or external request sent.`;window.dispatchEvent(new Event("fixture-action"));if(path==="/payment-runs")return reply({runId:run.runId,snapshotHash:run.snapshotHash});if(path.endsWith("/authorize")){run.items.forEach(i=>i.payment.status="queued");return reply({commandIds:["synthetic-command-a","synthetic-command-b"]});}if(path.endsWith("/cancel")){run.items.forEach(i=>i.payment.status="cancelled");return reply({ok:true});}if(path.startsWith("/business/")||path.startsWith("/close/")||path.includes("/corrections/"))return reply({ok:true});if(correctionMode&&path.endsWith("/accounting/preview"))return reply({plan:creditMode?creditCorrectionPlanFixture(path.split("/")[2]):correctionPlanFixture(path.split("/")[2]),planHash:"f".repeat(64),externalWrites:0});return reply({error:{code:"fixture_read_only",reason:"This fixture does not simulate accounting or bank writes."}},409);}
  if(path.startsWith("/close/cost-state/"))return reply(costUIFixture(decodeURIComponent(path.split("/").at(-1)!)));
  if(path.startsWith("/close/"))return reply(closeUIFixture());
  if(path==="/cases")return reply(cases);
  if(path==="/business")return reply({...raw.governance,policies:raw.governance.policies.map(p=>({...p,policy:{...p.policy,accounts:[...p.policy.accounts,{account:"6000",treatment:"expense"},{account:"1200",treatment:"inventory"}]}}))});
  if(path==="/payment-runs")return reply([{runId:run.runId,snapshotHash:run.snapshotHash,caseIds:run.items.map(i=>i.caseId),executionDate:run.executionDate,createdAt:run.createdAt}]);
  if(path===`/payment-runs/${run.runId}`)return reply(run);
- if(path.endsWith("/corrections")){const proposal=correctionUIFixture(path.split("/")[2]);return reply({proposals:correctionMode?[{...proposal,status:fixtureMode==="corrections"?"approved":"pending"}]:[],controllerProposalAvailable:true});}
+ if(path.includes("/credit-applications/"))return reply(creditApplicationUIFixture(cases.find(c=>c.caseId===path.split("/")[2])?.links.billId??"missing"));
+ if(path.endsWith("/corrections")){const proposal=correctionUIFixture(path.split("/")[2]);return reply({proposals:creditMode?[{...proposal,status:"approved"},{...creditCorrectionUIFixture(path.split("/")[2]),status:fixtureMode==="credit-allocation"?"approved":"pending"}]:correctionMode?[{...proposal,status:fixtureMode==="corrections"?"approved":"pending"}]:[],controllerProposalAvailable:true});}
  if(path.endsWith("/accounting"))return reply({provider:"QuickBooks Online",environment:"sandbox",configuration:correctionMode?"configured":"not_configured",grant:"authorization_required",mappings:correctionMode?"configured":"missing",externalVerification:"not_checked",receipts:[],holds:[],authority:correctionMode?"verified":"not_recognized",complete:true,externalWritesAllowed:false});
  const c=cases.find(c=>path===`/cases/${c.caseId}`);if(c)return reply(c);
  return reply({error:{code:"fixture_unavailable",reason:"This synthetic fixture does not provide original raster or external provider data."}},503);

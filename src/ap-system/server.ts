@@ -114,6 +114,12 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
    }
    // A browser cookie alone never authenticates an external human.
    if(req.method==="GET"&&!sessionValid(req,subject))throw new APHttpError("session_required",403,"Open the AP workspace before reading source or case details.");
+   const creditApplication=/^\/api\/ap-system\/cases\/([^/]+)\/credit-applications\/([^/]+)$/.exec(url.pathname);
+   if(req.method==="GET"&&creditApplication){
+    if(!service.corrections)throw new APHttpError("capability_unavailable",503,"Credit application evidence is unavailable.");
+    const id=z.string().trim().min(1).max(180);
+    return send(res,await service.corrections.creditApplication(id.parse(decodeURIComponent(creditApplication[1]!)),id.parse(decodeURIComponent(creditApplication[2]!))));
+   }
    const costState=/^\/api\/ap-system\/close\/cost-state\/([^/]+)$/.exec(url.pathname);
    if(req.method==="GET"&&costState){
     if(!service.close)throw new APHttpError("capability_unavailable",503,"Current cost allocation evidence is unavailable.");

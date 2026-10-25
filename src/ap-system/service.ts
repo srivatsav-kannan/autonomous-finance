@@ -57,6 +57,7 @@ export function createAPWorkspaceService(options:{
  };
  const correctionRows=(caseId:string)=>human.query(makeFunctionReference<"query">("apAccountingCorrections:proposals"),{scope,caseId}) as Promise<CorrectionProposal[]>;
  const corrections:CorrectionOperations={
+  creditApplication:(caseId,creditApplicationId)=>human.query(makeFunctionReference<"query">("apAccountingCorrections:creditApplication"),{scope,caseId,creditApplicationId}),
   list:async caseId=>({proposals:await correctionRows(caseId),controllerProposalAvailable:!!options.controllerCredential}),
   propose:async input=>{if(!options.controllerCredential)throw new APHttpError("controller_unavailable",503,"A separate scoped controller agent is required to propose accounting corrections.");return agent.mutation(makeFunctionReference<"mutation">("apAccountingCorrections:propose"),{scope,...options.controllerCredential,input:accountingCorrectionRequestSchema.parse(input)});},
   vote:async(caseId,input)=>{const parsed=domainVoteSchema.strict().parse(input);if(!(await correctionRows(caseId)).some(p=>p._id===parsed.proposalId&&p.caseId===caseId))throw new APHttpError("case_mismatch",409,"This correction proposal is not linked to the selected case.");return human.mutation(makeFunctionReference<"mutation">("apAccountingCorrections:vote"),{scope,input:parsed});},

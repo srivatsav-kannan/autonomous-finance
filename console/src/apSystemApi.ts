@@ -13,7 +13,7 @@ import type { BankTransaction, TransferObservation } from "../../src/integration
 
 import type { PaymentRunDetail, PaymentRunRequest, PaymentRunSummary, AccountingStatus } from "../../src/ap-system/workspace-operations";
 import type { QBOReceipt } from "../../src/ap-system/quickbooks/runtime";
-import type { Plan } from "../../src/ap-system/quickbooks/types";
+import type { CreditApplication, Plan } from "../../src/ap-system/quickbooks/types";
 import { APSystemApiError, apProtectedFetch, closeAPSession } from "./apAuthSession";
 export { APSystemApiError } from "./apAuthSession";
 export type PaymentDetail = { snapshotHash: string; snapshot: PaymentSnapshot; approvals: PaymentApproval[]; observations: TransferObservation[]; transactions: BankTransaction[] };
@@ -79,6 +79,7 @@ export function accountingSelection(value?:APAccountingSelection|string):APAccou
  return input;
 }
 export const apSystemApi = {
+  creditApplication:(caseId:string,applicationId:string,signal?:AbortSignal)=>request<CreditApplication>(`/cases/${encodeURIComponent(caseId)}/credit-applications/${encodeURIComponent(applicationId)}`,undefined,signal),
   costState:(originalEntryId:string,signal?:AbortSignal)=>request<CostState>(`/close/cost-state/${encodeURIComponent(originalEntryId)}`,undefined,signal),
   closeAccountingStatus:(selection:CloseExportRequest,signal?:AbortSignal)=>request<QBOCloseStatus>("/close/accounting/status",{request:closeExportRequestSchema.strict().parse(selection)},signal),
   closeAccountingPreview:(selection:CloseExportRequest)=>request<QBOClosePreview>("/close/accounting/preview",{request:closeExportRequestSchema.strict().parse(selection)}),

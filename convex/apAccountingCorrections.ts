@@ -1,3 +1,5 @@
+import {creditApplication as loadCreditApplication} from "./lib/apSystem/accountingCredits";
+import {loadRecognizedBusinessExport} from "./lib/apSystem/businessExport";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { scopeValidator } from "./demoSchema";
@@ -5,6 +7,7 @@ import {
   requirePaymentSeat,
   requirePaymentHuman,
   auditDemo,
+  assertRowScope,
 } from "./lib/demoAuth";
 import { accountingCorrectionRequestSchema } from "../src/ap-system/quickbooks/corrections";
 import { domainVoteSchema } from "../src/ap-system/domain-contracts";
@@ -197,5 +200,21 @@ export const current = query({
   handler: async (ctx, args) => {
     await requirePaymentHuman(ctx, args.scope);
     return approvedCorrection(ctx, args.scope, args.correctionId);
+  },
+});
+
+/** Read the validated immutable group; selecting a component never guesses its total. */
+export const creditApplication = query({
+  args: {scope: scopeValidator, caseId: v.id("apCaseRecords"), creditApplicationId: v.id("apCreditApplications")},
+  handler: async (ctx, args) => {
+    await requirePaymentHuman(ctx, args.scope);
+    const row = await caseRow(ctx, args.scope, args.caseId);
+    if (!row.billId) throw Error("recognized_bill_required");
+    const bill = await ctx.db.get(row.billId);
+    assertRowScope(bill, args.scope);
+    if (!bill) throw Error("recognized_bill_required");
+    const recognized = await loadRecognizedBusinessExport(ctx, args.scope, row._id);
+    if (recognized.kind !== "invoice") throw Error("recognized_invoice_required");
+    return loadCreditApplication(ctx, args.scope, row._id, bill._id, args.creditApplicationId);
   },
 });
