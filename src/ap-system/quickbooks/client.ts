@@ -12,6 +12,48 @@ const entities = new Set([
   "CompanyInfo",
   "Class",
 ]);
+/** An absent/malformed query envelope is not evidence of zero matching transactions. */
+function queryRows(
+  data: Record<string, any>,
+  entity: string,
+): Record<string, any>[] {
+  const q = data.QueryResponse;
+  if (
+    !Object.prototype.hasOwnProperty.call(data, "QueryResponse") ||
+    !q ||
+    typeof q !== "object" ||
+    Array.isArray(q) ||
+    Object.keys(q).some(
+      (k) => ![entity, "startPosition", "maxResults", "totalCount"].includes(k),
+    )
+  )
+    throw new QboError("qbo_query_envelope_invalid");
+  const hasRows = Object.prototype.hasOwnProperty.call(q, entity);
+  if (hasRows && !Array.isArray(q[entity]))
+    throw new QboError("qbo_query_envelope_invalid");
+  const rows: Record<string, any>[] = hasRows ? q[entity] : [];
+  if (
+    rows.some(
+      (r) =>
+        !r ||
+        typeof r !== "object" ||
+        Array.isArray(r) ||
+        typeof r.Id !== "string" ||
+        !/^\d{1,32}$/.test(r.Id),
+    )
+  )
+    throw new QboError("qbo_query_envelope_invalid");
+  for (const key of ["startPosition", "maxResults", "totalCount"])
+    if (q[key] !== undefined && (!Number.isSafeInteger(q[key]) || q[key] < 0))
+      throw new QboError("qbo_query_envelope_invalid");
+  if (
+    (q.startPosition !== undefined && q.startPosition !== 1) ||
+    (q.totalCount !== undefined && q.totalCount !== rows.length) ||
+    (q.maxResults !== undefined && q.maxResults < rows.length)
+  )
+    throw new QboError("qbo_query_incomplete");
+  return rows;
+}
 export function matches(expected: unknown, actual: unknown): boolean {
   if (Array.isArray(expected))
     return (
@@ -167,7 +209,7 @@ export class QboClient {
       undefined,
       `SELECT * FROM ${plan.entity} WHERE DocNumber = '${doc}' MAXRESULTS 1000`,
     );
-    const rows = data.QueryResponse?.[plan.entity] ?? [];
+    const rows = queryRows(data, plan.entity);
     if (!Array.isArray(rows) || rows.length >= 1000)
       throw new QboError("reconciliation_incomplete");
     // Any same marker with changed economics is a conflict, never silently picked.
@@ -201,7 +243,7 @@ export class QboClient {
       undefined,
       `SELECT * FROM BillPayment WHERE VendorRef = '${vendorId}' MAXRESULTS 1000`,
     );
-    const rows = data.QueryResponse?.BillPayment ?? [];
+    const rows = queryRows(data, "BillPayment");
     if (
       !Array.isArray(rows) ||
       rows.length >= 1000 ||
