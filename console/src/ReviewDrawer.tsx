@@ -2,6 +2,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 
 type ReviewDrawerProps = {
   open: boolean;
+  wide?: boolean;
   onClose: () => void;
   labelledBy: string;
   children: ReactNode;
@@ -10,7 +11,7 @@ type ReviewDrawerProps = {
   closeDisabled?: boolean;
 };
 
-export function ReviewDrawer({ open, onClose, labelledBy, children, fallbackFocusId, preferFallbackFocus = false, closeDisabled = false }: ReviewDrawerProps) {
+export function ReviewDrawer({ wide = false, open, onClose, labelledBy, children, fallbackFocusId, preferFallbackFocus = false, closeDisabled = false }: ReviewDrawerProps) {
   const dialog = useRef<HTMLDialogElement>(null);
   const backdropPress = useRef(false);
   const preferFallback = useRef(preferFallbackFocus);
@@ -47,7 +48,7 @@ export function ReviewDrawer({ open, onClose, labelledBy, children, fallbackFocu
   return (
     <dialog
       ref={dialog}
-      className="review-drawer"
+      className={`review-drawer ${wide ? "case-drawer" : ""}`}
       aria-labelledby={labelledBy}
       onCancel={(event) => { event.preventDefault(); onClose(); }}
       onClose={(event) => {

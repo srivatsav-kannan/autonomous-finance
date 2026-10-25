@@ -1,3 +1,4 @@
+import { retainedSourceOutcome, assertSourcePayable } from "./lib/apSystem/sourceOutcome";
 import { activeBusinessPolicy } from "./lib/apSystem/businessAuthority";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
@@ -16,6 +17,7 @@ import { cancelUnsent } from "./lib/payments/applyCommand";
 import {
   AP_POLICY_VERSION,
   intakeSchema,
+  sourceOutcomeSchema,
   decisionSchema,
   reviewRequestSchema,
   billApprovalRequestSchema,
@@ -131,6 +133,9 @@ export const ingest = mutation({
     let duplicate = false;
     if (input.explicitRevisionOf) {
       row = await caseRow(ctx, args.scope, input.explicitRevisionOf);
+      const retainedOutcome = retainedSourceOutcome(row);
+      if (retainedOutcome && input.sourceOutcome && canonical(retainedOutcome) !== canonical(input.sourceOutcome))
+        deny("historical_source_outcome_immutable", "Retained historical payment evidence cannot be changed or cleared by reimport");
       if (key && row.obligationKey && key !== row.obligationKey)
         deny(
           "obligation_identity_changed",
@@ -187,6 +192,7 @@ export const ingest = mutation({
       }
       await ctx.db.patch(row._id, {
         intake: storedIntake(input),
+        ...(input.sourceOutcome ? {sourceOutcome: input.sourceOutcome} : {}),
         currentRevision: row.currentRevision + 1,
         snapshotHash: newHash,
         primaryHash,
@@ -229,6 +235,9 @@ export const ingest = mutation({
             "explicit_revision_required",
             "Existing invoice/source has different facts; import an explicit revision, preserving its history",
           );
+        const retainedOutcome = retainedSourceOutcome(row);
+        if (input.sourceOutcome && canonical(retainedOutcome ?? null) !== canonical(input.sourceOutcome))
+          deny("historical_source_outcome_update_required", "Record historical source outcome explicitly before reimporting an existing case");
         duplicate = true;
       } else {
         if (input.candidate && input.candidate.revision !== 1)
@@ -244,6 +253,7 @@ export const ingest = mutation({
           currentRevision: 1,
           snapshotHash: newHash,
           intake: storedIntake(input),
+          ...(input.sourceOutcome ? {sourceOutcome: input.sourceOutcome} : {}),
           createdBy: seat.seatId,
           documentStatus:
             input.extraction.status === "failed" ? "failed" : "review_required",
@@ -294,6 +304,27 @@ export const ingest = mutation({
       result,
     );
     return result;
+  },
+});
+/** A monotonic safety annotation: retains source history without inventing a local settlement. */
+export const recordSourceOutcome = mutation({
+  args: {...agent, caseId:v.string(), sourceOutcome:v.any()},
+  handler: async (ctx,args) => {
+    const {seat}=await requirePaymentSeat(ctx,args,["ap_clerk"]);
+    const row=await caseRow(ctx,args.scope,args.caseId);
+    const parsed=sourceOutcomeSchema.safeParse(args.sourceOutcome);
+    if(!parsed.success) deny("invalid_source_outcome",parsed.error.message);
+    const outcome=parsed.data, prior=retainedSourceOutcome(row);
+    if(prior) {
+      if(canonical(prior)!==canonical(outcome)) deny("historical_source_outcome_immutable","Retained historical payment evidence cannot be changed or cleared");
+      return {caseId:row._id,sourceOutcome:prior,replayed:true};
+    }
+    // Validate amount and every evidence binding against this case's current originals.
+    const checked=intakeSchema.safeParse({...row.intake,sourceOutcome:outcome});
+    if(!checked.success) deny("invalid_source_outcome",checked.error.message);
+    await ctx.db.patch(row._id,{sourceOutcome:outcome,updatedAt:Date.now()});
+    await auditDemo(ctx,args.scope,seat.seatId,"ap_historical_source_paid",{caseId:row._id,sourceOutcome:outcome});
+    return {caseId:row._id,sourceOutcome:outcome,replayed:false};
   },
 });
 export const list = query({
@@ -461,6 +492,7 @@ export const approveBill = mutation({
         decisionId: string;
       };
     const row = await caseRow(ctx, args.scope, request.caseId);
+    assertSourcePayable(row);
     if (row.domainApprovalId || await activeBusinessPolicy(ctx, args.scope))
       deny("business_route_required", "Configured business governance requires the explicit amount/allocation and sequential group approval route");
     const input = currentReview(row, request);

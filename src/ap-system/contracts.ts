@@ -85,10 +85,17 @@ export const purchasingEvidenceSchema = z.object({
   lines:z.array(z.object({lineId:id, sku:id, quantity:quantitySchema, unitPriceCents:centsSchema.nullable(), invoiceLineId:id})),
   acceptedBy:z.string().nullable(), acceptedAt:z.string().nullable(),
 });
+/** Additive v1 metadata: source-system history is never a new payment in this run. */
+export const sourceOutcomeSchema = z.object({
+  status:z.literal("historical_paid"), amountCents:centsSchema,
+  currency:z.string().regex(/^[A-Z]{3}$/), sourceReference:id,
+  evidence:z.array(sourceBindingSchema).min(1), reason:id,
+});
+export type SourceOutcome = z.infer<typeof sourceOutcomeSchema>;
 export const intakeSchema = z.object({
   contractVersion:z.literal(AP_CONTRACT_VERSION), idempotencyKey:id, documents:z.array(sourceDocumentSchema).min(1),
   candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), purchasingEvidence:z.array(purchasingEvidenceSchema),
-  explicitRevisionOf:z.string().nullable(),
+  explicitRevisionOf:z.string().nullable(), sourceOutcome:sourceOutcomeSchema.optional(),
 }).superRefine((input,ctx) => {
   const fail=(message:string)=>ctx.addIssue({code:"custom",message});
   if ((input.extraction.status === "complete") !== (input.candidate !== null)) fail("Complete extraction requires a candidate; incomplete extraction must not invent one");
@@ -96,6 +103,12 @@ export const intakeSchema = z.object({
   const key=(s:SourceBinding)=>`${s.sourceId}:${s.revision}:${s.sha256}`;
   const sources=new Map(input.documents.map(s=>[key(s),s]));
   if (sources.size !== input.documents.length) fail("Duplicate source binding");
+  if (input.sourceOutcome) {
+    if (input.sourceOutcome.evidence.some(e => !sources.has(key(e)))) fail("Historical source outcome must bind retained originals");
+    const primary=input.documents.find(d => d.kind === "invoice");
+    if (!primary || !input.sourceOutcome.evidence.some(e => key(e) === key(primary))) fail("Historical source outcome must bind the current invoice original");
+    if (input.candidate && (input.sourceOutcome.amountCents !== input.candidate.totalCents || input.sourceOutcome.currency !== input.candidate.currency)) fail("Historical source outcome amount/currency must match the invoice");
+  }
   const candidateSources=new Set(input.candidate?.sources.map(key));
   for(const binding of input.candidate?.sources ?? []) if(!sources.has(key(binding))) fail("Candidate source is not an original document revision");
   const evidence=[...(input.candidate?.evidence ?? []),...input.extraction.evidence];
@@ -130,7 +143,7 @@ export const statesSchema = z.object({
   reconciliation:z.enum(["unmatched","matched","exception"]),
 });
 export const caseDetailSchema = z.object({
-  domain:domainCaseProjectionSchema.optional(),
+  domain:domainCaseProjectionSchema.optional(), sourceOutcome:sourceOutcomeSchema.optional(),
   contractVersion:z.literal(AP_CONTRACT_VERSION), caseId:id, runId:id, organizationId:id,
   revision:z.number().int().positive(), candidate:candidateSchema.nullable(), extraction:z.object({status:z.enum(["complete","incomplete","failed"]), evidence:z.array(fieldEvidenceSchema), reasons:z.array(id)}), sources:z.array(sourceDocumentSchema),
   currentSourceBindings:z.array(sourceBindingSchema).min(1),

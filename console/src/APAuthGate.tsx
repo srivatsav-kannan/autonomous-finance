@@ -1,3 +1,4 @@
+import { apRequestPath, isUnifiedApexRuntime } from "./apRuntime";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Auth0Client } from "@auth0/auth0-spa-js";
 import { z } from "zod";
@@ -19,12 +20,12 @@ const simulationConfig=z.object({mode:z.literal("local_simulation"),actors:z.arr
 type Boot = { mode: "local" } | { mode: "auth0"; client: Auth0Client } | z.infer<typeof simulationConfig>;
 let boot: Promise<Boot> | undefined;
 async function initialize(): Promise<Boot> {
-  const response = await fetch("/api/ap-system/runtime", { credentials: "same-origin", redirect: "error", signal: AbortSignal.timeout(10_000) });
+  const response = await fetch(apRequestPath("/api/ap-system/runtime"), { credentials: "same-origin", redirect: "error", signal: AbortSignal.timeout(10_000) });
   if (!response.ok) throw new Error("AP service unavailable. Start the configured gateway, then retry.");
   const runtime = await response.json();
   if (!runtime.auth && runtime.identityMode === "simulated_human") return { mode: "local" };
   if(runtime.auth?.mode==="local_simulation"){
-    if(!isLocalSimulationOrigin(runtime,location.origin,import.meta.env.DEV))throw new Error("Local simulation must use its isolated development workspace.");
+    if(!isUnifiedApexRuntime(runtime) && !isLocalSimulationOrigin(runtime,location.origin,import.meta.env.DEV))throw new Error("Local simulation must use its isolated development workspace.");
     return simulationConfig.parse(runtime.auth);
   }
   const config = authConfig.safeParse(runtime.auth);

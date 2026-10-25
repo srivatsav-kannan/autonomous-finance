@@ -16,3 +16,10 @@
 .ap-local-simulation p { margin-top: var(--space-xs); font-size: var(--text-sm); max-width: 75ch; }
 .ap-local-simulation label { display: grid; gap: var(--space-xs); max-width: 28rem; }
 .ap-local-simulation select { width: 100%; }
+
+@media (min-width: 1000px) { .ap-local-simulation { grid-template-columns: minmax(0,1fr) minmax(240px,0.6fr); align-items: center; gap: var(--space-sm) var(--space-lg); } .ap-local-simulation > .aps-caption { grid-column: 1 / -1; } }
+
+.ap-local-simulation .ap-acting-as { margin-top: 0; }
+.ap-local-simulation summary { min-height: 32px; }
+
+.ap-local-simulation strong { font-weight: 600; }

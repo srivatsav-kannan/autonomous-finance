@@ -80,13 +80,14 @@ describe("AP case workspace evidence boundaries",()=>{
     f.extraction.evidence=f.candidate!.evidence;
     const html=renderToStaticMarkup(<APSystemEvidence detail={f}/>);
     expect(paths).toHaveLength(35);
-    expect(html.match(/<option /g)).toHaveLength(35);
+    expect(html.match(/<option /g)).toHaveLength(36);
     expect(html).toContain('type="search"');
     expect(html).toContain('role="region" aria-label="Field search results" tabindex="0"');
     expect(html).toContain("Line 4 / Unit price");
     expect(html).toContain("Derived location");
     expect(html).toContain("Location unresolved");
-    expect(html).toContain("Selected source evidence");
+    expect(html).toContain("Stored original document");
+    expect(html).toContain("Field citation");
   });
   it("maps rotated original regions into display coordinates without merging lines",()=>{
     const frame={width:600,height:800,units:"pixel" as const,origin:"top_left" as const,rotation:90 as const,transform:[0,1,-1,0,800,0] as [number,number,number,number,number,number]};

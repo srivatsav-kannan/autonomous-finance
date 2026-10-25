@@ -1,3 +1,4 @@
+import { assertSourcePayable } from "./sourceOutcome";
 import type { QueryCtx } from "../../_generated/server";
 import type { Doc, Id } from "../../_generated/dataModel";
 import type { BankScope } from "../../../src/integrations/contracts";
@@ -361,6 +362,7 @@ export async function resolveAPBusinessPaymentAuthority(
         q.eq("scope.runId", scope.runId).eq("billId", billId),
       )
       .unique();
+    if (row) assertSourcePayable(row);
     if (!row?.domainApprovalId) {
       legacy = true;
       continue;

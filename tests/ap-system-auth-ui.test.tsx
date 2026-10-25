@@ -22,7 +22,7 @@ describe("Auth0 AP gate and request lifetime",()=>{
   const html=renderToStaticMarkup(<APLocalSimulationGate actors={actors}><p>private prior actor case</p></APLocalSimulationGate>);
   expect(html).toContain("Local multi-human simulation / FakeBank");expect(html).toContain("Choose a simulated actor");expect(html).not.toContain("private prior actor case");expect(html).not.toContain("textarea");
   const ready=renderToStaticMarkup(<APLocalSimulationBanner actors={actors} selected="owner-b" busy={true} state="ready" onSelect={()=>{}} onRetry={()=>{}}/>);
-  expect(ready).toContain("Acting as Simulated owner B");expect(ready).toContain("<select disabled");expect(ready).toContain("not an Auth0 login");
+  expect(ready).toContain("Acting as Simulated owner B");expect(ready).toMatch(/<select[^>]*disabled/);expect(ready).toContain("not an Auth0 login");
  });
  it("keeps public simulated selection in memory and rejects an old actor response after switching",async()=>{
   let finish!:(value:Response)=>void;const fetcher=vi.fn((_url:string,_init?:RequestInit)=>new Promise<Response>(resolve=>{finish=resolve;}));vi.stubGlobal("fetch",fetcher);

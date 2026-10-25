@@ -45,6 +45,7 @@ export interface APWorkspaceService {
  operationalTimings?():Promise<OperationalTimings>;
  supplierContacts?:SupplierContactOperations;
  physicalLines?:PhysicalLineOperations;
+ demoProcess?: {start():Promise<unknown>;status():Promise<unknown>};
  runtime():unknown;
 }
 export type APExternalAuthentication = {
@@ -107,6 +108,11 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
     if(req.method!=="POST"||url.pathname!==PREFIX+"/logout")if(!context.approved)throw new APHttpError("owner_binding_required",403,"Your signed-in identity has not been approved for this AP workspace.");
    }
    if(req.method!=="GET"&&(!origin||!origins.has(origin)||!sessionValid(req,subject)||req.headers["x-ap-system-session"]!=="1"))throw new APHttpError("session_required",403,"Open the AP workspace before making changes.");
+   if(url.pathname===PREFIX+"/demo/process") {
+    if(!service.demoProcess)throw new APHttpError("not_found",404,"Live APEX processing is not enabled in this workspace.");
+    if(req.method==="GET")return send(res,await service.demoProcess.status());
+    if(req.method==="POST"){z.object({idempotencyKey:z.string().min(1).max(200)}).strict().parse(await json(req));return send(res,await service.demoProcess.start(),202);}
+   }
    if(req.method==="GET"&&url.pathname===PREFIX+"/cases"){
     const cases=await service.list();
     let value=session;
