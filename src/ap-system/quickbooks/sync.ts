@@ -155,7 +155,7 @@ export class QuickBooksDispatcher {
     readonly mappings: Mappings,
     readonly journal: SyncJournal,
   ) {}
-  async run(request: ExportRequest, mode: "dry-run" | "submit" = "dry-run") {
+  async run(request: ExportRequest, mode: "dry-run" | "submit" = "dry-run", approval?: { expectedPlanHash: string }) {
     const e = await this.load(request);
     const d = assertExport(e, request);
     validateMappings(this.mappings, this.journal.client.oauth.config.realmId);
@@ -165,6 +165,7 @@ export class QuickBooksDispatcher {
       if (!bill) throw new QboError("external_bill_required");
       plan = paymentPlan(e, this.mappings, bill);
     }
+    if (approval && hash(plan) !== approval.expectedPlanHash) throw new QboError("preview_changed_before_write");
     if (mode === "dry-run") return { mode, plan };
     if (
       Date.now() - e.exportedAt > 30000 ||
