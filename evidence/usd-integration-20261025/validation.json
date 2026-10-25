@@ -1,0 +1,42 @@
+{
+  "sourceCommit": "ca62ed9eff920bad7052fb5d1c91500845f1c232",
+  "scope": "local implementation only",
+  "node": "26.8.1",
+  "tests": {
+    "passed": 1994,
+    "failed": 0,
+    "skipped": 4,
+    "total": 1998,
+    "command": "node node_modules/vitest/vitest.mjs run --maxWorkers=4",
+    "skips": []
+  },
+  "checks": {
+    "typecheck": "passed",
+    "typecheck:backend": "passed",
+    "typecheck:tests": "passed",
+    "build:console": "passed",
+    "design:check": "0 FAIL, 0 WARN"
+  },
+  "visualChecks": {
+    "kind": "isolated synthetic component preview using actual governance components",
+    "widths": [
+      390,
+      1440
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "editAddRemovePaymentBands": "passed",
+    "horizontalOverflow": false,
+    "browserErrors": [],
+    "renderedDesignLint": "Existing governance textarea edge contrast flagged; full rendered audit is not clean."
+  },
+  "providers": {
+    "liveModel": false,
+    "increase": false,
+    "quickbooks": false,
+    "auth0": false
+  },
+  "modelTests": "injected model through real typed tools and Convex test backend; no inference claim"
+}
