@@ -76,3 +76,5 @@ Required config is validated before opening the gateway or writing source files.
 ## Acceptance still required
 
 The automated suite uses explicit mocks and `convex-test` identities; it does not prove a real Auth0 signature, JWKS retrieval, real tenant audience/expiry behavior or bank execution. Before external acceptance, use the actual configured tenant to check login/callback/logout, approved and unapproved accounts, cold direct-link loading, expired/wrong-issuer/wrong-audience token rejection by Convex, original/raster access and a user-click authorization of the same case. Keep tokens private throughout. Record actual bank observations separately from C2 UI/transport evidence.
+
+For governed policy proposals, optionally configure distinct `AP_SANDBOX_CONTROLLER_SEAT_ID` and `AP_SANDBOX_CONTROLLER_SEAT_TOKEN` values privately for an existing scoped controller agent. Both are required together and must differ from AP and payments credentials. Their absence disables policy proposal without disabling human reads or existing approved case operations. No role, seat or allowlist entry is created automatically.

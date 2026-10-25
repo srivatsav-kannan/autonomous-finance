@@ -1,5 +1,5 @@
 import type { APCaseDetail, CoordinateFrame, EvidenceRegion, FieldEvidence, ReviewRequest, SourceBinding, SourceDocument } from "../../src/ap-system/contracts";
-export const apMoney = (value: number | null) => value === null ? "Not established" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value / 100);
+export const apMoney = (value: number | null) => value === null || !Number.isFinite(value) ? "Not established" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value / 100);
 export const apLabel = (value: string) => value.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
 const fieldNames: Record<string, string> = { extractedSupplierName: "Supplier name", totalCents: "Total amount", subtotalCents: "Subtotal", sku: "SKU" };
 export function apFieldLabel(path: string): string {

@@ -208,3 +208,18 @@
  .aps-run-table td { border: 0; padding: var(--space-sm) 0; }
  .aps-run-table td::before { content: attr(data-label); display: block; color: var(--muted); font-size: var(--text-sm); }
 }
+
+.aps-form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--space-md); margin-block: var(--space-md); }
+.aps-form-grid label, .aps-business-editor > label { display: grid; gap: var(--space-xs); min-width: 0; }
+.aps-form-grid :is(input,select,textarea), .aps-business-editor > label :is(input,select,textarea) { width: 100%; min-width: 0; }
+.aps-business-editor, .aps-evidence-picker { border: 0; padding: 0; margin-block: var(--space-md); min-width: 0; }
+.aps-business-editor fieldset { border: 1px solid var(--line); margin-block: var(--space-md); min-width: 0; }
+.aps-business-editor details, .aps-allocations > div { border-bottom: 1px solid var(--line); padding-block: var(--space-sm); }
+.aps-evidence-picker { max-height: 18rem; overflow: auto; padding: var(--space-xs); }
+.aps-evidence-picker .aps-check span { min-width: 0; overflow-wrap: anywhere; }
+.aps-evidence-picker small { display: block; }
+.aps-json-review { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 28rem; overflow: auto; background: var(--bg); padding: var(--space-md); font: var(--text-xs)/1.5 var(--font-outlier); }
+.aps-approval-route li { margin-block: var(--space-md); }
+.aps-receipt-claim { margin-block: var(--space-sm); }
+.aps-related { margin-top: var(--space-sm); }
+@media(max-width:760px) { .aps-form-grid { grid-template-columns: minmax(0,1fr); } }

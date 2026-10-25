@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { APSystemWorkspace, APOperationalMetrics, APCaseStatus, APActions, APMatching, APAccounting } from "../console/src/APSystemWorkspace";
+import { acceptanceDraft, APAcceptanceSummary, APSystemBusiness } from "../console/src/APSystemBusiness";
 import { APPaymentRunReview, runEligible } from "../console/src/APSystemRuns";
 import type { PaymentRunDetail } from "../src/ap-system/workspace-operations";
 import { APSystemEvidence, EvidencePage } from "../console/src/APSystemEvidence";
@@ -34,6 +35,15 @@ describe("AP case workspace evidence boundaries",()=>{
     const unknown={...c,caseId:"unknown",amounts:{...c.amounts,outstandingCents:null}};
     const html=renderToStaticMarkup(<APOperationalMetrics cases={[c,duplicate,unknown]}/>);
     expect(html).toContain("$100.00");expect(html).toContain("1 approved case amount unavailable");expect(html).not.toContain("$200.00");
+  });
+  it("keeps governed business approval separate and requires explicit receipt claims",()=>{
+    const c=apUIFixture(),draft=acceptanceDraft(c);
+    expect(draft.lines.map(l=>l.quantity)).toEqual(["2","1"]);expect(draft.lines.every(l=>l.agreement===null&&l.receipts.length===0&&l.taxCode==="")).toBe(true);
+    draft.lines[0]!.quantity="1";draft.lines[0]!.netCents=3850;expect(c.candidate!.lines[0]!.amountCents).toBe(7700);
+    c.domain={policyVersion:"explicit-v1",supplierId:c.candidate!.supplierId,supplierRevision:1,approvalId:"proposal",approvalHash:c.snapshotHash,approvalStatus:"pending",route:[{groupId:"controller",quorum:2,escalateAfterMs:60000,escalationGroupId:null}],stage:0,stageStartedAt:c.createdAt,votes:[],acceptance:draft,credit:null,creditLinks:[],recognizedCents:0,appliedCreditCents:0,availableSupplierCreditCents:0,cashSettledCents:0};
+    const html=renderToStaticMarkup(<APActions detail={c} busy={false} onBusy={()=>{}} onChanged={()=>{}}/>)+renderToStaticMarkup(<APSystemBusiness detail={c} cases={[c]} busy={false} onBusy={()=>{}} onChanged={()=>{}} onOpenCase={()=>{}}/>);
+    expect(html).not.toContain(">Approve bill");expect(html).toContain("2 distinct approvals");expect(html).toContain("Approve current business stage");expect(html).toContain(c.snapshotHash);
+    const summary=renderToStaticMarkup(<APAcceptanceSummary acceptance={draft}/>);expect(summary).toContain("$38.50");expect(summary).toContain("1 accepted");
   });
   it("names source fields for readers and formats cents without altering raw citations",()=>{
     expect(apFieldLabel("totalCents")).toBe("Total amount");

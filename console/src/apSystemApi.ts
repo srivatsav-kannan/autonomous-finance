@@ -1,3 +1,4 @@
+import { domainOperationSchemas, type DomainOperation, type DomainInputs, type GovernanceView, type BusinessProposal } from "../../src/ap-system/domain-operations";
 import { caseDetailSchema, type APCaseDetail, type BillApprovalRequest, type ReviewRequest, type SourceBinding, type SourceDocument } from "../../src/ap-system/contracts";
 import type { PaymentApproval, PaymentSnapshot } from "../../src/payments/contracts";
 import type { BankTransaction, TransferObservation } from "../../src/integrations/contracts";
@@ -64,6 +65,9 @@ export function validatePaymentRequest(input: APPaymentRequest) {
   return input;
 }
 export const apSystemApi = {
+  governance: (signal?:AbortSignal) => request<GovernanceView>("/business",undefined,signal),
+  businessProposals: (signal?:AbortSignal) => request<BusinessProposal[]>("/business/proposals",undefined,signal),
+  business: <K extends DomainOperation>(operation:K,input:DomainInputs[K]) => request<unknown>(`/business/${operation}`,domainOperationSchemas[operation].parse(input)),
   whoami: () => request<{ tokenIdentifier: string; issuer: string; approved: boolean }>("/whoami"),
   logout: closeAPSession,
   list: async (signal?: AbortSignal) => {

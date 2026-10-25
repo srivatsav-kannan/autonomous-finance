@@ -5,12 +5,13 @@ import {createAPCasePayments} from "./payment";
 import {caseDetailSchema,intakeSchema,type APIntake,type SourceDocument} from "./contracts";
 import { createQBOBridge } from "./quickbooks/runtime";
 import { APHttpError } from "./server";
+import { domainOperationSchemas, type DomainOperations } from "./domain-operations";
 import type { PaymentRunOperations } from "./workspace-operations";
 import type {APWorkspaceService} from "./server";
 /** Per-run composition with a request-owned human client in external mode. Agent credentials never reach the browser or human client. */
 export function createAPWorkspaceService(options:{
  agent:ConvexHttpClient;human:ConvexHttpClient;scope:BankScope;
- apCredential:{seatId:string;token:string};paymentsCredential:{seatId:string;token:string};
+ apCredential:{seatId:string;token:string};paymentsCredential:{seatId:string;token:string};controllerCredential?:{seatId:string;token:string};
  parseUploads:APWorkspaceService["parseUploads"];renderPage?:APWorkspaceService["renderPage"];runtime:()=>unknown;
 }):APWorkspaceService{
  const{agent,human,scope}=options;const payments=createAPCasePayments(agent,human,scope,options.paymentsCredential);
@@ -23,8 +24,19 @@ export function createAPWorkspaceService(options:{
   authorize:input=>human.mutation(makeFunctionReference<"mutation">("apPaymentRuns:authorize"),{scope,...input}),
   cancel:input=>human.mutation(makeFunctionReference<"mutation">("apPaymentRuns:cancel"),{scope,...input}),
  };
+ const domain:DomainOperations={
+  view:async()=>({...await human.query(makeFunctionReference<"query">("apBusinessConfig:view"),{scope}),controllerProposalAvailable:!!options.controllerCredential}),
+  proposals:()=>human.query(makeFunctionReference<"query">("apBusiness:proposals"),{scope}),
+  execute:async(operation,input)=>{
+   const parsed=domainOperationSchemas[operation].parse(input);
+   const credential=operation==="proposePolicy"?options.controllerCredential:operation==="propose"||operation==="proposeSupplier"?options.apCredential:undefined;
+   if(operation==="proposePolicy"&&!credential)throw new APHttpError("controller_unavailable",503,"A separate scoped controller agent must be configured before proposing policy.");
+   const business=["propose","vote","applyCredits"].includes(operation),nested=operation==="propose"||operation==="vote";
+   return (credential?agent:human).mutation(makeFunctionReference<"mutation">(`${business?"apBusiness":"apBusinessConfig"}:${operation}`),{scope,...(credential??{}),...(nested?{input:parsed}:parsed)});
+  },
+ };
  return{
-  paymentRuns,
+  paymentRuns,domain,
   accounting:{status:async caseId=>({...await qbo.status(caseId),externalWritesAllowed}),preview:qbo.preview,submit:(request,hash)=>{requireExternal();return qbo.submit(request,hash);},verify:request=>{requireExternal();return qbo.verify(request);}},
   async list(){const rows=await human.query(makeFunctionReference<"query">("apCases:list"),{scope});return caseDetailSchema.array().parse(rows);},
   async detail(caseId){return caseDetailSchema.parse(await human.query(makeFunctionReference<"query">("apCases:detail"),{scope,caseId}));},

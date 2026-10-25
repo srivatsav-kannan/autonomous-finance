@@ -7,6 +7,7 @@ import {ConvexError} from "convex/values";
 import {billApprovalRequestSchema,reviewRequestSchema,type APCaseDetail,type APIntake,type SourceDocument,type CoordinateFrame} from "./contracts";
 
 import type { PaymentRunOperations, AccountingOperations } from "./workspace-operations";
+import { domainOperationSchemas, type DomainOperations, type DomainOperation } from "./domain-operations";
 import { QboError } from "./quickbooks/private-store";
 const PREFIX="/api/ap-system";
 const MAX_ORIGINAL_BYTES=8*1024*1024;
@@ -28,6 +29,7 @@ export interface APWorkspaceService {
  renderPage?(source:SourceDocument,page:number):Promise<{bytes:Uint8Array;mimeType:"image/png";frame:CoordinateFrame}>;
  paymentRuns?:PaymentRunOperations;
  accounting?:AccountingOperations;
+ domain?:DomainOperations;
  runtime():unknown;
 }
 export type APExternalAuthentication = {
@@ -105,6 +107,18 @@ export function createAPSystemServer(baseService:Pick<APWorkspaceService,"runtim
    }
    // A browser cookie alone never authenticates an external human.
    if(req.method==="GET"&&!sessionValid(req,subject))throw new APHttpError("session_required",403,"Open the AP workspace before reading source or case details.");
+   const domain=/^\/api\/ap-system\/business(?:\/([a-zA-Z]+))?$/.exec(url.pathname);
+   if(domain){
+    if(!service.domain)throw new APHttpError("capability_unavailable",503,"Business governance is not available on this AP service.");
+    if(req.method==="GET"&&!domain[1])return send(res,await service.domain.view());
+    if(req.method==="GET"&&domain[1]==="proposals")return send(res,await service.domain.proposals());
+    if(req.method==="POST"&&domain[1]&&Object.hasOwn(domainOperationSchemas,domain[1])){
+     const operation=domain[1] as DomainOperation, data=await json(req);
+     // Identity, scope and agent credentials are server-owned for every operation.
+     if(data&&typeof data==="object"&&["actor","subject","scope","seatId","token","approvedBy"].some(k=>k in data))throw new APHttpError("invalid_request",400,"Caller identity and scope cannot be supplied in business requests.");
+     return send(res,await service.domain.execute(operation,domainOperationSchemas[operation].parse(data)));
+    }
+   }
    const runs=/^\/api\/ap-system\/payment-runs(?:\/([^/]+)(?:\/(authorize|cancel))?)?$/.exec(url.pathname);
    if(runs){
     if(!service.paymentRuns)throw new APHttpError("capability_unavailable",503,"Payment runs are not available on this AP service.");

@@ -1,6 +1,6 @@
 # QuickBooks Online US sandbox — runnable C4 operator setup
 
-Status on 2026-10-25: connector and independent protocol/backend tests implemented; **no Intuit account, application keys, OAuth grant or external record exists for this task**. Live OAuth, company reads, Bill/VendorCredit/BillPayment writes and external reconciliation are **NOT_RUN**, pending the account owner. Mock success is not sandbox acceptance. Increase sandbox remains the payment rail; this connector only records accounting after independent settlement evidence.
+Status on 2026-10-25: connector and independent protocol/backend tests are implemented. The operator has configured Development credentials and selected a US sandbox privately; configuration presence is not proof of valid credentials or consent. Master reached the real company consent page, with the owner’s Connect action still pending at this checkpoint. Live OAuth completion, company reads, Bill/VendorCredit/BillPayment writes and external reconciliation remain separately evidenced acceptance steps. Mock success is not sandbox acceptance. Increase sandbox remains the payment rail; this connector only records accounting after independent settlement evidence.
 
 ## 1. Register and select the sandbox
 
@@ -29,7 +29,7 @@ From the integration checkout, after dependencies are installed:
 node --env-file=/Users/junjiexiong/Desktop/calhacks/var/ap-environment/providers.env --import tsx scripts/ap-system/quickbooks-callback.ts
 ```
 
-Open `http://localhost:8824/`, select **Connect sandbox**, sign in yourself and grant the selected company access. The callback listens only on 127.0.0.1:8824; Host, Origin, session cookie, CSRF token and one-time OAuth state are checked. Use `localhost` in the browser, matching the registered redirect exactly. State lasts ten minutes. The callback consumes state before exchanging the code and checks the configured realm. It redirects away from callback query parameters; no third-party assets or code/token logging are used.
+Open `http://localhost:8824/`, select **Connect sandbox**, then **Continue to Intuit authorization**, sign in yourself and grant the selected company access. The callback listens only on 127.0.0.1:8824; Host, Origin, session cookie, CSRF token and one-time OAuth state are checked. Use `localhost` in the browser, matching the registered redirect exactly. State lasts ten minutes. The callback consumes state before exchanging the code and checks the configured realm. It redirects away from callback query parameters; no third-party assets or code/token logging are used.
 
 The requested scope is accounting only. Access tokens are refreshed from the most recently saved refresh token. Rotation is serialized across processes and persisted atomically with fsync. A crash/timeout during rotation blocks reuse and requires a new normal grant. Revoked/expired grants also require reconnection. This conservative policy avoids guessing whether a refresh token was consumed. A stale lock is not automatically stolen: stop all connector processes, verify the recorded operation/token status, and remove only the corresponding lock directory after confirming no process owns it.
 

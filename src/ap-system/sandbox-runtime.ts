@@ -24,9 +24,11 @@ export function parseAPSandboxConfig(env:Record<string,string|undefined>,root=pr
  const apCredential={seatId:required(env,"AP_SANDBOX_AP_SEAT_ID"),token:required(env,"AP_SANDBOX_AP_SEAT_TOKEN")};
  const paymentsCredential={seatId:required(env,"AP_SANDBOX_PAYMENTS_SEAT_ID"),token:required(env,"AP_SANDBOX_PAYMENTS_SEAT_TOKEN")};
  if(apCredential.seatId===paymentsCredential.seatId||apCredential.token===paymentsCredential.token)throw new Error("AP intake and payments preparation require distinct scoped agent credentials.");
+ const controllerCredential=env.AP_SANDBOX_CONTROLLER_SEAT_ID||env.AP_SANDBOX_CONTROLLER_SEAT_TOKEN?{seatId:required(env,"AP_SANDBOX_CONTROLLER_SEAT_ID"),token:required(env,"AP_SANDBOX_CONTROLLER_SEAT_TOKEN")}:undefined;
+ if(controllerCredential&&[apCredential,paymentsCredential].some(c=>c.seatId===controllerCredential.seatId||c.token===controllerCredential.token))throw new Error("Controller proposals require a distinct scoped controller credential.");
  const context=contextSchema.parse(JSON.parse(required(env,"AP_SANDBOX_TRUSTED_CONTEXT")));
  const directory=path.join(root,"var","auth0-sandbox",scope.runId);
- return {auth,convexUrl,scope,apCredential,paymentsCredential,context,directory,storageRoot:path.join(directory,"sources")};
+ return {auth,convexUrl,scope,apCredential,paymentsCredential,controllerCredential,context,directory,storageRoot:path.join(directory,"sources")};
 }
 export function createAPSandboxRuntime(config:ReturnType<typeof parseAPSandboxConfig>,env:Record<string,string|undefined>) {
  // This client carries agent credentials only as explicit mutation arguments. Never a human/admin token.
