@@ -1,0 +1,201 @@
+{
+  "version": "ap97-i2-live-v1",
+  "checkedAt": "2026-10-25T10:00:57.767Z",
+  "code": "4ff9be5",
+  "runId": "ap97-b3-live-20261025",
+  "caseId": "k175gds0dypbgeknejs2henw5h8gysw8",
+  "identityMode": "five_distinct_simulated_humans",
+  "provider": "FakeBank local",
+  "practitionerReview": "pending",
+  "sourceChecks": [
+    {
+      "sourceId": "source-a6c745ac1f33d32ab142f8da420ba82a",
+      "revision": 1,
+      "sha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83",
+      "bytes": 2869
+    },
+    {
+      "sourceId": "source-180bd875e03024fafe18732710e829f4",
+      "revision": 1,
+      "sha256": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7",
+      "bytes": 3022
+    },
+    {
+      "sourceId": "source-a585c8f5e45a2ff962e94b56280d35ce",
+      "revision": 1,
+      "sha256": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2",
+      "bytes": 2908
+    },
+    {
+      "sourceId": "source-63539752792e6afbdd2fcecc4444a371",
+      "revision": 1,
+      "sha256": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883",
+      "bytes": 3022
+    }
+  ],
+  "amounts": {
+    "invoicedCents": 67860,
+    "acceptedCents": 28560,
+    "disputedCents": 39300,
+    "creditedCents": 0,
+    "instructedCents": 10000,
+    "settledCents": 10000,
+    "outstandingCents": 18560
+  },
+  "states": {
+    "document": "reviewed",
+    "business": "approved",
+    "accounting": "recognized",
+    "authorization": "authorized",
+    "execution": "settled",
+    "reconciliation": "matched"
+  },
+  "links": {
+    "billId": "n577wxmcdgn3t9ygpa1yd4jgc18gzzpz",
+    "billVersion": 2,
+    "recognitionJournalId": "r979g69xn1zq8a6yfryaybst3s8gzvw1",
+    "paymentVersionIds": [
+      "pd7c2tkw1kr2wfrj75924fzq2x8gyzcz",
+      "pd74q7njr5bqjzmy5a72jagtg58gykwp",
+      "pd7c8g9q8na2hgnj9wdkaygb4x8gy7fv"
+    ],
+    "commandIds": [
+      "n97cq3gmy756j50aawr2j8w6n98gy2ga",
+      "n9717vva268cpam8rb102tn2p18gy8x0"
+    ],
+    "bankTransactionIds": [
+      "txn_c2e7742b05dbb4841839d6a8"
+    ],
+    "settlementJournalIds": [
+      "r9749h5e6zshqqz13mmywdtwqn8gzbrf"
+    ],
+    "externalAccountingIds": [],
+    "duplicateOfCaseId": null
+  },
+  "journals": [
+    {
+      "entryId": "r979g69xn1zq8a6yfryaybst3s8gzvw1",
+      "kind": "recognition",
+      "date": "2026-10-19",
+      "lines": [
+        {
+          "account": "5000",
+          "debit": 7700,
+          "credit": 0
+        },
+        {
+          "account": "5000",
+          "debit": 8550,
+          "credit": 0
+        },
+        {
+          "account": "5000",
+          "debit": 6890,
+          "credit": 0
+        },
+        {
+          "account": "5000",
+          "debit": 5420,
+          "credit": 0
+        },
+        {
+          "account": "2000",
+          "debit": 0,
+          "credit": 28560
+        }
+      ],
+      "bankTransactionId": null
+    },
+    {
+      "entryId": "r9749h5e6zshqqz13mmywdtwqn8gzbrf",
+      "kind": "settlement",
+      "date": "2026-10-25",
+      "lines": [
+        {
+          "account": "2000",
+          "debit": 10000,
+          "credit": 0
+        },
+        {
+          "account": "1000",
+          "debit": 0,
+          "credit": 10000
+        }
+      ],
+      "bankTransactionId": "txn_c2e7742b05dbb4841839d6a8"
+    }
+  ],
+  "approval": {
+    "policyVersion": "ap97-b3-quorum2-finance-v1",
+    "supplierId": "golden-state-produce",
+    "supplierRevision": 1,
+    "approvalId": "jd77cpnwwck6dgqv3jzztxp3t58gzprf",
+    "approvalHash": "25e4fdc977830160afd31a5bc4931069281ca7706ebb12134e1cf991f5f15706",
+    "route": [
+      {
+        "groupId": "owner",
+        "quorum": 2,
+        "escalateAfterMs": 86400000,
+        "escalationGroupId": null
+      },
+      {
+        "groupId": "finance",
+        "quorum": 1,
+        "escalateAfterMs": 86400000,
+        "escalationGroupId": null
+      }
+    ],
+    "votes": [
+      {
+        "subject": "https://ap-demo.invalid|ap97-b3-owner-a",
+        "principal": "https://ap-demo.invalid|ap97-b3-owner-a",
+        "subjectSeatId": "ap97-b3-owner-a",
+        "principalSeatId": "ap97-b3-owner-a",
+        "groupId": "owner",
+        "stage": 0,
+        "at": 1792922146571,
+        "delegationId": null
+      },
+      {
+        "subject": "https://ap-demo.invalid|ap97-b3-owner-b",
+        "principal": "https://ap-demo.invalid|ap97-b3-owner-b",
+        "subjectSeatId": "ap97-b3-owner-b",
+        "principalSeatId": "ap97-b3-owner-b",
+        "groupId": "owner",
+        "stage": 0,
+        "at": 1792922187790,
+        "delegationId": null
+      },
+      {
+        "subject": "https://ap-demo.invalid|ap97-b3-finance",
+        "principal": "https://ap-demo.invalid|ap97-b3-finance",
+        "subjectSeatId": "ap97-b3-finance",
+        "principalSeatId": "ap97-b3-finance",
+        "groupId": "finance",
+        "stage": 1,
+        "at": 1792922207713,
+        "delegationId": null
+      }
+    ]
+  },
+  "scheduledBeforeDate": {
+    "checkedAt": "2026-10-25T09:57:46.837Z",
+    "transferCount": 0,
+    "postedDebitCount": 0,
+    "errors": []
+  },
+  "afterReplay": {
+    "checkedAt": "2026-10-25T09:59:10.080Z",
+    "transferCount": 1,
+    "postedDebitCount": 1,
+    "errors": [],
+    "calls": {
+      "listTransactions": 3,
+      "createTransfer": 1,
+      "getTransfer": 2,
+      "getTransaction": 2
+    }
+  },
+  "externalIncrease": "NOT_RUN",
+  "externalQBOAccountingTransactions": "NOT_RUN"
+}

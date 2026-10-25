@@ -1,0 +1,16 @@
+import { describe, expect, it } from "vitest";
+import { isLocalSimulationOrigin } from "../console/src/apLocalSimulationOrigin";
+const runtime = { identityMode: "simulated_human", runId: "ap97-i3-20261025", scope: { runId: "ap97-i3-20261025", provider: "fake", environment: "local", organizationId: "ap97-i3-synthetic-company", accountId: "ap97-i3-usd-operating" } };
+describe("isolated local rehearsal origin", () => {
+  it("retains the existing simulation origin and admits the exact I3 dev workspace", () => {
+    expect(isLocalSimulationOrigin(runtime, "http://127.0.0.1:5193", false)).toBe(true);
+    expect(isLocalSimulationOrigin(runtime, "http://127.0.0.1:5195", true)).toBe(true);
+  });
+  it("rejects production builds, external origins and the real Auth0 origin", () => {
+    expect(isLocalSimulationOrigin(runtime, "http://127.0.0.1:5195", false)).toBe(false);
+    for (const origin of ["http://127.0.0.1:5192", "http://localhost:5195", "https://127.0.0.1:5195", "https://example.com"]) expect(isLocalSimulationOrigin(runtime, origin, true)).toBe(false);
+  });
+  it("rejects external or mismatched identities and scopes", () => {
+    for (const bad of [null, {}, {...runtime, identityMode: "auth0"}, {...runtime, runId: "other"}, {...runtime, scope: undefined}, ...Object.entries({runId:"other",provider:"increase",environment:"sandbox",organizationId:"other",accountId:"other"}).map(([key,value])=>({...runtime,scope:{...runtime.scope,[key]:value}}))]) expect(isLocalSimulationOrigin(bad, "http://127.0.0.1:5195", true)).toBe(false);
+  });
+});

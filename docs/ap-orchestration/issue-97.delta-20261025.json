@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97",
+  "updated_at": "2026-10-25T11:00:45Z",
+  "frozen_sha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "current_body_sha256": "b735332785be8511595ee635426f33819b0caee48f2bce862815fbfe240884f4",
+  "decision": "Adopt compatible clarification of already-required source/exception/resume/recovery scope; preserve frozen baseline and explicit USD/desktop user decisions. No optional workshop learning platform adopted.",
+  "requirements": [
+    "Separate runtime inputs, evaluator-only expectations and actual observed evidence.",
+    "Freeze clean, missing-receipt/later-resolution and duplicate/correction variants; preserve arrival order and same-case history.",
+    "Distinguish delivery gates A\u2013F from workstream owners A\u2013D.",
+    "Verify bank acceptance, actual worker loss, same-operation recovery and polling settlement with exact counts."
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "accounts": [
+    {
+      "account": "5000",
+      "treatment": "expense"
+    },
+    {
+      "account": "1200",
+      "treatment": "inventory"
+    },
+    {
+      "account": "1300",
+      "treatment": "prepayment"
+    },
+    {
+      "account": "1500",
+      "treatment": "fixed_asset"
+    },
+    {
+      "account": "1180",
+      "treatment": "tax"
+    }
+  ],
+  "bands": [
+    {
+      "steps": [
+        {
+          "escalateAfterMs": 60000,
+          "escalationGroupId": "escalation",
+          "groupId": "owner",
+          "quorum": 1
+        }
+      ],
+      "upToCents": 5000
+    },
+    {
+      "steps": [
+        {
+          "escalateAfterMs": 60000,
+          "escalationGroupId": "escalation",
+          "groupId": "owner",
+          "quorum": 1
+        },
+        {
+          "escalateAfterMs": 60000,
+          "escalationGroupId": null,
+          "groupId": "finance",
+          "quorum": 1
+        }
+      ],
+      "upToCents": 9007199254740991
+    }
+  ],
+  "dimensions": {
+    "departments": [
+      "operations"
+    ],
+    "projects": [],
+    "scope": "cost_and_settlement",
+    "settlementDepartment": "homogeneous_approved_department",
+    "version": "ap-gl-dimensions-v1"
+  },
+  "groups": [
+    {
+      "groupId": "verify",
+      "members": [
+        "https://ap-demo.invalid|verifier"
+      ]
+    },
+    {
+      "groupId": "govern",
+      "members": [
+        "https://ap-demo.invalid|governor"
+      ]
+    },
+    {
+      "groupId": "owner",
+      "members": [
+        "https://ap-demo.invalid|owner",
+        "https://ap-demo.invalid|second"
+      ]
+    },
+    {
+      "groupId": "finance",
+      "members": [
+        "https://ap-demo.invalid|finance"
+      ]
+    },
+    {
+      "groupId": "escalation",
+      "members": [
+        "https://ap-demo.invalid|escalation"
+      ]
+    },
+    {
+      "groupId": "tax-review",
+      "members": [
+        "https://ap-demo.invalid|second"
+      ]
+    }
+  ],
+  "maxDelegationMs": 86400000,
+  "maxPriceVarianceBps": 0,
+  "stores": [
+    "sf-hayes-valley"
+  ],
+  "supplierApprovalGroup": "govern",
+  "supplierVerificationGroup": "verify",
+  "taxCodes": [
+    {
+      "code": "NONE",
+      "mode": "none"
+    },
+    {
+      "code": "COST",
+      "mode": "nonrecoverable"
+    },
+    {
+      "code": "TEST",
+      "mode": "recoverable",
+      "recovery": {
+        "adjustments": {
+          "attribution": "explicit_original_allocation",
+          "creditRounding": "half_up_cumulative_latest_adjustment",
+          "mode": "reviewed_remaining_tax"
+        },
+        "allowStatedAmount": true,
+        "approvalGroupId": "tax-review",
+        "effectiveFrom": "2026-01-01",
+        "effectiveThrough": "2026-12-31",
+        "jurisdiction": "SYNTHETIC-JURISDICTION",
+        "priceBases": [
+          "exclusive",
+          "inclusive"
+        ],
+        "rateBps": [
+          1000
+        ],
+        "receivableAccount": "1180",
+        "recoverableBps": 5000,
+        "rounding": {
+          "calculatedTax": "half_up_per_line",
+          "credit": "half_up_cumulative_original_proportion",
+          "partialAcceptance": "half_up_original_proportion",
+          "recovery": "half_up_original_proportion"
+        },
+        "version": "ap-recoverable-tax-v1"
+      }
+    }
+  ],
+  "varianceApprovalGroup": "finance",
+  "version": "test-tax-50-percent"
+}

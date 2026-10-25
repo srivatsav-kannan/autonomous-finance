@@ -1,5 +1,8 @@
+import { apAccountingTables } from "./apAccountingSchema";
+import { apPaymentRunTables } from "./apPaymentRunSchema";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { apSystemTables } from "./apSystemSchema";
 import { demoTables } from "./demoSchema";
 import { demoEvidenceTables } from "./demoEvidenceSchema";
 
@@ -18,6 +21,8 @@ export const lineValidator = v.object({
   dims: v.optional(
     v.object({
       store: v.optional(v.string()),
+      department: v.optional(v.string()),
+      project: v.optional(v.string()),
       vendor: v.optional(v.string()),
       channel: v.optional(v.string()),
       employee: v.optional(v.string()),
@@ -56,6 +61,9 @@ export const toolCallValidator = v.object({ tool: v.string(), summary: v.string(
 export const invoiceCaseStatusValidator = v.union(v.literal("received"), v.literal("investigating"), v.literal("needs_review"), v.literal("evidence_missing"), v.literal("recorded"), v.literal("excluded"), v.literal("superseded"), v.literal("duplicate"));
 
 export default defineSchema({
+  ...apAccountingTables,
+  ...apSystemTables,
+  ...apPaymentRunTables,
   ...demoTables,
   ...demoEvidenceTables,
 

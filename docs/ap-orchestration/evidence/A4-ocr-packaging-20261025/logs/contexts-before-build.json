@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/docker",
+    "context",
+    "ls",
+    "--format",
+    "json"
+  ],
+  "startedUtc": "2026-10-25T10:44:16.102998+00:00",
+  "durationSeconds": 0.02,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "logs/contexts-before-build.stdout",
+  "stderr": "logs/contexts-before-build.stderr"
+}

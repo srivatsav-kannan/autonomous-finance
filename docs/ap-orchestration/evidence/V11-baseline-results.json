@@ -1,0 +1,199 @@
+{
+  "review": "V11 frozen local settlement-dimension baseline",
+  "runtime": "41a1116575f98460209e4164776363a0fa4e6e50",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "independent": {
+    "raw": {
+      "path": "/private/tmp/ap97-v11-independent-baseline.json",
+      "sha256": "69936c11235d8a9a8a5e8b10cd9fc06a4baf98aea4529cc8818e797a9cf82704"
+    },
+    "result": {
+      "passed": 11,
+      "failed": 1,
+      "total": 12
+    },
+    "suites": [
+      {
+        "file": "tests/ap-system/v11-settlement-binding.test.ts",
+        "assertions": [
+          {
+            "name": "freezes ops authority in exact snapshot/command hashes and preserves partial cash/credit arithmetic through real FakeBank settlement and return",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "freezes null authority in exact snapshot/command hashes and preserves partial cash/credit arithmetic through real FakeBank settlement and return",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "blocks a first send after current human retirement without changing the original binding or submitting to the bank",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "blocks a first send after current policy retirement without changing the original binding or submitting to the bank",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "rejects a rehashed forged department binding during human authorization",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "rejects a rehashed forged credit amount binding during human authorization",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "rejects a rehashed forged recognition journal binding during human authorization",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "recovers an accepted lost response and settles the frozen department after both current policy and approving human retire",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "rejects a changed command binding during possible-send recovery even with a valid new request hash",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "requires the original settlement account and department before posting a verified bank return",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "stores one exact zero-cash binding on every group member and rejects a partial changed member during grouped read",
+            "status": "failed",
+            "failure": "ConvexError: {\"code\":\"cost_credit_mismatch\",\"reason\":\"Original linked credit allocations differ from posted journal\"}"
+          },
+          {
+            "name": "applies one governed credit without cash, retains its binding and refuses a stripped binding on authoritative read",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      }
+    ]
+  },
+  "ownerAndArchitecture": {
+    "raw": {
+      "path": "/private/tmp/ap97-v11-owner-baseline.json",
+      "sha256": "ab1807ce041ea0b2a589172916edca5b1a939c217421cadf734e4bf843019100"
+    },
+    "result": {
+      "passed": 10,
+      "failed": 1,
+      "total": 11
+    },
+    "suites": [
+      {
+        "file": "tests/payments/architecture.test.ts",
+        "assertions": [
+          {
+            "name": "payment module dependency boundaries keeps domain/contracts/ports free of framework, runtime, provider SDK and IO dependencies",
+            "status": "failed",
+            "failure": "AssertionError: expected [ \u2026(2) ] to deeply equal []"
+          },
+          {
+            "name": "payment module dependency boundaries makes application workflows depend on domain and ports rather than concrete adapters",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "payment module dependency boundaries keeps transfer submission and service credentials out of ordinary agent entry points",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/settlement-dimensions.test.ts",
+        "assertions": [
+          {
+            "name": "Explicit immutable settlement location recognition requires the operator's scope/rule pair and rejects mixed including null departments before recognition",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Explicit immutable settlement location recognition posts and exports exact original AP department on recognition and linked credit",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Explicit immutable settlement location recognition retains legacy cost-only AP dimensions and does not claim settlement authority",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Explicit immutable settlement location recognition retains explicit null settlement authority and rejects changed historical AP coordinates",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/settlement-payment-binding.test.ts",
+        "assertions": [
+          {
+            "name": "Frozen settlement accounting binding binds exact partial cash and credit approval, then posts and reverses the original department after policy retirement",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Frozen settlement accounting binding rejects a validly rehashed command with a foreign accounting binding before any attempt",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Frozen settlement accounting binding keeps possible-send reconciliation and exact command after current policy retirement",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Frozen settlement accounting binding preserves absence and existing canonical command hash for cost-only legacy scope",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      }
+    ]
+  },
+  "testSha256": {
+    "tests/ap-system/v11-settlement-fixture.ts": "5a5fc29878a7302ef8c9cab974dcf3bfcf3872e946c6aaa39654ffc7096fd04b",
+    "tests/ap-system/v11-settlement-binding.test.ts": "be73def5ab5717116e3ec48b3ae053f9f603ba0050510311f4e8fee31e983691"
+  },
+  "typechecks": {
+    "tests": "passed"
+  },
+  "findings": [
+    {
+      "id": "V11-F1",
+      "status": "open at frozen baseline",
+      "priority": "P2",
+      "summary": "Prior dimension-bearing credit AP line is rejected by cost state, blocking successive credits and related cost work",
+      "repairAvailable": "f760a90f05809c1fa650db53ceba9baa7a17fd13",
+      "discovery": "Independently reproduced before being notified B had concurrently repaired the same issue."
+    },
+    {
+      "id": "V11-K1",
+      "status": "open at frozen baseline",
+      "summary": "Known architecture import-boundary regression; reported by parent before review",
+      "files": [
+        "src/payments/contracts.ts",
+        "src/payments/domain/validation.ts"
+      ]
+    }
+  ],
+  "limits": [
+    "No actual provider, private credentials, live backend or practitioner sign-off.",
+    "FakeBank executes only inside independent in-memory SQLite.",
+    "Future QBO settlement export and recoverable-tax integration excluded.",
+    "Two-credit grouped zero-cash positive blocked by V11-F1; single-credit zero-cash passes."
+  ]
+}

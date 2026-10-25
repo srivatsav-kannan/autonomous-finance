@@ -17,6 +17,7 @@ export const CHART: AccountDef[] = [
   { code: "1100", name: "Card Settlements Receivable", type: "asset" },
   { code: "1110", name: "Delivery Platform Receivable", type: "asset" },
   { code: "1150", name: "Vendor Credits Receivable", type: "asset" },
+  { code: "1180", name: "Recoverable Purchase Taxes", type: "asset" },
   { code: "1200", name: "Inventory - Food & Packaging", type: "asset" },
   { code: "1300", name: "Prepaid Expenses", type: "asset" },
   { code: "1500", name: "Property & Equipment", type: "asset" },

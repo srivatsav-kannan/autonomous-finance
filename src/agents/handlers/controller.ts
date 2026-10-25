@@ -9,9 +9,9 @@ import type { Handler, SeatRuntime } from "../runtime";
 import type { Exception } from "./ap";
 
 /**
- * Resolve a held bill. Duplicates are rejected; quantity and price problems are short-paid
- * to what was received at contract price; open credits are deducted and marked applied;
- * clean over-limit bills are approved. Every resolution leaves a decision record.
+ * Resolve a held bill. Price/quantity and missing-evidence exceptions require an explicit
+ * human decision; a computed recommendation never authorizes a reduction. Existing credits
+ * retain their separate claim controls. Every resolution leaves a decision record.
  */
 export const reviewHeld: Handler = async (rt, task) => {
   const billId = task.payload.billId as Id<"bills">;
@@ -22,15 +22,15 @@ export const reviewHeld: Handler = async (rt, task) => {
   const codes = new Set(ex.map((e) => e.code));
 
   let humanAnswer: Doc<"asks"> | undefined;
-  if (codes.has("no_receiving_record") || codes.has("unknown_store")) {
+  if (["no_receiving_record", "unknown_store", "missing_delivery_reference", "unknown_sku", "price_over_contract", "short_shipment"].some(code => codes.has(code as Exception["code"]))) {
     const asks = await rt.kernel.client.query(api.asks.forTask, { runId: rt.runId, taskId: task._id });
     humanAnswer = asks.find((a) => a.taskId === task._id && a.to === "human_cfo" && a.status === "answered" &&
       (a.answer?.optionId === "pay" || a.answer?.optionId === "reject") && a.options.some((o) => o.id === a.answer?.optionId));
     if (!humanAnswer) {
       await rt.ask({ to: "human_cfo", severity: "decision", title: `Can't verify ${bill.vendor} ${bill.invoiceNumber}`,
-        body: ex.map((e) => e.detail).join("\n"), options: [{ id: "pay", label: "Pay as billed" }, { id: "reject", label: "Reject" }], taskId: task._id,
+        body: `${ex.map((e) => e.detail).join("\n")}\nA calculated adjustment is a proposal only. Obtain a corrected invoice/credit or explicit authorized decision; no vendor communication has been sent.`, options: [{ id: "pay", label: "Pay as billed" }, { id: "reject", label: "Reject" }], taskId: task._id,
         evidence: [{ label: "decision", ref: String(task.payload.decisionPath) }] });
-      return { outcome: "asked", summary: "needs a human: no receiving record", waiting: true };
+      return { outcome: "asked", summary: "needs an authorized human resolution of the held evidence/variance", waiting: true };
     }
   }
 
@@ -91,7 +91,7 @@ export const reviewHeld: Handler = async (rt, task) => {
       const on = await rt.simDate();
       await rt.updateVendor(v.id, (current) => ({
         ...current,
-        notes: [...current.notes, ...disputes.map((e) => ({ on, by: rt.seat.seatId, text: `Short-paid ${bill.invoiceNumber}: ${e.detail}. Vendor notified.` }))],
+        notes: [...current.notes, ...disputes.map((e) => ({ on, by: rt.seat.seatId, text: `Dispute recorded for ${bill.invoiceNumber}: ${e.detail}. Communication state: not sent; retain actual delivery evidence if later sent.` }))],
       }), `Record disputes for ${bill.invoiceNumber}`, { "Decision-Id": d.path }, `vendor-update:${bill._id}`);
     }
   }

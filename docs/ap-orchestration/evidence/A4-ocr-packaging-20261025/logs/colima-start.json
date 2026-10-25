@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/colima",
+    "start",
+    "default",
+    "--activate=false",
+    "--save-config=false",
+    "--ssh-config=false"
+  ],
+  "startedUtc": "2026-10-25T10:43:46.382488+00:00",
+  "durationSeconds": 22.698,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "logs/colima-start.stdout",
+  "stderr": "logs/colima-start.stderr"
+}

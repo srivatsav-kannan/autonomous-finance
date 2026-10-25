@@ -1,0 +1,17 @@
+{
+  "review": "Independent agent engineering review; simulated identities, no practitioner or real Auth0 verification",
+  "baseline": "a8ea9ef",
+  "frozenBeforeTestExecution": true,
+  "expectations": [
+    "A request uses only its own verified Convex identity; a different allowlisted subject cannot reuse another subject's cookie or in-flight response.",
+    "Allowlist removal or backend seat revocation prevents the next action; logout invalidates current cookie and aborts old UI work.",
+    "Invoice evidence cannot establish its own trusted contact; a bank change must use the existing approved contact and separate verifier/approver.",
+    "A supplier proposal verified under authority subsequently revoked must not gain bank authority without current valid verification.",
+    "Sequential quorum cannot be skipped, filled twice by one principal, or finalized using revoked or expired delegation.",
+    "Accepting one of two 3850-cent units recognizes3850, retains original7700 and disputed3850, creates one journal and no payment.",
+    "Identical original PO/receipt/return bytes cannot acquire new economic capacity by renaming source or parser-assigned line IDs.",
+    "Tax/cost credits must reverse exact remaining original allocations, never reuse returned units, and cannot mutate a reserved original obligation.",
+    "Before possible send a supplier change invalidates authority and requires recertification and renewed payment approval; after possible send the original key/destination/reservation must survive recovery.",
+    "QBO business sync and B4 are separate gates; no baseline expansion or provider calls."
+  ]
+}

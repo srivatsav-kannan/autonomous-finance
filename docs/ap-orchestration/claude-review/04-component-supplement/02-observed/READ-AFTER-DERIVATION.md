@@ -1,0 +1,11 @@
+# Supplemental actual component records
+
+Reveal only after the supplemental source/policy derivation is frozen. ACTUAL-JOURNALS-AND-BUSINESS-RESULTS.json projects actual journal, bill, credit and case rows; it is not an expected-posting file. DB-AND-EXECUTED-TESTS.zip contains all captured whitelisted tables plus exact executed test files and fixture helpers so the reviewer can distinguish public business operations from deliberately seeded/adversarial data. Input/source records are associated by opaque variant ID and source hash.
+
+The observer wraps convexTest only to retain each newly created in-memory instance, then queries tables after the existing test finishes. It does not change application methods, assertions or database writes. Captured tables omit configuration/seat credentials. Local tests may intentionally mutate rows or promote a synthetic scope to Increase; these records remain local doubles and do not prove any external write. Final snapshots retain available journal/action/decision sequence, not every intermediate read or external request/response. The ZIP is for inspection; extract files as needed rather than assuming a model can read a ZIP upload.
+
+Compare these records against your frozen result, source facts, policy, business-event sequence and full original-case context. Check incorrect account/sign/date/dimension/amount as well as missing proof. Use stable finding IDs and separately state which scenario variants the data proves. For C14/C22, local journal records alone do not establish QBO wire behavior or external acceptance; the raw executed test source identifies where protocol doubles were used. Report missing wire evidence if needed.
+
+The 31 scenario tests passed unchanged; that is evidence that export completed, not independent business review. Selection-filtered tests were not run and are not failures or new claimed coverage. No full suite or CI run was performed. External Claude review remains pending.
+
+Source retrieval caveat: C19/C22 contain14 metadata/chunk scope mismatches caused by protocol-fixture scope promotion. The input index flags each one. Exact byte hashes match retained chunks, but actual scoped source API access is not established. Initial packaging failed this strict scope check; the mismatch is preserved explicitly instead of silently treating it as verified.

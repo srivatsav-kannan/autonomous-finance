@@ -1,0 +1,104 @@
+{
+  "version": "heldout-suppliers-v1",
+  "baselineCode": "3f41c68b149a97be7aee3ad4f5a98de9473bb258",
+  "scope": "Two newly authored suppliers and layouts, frozen before actual parser calls; not an independent production benchmark",
+  "generation": "generate.py reads authoring/facts.json only; fixed PDF metadata and deterministic scan transformation",
+  "sources": [
+    {
+      "id": "harbor-thread-native",
+      "supplierId": "harbor-thread-textiles",
+      "layout": "landscape-ledger",
+      "variant": "native",
+      "path": "input/harbor-thread-native.pdf",
+      "mimeType": "application/pdf",
+      "pages": 1,
+      "frame": {
+        "width": 792,
+        "height": 612,
+        "unit": "point",
+        "rotation": 0
+      },
+      "sha256": "0d8993129e04f666f715018040106dc518c1a42f41f77587293180b4ed4df1c5",
+      "byteLength": 2789,
+      "provenance": {
+        "kind": "synthetic",
+        "description": "Project-authored invented supplier invoice with native PDF text",
+        "license": "Project-authored evaluation fixture; may be redistributed",
+        "originalFilename": "harbor-thread-native.pdf"
+      }
+    },
+    {
+      "id": "harbor-thread-scan",
+      "supplierId": "harbor-thread-textiles",
+      "layout": "landscape-ledger",
+      "variant": "scan",
+      "path": "input/harbor-thread-scan.pdf",
+      "mimeType": "application/pdf",
+      "pages": 1,
+      "frame": {
+        "width": 792,
+        "height": 612,
+        "unit": "point",
+        "rotation": 0
+      },
+      "sha256": "fa814b53d96635afc6c7fc08e02eec91df5a656c9024d72b2a5949b4248090a5",
+      "byteLength": 107517,
+      "provenance": {
+        "kind": "synthetic",
+        "description": "Project-authored invented supplier invoice rendered as an image-only controlled scan proxy",
+        "license": "Project-authored evaluation fixture; may be redistributed",
+        "originalFilename": "harbor-thread-scan.pdf"
+      }
+    },
+    {
+      "id": "copper-valve-native",
+      "supplierId": "copper-valve-maintenance",
+      "layout": "portrait-service-statement",
+      "variant": "native",
+      "path": "input/copper-valve-native.pdf",
+      "mimeType": "application/pdf",
+      "pages": 1,
+      "frame": {
+        "width": 612,
+        "height": 792,
+        "unit": "point",
+        "rotation": 0
+      },
+      "sha256": "dc323890c0c20082c1f6bcfd402b0365009d4e0147b36299835129cf39c96791",
+      "byteLength": 3442,
+      "provenance": {
+        "kind": "synthetic",
+        "description": "Project-authored invented supplier invoice with native PDF text",
+        "license": "Project-authored evaluation fixture; may be redistributed",
+        "originalFilename": "copper-valve-native.pdf"
+      }
+    },
+    {
+      "id": "copper-valve-scan",
+      "supplierId": "copper-valve-maintenance",
+      "layout": "portrait-service-statement",
+      "variant": "scan",
+      "path": "input/copper-valve-scan.pdf",
+      "mimeType": "application/pdf",
+      "pages": 1,
+      "frame": {
+        "width": 612,
+        "height": 792,
+        "unit": "point",
+        "rotation": 0
+      },
+      "sha256": "741c0bc7adfcb6fccffe404f8dc4096a31e55fbe8f76b18fef5f5807586495f6",
+      "byteLength": 118476,
+      "provenance": {
+        "kind": "synthetic",
+        "description": "Project-authored invented supplier invoice rendered as an image-only controlled scan proxy",
+        "license": "Project-authored evaluation fixture; may be redistributed",
+        "originalFilename": "copper-valve-scan.pdf"
+      }
+    }
+  ],
+  "runtimeContextFile": "runtime-contexts.json",
+  "evaluationOnlyFile": "evaluation/expected-outcomes.json",
+  "evaluationAccess": "Not a runtime parser input",
+  "providerCallsByGenerator": 0
+}

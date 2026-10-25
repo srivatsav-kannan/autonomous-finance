@@ -1,0 +1,56 @@
+{
+  "version": "heldout-suppliers-evaluation-v1",
+  "frozenBeforeActualParser": true,
+  "derivation": "Project-authored expected facts and exact arithmetic, separately transcribed from the intended originals; independent original-derived verification remains pending V.",
+  "runtimeAccess": "Forbidden: only original input PDFs and runtime-contexts.json enter parser requests.",
+  "scoring": {
+    "evaluatedDocuments": 4,
+    "documentsPerSupplier": 2,
+    "contentFieldDenominator": 104,
+    "headerFieldsPerDocument": 11,
+    "lineFields": ["sku", "description", "quantity", "unit", "unitPriceCents", "amountCents"],
+    "comparison": "Match each line by unique SKU, exact quantity decimal value and exact integer cents. Do not assume generated line IDs. Whitespace normalization may collapse line wrapping in descriptions; no fuzzy digit correction.",
+    "candidateNull": "Counts as content failure for this complete authored original. Preserve the explicit missing/unsupported reason; do not force a candidate or exclude it from the denominator.",
+    "geometry": "Score the same 104 visible field facts separately: require correct source SHA/revision/page/frame plus native or derived exact-token evidence. Missing evidence, unresolved geometry or failed parse stays in denominator. Do not infer exact boxes from evaluation facts.",
+    "scanNativeText": "Both scan PDFs must contain no native text. They are controlled raster proxies, not archival or camera photographs.",
+    "safety": "An exact trusted supplier context may bind only its matching printed supplier. A mismatched trusted supplier must not be assigned. No supplied document establishes human review, supplier onboarding, procurement acceptance, accounting approval or bank authorization.",
+    "accounting": "No PO/receipt/contract is supplied. No automatic payment or AP approval is expected from extraction success. Procurement-dependent acceptance requires separately authorized supporting evidence."
+  },
+  "profiles": {
+    "harbor-thread": {
+      "sources": ["harbor-thread-native", "harbor-thread-scan"],
+      "expectedCompleteCandidate": true,
+      "pages": 1,
+      "frame": {"width":792,"height":612,"unit":"point","rotation":0},
+      "headers": {
+        "extractedSupplierName":"Harbor Thread Textiles LLC",
+        "invoiceNumber":"HT-2408","invoiceDate":"2026-10-22","dueDate":"2026-11-21","terms":"Net 30","currency":"USD",
+        "subtotalCents":26685,"taxCents":0,"freightCents":1250,"discountCents":535,"totalCents":27400
+      },
+      "lines": [
+        {"sku":"COT-ROLL","description":"Cotton table linen roll","quantity":"1.5","unit":"roll","unitPriceCents":12840,"amountCents":19260},
+        {"sku":"NAP-12","description":"Linen napkins, pack of twelve","quantity":"3","unit":"pack","unitPriceCents":2475,"amountCents":7425}
+      ],
+      "fieldFactsPerDocument":23,
+      "arithmetic":["1.5 * 12840 = 19260 cents","3 * 2475 = 7425 cents","19260 + 7425 = 26685 cents","26685 + 0 + 1250 - 535 = 27400 cents"]
+    },
+    "copper-valve": {
+      "sources": ["copper-valve-native", "copper-valve-scan"],
+      "expectedCompleteCandidate": true,
+      "pages": 1,
+      "frame": {"width":612,"height":792,"unit":"point","rotation":0},
+      "headers": {
+        "extractedSupplierName":"Copper Valve Maintenance Inc.",
+        "invoiceNumber":"CV-9017","invoiceDate":"2026-10-23","dueDate":"2026-11-06","terms":"Net 14","currency":"USD",
+        "subtotalCents":26250,"taxCents":0,"freightCents":0,"discountCents":0,"totalCents":26250
+      },
+      "lines": [
+        {"sku":"LAB-PL","description":"Preventive plumbing inspection and adjustment","quantity":"2.75","unit":"hour","unitPriceCents":6400,"amountCents":17600},
+        {"sku":"SEAL-K","description":"Food-grade pump seal replacement kit","quantity":"2","unit":"kit","unitPriceCents":1875,"amountCents":3750},
+        {"sku":"FLT-04","description":"Inline water filter cartridge, four micron","quantity":"4","unit":"each","unitPriceCents":1225,"amountCents":4900}
+      ],
+      "fieldFactsPerDocument":29,
+      "arithmetic":["2.75 * 6400 = 17600 cents","2 * 1875 = 3750 cents","4 * 1225 = 4900 cents","17600 + 3750 + 4900 = 26250 cents","26250 + 0 + 0 - 0 = 26250 cents"]
+    }
+  }
+}

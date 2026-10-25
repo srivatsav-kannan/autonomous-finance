@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-25",
+  "followup": {
+    "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/104",
+    "title": "AP follow-up: multicurrency and FX accounting after USD release",
+    "issue_number": 104,
+    "body": "Follow-up to #97, explicitly agreed by the user on 2026-10-25: “先完成当前 USD，多币种移到后续 issue” (finish the current USD system first; move multicurrency to a later issue).\n\nThe current AP release remains USD-only. Non-USD accounting/payment requests must stay visibly unsupported and fail closed. This issue tracks the broader currency work from the frozen #97 roadmap; it does not imply that multicurrency has been implemented or accepted.\n\nBefore implementation:\n- Agree supported invoice and functional currencies and the rollout boundary. USD functional books with EUR/GBP vendor bills is a candidate, not an approved scope.\n- Define exchange-rate source, effective date, precision, explicit reviewer authority, rounding, and rate provenance.\n- Decide treatment of credits, partial settlements, reversals, realized/unrealized FX, revaluation, and period close.\n- Confirm QuickBooks Online company multicurrency configuration and immutable currency/rate mapping.\n- Select and authorize any non-USD payment rail. Increase sandbox remains the current USD execution rail.\n\nAcceptance:\n- Preserve original currency, functional-currency amounts, rate provenance, and balanced journals throughout invoice, credit, payment, recovery, and close flows.\n- Add independent automated and integration coverage for supported currencies and fail-closed unsupported cases.\n- Obtain actual sandbox round-trip evidence separately from simulated tests.\n- Prepare examples and expected entries for a real AP/accounting practitioner; agent validation does not count as practitioner sign-off.\n\nNo production deployment, account configuration change, payment execution, or FX policy is authorized by creating this issue.",
+    "state": "open",
+    "user": {
+      "login": "JunjieAraoXiong",
+      "name": "JunjieAraoXiong",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/167785867?v=4",
+      "id": 167785867
+    },
+    "assignees": null,
+    "labels": null,
+    "milestone": null,
+    "state_reason": null,
+    "comments": 0,
+    "created_at": "2026-10-25T11:00:03Z",
+    "updated_at": "2026-10-25T11:00:03Z",
+    "closed_at": null,
+    "display_url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/104",
+    "display_title": "AP follow-up: multicurrency and FX accounting after USD release"
+  },
+  "comments": [
+    {
+      "id": 6396729954,
+      "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396729954",
+      "body": "## Acceptance update — OCR packaging runtime gate PASS (2026-10-25)\n\nOnly the **OCR packaging runtime gate** is marked **PASS** by this update.\n\n- Frozen source: `ed372a40570d714b5b893c6e4e86e25f2427bc80`. The original Dockerfile, lock file and smoke script were unchanged.\n- Actual build succeeded (exit 0, 102.012 s) using existing Colima 0.10.3; Docker Client 29.9.2 connected to Server 29.5.2. Global Docker context was not switched.\n- Actual image: `sha256:09c398f49cc16a60d0e7888b3939505d60f5482264ea0e86bb4374034352d9c7`, linux/arm64. Tesseract 5.5.2 and pinned English traineddata checks passed.\n- The original bounded smoke ran on two controlled scans: Harbor Thread **123 nonempty words, 1584×1224**; Copper Valve **135 nonempty words, 1224×1584**. Single-page/zero-rotation/no-native-text, raster dimensions and word-box bounds passed.\n- Smoke and container exited **0**, with no timeout or OOM; the combined invocation took 1.204 s. Network was disabled, root and three mounts were read-only, capabilities were dropped, no-new-privileges was set, and CPU/memory/PID/tmpfs limits were recorded. `accuracyEvaluated=false`; `providerCalls=0`.\n- Initial container creation failed because the first host path was outside the existing VM share. That failure is preserved; the successful retry used a byte-identical snapshot in the existing shared home directory, without changing VM shares.\n\nMaster and a separate verification agent recomputed **90/90 evidence hashes**; the verifier also matched **12/12 source files** to the frozen commit, snapshot, mounted copy and current sources. The complete original 91-file evidence bundle is persisted in the local integration commit `9f87533` at `docs/ap-orchestration/evidence/A4-ocr-packaging-20261025/`, with review `docs/ap-orchestration/evidence/A4-ocr-packaging-review.md`. This integration commit has not yet been published to the remote. The evidence manifest SHA256 is `d709a5d4e0c585d384b7515a99832c7e767e553097a0f4dce9a1a42fddd624fc`.\n\n**Scope boundary:** this smoke does not change the independent acceptance states for extraction accuracy, exact-word grounding, complete AP/`parseUpload` integration, multipage/rotation behavior, production readiness or the overall roadmap. Existing parser evaluations retain their own separate results. Generated PNG/TSV files were cleaned by the original script; their logged hashes cannot now be independently recomputed. Moving Debian tags/package versions also do not establish byte-identical future rebuilds. Issue #97 remains open.",
+      "body_sha256": "b3164be7daa3cace22d6b786614ae850f34c6b128a6a245578467cd59d3ee0b7"
+    },
+    {
+      "id": 6396796577,
+      "url": "https://github.com/srivatsav-kannan/autonomous-finance/issues/97#issuecomment-6396796577",
+      "body": "Scope decision recorded on 2026-10-25: the user explicitly chose “先完成当前 USD，多币种移到后续 issue”. The current delivery scope is USD; broader currency and FX accounting is tracked in #104: https://github.com/srivatsav-kannan/autonomous-finance/issues/104.\n\nThe original frozen roadmap snapshot remains unchanged. Multicurrency is deferred by agreement, not marked implemented. Current USD tax/accounting/payment engineering and verification continue. UI acceptance targets laptop/desktop web per the user's latest instruction; public website hosting remains a later consideration.\n\nThis scope update does not close #97 or satisfy the outstanding actual operator, QBO accounting-transaction, Increase sandbox execution, or real AP/accounting practitioner acceptance gates.",
+      "body_sha256": "aa1427598c321330e70facc34ec2fbbc12c6111b0a85ac1a28021ae06640dfc8"
+    }
+  ],
+  "readback_verified": true
+}

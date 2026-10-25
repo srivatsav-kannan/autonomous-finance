@@ -1,0 +1,84 @@
+{
+  "captured_at": "2026-10-25T08:32:32.678221+00:00",
+  "desktop_head": "5b9ef923ec91a1f329990d3cb058e8316850d4c9",
+  "desktop_status": [
+    " M README.md",
+    " M console/src/App.tsx",
+    " M convex/tasks.ts",
+    " M package.json",
+    " M src/agents/llm.ts",
+    " M src/agents/team.ts",
+    " M src/human/gateway.ts",
+    " M src/memory/store.ts",
+    "?? artifacts/",
+    "?? benchmarks/",
+    "?? console/src/Memory.tsx",
+    "?? console/src/memory.css",
+    "?? docs/EXTERNAL_EVALS.md",
+    "?? docs/ap-orchestration/",
+    "?? scripts/external-bench/",
+    "?? src/agents/handlers/memory.ts",
+    "?? src/evals/external/",
+    "?? src/human/memory.ts",
+    "?? src/memory/history.ts",
+    "?? tests/memory-gateway.test.ts",
+    "?? tests/memory-history.test.ts",
+    "?? tests/memory-restore-handler.test.ts"
+  ],
+  "desktop_tracked_dirty_hashes": {
+    "README.md": "46c57cb0f367d13f772b09d80e009af229591e392669d241b417043ae22f978b",
+    "console/src/App.tsx": "eacde207589610569cfed59bea5636b1c39f55680894a978374a3e79d99830ff",
+    "convex/tasks.ts": "247813c6da2c0b7c23fbe99add062aa2226534e0939e16d5aaa9c688087ef218",
+    "package.json": "1c7c40c934d209c0dc1ff0199a8015dc58d1be0fd855c311cbd9dfa025ad2924",
+    "src/agents/llm.ts": "8abdd5c99cfbe6bdafcd73beb7a7101768dd946fa0be8a2a3ca5c77dbdb66648",
+    "src/agents/team.ts": "9d5229aa44d27aaddc646479705985e427e82bd8a1b686afba616cfa47749f68",
+    "src/human/gateway.ts": "116e1f8c8ac049ba70c64b111d4e5c085d145ed4dafbb1398b0b091bc645a339",
+    "src/memory/store.ts": "60c8d5ea6cb755ea3c39c540b7ce03295fefb491d58d8e4870c739e4b11be19f"
+  },
+  "existing_owned_artifacts": [],
+  "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
+  "branch": "codex/ap-system-integration",
+  "adopted_main": "d24f22007a36722831a521d7387ee8f5c92c5803",
+  "prior_work": {
+    "PR92": {
+      "state": "open_draft_unmerged",
+      "head": "75e9df55e1d9e9d43c57e9a1646956d6c7127e4a",
+      "scope": "printed text candidate extraction for customer totals; not merged wholesale; A inspects reusable field normalization"
+    },
+    "payment_engine": "Existing scoped-ap-v2 retained; no reimplementation"
+  },
+  "provider_checks": {
+    "OpenAI": "AUTH_VERIFIED_200",
+    "LlamaParse": "METADATA_ACCESS_VERIFIED_200",
+    "Increase": "AUTH_AND_RESOURCE_READ_VERIFIED_200",
+    "workflow": "NOT_RUN"
+  },
+  "preserved_listener_ports": [
+    3210,
+    3211,
+    3220,
+    3221,
+    3230,
+    3231,
+    3240,
+    3241,
+    5173,
+    5184,
+    5186,
+    8787,
+    8789,
+    8790,
+    8813,
+    8814
+  ],
+  "allocated_free_ports": [
+    3250,
+    3251,
+    5190,
+    8820,
+    8821,
+    8822
+  ],
+  "runtime_started": false,
+  "ownership": "Only new AP worktrees and run ap97-20261025-01a1722e. No legacy runtime operations."
+}

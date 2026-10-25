@@ -1,0 +1,16 @@
+{
+  "kind": "summary of initial tool observations, not a raw command transcript",
+  "dockerClient": "/opt/homebrew/bin/docker 29.9.2 darwin/arm64",
+  "colima": "/opt/homebrew/bin/colima 0.10.3",
+  "existingProfile": "default, aarch64, 4 CPUs, 6 GiB memory, 60 GiB disk, docker runtime, vz",
+  "initialSockets": {
+    "/var/run/docker.sock": false,
+    "/Users/junjiexiong/.colima/default/docker.sock": false
+  },
+  "initialDockerContext": "default: unix:///var/run/docker.sock",
+  "initialDockerVersionExitCode": 1,
+  "initialColimaStatusExitCode": 1,
+  "initialColimaListStatus": "Broken (sandbox read); existing VM files were present and the subsequent normal start succeeded",
+  "initialProcessProbe": "pgrep failed under sandbox; not evidence that the software was absent",
+  "instructionDiscovery": "No applicable AGENTS.md found in source/current root ancestry or target file/fixture ancestry. console/AGENTS.md is outside scope."
+}

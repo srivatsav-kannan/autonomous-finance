@@ -1,0 +1,16 @@
+{
+  "label": "Claude 独立模型评审",
+  "status": "awaiting_external_reviewer",
+  "operator": "recipient uses existing Claude account",
+  "phase1": "not_executed",
+  "phase2": "not_executed",
+  "findings": [],
+  "fixes": [],
+  "rechecks": [],
+  "practitionerSignoff": false,
+  "practitionerRequiredForThisDelivery": false,
+  "liveProviderAcceptance": "separate unchanged gates",
+  "ci": "deferred_by_user",
+  "createdAt": "2026-10-25T11:20:29.118927+00:00",
+  "findingsStatus": "not_yet_evaluated"
+}

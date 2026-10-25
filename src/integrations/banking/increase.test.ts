@@ -26,6 +26,32 @@ async function bank(routes: Record<string, unknown>, overrides: { fetch?: typeof
 }
 
 describe("Increase sandbox adapter contracts", () => {
+  it("preserves exact sandbox-prefixed identities through submission and read-only recovery", async () => {
+    const scoped={...scope,accountId:"sandbox_account_fixture"};
+    const saved=await command();saved.scope=scoped;saved.destination={...saved.destination,externalAccountId:"sandbox_external_account_fixture"};
+    saved.providerRequest=buildIncreaseRequestBody(saved);saved.requestHash=await commandRequestHash(saved);
+    const transfer={...fixtures.pending,id:"sandbox_ach_transfer_fixture",account_id:scoped.accountId,external_account_id:saved.destination.externalAccountId};
+    const http=vi.fn<typeof fetch>(async()=>response(transfer));
+    const provider=new IncreaseSandboxBank({scope:scoped,apiKey:"synthetic",resolveCommand:async()=>saved,fetch:http});
+    expect(await provider.createTransfer(saved)).toMatchObject({id:transfer.id,scope:scoped,destination:saved.destination});
+    expect(http.mock.calls[0]?.[1]?.body).toBe(saved.providerRequest);
+    expect(await provider.lookupTransfer(saved,transfer.id)).toMatchObject({kind:"found",observation:{id:transfer.id}});
+    expect(http.mock.calls.map(([url])=>new URL(String(url)).origin)).toEqual(["https://sandbox.increase.com","https://sandbox.increase.com"]);
+    for(const id of ["sandbox_ach_transfer_fixture/other","sandbox_ach_transfer_fixture?key=1","sandbox_ach_transfer_fixture%2fother","sandbox_transaction_fixture"]){
+      await expect(provider.getTransfer(scoped,id)).rejects.toThrow();
+    }
+    expect(http).toHaveBeenCalledTimes(2);
+    expect(()=>new IncreaseSandboxBank({scope:{...scoped,environment:"production"} as unknown as BankScope,apiKey:"synthetic",resolveCommand:async()=>saved,fetch:http})).toThrow();
+  });
+  it("verifies sandbox-prefixed signed events without accepting altered signatures", () => {
+    const event={id:"sandbox_event_fixture",type:"event",associated_object_id:"sandbox_ach_transfer_fixture",associated_object_type:"ach_transfer",category:"ach_transfer.updated",created_at:"2026-10-25T00:00:00Z"};
+    const rawBody=Buffer.from(JSON.stringify(event)),timestamp="1792886400",secret="fixture-only-secret";
+    const signature=createHmac("sha256",secret).update(`${event.id}.${timestamp}.`).update(rawBody).digest("base64");
+    const headers={"webhook-id":event.id,"webhook-timestamp":timestamp,"webhook-signature":`v1,${signature}`};
+    expect(verifyIncreaseWebhook({rawBody,headers,scope,signingSecret:secret,now:Number(timestamp)*1000})).toMatchObject({id:event.id,transferId:event.associated_object_id});
+    expect(()=>verifyIncreaseWebhook({rawBody:Buffer.from(JSON.stringify({...event,category:"changed"})),headers,scope,signingSecret:secret,now:Number(timestamp)*1000})).toThrow();
+  });
+
   it("finds the original transfer by scoped operation key with GET and no resend authority", async () => {
     const { provider, saved, http } = await bank({ "/ach_transfers": { data: [fixtures.pending], next_cursor: null } });
     expect(await provider.lookupTransfer(saved)).toMatchObject({ kind: "found", scope, commandId: saved.commandId,

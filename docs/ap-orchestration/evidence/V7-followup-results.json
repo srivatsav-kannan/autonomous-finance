@@ -1,0 +1,752 @@
+{
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "verificationCodeHead": "0991683322c0a8e44ff8f9785d4c164ed256de01",
+  "timing": {
+    "repair": "5897330ae92e34b5544d94d68fe6aa918e6d88f7",
+    "independentTestSha256": "2cc61f9c5382097ba9cf14e2eee7bf14d41e070c4bfaf20c48f8c2959566d0a5",
+    "unchangedFrom": "e3707a28db0087bc05fc14cc1841e93c5643e9ac",
+    "independentTests": 5,
+    "ownerTests": 23,
+    "result": {
+      "rawPrivateReport": "/private/tmp/ap97-v7-timing-repair-final.json",
+      "rawReportSha256": "4680c8f6779105e3051638a6475b481f0c065593b848030a9f88ebfc7cc7ec0e",
+      "total": 28,
+      "passed": 28,
+      "failed": 0,
+      "tests": [
+        {
+          "file": "tests/ap-system-operational-timing.test.ts",
+          "name": "event-based operational interval boundaries distinguishes completed duration, ongoing age, not-started clock and unavailable evidence",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-operational-timing.test.ts",
+          "name": "event-based operational interval boundaries does not reuse prior-revision reviews or recognition, or generic updatedAt for hold onset",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-operational-timing.test.ts",
+          "name": "event-based operational interval boundaries does not count scheduled unsent time as unresolved outcome age",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-operational-timing.test.ts",
+          "name": "event-based operational interval boundaries counts recovery through durable posting, not provider acceptance or worker liveness",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-operational-timing.test.ts",
+          "name": "event-based operational interval boundaries measures explicit evidence-request episodes without overlapping repeated requests",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-operational-timing.test.ts",
+          "name": "event-based operational interval boundaries does not invent recovery time for an abandoned lease or a rejected outcome lacking completion",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-operational-timing.test.ts",
+          "name": "event-based operational interval boundaries times a proven pre-dispatch block separately from an unstarted payment outcome",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-timing-transport.test.ts",
+          "name": "uses only the request-owned human and configured scope for operational reads",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-timing-transport.test.ts",
+          "name": "requires current authentication plus matching session and keeps metrics read-only",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-timing-ui.test.tsx",
+          "name": "keeps completed median, ongoing oldest and missing coverage separate",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-timing-ui.test.tsx",
+          "name": "exposes exact event, source and payment-run evidence without relabeling unknown history as current",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-timing-ui.test.tsx",
+          "name": "rejects timing snapshots for another scope, revision, hash or case set",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-timing-ui.test.tsx",
+          "name": "states fixed snapshot and overlapping intervals without invented latency or worker progress",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system-timing-ui.test.tsx",
+          "name": "fetches only the authenticated read endpoint and forwards cancellation",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/business-timing-authority.test.ts",
+          "name": "keeps a valid partial route pending without demanding future quorum or changing history",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/business-timing-authority.test.ts",
+          "name": "marks a retained retired voter stale without rewriting pending approval history",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/business-timing-authority.test.ts",
+          "name": "marks a retained rebound voter stale without rewriting pending approval history",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/business-timing-authority.test.ts",
+          "name": "marks a retained delegated vote revoked before final quorum as unavailable",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/business-timing-authority.test.ts",
+          "name": "marks a retained delegated vote expired before final quorum as unavailable",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/business-timing-authority.test.ts",
+          "name": "preserves the completed historical duration when approved authority later becomes stale",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/operational-timing.test.ts",
+          "name": "reads actual retained review/post/authorization/recovery events and changes no economic state",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/operational-timing.test.ts",
+          "name": "measures a sequential business route until its final independent vote",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/operational-timing.test.ts",
+          "name": "binds grouped proposal timing to its frozen source revision and stops an unsent queue at cancellation",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/v7-timing.test.ts",
+          "name": "marks superseded and subsequently invalidated human routes unavailable rather than ongoing or fabricated completion",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/v7-timing.test.ts",
+          "name": "marks a pending proposal unavailable when a new approved policy invalidates its frozen authority",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/v7-timing.test.ts",
+          "name": "excludes same-run foreign-scope proposal/version rows and rejects retired read identity without economic writes",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/v7-timing.test.ts",
+          "name": "keeps accepted-but-unposted recovery ongoing, freezes matched completion, and requires distinct return evidence for returned outcome",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/v7-timing.test.ts",
+          "name": "keeps missing, future and reversed event clocks out of completed/ongoing aggregation while admitting a real zero duration",
+          "status": "passed"
+        }
+      ]
+    },
+    "priorRestrictedAttempts": [
+      {
+        "rawPrivateReport": "/private/tmp/ap97-v7-timing-repair.json",
+        "rawReportSha256": "de5b4997c4418272f6fbdcc6d9b44e055ad13117be8b4eab916e118013a1cfef",
+        "total": 28,
+        "passed": 27,
+        "failed": 1,
+        "tests": [
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries distinguishes completed duration, ongoing age, not-started clock and unavailable evidence",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries does not reuse prior-revision reviews or recognition, or generic updatedAt for hold onset",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries does not count scheduled unsent time as unresolved outcome age",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries counts recovery through durable posting, not provider acceptance or worker liveness",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries measures explicit evidence-request episodes without overlapping repeated requests",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries does not invent recovery time for an abandoned lease or a rejected outcome lacking completion",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries times a proven pre-dispatch block separately from an unstarted payment outcome",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-transport.test.ts",
+            "name": "uses only the request-owned human and configured scope for operational reads",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-transport.test.ts",
+            "name": "requires current authentication plus matching session and keeps metrics read-only",
+            "status": "failed"
+          },
+          {
+            "file": "tests/ap-system-timing-ui.test.tsx",
+            "name": "keeps completed median, ongoing oldest and missing coverage separate",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-ui.test.tsx",
+            "name": "exposes exact event, source and payment-run evidence without relabeling unknown history as current",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-ui.test.tsx",
+            "name": "rejects timing snapshots for another scope, revision, hash or case set",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-ui.test.tsx",
+            "name": "states fixed snapshot and overlapping intervals without invented latency or worker progress",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-ui.test.tsx",
+            "name": "fetches only the authenticated read endpoint and forwards cancellation",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "keeps a valid partial route pending without demanding future quorum or changing history",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "marks a retained retired voter stale without rewriting pending approval history",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "marks a retained rebound voter stale without rewriting pending approval history",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "marks a retained delegated vote revoked before final quorum as unavailable",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "marks a retained delegated vote expired before final quorum as unavailable",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "preserves the completed historical duration when approved authority later becomes stale",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/operational-timing.test.ts",
+            "name": "reads actual retained review/post/authorization/recovery events and changes no economic state",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/operational-timing.test.ts",
+            "name": "measures a sequential business route until its final independent vote",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/operational-timing.test.ts",
+            "name": "binds grouped proposal timing to its frozen source revision and stops an unsent queue at cancellation",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/v7-timing.test.ts",
+            "name": "marks superseded and subsequently invalidated human routes unavailable rather than ongoing or fabricated completion",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/v7-timing.test.ts",
+            "name": "marks a pending proposal unavailable when a new approved policy invalidates its frozen authority",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/v7-timing.test.ts",
+            "name": "excludes same-run foreign-scope proposal/version rows and rejects retired read identity without economic writes",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/v7-timing.test.ts",
+            "name": "keeps accepted-but-unposted recovery ongoing, freezes matched completion, and requires distinct return evidence for returned outcome",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/v7-timing.test.ts",
+            "name": "keeps missing, future and reversed event clocks out of completed/ongoing aggregation while admitting a real zero duration",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "rawPrivateReport": "/private/tmp/ap97-v7-timing-repair-confirm.json",
+        "rawReportSha256": "1af9f1924d938e621776f7814d2d4d755d05ff3b19c7ef3db8c0964081c66931",
+        "total": 28,
+        "passed": 27,
+        "failed": 1,
+        "tests": [
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries distinguishes completed duration, ongoing age, not-started clock and unavailable evidence",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries does not reuse prior-revision reviews or recognition, or generic updatedAt for hold onset",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries does not count scheduled unsent time as unresolved outcome age",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries counts recovery through durable posting, not provider acceptance or worker liveness",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries measures explicit evidence-request episodes without overlapping repeated requests",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries does not invent recovery time for an abandoned lease or a rejected outcome lacking completion",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-operational-timing.test.ts",
+            "name": "event-based operational interval boundaries times a proven pre-dispatch block separately from an unstarted payment outcome",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-transport.test.ts",
+            "name": "uses only the request-owned human and configured scope for operational reads",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-transport.test.ts",
+            "name": "requires current authentication plus matching session and keeps metrics read-only",
+            "status": "failed"
+          },
+          {
+            "file": "tests/ap-system-timing-ui.test.tsx",
+            "name": "keeps completed median, ongoing oldest and missing coverage separate",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-ui.test.tsx",
+            "name": "exposes exact event, source and payment-run evidence without relabeling unknown history as current",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-ui.test.tsx",
+            "name": "rejects timing snapshots for another scope, revision, hash or case set",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-ui.test.tsx",
+            "name": "states fixed snapshot and overlapping intervals without invented latency or worker progress",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system-timing-ui.test.tsx",
+            "name": "fetches only the authenticated read endpoint and forwards cancellation",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "keeps a valid partial route pending without demanding future quorum or changing history",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "marks a retained retired voter stale without rewriting pending approval history",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "marks a retained rebound voter stale without rewriting pending approval history",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "marks a retained delegated vote revoked before final quorum as unavailable",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "marks a retained delegated vote expired before final quorum as unavailable",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/business-timing-authority.test.ts",
+            "name": "preserves the completed historical duration when approved authority later becomes stale",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/operational-timing.test.ts",
+            "name": "reads actual retained review/post/authorization/recovery events and changes no economic state",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/operational-timing.test.ts",
+            "name": "measures a sequential business route until its final independent vote",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/operational-timing.test.ts",
+            "name": "binds grouped proposal timing to its frozen source revision and stops an unsent queue at cancellation",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/v7-timing.test.ts",
+            "name": "marks superseded and subsequently invalidated human routes unavailable rather than ongoing or fabricated completion",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/v7-timing.test.ts",
+            "name": "marks a pending proposal unavailable when a new approved policy invalidates its frozen authority",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/v7-timing.test.ts",
+            "name": "excludes same-run foreign-scope proposal/version rows and rejects retired read identity without economic writes",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/v7-timing.test.ts",
+            "name": "keeps accepted-but-unposted recovery ongoing, freezes matched completion, and requires distinct return evidence for returned outcome",
+            "status": "passed"
+          },
+          {
+            "file": "tests/ap-system/v7-timing.test.ts",
+            "name": "keeps missing, future and reversed event clocks out of completed/ongoing aggregation while admitting a real zero duration",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  "increase": {
+    "patch": "47f81c3b94b2e9989239e5e515048417d2648dc5",
+    "independentTestSha256": "93210cf86842913a000624598b965fc3449c6fd12a6efabb8e8b893e98b8364a",
+    "independentTests": 5,
+    "ownerTests": 49,
+    "result": {
+      "rawPrivateReport": "/private/tmp/ap97-v7-increase.json",
+      "rawReportSha256": "28e87f30005239c54fe17c41c0ff4fb86d4f66b4653ed678f5a068797c80b703",
+      "total": 54,
+      "passed": 54,
+      "failed": 0,
+      "tests": [
+        {
+          "file": "tests/ap-system/sandbox-bootstrap.test.ts",
+          "name": "explicit Auth0 sandbox operator bootstrap (offline) accepts exact sandbox resource prefixes without relaxing scope or path validation",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/sandbox-bootstrap.test.ts",
+          "name": "explicit Auth0 sandbox operator bootstrap (offline) prepares only reserved deployment settings, private distinct credentials, and identity-only gateway configuration",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/sandbox-bootstrap.test.ts",
+          "name": "explicit Auth0 sandbox operator bootstrap (offline) requires explicit same-issuer humans, binds each independent seat once, and replays without mutations",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/sandbox-bootstrap.test.ts",
+          "name": "explicit Auth0 sandbox operator bootstrap (offline) reconciles a lost admin:createRun reply against exact backend hashes without repeating successful setup",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/sandbox-bootstrap.test.ts",
+          "name": "explicit Auth0 sandbox operator bootstrap (offline) reconciles a lost demoPayments:configure reply against exact backend hashes without repeating successful setup",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/sandbox-bootstrap.test.ts",
+          "name": "explicit Auth0 sandbox operator bootstrap (offline) refuses another existing run, changed immutable configuration, and changed deployment secrets",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/sandbox-bootstrap.test.ts",
+          "name": "explicit Auth0 sandbox operator bootstrap (offline) rejects wrong ports, wrong live instance, symlinked backend config and insecure saved files before backend mutation",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/sandbox-bootstrap.test.ts",
+          "name": "explicit Auth0 sandbox operator bootstrap (offline) rejects fake or nonowned configuration and never returns input values from validation errors",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/sandbox-bootstrap.test.ts",
+          "name": "explicit Auth0 sandbox operator bootstrap (offline) uses only the pinned deployment environment protocol and fails closed on a malformed query reply",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/sandbox-bootstrap.test.ts",
+          "name": "explicit Auth0 sandbox operator bootstrap (offline) protects inspection from unauthenticated callers and returns only comparison hashes",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/v7-increase-identities.test.ts",
+          "name": "retains distinct sandbox-prefixed debit/return identities and refuses a prefix-stripped alias in any financial link",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/v7-increase-identities.test.ts",
+          "name": "does not normalize a scoped account prefix or rewrite an immutable body to permit sending",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/v7-increase-identities.test.ts",
+          "name": "rejects path, repeated-prefix, cross-kind and control characters before transport",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/v7-increase-identities.test.ts",
+          "name": "requires exact account ownership before sandbox simulation and keeps simulation on its pinned origin",
+          "status": "passed"
+        },
+        {
+          "file": "tests/ap-system/v7-increase-identities.test.ts",
+          "name": "binds signature to exact prefixed event ID, raw body and time while rejecting another environment",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts preserves exact sandbox-prefixed identities through submission and read-only recovery",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts verifies sandbox-prefixed signed events without accepting altered signatures",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts finds the original transfer by scoped operation key with GET and no resend authority",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts finds a known transfer using the original command even without an evidence-service resolver",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts keeps missing known identity and incomplete key scans unresolved",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts rejects malformed or conflicting lookup evidence for operator review",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts validates every scope dimension before recovery HTTP and preserves failed reads",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts pins exact upstream subset and fixture hashes",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts replays exactly the original POST and key after a lost acceptance response and fresh worker",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts sends saved noncanonical whitespace/key-order bytes and refuses missing or altered saved requests",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts rejects changed hash, organization, run, account, environment, amount and destination before HTTP",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts normalizes HTTP 401 without exposing credentials or bank details",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts normalizes HTTP 403 without exposing credentials or bank details",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts normalizes HTTP 429 without exposing credentials or bank details",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts normalizes HTTP 409 without exposing credentials or bank details",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts normalizes HTTP 500 without exposing credentials or bank details",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts normalizes HTTP 503 without exposing credentials or bank details",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts does not post submitted status without settlement evidence",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts maps submitted plus settlement and a verified posted debit to settled",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts fails closed for inconsistent bank transaction evidence 0",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts fails closed for inconsistent bank transaction evidence 1",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts fails closed for inconsistent bank transaction evidence 2",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts requires both original and distinct return transaction when return is seen first",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts rejects response linked to another beneficiary or account",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts preserves unmatched account activity and performs account-filtered paginated full scans",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts returns failed rows separately, bounds lookup concurrency and stops new lookups after a rate limit",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts scans the account for possible sends before an operator release, read-only and filtered from the first attempt",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts preserves event tail cursor after empty page and polls oldest first",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts reads balance from the documented balance_lookup object (which has no currency field)",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts reports missing sandbox credentials as not run and keeps controls off provider",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts harness submits only a pending submission and skips an already submitted transfer",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts harness fails closed on review, terminal or unknown submission states",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts harness recognizes automatic submission racing the simulation without repeating the POST",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts harness preserves simulation failures and verifies ownership again after a submission race",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase sandbox adapter contracts harness rejects cross-account control before issuing a simulation POST",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase signed raw-byte notification ingress verifies raw bytes and persists resource identity without treating it as settlement",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase signed raw-byte notification ingress accepts transaction notifications as durable hints before fetching account-scoped evidence",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase signed raw-byte notification ingress rejects tampering, serialization changes, stale timestamps, wrong secret and mismatched signed IDs",
+          "status": "passed"
+        },
+        {
+          "file": "src/integrations/banking/increase.test.ts",
+          "name": "Increase signed raw-byte notification ingress accepts one valid signature during rotation",
+          "status": "passed"
+        }
+      ]
+    }
+  },
+  "typechecks": {
+    "root": "PASS",
+    "backend": "PASS",
+    "tests": "PASS"
+  },
+  "externalCallsByVerifier": 0
+}

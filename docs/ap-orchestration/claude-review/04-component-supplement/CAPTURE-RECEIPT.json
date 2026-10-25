@@ -1,0 +1,98 @@
+{
+  "format": "ap97-component-supplement-v1",
+  "createdAt": "2026-10-25T11:23:19.313664+00:00",
+  "applicationRevision": "63cde7bb9531c6fbdf5912c26eb5f8b0b646e4ef",
+  "observer": "scripts/ap-system/review-export",
+  "observerHashes": {
+    "README.md": "70c210f5fc94b5d8996d826a67ebb93fadbe9f5501d498ba98a8c8e7451d7561",
+    "capture.config.mjs": "4c4e101b696fd6d773712ea6a3d3108186e4d1f6e4fad0900adca085ae935a71",
+    "capture.setup.mjs": "641272c2e639494c72412ef19de71590a7bb5608ed0b43e9c486c1c4dcea9a8d",
+    "selection.json": "0a9b02a94a427e86312f9b71bfdbbb00b2ea03496b9f0e6eeb61b0bc7224fa3e"
+  },
+  "caseVariantCounts": {
+    "C02": 1,
+    "C04": 2,
+    "C05": 2,
+    "C06": 1,
+    "C07": 1,
+    "C08": 1,
+    "C09": 1,
+    "C10": 1,
+    "C11": 2,
+    "C12": 3,
+    "C13": 2,
+    "C14": 1,
+    "C15": 2,
+    "C16": 3,
+    "C17": 1,
+    "C18": 1,
+    "C19": 1,
+    "C20": 1,
+    "C21": 2,
+    "C22": 2
+  },
+  "variantCount": 31,
+  "databaseCount": 31,
+  "journalRows": 74,
+  "distinctOriginalFiles": 61,
+  "distinctPolicyFiles": 12,
+  "checks": [
+    {
+      "invocation": "a",
+      "passed": 28,
+      "failed": 0,
+      "filteredOut": 162,
+      "reportSha256": "a60b758a963368df6967cd0b11f6cbc8ac46717d935cf7a00c04ceb740850cdc",
+      "reportLocation": "/private/tmp/ap97-claude-component-20261025-a-report.json",
+      "selectionSha256": "3ac34009cf39a1fb42f68598487ddbd7ba5e1fd6f338efe5353fc872c7da809d",
+      "selectionSource": "DB-AND-EXECUTED-TESTS.zip:observer/selection.initial.json"
+    },
+    {
+      "invocation": "b",
+      "passed": 2,
+      "failed": 0,
+      "filteredOut": 1,
+      "reportSha256": "ebdd6d40a04e1e07ef700aa43d862d2cd1b90279a016f6d20c2f201d4e1831ad",
+      "reportLocation": "/private/tmp/ap97-claude-component-20261025-b-report.json",
+      "selectionSha256": "43b18b22a182f0b7355dc81e787d9c94cc252b8dd195845dfefcde66d4ab92b7",
+      "selectionSource": "DB-AND-EXECUTED-TESTS.zip:observer/selection.second.json"
+    },
+    {
+      "invocation": "c",
+      "passed": 1,
+      "failed": 0,
+      "filteredOut": 14,
+      "reportSha256": "a9b84abf38296d2b1e093b59b385b494e266475220a1f98f9387c7f5521b4a6b",
+      "reportLocation": "/private/tmp/ap97-claude-component-20261025-c-report.json",
+      "selectionSha256": "0a9b02a94a427e86312f9b71bfdbbb00b2ea03496b9f0e6eeb61b0bc7224fa3e",
+      "selectionSource": "scripts/ap-system/review-export/selection.json"
+    }
+  ],
+  "externalProviderCalls": "none; only local fixtures and protocol doubles",
+  "independentClaudeReview": "not_executed",
+  "ci": "deferred; not run",
+  "limitations": [
+    "C02 retains four original synthetic PDFs with manually constructed candidate facts; other exact component originals are57 text stand-ins. No new parser run or real supplier evidence.",
+    "Test source may explicitly seed/adversarially mutate data.",
+    "Coverage is these variants, not all alternatives in C04-C22 or a combined end-to-end workflow.",
+    "Actual QBO/Increase wire evidence and user financial authorization remain separate.",
+    "C19/C22 protocol helpers promote source metadata scope without promoting14 original chunk rows. Exact byte hashes verified from retained chunks; scoped source retrieval not verified."
+  ],
+  "captureHistory": [
+    "First local run captured28 passing scenarios; C11 title filter matched no cases.",
+    "Corrected only the observer selection string and ran close-capacity.test.ts; two additional passing scenarios captured. Existing application/test assertions unchanged.",
+    "Third invocation captured one original-PDF quantity discrepancy scenario and its no-transfer FakeBank trace; input facts are manually constructed, no parser rerun.",
+    "Initial packaging refused a C19 source row without same-scope chunks. Final packaging retains14 source/chunk scope mismatches across C19 and C22, validates exact byte hashes, and explicitly does not claim successful scoped source API access."
+  ],
+  "verification": {
+    "actualJournalRowsMatchRawDatabase": 74,
+    "balancedIntegerCentJournals": 74,
+    "sourceChunkScopeMismatches": 14,
+    "knownCredentialPatternsFound": 0,
+    "productionOrTestAssertionChanges": 0
+  },
+  "originalRepresentations": {
+    "syntheticTextFiles": 57,
+    "originalSyntheticPdfs": 4
+  }
+}

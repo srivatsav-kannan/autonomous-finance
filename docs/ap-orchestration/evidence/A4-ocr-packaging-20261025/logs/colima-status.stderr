@@ -1,0 +1,6 @@
+time="2026-10-25T03:44:16-07:00" level=info msg="colima is running using macOS Virtualization.Framework"
+time="2026-10-25T03:44:16-07:00" level=info msg="arch: aarch64"
+time="2026-10-25T03:44:16-07:00" level=info msg="runtime: docker"
+time="2026-10-25T03:44:16-07:00" level=info msg="mountType: virtiofs"
+time="2026-10-25T03:44:16-07:00" level=info msg="docker socket: unix:///Users/junjiexiong/.colima/default/docker.sock"
+time="2026-10-25T03:44:16-07:00" level=info msg="containerd socket: unix:///Users/junjiexiong/.colima/default/containerd.sock"

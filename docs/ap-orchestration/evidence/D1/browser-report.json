@@ -1,0 +1,152 @@
+{
+  "scope": "UI component fixture only; no backend/provider/accounting verification",
+  "screenshots": [
+    "derived-light-1440.png",
+    "derived-light-390.png",
+    "derived-dark-1440.png",
+    "derived-dark-390.png",
+    "unresolved-light-1440.png"
+  ],
+  "checks": [
+    "Native region renders against exact source headers",
+    "Derived multiline evidence stays as two regions",
+    "Desktop and phone in light/dark have no horizontal overflow",
+    "Unresolved evidence displays only labeled coarse context",
+    "Mismatched preview hash hides every highlight",
+    "Field review then bill approval never auto-prepares or authorizes payment",
+    "Independent payment confirmation sends AP and payment snapshot hashes",
+    "No uncaught browser exceptions"
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases/component-fixture-1042"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases/component-fixture-1042"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/sources/ui-source/revisions/1/pages/1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/sources/ui-source/revisions/1/pages/1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/sources/ui-source/revisions/1/pages/1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/sources/ui-source/revisions/1/pages/1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/sources/ui-source/revisions/1/pages/1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/sources/ui-source/revisions/1/pages/1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/sources/ui-source/revisions/1/pages/1"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ap-system/cases/component-fixture-1042/review"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases/component-fixture-1042"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/sources/ui-source/revisions/1/pages/1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/sources/ui-source/revisions/1/pages/1"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ap-system/cases/component-fixture-1042/approve"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases/component-fixture-1042"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/sources/ui-source/revisions/1/pages/1"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/sources/ui-source/revisions/1/pages/1"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ap-system/cases/component-fixture-1042/payments"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/payments/fixture-payment"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases/component-fixture-1042"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/payments/fixture-payment"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ap-system/cases/component-fixture-1042/payments/fixture-payment/authorize"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ap-system/cases/component-fixture-1042"
+    }
+  ],
+  "status": "passed",
+  "baseline_commit": "ac62854",
+  "adopted_source": "d24f22007a36722831a521d7387ee8f5c92c5803",
+  "spec_sha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract_version": "ap-evidence-v1",
+  "source_sha256": {
+    "console/src/APSystemWorkspace.tsx": "b1a238f34776694704af63846e86eeada2bfdc04b79dd3c7daaf77e98c089be7",
+    "console/src/APSystemEvidence.tsx": "d88c0638f1e626ce7102da4cccbee95d02a249be03b9519dfd2b609c7679d58d",
+    "console/src/apSystem.css": "14330d5e32c794c02ef7140dc8d01d13fd0e3819e338eee2b470c9c35ba38da3",
+    "console/src/apSystemApi.ts": "4c625590008c2a56532fbd45a044356ffa93f1209510a0579f0f70c95f7dfa51",
+    "console/src/apSystemView.ts": "a80312542372af7e1d365a790ae7a8e2954205e90978d4b36d71a0da36ef083a",
+    "console/src/App.tsx": "c2f9526783731f0a3c202176d6b2d916a2a40b432650419ab801f9a4dc24a71f"
+  }
+}

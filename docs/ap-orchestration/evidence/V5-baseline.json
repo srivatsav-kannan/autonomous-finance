@@ -1,0 +1,427 @@
+{
+  "reviewer": "/root/verifier",
+  "reviewKind": "independent agent engineering review",
+  "baseline": "391f2e9fc027f79babd736fe83047bc253bab1fa",
+  "checkpointCommit": "f82ed1f6297c695f1e2baa3c4928e86dbc06fb1f",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "testSourceSha256": {
+    "tests/ap-system/v5-close.test.ts": "2e638331c60a42612627affc4e1b079a283cdd57e4fa12ea58740efdfe61bec4",
+    "tests/ap-system/v5-governed-credit.test.ts": "f6cad77c488efc62986a4df6faac65db9ab9cdf4df155dec60d1436b0ce36b6b",
+    "tests/ap-system/v5-quickbooks.test.ts": "14ef9ddf821d4e17492a78f86a412ae226699956a4d03f6224c51466c7534985",
+    "docs/ap-orchestration/evidence/V5-expectations.json": "ffe3c5eeabfb55e09ed4845cbe27c555e57cd2e035061213f2b415cec40bb47f"
+  },
+  "run": {
+    "rawPath": "/private/tmp/ap97-v5-baseline-results.json",
+    "rawSha256": "737c19af065c3f32ab6ec4ed982219849d707e149c210f45b11c4607029e175d",
+    "total": 65,
+    "passed": 62,
+    "failed": 3,
+    "skipped": 0,
+    "success": false,
+    "startTime": 1792922500199,
+    "files": [
+      {
+        "path": "tests/ap-system/close.test.ts",
+        "sha256": "8f94be984c940e69e5357af437296f4d5da777754fb5f7f7743c6b9a1132cad4",
+        "independent": false,
+        "tests": [
+          {
+            "name": "B4 close and supplier statements closes reconciled unpaid AP with an independently reviewed opening and statement, preserving carryforward",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 close and supplier statements rejects unmatched statement differences until evidence-backed human resolutions, and malformed arithmetic is never waived",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 close and supplier statements does not assume zero opening balances or bypass B4 through legacy close",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 close and supplier statements changed journals invalidate a close proposal and expose AP/GL difference",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 close and supplier statements locks posting and requires an exact independently approved reopen before adjustment",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 received but unbilled accruals recognizes accrued cost before invoice, carries it through close, and reverses exactly once atomically with later invoice",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 received but unbilled accruals prevents duplicate accrual units and bounds explicit partial reversal",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 received but unbilled accruals tracks standalone receipt originals and restricts supported dispositions to source blockers",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 adversarial period boundaries reclassifies only cost remaining after a linked return and holds later credit allocations changed by that correction",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 adversarial period boundaries requires the actual nonzero opening cash balance from all prior periods",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 adversarial period boundaries holds copied accrual originals despite renamed parser lines or changed SKU interpretation",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 adversarial period boundaries applies an explicit partial accrual with the invoice and leaves only unrecognized residual units",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 adversarial period boundaries reverses every allocated accrual cent once and prevents reversal before original accounting date",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 adversarial period boundaries requires complete statement movements even when omitted bill and credit offset to zero",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 adversarial period boundaries carries unpaid prior-period AP and blocks reopening an earlier period beneath a later close",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 adversarial period boundaries keeps a late closed-period bank posting as an owned exception until approved reopen",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 adversarial period boundaries retains failed extraction as a source disposition blocker and rejects retired statement reviewers",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 authoritative accounting exports exports only the exact approved accrual with retained human seat authority",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 authoritative accounting exports exports manual reversals by action or application with the same immutable effect identity",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 authoritative accounting exports exports the exact invoice-triggered reversal from its approved business plan without a second posting",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B4 authoritative accounting exports exports approved cost correction links and holds a retired retained voter or changed journal",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/governed-payment-credits.test.ts",
+        "sha256": "c5734f28ee6ffa4f63fd7651b4642c8fa3d25be28ed340a2515e000c32ff2b98",
+        "independent": false,
+        "tests": [
+          {
+            "name": "Governed payment credits retains the original legacy path only for runs without an active business policy",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Governed payment credits does not reserve an unlinked historical credit under an active business policy",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Governed payment credits allows a recognized linked credit through request, independent approval and first dispatch",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Governed payment credits rejects broken credit linkage at request with no bank attempt",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Governed payment credits rejects broken credit linkage at approval with no bank attempt",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Governed payment credits rejects broken credit linkage at dispatch with no bank attempt",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Governed payment credits holds a credit whose approving human is no longer active",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "Governed payment credits preserves a possibly sent original after credit authority changes",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/quickbooks-business-protocol.test.ts",
+        "sha256": "05c6d5a01443a92780b08135104622350ad26d1ad6ad1c46357e4d1c6a4312f7",
+        "independent": false,
+        "tests": [
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) preserves cash+credit economics across original Bill and restored JournalEntry",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) replicates approved return, resolves held evidence only after readback, and pays exact restored allocation",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) never resolves ambiguous journal creation or retries with a new request ID",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) blocks externally consumed restored principal before a replacement POST",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) preserves original signed discount GL on Bill and linked VendorCredit through readback",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) posts exact Bill, VendorCredit and credit-only application; retry preserves original approval author",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) posts cash+credit with actual cash total and blocks missing or insufficient external credit",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) keeps an ambiguous zero-net response unknown with its fixed identity and original approval",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) persists a returned-evidence hold even for bill-only submit without altering successful history",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO business dispatcher HTTP protocol (mocked) refuses changed requester identity before first external POST and requires journal authorization",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/quickbooks-business.test.ts",
+        "sha256": "51b240d0a006c041ed04bd286e5a727e13f9ebc5e494a1228976c2f6c4951421",
+        "independent": false,
+        "tests": [
+          {
+            "name": "B3 recognized accounting exports exports 3850 approved cents without rewriting the 7700-cent original candidate",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "B3 recognized accounting exports still refuses an altered posted B3 recognition journal",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO explicit credit and partial cash applications recognizes the original-linked credit, then applies a zero-cash immutable receipt without new local journal/command",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO explicit credit and partial cash applications exports partial cash and cash+credit using gross application separately from actual bank amount",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO explicit credit and partial cash applications surfaces any historical return on bill-only export, not only a requested payment",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "QBO explicit credit and partial cash applications rejects wrong-case application IDs, altered consumed receipts, and altered signed credit allocation totals",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/quickbooks-corrections.test.ts",
+        "sha256": "9927d98bed0eb663c319de14cbc71a04898529502703f8a52dabbdf6713dc56f",
+        "independent": false,
+        "tests": [
+          {
+            "name": "controller-proposed immutable QBO return authority reserves exact restored capacity and rejects duplicates, wrong sums and over-allocation",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "controller-proposed immutable QBO return authority requires explicit sequential human approval and preserves existing cash/AP journals",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "controller-proposed immutable QBO return authority rejects non-controller proposal, mismatched return, unposted/closed journal and unauthenticated read",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "controller-proposed immutable QBO return authority revalidates current evidence, policy and distinct retained human seats",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/v5-close.test.ts",
+        "sha256": "2e638331c60a42612627affc4e1b079a283cdd57e4fa12ea58740efdfe61bec4",
+        "independent": true,
+        "tests": [
+          {
+            "name": "V5 independent close accounting does not close a standalone two-unit receipt after partial accrual without accounting for remaining units",
+            "status": "failed",
+            "failure": "Error: promise resolved \"{ p: { \u2026(4) }, result: { \u2026(5) } }\" instead of rejecting"
+          },
+          {
+            "name": "V5 independent close accounting does not close a standalone two-unit receipt after fully_reversed accrual without accounting for remaining units",
+            "status": "failed",
+            "failure": "Error: promise resolved \"{ p: { \u2026(4) }, result: { \u2026(5) } }\" instead of rejecting"
+          },
+          {
+            "name": "V5 independent close accounting rejects a close whose reviewed snapshot is changed by a new standalone original before final approval",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "V5 independent close accounting revalidates competing reclassification capacity and exports only the approved exact noncash change",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "V5 independent close accounting rejects a second pending reversal after the first consumes its quantity and preserves exact remaining allocation cents",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "V5 independent close accounting atomically reverses only the residual accrued unit when the two-unit invoice is recognized and prevents reaccrual",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/v5-governed-credit.test.ts",
+        "sha256": "f6cad77c488efc62986a4df6faac65db9ab9cdf4df155dec60d1436b0ce36b6b",
+        "independent": true,
+        "tests": [
+          {
+            "name": "V5 independent governed credit versus durable bank execution holds new sends but preserves exact original recovery after credit linkage changes, possible send=false",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "V5 independent governed credit versus durable bank execution holds new sends but preserves exact original recovery after credit linkage changes, possible send=true",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      },
+      {
+        "path": "tests/ap-system/v5-quickbooks.test.ts",
+        "sha256": "14ef9ddf821d4e17492a78f86a412ae226699956a4d03f6224c51466c7534985",
+        "independent": true,
+        "tests": [
+          {
+            "name": "V5 independent external accounting safeguards preserves signed discount costs and a partial cash/credit application exactly without changing original Bill",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "V5 independent external accounting safeguards rejects missing, wrong-plan, stale and future first-write authorizations while preserving zero attempts",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "V5 independent external accounting safeguards rejects a preview hash that does not match the authenticated plan before any provider call",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "V5 independent external accounting safeguards recovers an accepted return journal after reopen without a new POST and resolves only covered historical holds",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "V5 independent external accounting safeguards does not treat a malformed successful vendor-query envelope as proof that restored principal is unused",
+            "status": "failed",
+            "failure": "Error: promise resolved \"{ \u2026(19) }\" instead of rejecting"
+          },
+          {
+            "name": "V5 independent external accounting safeguards refuses duplicate external application evidence before a replacement POST",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "V5 independent external accounting safeguards refuses mixed_links external application evidence before a replacement POST",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "name": "V5 independent external accounting safeguards refuses fractional_cent external application evidence before a replacement POST",
+            "status": "passed",
+            "failure": null
+          }
+        ]
+      }
+    ]
+  },
+  "typecheck": {
+    "command": "./node_modules/.bin/tsc --noEmit -p tsconfig.tests.json --pretty false",
+    "exitCode": 0
+  },
+  "findings": [
+    {
+      "id": "V5-F1",
+      "priority": "high",
+      "testsFailed": 2,
+      "status": "open at immutable baseline",
+      "fixCandidate": "354cb3603c2c723d532969be5c593e3f2b03782e"
+    },
+    {
+      "id": "V5-F2",
+      "priority": "medium",
+      "testsFailed": 1,
+      "status": "open at immutable baseline",
+      "fixCandidate": "78532b33f0c5752525c7a2f9c148c92887bf6387"
+    }
+  ]
+}

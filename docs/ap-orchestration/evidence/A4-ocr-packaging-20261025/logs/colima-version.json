@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/colima",
+    "version"
+  ],
+  "startedUtc": "2026-10-25T10:44:15.265760+00:00",
+  "durationSeconds": 0.389,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "logs/colima-version.stdout",
+  "stderr": "logs/colima-version.stderr"
+}

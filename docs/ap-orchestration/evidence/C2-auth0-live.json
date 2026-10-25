@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-25T10:39:02.353329+00:00",
+  "liveCode": "b3c3bc6",
+  "identityMode": "real Auth0 normal browser login, Convex verified identity, explicit operator binding",
+  "provider": "Auth0 development tenant",
+  "humanCount": 1,
+  "runId": "ap97-auth0-live-20261025",
+  "caseId": "kd7a1bytda9wteyr3ek1srj8qn8gy4xr",
+  "caseRevision": 1,
+  "invoice": "INV-1001",
+  "currency": "USD",
+  "amountCents": 67860,
+  "intakeTransport": "scoped server AP agent; browser upload not claimed",
+  "sourceCount": 4,
+  "cacheJobs": 4,
+  "verifiedCacheArtifacts": 13,
+  "newParserRequests": 0,
+  "independentExpectedFields": {
+    "matched": 22,
+    "total": 22
+  },
+  "fieldEvidence": {
+    "total": 35,
+    "native": 33,
+    "unresolved": 2
+  },
+  "actualBrowser": [
+    "normal user-completed sign-in",
+    "verified identity shown before binding",
+    "scoped case access after explicit binding",
+    "original invoice raster displayed",
+    "field and bill review remain separate from payment authorization"
+  ],
+  "humanFieldReview": "pending",
+  "billApproval": "pending",
+  "paymentAuthorization": "pending",
+  "paymentWorkerStarted": false,
+  "increaseTransfers": 0,
+  "qboAccountingTransactions": 0,
+  "practitionerSignoff": "pending",
+  "privateProof": "Desktop/calhacks/var/ap-environment/d2-final/auth0-workspace-access.jpg and auth0-review-ready.jpg; identifiers remain private",
+  "limitations": [
+    "Live logout/expiry/wrong-issuer/wrong-audience/second-user tests not yet performed",
+    "No actual operator field/bill/payment decision claimed",
+    "No accounting or bank transaction acceptance claimed"
+  ]
+}

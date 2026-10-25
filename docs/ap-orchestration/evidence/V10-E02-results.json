@@ -1,0 +1,407 @@
+{
+  "review": "V10 E02 independent credential-independent review",
+  "runtime": "ed372a40570d714b5b893c6e4e86e25f2427bc80",
+  "sourcePatches": [
+    "8894bfb9cce353573d294c5e12ebe730208d6709",
+    "ae0a3d90f24ec72ae783603853b5528ea9bab1cf",
+    "2499b60ed608046402431dd6c833d460c1b4f89d",
+    "c58e88a0eba7dfd00305391d875697bb097fd776"
+  ],
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contract": "ap-evidence-v1",
+  "independent": {
+    "raw": {
+      "path": "/private/tmp/ap97-v10-e02-independent.json",
+      "sha256": "5273e6285487038cbf1073df37e674fac9244bd65458612ee38710d04933b8b7"
+    },
+    "result": {
+      "total": 21,
+      "passed": 21,
+      "failed": 0
+    },
+    "suites": [
+      {
+        "file": "tests/ap-system/v10-local-dimensions.test.ts",
+        "assertions": [
+          {
+            "name": "conserves a four-coordinate invoice through account correction and two exact half credits without borrowing another department or project path",
+            "status": "passed"
+          },
+          {
+            "name": "keeps multi-department accrual, correction and partial reversal exact through authoritative export and per-line QBO location mapping",
+            "status": "passed"
+          },
+          {
+            "name": "rejects final posting after a dimension policy change while preserving historical dimension exports",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/v10-project-catalog.test.ts",
+        "assertions": [
+          {
+            "name": "returns only a complete realm-checked catalog and keeps successful proof bytes private",
+            "status": "passed"
+          },
+          {
+            "name": "expires the grant between project reads without returning a partial catalog or issuing the next request",
+            "status": "passed"
+          },
+          {
+            "name": "rejects clientHash changes during 401 rotation before sending the replacement token",
+            "status": "passed"
+          },
+          {
+            "name": "rejects grantId changes during 401 rotation before sending the replacement token",
+            "status": "passed"
+          },
+          {
+            "name": "rejects authorizedAt changes during 401 rotation before sending the replacement token",
+            "status": "passed"
+          },
+          {
+            "name": "rejects scopes changes during 401 rotation before sending the replacement token",
+            "status": "passed"
+          },
+          {
+            "name": "rejects overlarge streamed bodies and hostile request identities without leaking provider diagnostics",
+            "status": "passed"
+          },
+          {
+            "name": "never returns a completed catalog after TTL expires while receiving the last body",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/v10-qbo-dimensions.test.ts",
+        "assertions": [
+          {
+            "name": "maps actual recognized invoice and linked credit with exact locations, distinct projects/customers and reviewed billability",
+            "status": "passed"
+          },
+          {
+            "name": "never accepts missing department in lost-response recovery and never reposts the original request",
+            "status": "passed"
+          },
+          {
+            "name": "never accepts missing project in lost-response recovery and never reposts the original request",
+            "status": "passed"
+          },
+          {
+            "name": "never accepts extra line department in lost-response recovery and never reposts the original request",
+            "status": "passed"
+          },
+          {
+            "name": "never accepts extra header class in lost-response recovery and never reposts the original request",
+            "status": "passed"
+          },
+          {
+            "name": "never accepts wrong customer in lost-response recovery and never reposts the original request",
+            "status": "passed"
+          },
+          {
+            "name": "never accepts changed billability in lost-response recovery and never reposts the original request",
+            "status": "passed"
+          },
+          {
+            "name": "keeps changed mapping policy out of a prepared operation and requires fresh project verification before the first POST",
+            "status": "passed"
+          },
+          {
+            "name": "does not infer department authority for local cost-only settlement even after an observed synthetic settlement",
+            "status": "passed"
+          },
+          {
+            "name": "keeps merchant processing disabled through durable prepared state, lost response and saved readback",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  "owner": {
+    "raw": {
+      "path": "/private/tmp/ap97-v10-e02-owner.json",
+      "sha256": "91bbc0f5a7c51618775c6bba9b4913a96853c3b546c100e9d9f4e95825f7c6a4"
+    },
+    "result": {
+      "total": 49,
+      "passed": 49,
+      "failed": 0
+    },
+    "suites": [
+      {
+        "file": "tests/ap-system/local-dimensions.test.ts",
+        "assertions": [
+          {
+            "name": "Governed local cost dimensions holds absent policy and unknown dimensions without posting, but retains legacy null behavior",
+            "status": "passed"
+          },
+          {
+            "name": "Governed local cost dimensions retains exact cost dimensions on tax-bearing lines, freight and signed discounts, and rejects changed posted dimensions",
+            "status": "passed"
+          },
+          {
+            "name": "Governed local cost dimensions partitions capacity across identical account/store with distinct department and project",
+            "status": "passed"
+          },
+          {
+            "name": "Governed local cost dimensions retains original credit dimensions and rejects cross-dimension corrected shares",
+            "status": "passed"
+          },
+          {
+            "name": "Governed local cost dimensions preserves accrued dimensions across corrected partial reversals and immutable exports",
+            "status": "passed"
+          },
+          {
+            "name": "Governed local cost dimensions holds new recognition of historical dimensions after the policy is retired",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/quickbooks-accounting-only.test.ts",
+        "assertions": [
+          {
+            "name": "QBO accounting-only merchant-processing boundary rejects true and malformed processing flags before token lookup or HTTP",
+            "status": "passed"
+          },
+          {
+            "name": "QBO accounting-only merchant-processing boundary preserves legacy payload bytes and accepts explicitly disabled processing",
+            "status": "passed"
+          },
+          {
+            "name": "QBO accounting-only merchant-processing boundary rejects merchant processing during read verification, recovery and initial response",
+            "status": "passed"
+          },
+          {
+            "name": "QBO accounting-only merchant-processing boundary does not certify a processing request even if provider echoes it, while metadata remains additive",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/quickbooks-close.test.ts",
+        "assertions": [
+          {
+            "name": "approved B4 journals to QBO mock protocol exports case-less accrual then exact partial reversal by either selector with stable identity",
+            "status": "passed"
+          },
+          {
+            "name": "approved B4 journals to QBO mock protocol holds missing class or original external history and rejects stale current authority",
+            "status": "passed"
+          },
+          {
+            "name": "approved B4 journals to QBO mock protocol recovers a lost create response under the same identity without a second post",
+            "status": "passed"
+          },
+          {
+            "name": "approved B4 journals to QBO mock protocol preserves exact approved cost reclassification dimensions and forbids cash/AP substitution",
+            "status": "passed"
+          },
+          {
+            "name": "maps approved per-line JE location, preserves null liability location and verifies exact readback",
+            "status": "passed"
+          },
+          {
+            "name": "holds project JE rather than replacing vendor Entity or writing read-only billability",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/quickbooks-dimensions.test.ts",
+        "assertions": [
+          {
+            "name": "explicit QBO department/project mapping preserves store Class, document location and project/customer without making expenses billable",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping keeps missing policy an owned hold in preview and plan",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping requires both new fields together while preserving explicit legacy and null semantics",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping holds heterogeneous departments including null; no line is dropped",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping holds heterogeneous departments including unmapped; no line is dropped",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping requires literal department-as-location declaration and reviewed mapping",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping holds missing project catalog evidence",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping holds expired project catalog evidence",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping holds realm project catalog evidence",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping holds entitlement project catalog evidence",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping holds relation project catalog evidence",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping holds inactive project catalog evidence",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping holds duplicate project catalog evidence",
+            "status": "passed"
+          },
+          {
+            "name": "explicit QBO department/project mapping rejects absent billability instead of defaulting it",
+            "status": "passed"
+          },
+          {
+            "name": "fresh provider catalog gates and dimensional readback static catalog does not authorize a project submit without trusted current verifier",
+            "status": "passed"
+          },
+          {
+            "name": "fresh provider catalog gates and dimensional readback verifies current project relation, customer, location and location preference using read-only protocol",
+            "status": "passed"
+          },
+          {
+            "name": "fresh provider catalog gates and dimensional readback rejects changed current project relation despite valid reviewed snapshot",
+            "status": "passed"
+          },
+          {
+            "name": "fresh provider catalog gates and dimensional readback holds unavailable current reference /preferences",
+            "status": "passed"
+          },
+          {
+            "name": "fresh provider catalog gates and dimensional readback holds unavailable current reference /department/10",
+            "status": "passed"
+          },
+          {
+            "name": "fresh provider catalog gates and dimensional readback holds unavailable current reference /customer/12",
+            "status": "passed"
+          },
+          {
+            "name": "fresh provider catalog gates and dimensional readback rejects missing/changed/unexpected ClassRef while accepting non-dimensional metadata",
+            "status": "passed"
+          },
+          {
+            "name": "fresh provider catalog gates and dimensional readback rejects missing/changed/unexpected DepartmentRef while accepting non-dimensional metadata",
+            "status": "passed"
+          },
+          {
+            "name": "fresh provider catalog gates and dimensional readback rejects missing/changed/unexpected ProjectRef while accepting non-dimensional metadata",
+            "status": "passed"
+          },
+          {
+            "name": "fresh provider catalog gates and dimensional readback rejects missing/changed/unexpected CustomerRef while accepting non-dimensional metadata",
+            "status": "passed"
+          },
+          {
+            "name": "dimension lifecycle gates keeps the immutable operation prepared with no POST and no invented external receipt when project verification is unavailable",
+            "status": "passed"
+          },
+          {
+            "name": "dimension lifecycle gates holds department payment and restored allocation until their local journals carry that authority",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "tests/ap-system/quickbooks-project-catalog.test.ts",
+        "assertions": [
+          {
+            "name": "Read-only authorized QBO project catalog queries exact IDs on the sandbox only and retains private hashed evidence without token leakage",
+            "status": "passed"
+          },
+          {
+            "name": "Read-only authorized QBO project catalog does not read or call anything on configuration and rejects missing, foreign, expired or accounting-only grants before HTTP",
+            "status": "passed"
+          },
+          {
+            "name": "Read-only authorized QBO project catalog uses separate private grant/config files and refuses unsafe permissions",
+            "status": "passed"
+          },
+          {
+            "name": "Read-only authorized QBO project catalog rejects partial GraphQL data, wrong identity/realm/customer, unsupported state and missing envelopes",
+            "status": "passed"
+          },
+          {
+            "name": "Read-only authorized QBO project catalog fails closed for duplicate IDs, oversized requests/responses, expired read and denied entitlement",
+            "status": "passed"
+          },
+          {
+            "name": "Read-only authorized QBO project catalog bounds retries, reuses the exact query and accepts only an externally rotated token of the same grant",
+            "status": "passed"
+          },
+          {
+            "name": "Read-only authorized QBO project catalog supplies fresh actual transport evidence to accounting mapping verification",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  "independentBreakdown": {
+    "localLifecycle": 3,
+    "qboAndDurableRecovery": 10,
+    "projectCatalog": 8
+  },
+  "typechecks": {
+    "root": "passed",
+    "backend": "passed",
+    "tests": "passed"
+  },
+  "testSha256": {
+    "tests/ap-system/v10-dimension-fixture.ts": "433c981fe329e270675689fb2dd157e7614a44decbe05ca27434152443506b59",
+    "tests/ap-system/v10-local-dimensions.test.ts": "028794fbf082051646fdbebc20c0f77242f87bcd253e4700fe6e2b2b37573832",
+    "tests/ap-system/v10-qbo-dimensions.test.ts": "e79e162a5e6547faea505319ab3c004e01f2e9320755c094d078271d37a292ce",
+    "tests/ap-system/v10-project-catalog.test.ts": "84860702d7304b549fffffb7a3ce065a4113a18959474494c84896290d05d094"
+  },
+  "reviewedSourceSha256": {
+    "src/ap-system/gl-dimensions.ts": "4f41dd1716c59211061f122364e4617ab8d214416a60b1033c0f9f15a6477104",
+    "src/ap-system/quickbooks/dimensions.ts": "4e930cf5e99d7236c2edc066fd00d32009a1ef35550355de68ebca99a20c832a",
+    "src/ap-system/quickbooks/project-catalog.ts": "9409eeb8366836fe1dd4e78cae61dd7b16833eabea6079b99f02df5e22773efa",
+    "src/ap-system/quickbooks/client.ts": "8a95a653ca12c59334869fceb23e2f3a73c471825587fead8d21fdf37ea67d9a",
+    "src/ap-system/quickbooks/plans.ts": "17346a8cc30ed4e06888331d063d3e2c45239100d97f0a2ef75ff5ceb4257aa4",
+    "src/ap-system/quickbooks/close-sync.ts": "95162fca2eaa9fe59bdfb0c632e931136585fd2e32af92646c2d9f7c439e8d8f",
+    "src/ap-system/quickbooks/correction-plans.ts": "161c6621f4cd2cfedd6817a76ad139d20c4b9436f3fc035d1bbff54a86d8e994",
+    "src/ap-system/quickbooks/sync.ts": "a6ef856a8a74173c7d0023fde2761dc823150d7b1181eedc897948609584f326",
+    "convex/lib/apSystem/costState.ts": "f08f06dc2be3497611015c8cc7c40aee4947adfc7d79a7600e954bd556283268",
+    "convex/lib/apSystem/businessExport.ts": "34b23b79a2f826fb8fde9fc5b1b09d7c055e9855f0a68761a1cdb3155d4bb801",
+    "convex/lib/apSystem/closeExport.ts": "2388d0239bd1f5ba11bf5aaca62dc882b4624b68c5c255e851a4d4053a898f75",
+    "convex/apClose.ts": "36b57d4c0972c1bc0099440fd11e487f85720afb2ddaeb85f49c8f6c4f51391d"
+  },
+  "findings": [],
+  "scopeLimits": [
+    "No live provider, external accounting write, actual Auth0 or practitioner review.",
+    "Bank settlement fixture is explicitly seeded synthetic immutable evidence, not new payment-engine execution.",
+    "Only cost_allocations policy is verified; forthcoming cost_and_settlement scope is absent and not counted.",
+    "Mixed-department Bill/VendorCredit documents are held; separate JournalEntry lines can map distinct locations.",
+    "Project-bearing close JournalEntry export remains unsupported and held.",
+    "Real project OAuth grant/tenant entitlement, operator decisions, browser affordances and live QBO round-trip remain external gates.",
+    "Recoverable tax foundation present in baseline is outside this review.",
+    "Official Intuit entity pages returned only an app shell to text browsing; no independent external schema certification claimed."
+  ],
+  "documentation": {
+    "checked": "https://github.com/IntuitDeveloper/SampleApp-Project-NodeJS/blob/master/graphql/project/getProjectById.js",
+    "observed": "Official project query sample supports by-ID lookup and account/customer IDs; checked read-only.",
+    "entityPagesAttempted": [
+      "https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/bill",
+      "https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry"
+    ]
+  }
+}

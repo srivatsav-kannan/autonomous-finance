@@ -1,0 +1,1304 @@
+{
+  "task": "V2",
+  "reviewer": "/root/verifier",
+  "reviewType": "independent_agent_engineering_review",
+  "baselineSha": "190201f811b7ea24d4945aec84d79a45b93e9157",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contractVersion": "ap-evidence-v1",
+  "testSha256": "d1bfbc625d51c3268bcf47c6b8583dc86f881ec9ede64705e2ced87373b3547e",
+  "expectationsSha256": "e879a9d46d5f0558901adbd157273923193b0eff66685d178133c1be0deb3a21",
+  "results": {
+    "numTotalTests": 34,
+    "numPassedTests": 34,
+    "numFailedTests": 0,
+    "startTime": 1792919045473,
+    "success": true
+  },
+  "files": [
+    {
+      "file": "tests/ap-system/v2-independent.test.ts",
+      "status": "passed",
+      "startTime": 1792919045659,
+      "endTime": 1792919046215.7302,
+      "assertions": [
+        {
+          "title": "V2 independent actual AP mutations through FakeBank recovery holds missing_receipt without creating an obligation or bank operation",
+          "status": "passed",
+          "duration": 84.64775
+        },
+        {
+          "title": "V2 independent actual AP mutations through FakeBank recovery holds contradictory_content without creating an obligation or bank operation",
+          "status": "passed",
+          "duration": 22.049958000000032
+        },
+        {
+          "title": "V2 independent actual AP mutations through FakeBank recovery holds quantity_conflict without creating an obligation or bank operation",
+          "status": "passed",
+          "duration": 26.449833000000012
+        },
+        {
+          "title": "V2 independent actual AP mutations through FakeBank recovery preserves one economic effect across renamed duplicate deliveries, retries and duplicate bank observations",
+          "status": "passed",
+          "duration": 71.024292
+        },
+        {
+          "title": "V2 independent actual AP mutations through FakeBank recovery does not merge a different original invoice merely because its filename is unchanged",
+          "status": "passed",
+          "duration": 34.45433300000002
+        },
+        {
+          "title": "V2 independent actual AP mutations through FakeBank recovery invalidates an old review on revision and permits only a fresh complete source-bound review",
+          "status": "passed",
+          "duration": 54.807957999999985
+        },
+        {
+          "title": "V2 independent actual AP mutations through FakeBank recovery cancels prepared unsent payment on source revision and blocks stale authorization",
+          "status": "passed",
+          "duration": 42.03566599999999
+        },
+        {
+          "title": "V2 independent actual AP mutations through FakeBank recovery cancels queued unsent payment on source revision and blocks stale authorization",
+          "status": "passed",
+          "duration": 43.390541999999925
+        },
+        {
+          "title": "V2 independent actual AP mutations through FakeBank recovery recovers a lost response after a possible-send source revision without changing the original key or reservation",
+          "status": "passed",
+          "duration": 74.011166
+        },
+        {
+          "title": "V2 independent actual AP mutations through FakeBank recovery retains settled evidence through interrupted local posting, then posts once without resending",
+          "status": "passed",
+          "duration": 50.15250000000003
+        },
+        {
+          "title": "V2 independent actual AP mutations through FakeBank recovery rejects anonymous/agent and foreign human authorization, stale snapshots and self-review",
+          "status": "passed",
+          "duration": 41.53275000000008
+        },
+        {
+          "title": "V2 independent geometry negative and fallback-retry checks does not accept a precise location on the wrong page or in an invalid frame",
+          "status": "passed",
+          "duration": 2.0424170000000004
+        },
+        {
+          "title": "V2 independent geometry negative and fallback-retry checks rejects provider geometry whose page dimensions disagree with the retained original frame",
+          "status": "passed",
+          "duration": 1.198582999999985
+        },
+        {
+          "title": "V2 independent geometry negative and fallback-retry checks preserves mismatch/ambiguity and retries an interrupted fallback without fabricated geometry",
+          "status": "passed",
+          "duration": 1.9149999999999636
+        },
+        {
+          "title": "V2 independent geometry negative and fallback-retry checks rejects stale precise evidence source revision at intake before any case is stored",
+          "status": "passed",
+          "duration": 6.730333999999971
+        }
+      ]
+    },
+    {
+      "file": "src/ap-system/ingestion/grounding.test.ts",
+      "status": "passed",
+      "startTime": 1792919045610,
+      "endTime": 1792919045618.9443,
+      "assertions": [
+        {
+          "title": "exact grounding uses valid native geometry before fallbacks",
+          "status": "passed",
+          "duration": 3.7097920000000073
+        },
+        {
+          "title": "exact grounding derives raw-word geometry with source token IDs",
+          "status": "passed",
+          "duration": 0.6567909999999983
+        },
+        {
+          "title": "exact grounding rejects character correction and repeated exact text",
+          "status": "passed",
+          "duration": 0.1715420000000023
+        },
+        {
+          "title": "exact grounding does not align across pages",
+          "status": "passed",
+          "duration": 0.08750000000000568
+        },
+        {
+          "title": "exact grounding falls back to attributed local OCR",
+          "status": "passed",
+          "duration": 0.22791700000000503
+        },
+        {
+          "title": "exact grounding preserves explicit failed/unavailable OCR reason",
+          "status": "passed",
+          "duration": 0.580750000000009
+        },
+        {
+          "title": "exact grounding keeps multiline matches in separate regions",
+          "status": "passed",
+          "duration": 0.2244580000000127
+        },
+        {
+          "title": "exact grounding aligns each provider line uniquely even when an adjacent amount interrupts reading order",
+          "status": "passed",
+          "duration": 0.5308330000000012
+        },
+        {
+          "title": "exact grounding rejects multiline alignment in reverse source order",
+          "status": "passed",
+          "duration": 0.10816699999999457
+        },
+        {
+          "title": "exact grounding rejects rotated and invalid-frame grounding",
+          "status": "passed",
+          "duration": 0.22579199999999844
+        },
+        {
+          "title": "exact grounding does not accept coarse rectangles as precise native geometry",
+          "status": "passed",
+          "duration": 0.3353749999999991
+        },
+        {
+          "title": "exact grounding requires explicit source revision and complete page coverage",
+          "status": "passed",
+          "duration": 1.9443339999999978
+        }
+      ]
+    },
+    {
+      "file": "src/ap-system/ingestion/ocr.test.ts",
+      "status": "passed",
+      "startTime": 1792919045581,
+      "endTime": 1792919045615.741,
+      "assertions": [
+        {
+          "title": "rejects changed original bytes before rendering the rehydrated source",
+          "status": "passed",
+          "duration": 2.0366669999999942
+        },
+        {
+          "title": "distinguishes unavailable renderer and bounded process timeout",
+          "status": "passed",
+          "duration": 30.933917000000008
+        },
+        {
+          "title": "fails closed for unconfigured, unavailable or unpinned traineddata",
+          "status": "passed",
+          "duration": 1.334457999999998
+        },
+        {
+          "title": "maps actual TSV word tokens into the declared original page frame",
+          "status": "passed",
+          "duration": 0.7409170000000103
+        }
+      ]
+    },
+    {
+      "file": "src/ap-system/ingestion/provider.test.ts",
+      "status": "passed",
+      "startTime": 1792919045578,
+      "endTime": 1792919045605.381,
+      "assertions": [
+        {
+          "title": "resumes a known provider job after timeout and reuses immutable completed artifacts",
+          "status": "passed",
+          "duration": 23.59566699999999
+        },
+        {
+          "title": "never resubmits an ambiguous upload and does not expose provider text",
+          "status": "passed",
+          "duration": 2.9790000000000134
+        },
+        {
+          "title": "rejects mutable latest parser version",
+          "status": "passed",
+          "duration": 0.38108300000000384
+        }
+      ]
+    }
+  ],
+  "typecheck": {
+    "command": "./node_modules/.bin/tsc --noEmit -p tsconfig.tests.json",
+    "exitCode": 0
+  },
+  "isolation": {
+    "freshConvexTestPerScenario": true,
+    "uniqueTempFakeBankSQLitePerScenario": true,
+    "sharedBackendWrites": 0,
+    "externalProviderCalls": 0,
+    "liveCredentialsLoaded": false
+  },
+  "scenarioSnapshots": [
+    {
+      "scenario": "V2 independent actual AP mutations through FakeBank recovery > holds missing_receipt without creating an obligation or bank operation",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [
+          {
+            "caseId": "0000000000000010007apCaseRecords",
+            "revision": 1,
+            "snapshotHash": "eb4d97709b87b70836b49df9049f8e6f51d13befd71c2fe6f768e1e8acb5c092",
+            "billId": null,
+            "documentStatus": "reviewed",
+            "businessStatus": "held"
+          }
+        ],
+        "bills": [],
+        "versions": [],
+        "commands": [],
+        "transactions": [],
+        "journals": [],
+        "bank": {
+          "calls": {},
+          "transfers": []
+        }
+      }
+    },
+    {
+      "scenario": "V2 independent actual AP mutations through FakeBank recovery > holds contradictory_content without creating an obligation or bank operation",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [
+          {
+            "caseId": "0000000000000010007apCaseRecords",
+            "revision": 1,
+            "snapshotHash": "ff600e00830ebef874727dddf6def8d9815e723abe472b5a3e13bb0bfaf4bf5c",
+            "billId": null,
+            "documentStatus": "review_required",
+            "businessStatus": "held"
+          }
+        ],
+        "bills": [],
+        "versions": [],
+        "commands": [],
+        "transactions": [],
+        "journals": [],
+        "bank": {
+          "calls": {},
+          "transfers": []
+        }
+      }
+    },
+    {
+      "scenario": "V2 independent actual AP mutations through FakeBank recovery > holds quantity_conflict without creating an obligation or bank operation",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [
+          {
+            "caseId": "0000000000000010007apCaseRecords",
+            "revision": 1,
+            "snapshotHash": "eb1828e43ed2c374c7d81298196c9f0ffc4ccab68bd309c6692d9f0954ec215c",
+            "billId": null,
+            "documentStatus": "reviewed",
+            "businessStatus": "held"
+          }
+        ],
+        "bills": [],
+        "versions": [],
+        "commands": [],
+        "transactions": [],
+        "journals": [],
+        "bank": {
+          "calls": {},
+          "transfers": []
+        }
+      }
+    },
+    {
+      "scenario": "V2 independent actual AP mutations through FakeBank recovery > preserves one economic effect across renamed duplicate deliveries, retries and duplicate bank observations",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [
+          {
+            "caseId": "0000000000000010007apCaseRecords",
+            "revision": 1,
+            "snapshotHash": "97f13efb2b7296d3715d716229f03acdaa52fb93a6c102649815cd7f0f967a0e",
+            "billId": "00000000000000000010026demoBills",
+            "documentStatus": "reviewed",
+            "businessStatus": "approved"
+          }
+        ],
+        "bills": [
+          {
+            "billId": "00000000000000000010026demoBills",
+            "originalCents": 67860,
+            "approvedCents": 67860,
+            "paidCents": 67860,
+            "reservedVersionId": null
+          }
+        ],
+        "versions": [
+          {
+            "versionId": "00000000000000010035demoVersions",
+            "status": "settled",
+            "reservations": "consumed",
+            "snapshotHash": "b0eef30a78c507c1cac7fc3dcbdaf5c38b7aeceb8e780abd231f06aa340c8df0",
+            "amountCents": 67860
+          }
+        ],
+        "commands": [
+          {
+            "effectId": "00000000000000010038demoCommands",
+            "operationId": "00000000000000010035demoVersions",
+            "idempotencyKey": "demo:00000000000000010035demoVersions",
+            "requestHash": "538fa6b3d40f53484fcc7acfd2dcbf7c6ded18e232130c0a2fb0d7c37efaf36c",
+            "execution": "settled",
+            "posting": "posted",
+            "reconciliation": "matched",
+            "attemptCount": 1,
+            "firstAttemptAt": 1792929600001,
+            "providerTransferId": "transfer_0d9616ebd58c3e4d73499287"
+          }
+        ],
+        "transactions": [
+          {
+            "transactionId": "txn_9d966423321b1b26e3c7c6d0",
+            "operationId": "00000000000000010035demoVersions",
+            "state": "posted",
+            "journalId": "000000000000010052journalEntries"
+          }
+        ],
+        "journals": [
+          {
+            "journalId": "000000000000010027journalEntries",
+            "source": {
+              "kind": "bill",
+              "ref": "00000000000000000010026demoBills"
+            },
+            "lines": [
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 19250,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 17100,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 20670,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 10840,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "2000",
+                "credit": 67860,
+                "debit": 0,
+                "dims": {
+                  "vendor": "golden-state-produce"
+                }
+              }
+            ]
+          },
+          {
+            "journalId": "000000000000010052journalEntries",
+            "source": {
+              "kind": "payment_settlement",
+              "ref": "ap-org:ap97-b-unit:fake:local:account-b:txn_9d966423321b1b26e3c7c6d0:debit"
+            },
+            "lines": [
+              {
+                "account": "2000",
+                "credit": 0,
+                "debit": 67860
+              },
+              {
+                "account": "1000",
+                "credit": 67860,
+                "debit": 0
+              }
+            ]
+          }
+        ],
+        "bank": {
+          "calls": {
+            "createTransfer": 1,
+            "getTransaction": 3,
+            "listTransactions": 2,
+            "getTransfer": 2
+          },
+          "transfers": [
+            {
+              "transferId": "transfer_0d9616ebd58c3e4d73499287",
+              "operationId": "00000000000000010035demoVersions",
+              "idempotencyKey": "demo:00000000000000010035demoVersions",
+              "requestHash": "538fa6b3d40f53484fcc7acfd2dcbf7c6ded18e232130c0a2fb0d7c37efaf36c",
+              "amountCents": 67860,
+              "status": "settled",
+              "originalTransactionId": "txn_9d966423321b1b26e3c7c6d0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario": "V2 independent actual AP mutations through FakeBank recovery > does not merge a different original invoice merely because its filename is unchanged",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [
+          {
+            "caseId": "0000000000000010007apCaseRecords",
+            "revision": 1,
+            "snapshotHash": "97f13efb2b7296d3715d716229f03acdaa52fb93a6c102649815cd7f0f967a0e",
+            "billId": null,
+            "documentStatus": "review_required",
+            "businessStatus": "held"
+          },
+          {
+            "caseId": "0000000000000010023apCaseRecords",
+            "revision": 1,
+            "snapshotHash": "eb1828e43ed2c374c7d81298196c9f0ffc4ccab68bd309c6692d9f0954ec215c",
+            "billId": null,
+            "documentStatus": "review_required",
+            "businessStatus": "held"
+          }
+        ],
+        "bills": [],
+        "versions": [],
+        "commands": [],
+        "transactions": [],
+        "journals": [],
+        "bank": {
+          "calls": {},
+          "transfers": []
+        }
+      }
+    },
+    {
+      "scenario": "V2 independent actual AP mutations through FakeBank recovery > invalidates an old review on revision and permits only a fresh complete source-bound review",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [
+          {
+            "caseId": "0000000000000010007apCaseRecords",
+            "revision": 2,
+            "snapshotHash": "9b205af4c590a63d4d5183b88bb5856a914666ef4ac817ea7a99cd02c9f97bcb",
+            "billId": "00000000000000000010035demoBills",
+            "documentStatus": "reviewed",
+            "businessStatus": "approved"
+          }
+        ],
+        "bills": [
+          {
+            "billId": "00000000000000000010035demoBills",
+            "originalCents": 67860,
+            "approvedCents": 67860,
+            "paidCents": 0,
+            "reservedVersionId": null
+          }
+        ],
+        "versions": [],
+        "commands": [],
+        "transactions": [],
+        "journals": [
+          {
+            "journalId": "000000000000010036journalEntries",
+            "source": {
+              "kind": "bill",
+              "ref": "00000000000000000010035demoBills"
+            },
+            "lines": [
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 19250,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 17100,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 20670,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 10840,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "2000",
+                "credit": 67860,
+                "debit": 0,
+                "dims": {
+                  "vendor": "golden-state-produce"
+                }
+              }
+            ]
+          }
+        ],
+        "bank": {
+          "calls": {},
+          "transfers": []
+        }
+      }
+    },
+    {
+      "scenario": "V2 independent actual AP mutations through FakeBank recovery > cancels prepared unsent payment on source revision and blocks stale authorization",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [
+          {
+            "caseId": "0000000000000010007apCaseRecords",
+            "revision": 2,
+            "snapshotHash": "9b205af4c590a63d4d5183b88bb5856a914666ef4ac817ea7a99cd02c9f97bcb",
+            "billId": "00000000000000000010026demoBills",
+            "documentStatus": "review_required",
+            "businessStatus": "held"
+          }
+        ],
+        "bills": [
+          {
+            "billId": "00000000000000000010026demoBills",
+            "originalCents": 67860,
+            "approvedCents": 67860,
+            "paidCents": 0,
+            "reservedVersionId": null
+          }
+        ],
+        "versions": [
+          {
+            "versionId": "00000000000000010035demoVersions",
+            "status": "cancelled",
+            "reservations": "released",
+            "snapshotHash": "b0eef30a78c507c1cac7fc3dcbdaf5c38b7aeceb8e780abd231f06aa340c8df0",
+            "amountCents": 67860
+          }
+        ],
+        "commands": [],
+        "transactions": [],
+        "journals": [
+          {
+            "journalId": "000000000000010027journalEntries",
+            "source": {
+              "kind": "bill",
+              "ref": "00000000000000000010026demoBills"
+            },
+            "lines": [
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 19250,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 17100,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 20670,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 10840,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "2000",
+                "credit": 67860,
+                "debit": 0,
+                "dims": {
+                  "vendor": "golden-state-produce"
+                }
+              }
+            ]
+          }
+        ],
+        "bank": {
+          "calls": {},
+          "transfers": []
+        }
+      }
+    },
+    {
+      "scenario": "V2 independent actual AP mutations through FakeBank recovery > cancels queued unsent payment on source revision and blocks stale authorization",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [
+          {
+            "caseId": "0000000000000010007apCaseRecords",
+            "revision": 2,
+            "snapshotHash": "9b205af4c590a63d4d5183b88bb5856a914666ef4ac817ea7a99cd02c9f97bcb",
+            "billId": "00000000000000000010026demoBills",
+            "documentStatus": "review_required",
+            "businessStatus": "held"
+          }
+        ],
+        "bills": [
+          {
+            "billId": "00000000000000000010026demoBills",
+            "originalCents": 67860,
+            "approvedCents": 67860,
+            "paidCents": 0,
+            "reservedVersionId": null
+          }
+        ],
+        "versions": [
+          {
+            "versionId": "00000000000000010035demoVersions",
+            "status": "cancelled",
+            "reservations": "released",
+            "snapshotHash": "b0eef30a78c507c1cac7fc3dcbdaf5c38b7aeceb8e780abd231f06aa340c8df0",
+            "amountCents": 67860
+          }
+        ],
+        "commands": [
+          {
+            "effectId": "00000000000000010037demoCommands",
+            "operationId": "00000000000000010035demoVersions",
+            "idempotencyKey": "demo:00000000000000010035demoVersions",
+            "requestHash": "538fa6b3d40f53484fcc7acfd2dcbf7c6ded18e232130c0a2fb0d7c37efaf36c",
+            "execution": "cancelled",
+            "posting": "unposted",
+            "reconciliation": "unmatched",
+            "attemptCount": 0,
+            "firstAttemptAt": null,
+            "providerTransferId": null
+          }
+        ],
+        "transactions": [],
+        "journals": [
+          {
+            "journalId": "000000000000010027journalEntries",
+            "source": {
+              "kind": "bill",
+              "ref": "00000000000000000010026demoBills"
+            },
+            "lines": [
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 19250,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 17100,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 20670,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 10840,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "2000",
+                "credit": 67860,
+                "debit": 0,
+                "dims": {
+                  "vendor": "golden-state-produce"
+                }
+              }
+            ]
+          }
+        ],
+        "bank": {
+          "calls": {},
+          "transfers": []
+        }
+      }
+    },
+    {
+      "scenario": "V2 independent actual AP mutations through FakeBank recovery > recovers a lost response after a possible-send source revision without changing the original key or reservation",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [
+          {
+            "caseId": "0000000000000010007apCaseRecords",
+            "revision": 2,
+            "snapshotHash": "9b205af4c590a63d4d5183b88bb5856a914666ef4ac817ea7a99cd02c9f97bcb",
+            "billId": "00000000000000000010026demoBills",
+            "documentStatus": "review_required",
+            "businessStatus": "held"
+          }
+        ],
+        "bills": [
+          {
+            "billId": "00000000000000000010026demoBills",
+            "originalCents": 67860,
+            "approvedCents": 67860,
+            "paidCents": 67860,
+            "reservedVersionId": null
+          }
+        ],
+        "versions": [
+          {
+            "versionId": "00000000000000010035demoVersions",
+            "status": "settled",
+            "reservations": "consumed",
+            "snapshotHash": "b0eef30a78c507c1cac7fc3dcbdaf5c38b7aeceb8e780abd231f06aa340c8df0",
+            "amountCents": 67860
+          }
+        ],
+        "commands": [
+          {
+            "effectId": "00000000000000010037demoCommands",
+            "operationId": "00000000000000010035demoVersions",
+            "idempotencyKey": "demo:00000000000000010035demoVersions",
+            "requestHash": "538fa6b3d40f53484fcc7acfd2dcbf7c6ded18e232130c0a2fb0d7c37efaf36c",
+            "execution": "settled",
+            "posting": "posted",
+            "reconciliation": "matched",
+            "attemptCount": 2,
+            "firstAttemptAt": 1792929600001,
+            "providerTransferId": "transfer_0d9616ebd58c3e4d73499287"
+          }
+        ],
+        "transactions": [
+          {
+            "transactionId": "txn_9d966423321b1b26e3c7c6d0",
+            "operationId": "00000000000000010035demoVersions",
+            "state": "posted",
+            "journalId": "000000000000010052journalEntries"
+          }
+        ],
+        "journals": [
+          {
+            "journalId": "000000000000010027journalEntries",
+            "source": {
+              "kind": "bill",
+              "ref": "00000000000000000010026demoBills"
+            },
+            "lines": [
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 19250,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 17100,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 20670,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 10840,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "2000",
+                "credit": 67860,
+                "debit": 0,
+                "dims": {
+                  "vendor": "golden-state-produce"
+                }
+              }
+            ]
+          },
+          {
+            "journalId": "000000000000010052journalEntries",
+            "source": {
+              "kind": "payment_settlement",
+              "ref": "ap-org:ap97-b-unit:fake:local:account-b:txn_9d966423321b1b26e3c7c6d0:debit"
+            },
+            "lines": [
+              {
+                "account": "2000",
+                "credit": 0,
+                "debit": 67860
+              },
+              {
+                "account": "1000",
+                "credit": 67860,
+                "debit": 0
+              }
+            ]
+          }
+        ],
+        "bank": {
+          "calls": {
+            "createTransfer": 1,
+            "lookupTransfer": 1,
+            "listTransactions": 1,
+            "getTransfer": 1,
+            "getTransaction": 1
+          },
+          "transfers": [
+            {
+              "transferId": "transfer_0d9616ebd58c3e4d73499287",
+              "operationId": "00000000000000010035demoVersions",
+              "idempotencyKey": "demo:00000000000000010035demoVersions",
+              "requestHash": "538fa6b3d40f53484fcc7acfd2dcbf7c6ded18e232130c0a2fb0d7c37efaf36c",
+              "amountCents": 67860,
+              "status": "settled",
+              "originalTransactionId": "txn_9d966423321b1b26e3c7c6d0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario": "V2 independent actual AP mutations through FakeBank recovery > retains settled evidence through interrupted local posting, then posts once without resending",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [
+          {
+            "caseId": "0000000000000010007apCaseRecords",
+            "revision": 1,
+            "snapshotHash": "97f13efb2b7296d3715d716229f03acdaa52fb93a6c102649815cd7f0f967a0e",
+            "billId": "00000000000000000010026demoBills",
+            "documentStatus": "reviewed",
+            "businessStatus": "approved"
+          }
+        ],
+        "bills": [
+          {
+            "billId": "00000000000000000010026demoBills",
+            "originalCents": 67860,
+            "approvedCents": 67860,
+            "paidCents": 67860,
+            "reservedVersionId": null
+          }
+        ],
+        "versions": [
+          {
+            "versionId": "00000000000000010035demoVersions",
+            "status": "settled",
+            "reservations": "consumed",
+            "snapshotHash": "b0eef30a78c507c1cac7fc3dcbdaf5c38b7aeceb8e780abd231f06aa340c8df0",
+            "amountCents": 67860
+          }
+        ],
+        "commands": [
+          {
+            "effectId": "00000000000000010037demoCommands",
+            "operationId": "00000000000000010035demoVersions",
+            "idempotencyKey": "demo:00000000000000010035demoVersions",
+            "requestHash": "538fa6b3d40f53484fcc7acfd2dcbf7c6ded18e232130c0a2fb0d7c37efaf36c",
+            "execution": "settled",
+            "posting": "posted",
+            "reconciliation": "matched",
+            "attemptCount": 1,
+            "firstAttemptAt": 1792929600001,
+            "providerTransferId": "transfer_0d9616ebd58c3e4d73499287"
+          }
+        ],
+        "transactions": [
+          {
+            "transactionId": "txn_9d966423321b1b26e3c7c6d0",
+            "operationId": "00000000000000010035demoVersions",
+            "state": "posted",
+            "journalId": "000000000000010047journalEntries"
+          }
+        ],
+        "journals": [
+          {
+            "journalId": "000000000000010027journalEntries",
+            "source": {
+              "kind": "bill",
+              "ref": "00000000000000000010026demoBills"
+            },
+            "lines": [
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 19250,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 17100,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 20670,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 10840,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "2000",
+                "credit": 67860,
+                "debit": 0,
+                "dims": {
+                  "vendor": "golden-state-produce"
+                }
+              }
+            ]
+          },
+          {
+            "journalId": "000000000000010047journalEntries",
+            "source": {
+              "kind": "payment_settlement",
+              "ref": "ap-org:ap97-b-unit:fake:local:account-b:txn_9d966423321b1b26e3c7c6d0:debit"
+            },
+            "lines": [
+              {
+                "account": "2000",
+                "credit": 0,
+                "debit": 67860
+              },
+              {
+                "account": "1000",
+                "credit": 67860,
+                "debit": 0
+              }
+            ]
+          }
+        ],
+        "bank": {
+          "calls": {
+            "createTransfer": 1,
+            "listTransactions": 3,
+            "getTransfer": 3,
+            "getTransaction": 3
+          },
+          "transfers": [
+            {
+              "transferId": "transfer_0d9616ebd58c3e4d73499287",
+              "operationId": "00000000000000010035demoVersions",
+              "idempotencyKey": "demo:00000000000000010035demoVersions",
+              "requestHash": "538fa6b3d40f53484fcc7acfd2dcbf7c6ded18e232130c0a2fb0d7c37efaf36c",
+              "amountCents": 67860,
+              "status": "settled",
+              "originalTransactionId": "txn_9d966423321b1b26e3c7c6d0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario": "V2 independent actual AP mutations through FakeBank recovery > rejects anonymous/agent and foreign human authorization, stale snapshots and self-review",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [
+          {
+            "caseId": "0000000000000010007apCaseRecords",
+            "revision": 1,
+            "snapshotHash": "97f13efb2b7296d3715d716229f03acdaa52fb93a6c102649815cd7f0f967a0e",
+            "billId": "00000000000000000010026demoBills",
+            "documentStatus": "reviewed",
+            "businessStatus": "approved"
+          },
+          {
+            "caseId": "0000000000000010037apCaseRecords",
+            "revision": 1,
+            "snapshotHash": "eb1828e43ed2c374c7d81298196c9f0ffc4ccab68bd309c6692d9f0954ec215c",
+            "billId": null,
+            "documentStatus": "review_required",
+            "businessStatus": "held"
+          }
+        ],
+        "bills": [
+          {
+            "billId": "00000000000000000010026demoBills",
+            "originalCents": 67860,
+            "approvedCents": 67860,
+            "paidCents": 0,
+            "reservedVersionId": "00000000000000010035demoVersions"
+          }
+        ],
+        "versions": [
+          {
+            "versionId": "00000000000000010035demoVersions",
+            "status": "awaiting_approval",
+            "reservations": "reserved",
+            "snapshotHash": "b0eef30a78c507c1cac7fc3dcbdaf5c38b7aeceb8e780abd231f06aa340c8df0",
+            "amountCents": 67860
+          }
+        ],
+        "commands": [],
+        "transactions": [],
+        "journals": [
+          {
+            "journalId": "000000000000010027journalEntries",
+            "source": {
+              "kind": "bill",
+              "ref": "00000000000000000010026demoBills"
+            },
+            "lines": [
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 19250,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 17100,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 20670,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "5000",
+                "credit": 0,
+                "debit": 10840,
+                "dims": {
+                  "store": "sf-hayes-valley",
+                  "vendor": "golden-state-produce"
+                },
+                "memo": "expense; period 2026-10"
+              },
+              {
+                "account": "2000",
+                "credit": 67860,
+                "debit": 0,
+                "dims": {
+                  "vendor": "golden-state-produce"
+                }
+              }
+            ]
+          }
+        ],
+        "bank": {
+          "calls": {},
+          "transfers": []
+        }
+      }
+    },
+    {
+      "scenario": "V2 independent geometry negative and fallback-retry checks > rejects stale precise evidence source revision at intake before any case is stored",
+      "state": {
+        "scope": {
+          "organizationId": "ap-org",
+          "runId": "ap97-b-unit",
+          "provider": "fake",
+          "environment": "local",
+          "accountId": "account-b"
+        },
+        "cases": [],
+        "bills": [],
+        "versions": [],
+        "commands": [],
+        "transactions": [],
+        "journals": [],
+        "bank": {
+          "calls": {},
+          "transfers": []
+        }
+      }
+    }
+  ],
+  "externalGatesPending": [
+    "Increase sandbox",
+    "QuickBooks Online",
+    "AP practitioner review"
+  ]
+}

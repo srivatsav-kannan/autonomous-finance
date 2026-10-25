@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/docker",
+    "--host",
+    "unix:///Users/junjiexiong/.colima/default/docker.sock",
+    "build",
+    "--progress",
+    "plain",
+    "--tag",
+    "ap97-ocr-smoke-6tn3tag:ed372a4",
+    "--iidfile",
+    "/private/tmp/ap97-ocr-20261025-6tn3tag_/image-id.txt",
+    "--file",
+    "/private/tmp/ap97-ocr-20261025-6tn3tag_/source/src/ap-system/ingestion/runtime/Dockerfile",
+    "/private/tmp/ap97-ocr-20261025-6tn3tag_/source/src/ap-system/ingestion/runtime"
+  ],
+  "startedUtc": "2026-10-25T10:44:23.402752+00:00",
+  "durationSeconds": 102.012,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "logs/image-build.stdout",
+  "stderr": "logs/image-build.stderr"
+}

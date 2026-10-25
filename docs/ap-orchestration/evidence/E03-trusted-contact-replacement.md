@@ -1,0 +1,50 @@
+# E03: governed trusted supplier contact replacement
+
+## Scope and evidence boundary
+
+Implementation baseline: `7b0f6444bf79ec914c0c7d0a4af1444af092c49c`.
+Spec: `b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565`.
+This checkpoint implements E03 backend/contracts only. It does not implement currency, tax, physical-line identity, UI, external communications, or provider configuration. All new execution evidence is `convex-test` with synthetic retained originals. There was no HTTP/FakeBank end-to-end run, real supplier contact, live backend, provider request, or practitioner signoff.
+
+## Business rules
+
+1. Recording a phone is not authority to replace the current verification channel. `registerTrustedContact` now accepts optional immutable `origin` metadata and retains the current recorder's seat. E03 replacement requires that metadata, a current recorder in `supplierVerificationGroup`, and retained source evidence containing the new E.164 phone. Existing source registrations without origin remain compatible with legacy onboarding but cannot establish an E03 replacement.
+2. The origin must be explicitly described as a preexisting vendor master, independent registry, or executed agreement, with an acquisition timestamp. This is a human provenance attestation. A phone substring in extracted text is an inclusion check, not proof of a real callback or external verification. Reviewers must compare the original. Any retained original already known as an invoice/credit note is rejected, including copies renamed/reclassified with the same original SHA. Synthetic originals are usable only in a local scope.
+3. Only a currently authenticated controller agent may propose a change. The immutable proposal binds the current supplier revision/hash, old governed contact, new contact, source/unavailability evidence, resolution, reason, and current policy hash. A second unresolved proposal must explicitly supersede the first. Both remain in history.
+4. Proposal places an explicit hold on new business/payment authority. It does **not** cancel an already authorized payment, release reservations, or change any command. Existing first-dispatch validation records an owned exception and retains reservations if it encounters this hold.
+5. A distinct current verification-group human records verification. The new source recorder and verifier cannot share a seat. For an available old channel, or restoration of that old channel, `old_channel_confirmation` is required. If the old channel is unavailable, the proposal retains the unavailability reason/evidence and policy must explicitly configure `supplierContactEscalationGroup`; a separate current member records `independent_reestablishment` after verification.
+6. Final approval requires a current `supplierApprovalGroup` human distinct by retained seat from proposer, recorder, verifier and any escalator. Subject aliases cannot create additional people. E03 has no delegated review shortcut. Current seat bindings and group membership are rechecked atomically at final approval; stale policy/supplier snapshots require a fresh superseding proposal.
+7. Approval of `replace` changes the authorized contact pointer only. The active supplier revision, bank destination, bills, journals and original supplier verification are unchanged. A **new** supplier revision must receive its own independent recorded callback through the new contact and separate approval. Existing recognized cases must then be reapproved against that new supplier revision before new payment authority. The same bill and original recognition remain; no second economic effect is booked.
+8. A human's final approval invokes the existing governance cancellation helper for provably unsent operations. Possible sends retain the exact command, key, destination, request, reservations and reconciliation path. No payment engine was changed.
+9. Rejection retains the hold. A controller may explicitly supersede the rejected/stale proposal with a corrected replacement or `retain_current` restoration. Restoration must reference the old contact as the new contact and receive fresh old-channel verification, any required escalation, and final independent approval. Approval of restoration clears the hold and cancels provably unsent operations; it does not change the supplier destination.
+10. Approved replacement provenance, recorder, verifier, escalator and final approver remain subject to current active seat/group checks at subsequent supplier, business and payment gates. Historical decisions are not rewritten when authority expires. Repair is a fresh source registration and replacement/recertification under current policy. A policy change before final approval invalidates the proposal hash context; after approval the current memberships/seat bindings are enforced rather than treating historical membership as authority.
+11. This software never places a call or sends a message. `operator_recorded` describes evidence of an action independently performed by the human; `simulated` is explicitly local-only. Audit events say that a review was recorded and preserve the mode.
+
+## Backend and UI handoff
+
+New contracts: `src/ap-system/supplier-contact-contracts.ts` exports `contactOriginSchema`, `contactChangeProposalSchema`, `contactChangeAttestationSchema`, `contactChangeDecisionSchema`, `contactChangeOperationSchemas`, `ContactChangeInputs`, `ContactChangeView`, and `SupplierContactView`. HTTP/UI wiring remains a separate D task. No actor identity, seat credential or scope should be accepted from browser JSON.
+
+| Operation | Backend arguments, in addition to trusted scope | Authorization and result |
+| --- | --- | --- |
+| Existing `apBusinessConfig:registerTrustedContact` | Existing `idempotencyKey`, `supplierId`, `phone`, `evidence`, `mode`; optional `origin:{kind,acquiredAt,description}` | Current verification-group human; returns `contactId`. The ordinary domain transport schema now accepts this optional origin. |
+| `apSupplierContacts:propose` | Server-owned controller `seatId/token`, `idempotencyKey`, `proposal` | Controller; returns `{changeId,hash}`. Proposal includes supplier/old/new contact IDs, expected revision, `resolution`, `oldChannel:{status,evidence,reason}`, reason, optional `supersedesChangeId`. |
+| `apSupplierContacts:verify` | `changeId`, `expectedHash`, `attestation` | Current verification-group human distinct from source recorder. Returns `{changeId}`. |
+| `apSupplierContacts:escalate` | Same as verify | Current explicitly configured contact-escalation-group human, after verification. Returns `{changeId}`. |
+| `apSupplierContacts:decide` | `input:{changeId,expectedHash,outcome,reason}` | Current approval-group human. Returns `{changeId,status}` where status is approved/rejected. |
+| `apSupplierContacts:view` | No browser-supplied actor information | Current scoped human. Safe `SupplierContactView`: contact inventory with original bindings and provenance, supplier active revision/hold/authority IDs, full immutable proposals and recorded human reviews/decisions. It contains no source bytes, originalRef, tokens, or payment destination secrets. |
+
+An attestation has `method`, `performedAt`, exact `evidence` bindings, `mode`, and `reason`. Do not prefill it as already performed. Use existing original-source viewing. Show the new source and old-channel unavailability evidence separately, the required current groups, prior rejection/supersession history, and the remaining supplier/case recertification step. Never infer approval from a phone registration or from the existence of a proposed change.
+
+Tables: new `apSupplierContactChanges`; optional `apSupplierContacts.origin/recordedSeatId`; optional `apSuppliers.contactReviewId/contactAuthorityId`. They are in the already delegated `apSystemTables` export, so no new root schema spread is required. Root may regenerate API declarations as part of its normal integration workflow. No shared contract version bump is needed; `ap-evidence-v1` is unchanged.
+
+## Observed component checks
+
+`tests/ap-system/supplier-contact-changes.test.ts`: 27 tests passed. Covered replacement/recertification without a second bill/journal, legacy bypass rejection, missing provenance/unsupported phone, invoice-original relabeling, unavailable-channel policy/escalation, old-channel confirmation, recorder/verifier/approver alias segregation, retired recorder/verifier/escalator/approver before/after activation, changed policy/group authority, stale pre-replacement bank proposal, immutable idempotent reviews/decisions, conflicting/concurrent proposals, rejected-change restoration, hash/time errors, scoped read authorization, controller-only proposals, and rejection of smuggled bank fields.
+
+Payment boundary observations use the existing backend payment transitions, not a bank adapter. A controller proposal leaves the queued command unchanged. Its first dispatch becomes a no-attempt owned exception with reservations intact. Human approval cancels/release only the provably unsent operation. A previously attempted operation retains its exact command; a later lease is `reconcile` using that same command despite contact replacement.
+
+Final command: `vitest run tests/ap-system tests/payments tests/demo-*.test.ts tests/payment-kernel.test.ts` — **88 files, 655 tests passed**, including all 27 E03 tests. Root, backend and test TypeScript checks passed (`tsc --noEmit`, `tsc --noEmit -p convex/tsconfig.json`, `tsc --noEmit -p tsconfig.tests.json`). No acceptance status is asserted here.
+
+## Deliberate remaining work
+
+D must compose the new operations and safe read model into the authenticated HTTP/UI path, expose the optional escalation policy and provenance inputs, and exercise the whole human flow. Independent verification should challenge the new backend checkpoint, including concurrent approval/dispatch behavior. A real organization must choose who holds the distinct verification/escalation/approval roles and what independently acquired originals meet its policy. No actual practitioner has accepted those policy choices.

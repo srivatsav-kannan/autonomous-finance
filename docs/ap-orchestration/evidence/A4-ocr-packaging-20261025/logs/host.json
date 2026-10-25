@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "uname",
+    "-a"
+  ],
+  "startedUtc": "2026-10-25T10:44:15.233130+00:00",
+  "durationSeconds": 0.006,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "logs/host.stdout",
+  "stderr": "logs/host.stderr"
+}

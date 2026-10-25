@@ -1,0 +1,23 @@
+{
+  "version": "ap-evidence-v1",
+  "owner": "master",
+  "files": {
+    "src/ap-system/contracts.ts": "21fbf634514f8c51b4e7e155d20c73f5478367177a794121bf32bc55fdf233b6",
+    "docs/ap-orchestration/CONTRACTS.md": "fcb37ebc9dac7c0b2989ddf392e38ddbee8c3ab774eaf3dafd5d9bf679152f7b"
+  },
+  "independent_review": {
+    "reviewer": "/root/p0_inventory",
+    "result": "accepted",
+    "scope": "contract readiness only"
+  },
+  "checks": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    {
+      "command": "npx vitest run src/ap-system/contracts.test.ts",
+      "result": "6 passed"
+    }
+  ]
+}

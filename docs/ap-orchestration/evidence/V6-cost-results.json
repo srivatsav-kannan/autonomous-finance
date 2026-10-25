@@ -1,0 +1,114 @@
+{
+  "baseline": "852d835bba09180e2cd71dabefd14d807b3f9da8",
+  "passed": 17,
+  "failed": 2,
+  "testFiles": [
+    {
+      "file": "tests/ap-system-close-transport.test.ts",
+      "assertions": [
+        {
+          "name": "retains only the full exact source loaded through the current human, then invokes the scoped agent",
+          "status": "passed"
+        },
+        {
+          "name": "rejects a source metadata substitution and inaccessible source before any agent mutation",
+          "status": "passed"
+        },
+        {
+          "name": "separates current human reads/votes from controller proposals and fails closed without that controller",
+          "status": "passed"
+        },
+        {
+          "name": "requires the HTTP session and rejects browser file metadata, caller identity and invalid periods",
+          "status": "passed"
+        },
+        {
+          "name": "blocks local close synchronization and validates exact HTTP selectors before service invocation",
+          "status": "passed"
+        },
+        {
+          "name": "queries current cost state with the request human and server scope only",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system-cost-ui.test.tsx",
+      "assertions": [
+        {
+          "name": "preserves exact signed share identities and stores while allowing deliberate reachable splits",
+          "status": "passed"
+        },
+        {
+          "name": "rejects invented routes, duplicate share/accounts, aggregate excess capacity and rounded amounts",
+          "status": "passed"
+        },
+        {
+          "name": "requires explicit review, never fills partial amounts with capacity, and distinguishes evidence loading",
+          "status": "passed"
+        },
+        {
+          "name": "loads exact original cost state using protected transport and encoded ID",
+          "status": "passed"
+        },
+        {
+          "name": "accepts explicit accounting amounts without treating blank as a balance or changing payment limits",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v6-cost-boundaries.test.ts",
+      "assertions": [
+        {
+          "name": "rejects UI readiness when net same-account reversals exceed the actual signed position by one cent",
+          "status": "failed"
+        },
+        {
+          "name": "allows exact signed netting and posts only independently reviewed proportional credit shares",
+          "status": "passed"
+        },
+        {
+          "name": "independently rejects a forged one-cent overdraw atomically at the actual backend",
+          "status": "passed"
+        },
+        {
+          "name": "requires an explicit later posting date for a credit issued before a cost correction",
+          "status": "passed"
+        },
+        {
+          "name": "keeps cost reads current-human and scope bound with no ledger or payment mutations",
+          "status": "passed"
+        },
+        {
+          "name": "retains exact accounting parsing while payment amounts always require a real positive safe balance",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v6-cost-browser.test.ts",
+      "assertions": [
+        {
+          "name": "invalidates mounted UI review after editing and parent context changes, ignores late responses and rejects wrong journal IDs",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "tests/ap-system/v6-cost-ui.test.tsx",
+      "assertions": [
+        {
+          "name": "offers an explicit credit posting date because a corrected cost reversal cannot predate its cost history",
+          "status": "failed"
+        }
+      ]
+    }
+  ],
+  "hashes": {
+    "tests/ap-system/v6-cost-boundaries.test.ts": "2d7810109ca21e32d1e2e6f8b5548033c23e4a36ae32b1e3b91de97eef94bbc2",
+    "tests/ap-system/v6-cost-browser.fixture.tsx": "b9e9b99fcd08249c16e23c4eb147cdc7999ad6d3ac5d2700885cf51da7858fb5",
+    "tests/ap-system/v6-cost-browser.test.ts": "d521f22d21cc586da1b6657422d0f64a19e3b6175e7bd88bff0097ba1365b0da",
+    "tests/ap-system/v6-cost-ui.test.tsx": "ff48fe7aae1e3667ffcf916742e098cb1cc6663c2d5599721504bf0af40433fd"
+  }
+}

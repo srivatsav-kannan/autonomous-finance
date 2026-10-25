@@ -1,0 +1,536 @@
+{
+  "evaluationId": "ap97-v1-independent-originals-v1",
+  "reviewer": "/root/verifier",
+  "reviewType": "independent_agent_engineering_review",
+  "verdict": "accepted_with_documented_nonblocking_coverage_limit",
+  "baselineCodeSha": "be98772d45ac6715957e002570edb9184efce9ca",
+  "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+  "contractVersion": "ap-evidence-v1",
+  "policyVersion": "golden-state-ap-v1",
+  "practitionerReview": "pending_external_reviewer",
+  "doesNotClaim": [
+    "I1",
+    "V2",
+    "live_parser_verification",
+    "live_Increase_verification",
+    "external_accounting_verification"
+  ],
+  "artifactHashes": {
+    "independent-derived.json": "68fe8d6dbd21a164b417034c8ca201016776f3bf9efea88af3f5835486486e97",
+    "policy-result.json": "356e95f7c58c956b3041a7c1e73868f4194586adadac71cb8a36fbe768e99622",
+    "source-event-result.json": "af5a49e2945620bdced1603ec1e98007809924defec3f91b88adf40916fedc9f",
+    "pdf-metadata.json": "f76d2b37be08ce773448c26ed9d6fd9a6b0f624ca2ade5f04ce8ac6ff486ffd3",
+    "correction-assessment.json": "0133633daa429c8e3833da263459a735bd854dc3e4063438efd23e86819d6efd",
+    "policy-check.mts": "3a9ae1966979acadd212f7b24a9957fb5860ac77bd33e7df51326b0f1b889d83",
+    "source-event-check.mts": "2ca95296648890aa0c014a93225bec191d0864d0ba358280d976e2a655a0f09c"
+  },
+  "reviewedFileHashesAtBaseline": {
+    "src/ap-system/policy.ts": "2ccc0a61c3cc1fc39a4aac5fdce44428dbf84d39f62a8f1f239beaacf2c1e738",
+    "src/ap-system/accounting.ts": "d207bcfdffb4973296abf2ff3229982310788749594ae2848754f2a07077a060",
+    "convex/apCases.ts": "e69c51b25bcd57c1164fbbd72b33eafb7055ef36f0532b5fd61d92b5a629fadf",
+    "convex/lib/apSystem/shared.ts": "6df5d32c4ea2d48c2c74b492674b6ddd587177442067aa7398e1a5149369ea53",
+    "convex/lib/apSystem/projection.ts": "5c9e02aba6aa4a32becba10a3f9bcf475e07b7a849cd4151102a8bfe26d4448d",
+    "convex/lib/payments/applyObservation.ts": "54146bfdc89202f910a082d65f5e06d5744ea5c5ae03e1a36e4918fc2855f894",
+    "tests/ap-system/accounting-policy.test.ts": "88990fd4e1a6dfdbecfc39545369a5149f19bd81756d86ae8ea67721ceecfd94",
+    "tests/ap-system/accounting-backend.test.ts": "3377a3f1d21fbaa771858855641503f535830394de9b874393f644bb76963dde",
+    "fixtures/ap-system/golden-state-v1/manifest.json": "dc4507fd7e28184e493d0326d71d3c19b1f3e9a9a5ef8690e2e9fa1b3cec791f"
+  },
+  "preComparisonDerivation": {
+    "evaluationId": "ap97-v1-independent-originals-v1",
+    "reviewType": "independent_agent_engineering_review",
+    "reviewer": "/root/verifier",
+    "reviewedCodeSha": "be98772d45ac6715957e002570edb9184efce9ca",
+    "specSha256": "b795ea7028c3e8eb91446dae5623e5e2183bcabb32447a54deefd9db238de565",
+    "contractVersion": "ap-evidence-v1",
+    "policyVersion": "golden-state-ap-v1",
+    "independence": {
+      "expectedOutcomeFileRead": false,
+      "runtimeParserOutputRead": false,
+      "derivedAtUtc": "2026-10-25T08:49:14.680763+00:00",
+      "basis": [
+        "all five original PDF pages visually rendered and text inspected",
+        "original invoice/receiving events",
+        "frozen facts and supplier master",
+        "explicit B1 policy and recognition code",
+        "existing settlement posting rule"
+      ],
+      "scopeExclusions": [
+        "I1",
+        "V2",
+        "provider_execution",
+        "AP_practitioner_signoff"
+      ]
+    },
+    "provenance": {
+      "kind": "synthetic",
+      "transactionSource": "seed-97 simulator frozen at d24f22007a36722831a521d7387ee8f5c92c5803",
+      "supportingPOAndContract": "explicitly authored synthetic support, not claimed simulator export",
+      "receivingAcceptance": "fixture operator/timestamp added in synthetic receipt",
+      "externalSupplierLicenseRequired": false,
+      "practitionerReview": "pending_external_reviewer"
+    },
+    "sourceHashes": {
+      "invoice.pdf": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83",
+      "purchase-order.pdf": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7",
+      "receipt.pdf": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2",
+      "contract.pdf": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883",
+      "invoice-quantity-discrepancy.pdf": "59b5344281b0a7202c924f4ace515667f34bcf45816826252cecc3b0c6df967a",
+      "facts.json": "cfecbb1bf1225b8eae5d5bda151cff2a6dd29e90acf1a9029cfe4273ae754b73",
+      "invoice-event.json": "db3ba66f3009f123d88a6cbce56812b27f2e6f8240b2ebe92f21ad259a633d38",
+      "receiving-event.json": "ebff79c85a751d5ecd497ef9f971174487dcd49b2fa3510b4112418b00e2dd97",
+      "original-simulator-invoice.txt": "5a72755587c9bfcedbee8c57edd9ce843b1fe68951c392af9c8aa63760b7b957"
+    },
+    "pdfReview": {
+      "pages": 5,
+      "pageSizePoints": [
+        612,
+        792
+      ],
+      "rotationDegrees": 0,
+      "visuallyLegible": true,
+      "allSinglePage": true,
+      "noClippingObserved": true,
+      "renderer": "Poppler 26.02.0",
+      "rasterDirectory": "/private/tmp/ap97-v1"
+    },
+    "nominalFields": {
+      "extractedSupplierName": "Golden State Produce Co.",
+      "supplierId": "golden-state-produce",
+      "invoiceNumber": "INV-1001",
+      "invoiceDate": "2026-10-19",
+      "dueDate": "2026-11-02",
+      "terms": "Net 14",
+      "currency": "USD",
+      "store": "sf-hayes-valley",
+      "purchaseOrder": "PO-GS-20261019-001",
+      "deliveryReference": "DLV-sf-hayes-valley-20261019-GOL",
+      "contractReference": "CONTRACT-GS-2026",
+      "subtotalCents": 67860,
+      "taxCents": 0,
+      "freightCents": 0,
+      "discountCents": 0,
+      "totalCents": 67860
+    },
+    "lines": [
+      {
+        "lineId": "line-1",
+        "sku": "KALE-24",
+        "description": "Organic Kale, 24ct case",
+        "quantity": "5",
+        "unit": "case",
+        "unitPriceCents": 3850,
+        "amountCents": 19250,
+        "taxCents": 0
+      },
+      {
+        "lineId": "line-2",
+        "sku": "ROM-CS",
+        "description": "Romaine Hearts, case",
+        "quantity": "4",
+        "unit": "case",
+        "unitPriceCents": 4275,
+        "amountCents": 17100,
+        "taxCents": 0
+      },
+      {
+        "lineId": "line-3",
+        "sku": "AVO-48",
+        "description": "Hass Avocados, 48ct",
+        "quantity": "3",
+        "unit": "case",
+        "unitPriceCents": 6890,
+        "amountCents": 20670,
+        "taxCents": 0
+      },
+      {
+        "lineId": "line-4",
+        "sku": "TOM-25",
+        "description": "Heirloom Tomatoes, 25lb",
+        "quantity": "2",
+        "unit": "case",
+        "unitPriceCents": 5420,
+        "amountCents": 10840,
+        "taxCents": 0
+      }
+    ],
+    "comparisons": {
+      "cleanInvoiceQuantities": [
+        "5",
+        "4",
+        "3",
+        "2"
+      ],
+      "poQuantities": [
+        "5",
+        "4",
+        "3",
+        "2"
+      ],
+      "receiptQuantities": [
+        "5",
+        "4",
+        "3",
+        "2"
+      ],
+      "contractPricesCents": [
+        3850,
+        4275,
+        6890,
+        5420
+      ],
+      "catalogPricesCents": [
+        3850,
+        4275,
+        6890,
+        5420
+      ],
+      "receiptAcceptedBy": "Fixture Receiving Operator (simulated)",
+      "receiptAcceptedAt": "2026-10-19T10:00:00Z",
+      "contractEffectiveFrom": "2026-01-01",
+      "contractEffectiveThrough": "2026-12-31",
+      "invoiceWithinContract": true,
+      "net14DateDifferenceDays": 14
+    },
+    "arithmetic": {
+      "nominalExpressionCents": "5*3850 + 4*4275 + 3*6890 + 2*5420",
+      "nominalTotalCents": 67860,
+      "discrepancyExpressionCents": "6*3850 + 4*4275 + 3*6890 + 2*5420",
+      "discrepancyTotalCents": 71710,
+      "discrepancyExtraCents": 3850,
+      "discrepancyIsArithmeticError": false
+    },
+    "scenarios": [
+      {
+        "name": "clean",
+        "sourceFiles": [
+          "invoice.pdf",
+          "purchase-order.pdf",
+          "receipt.pdf",
+          "contract.pdf"
+        ],
+        "invoicedCents": 67860,
+        "businessHoldCodesAfterCompleteHumanFieldReview": [],
+        "acceptedCentsAfterBusinessApproval": 67860,
+        "recognizedBillCountAfterBusinessApproval": 1,
+        "transferCountImmediatelyAfterBusinessApproval": 0,
+        "eventualTransferCountAfterIndependentPaymentAuthorizationAndSettlement": 1,
+        "recognitionAggregate": [
+          {
+            "account": "5000",
+            "debit": 67860,
+            "credit": 0
+          },
+          {
+            "account": "2000",
+            "debit": 0,
+            "credit": 67860
+          }
+        ],
+        "settlementAfterPostedBankTransaction": [
+          {
+            "account": "2000",
+            "debit": 67860,
+            "credit": 0
+          },
+          {
+            "account": "1000",
+            "debit": 0,
+            "credit": 67860
+          }
+        ]
+      },
+      {
+        "name": "missing_receipt",
+        "sourceFiles": [
+          "invoice.pdf",
+          "purchase-order.pdf",
+          "contract.pdf"
+        ],
+        "invoicedCents": 67860,
+        "businessHoldCodesAfterCompleteHumanFieldReview": [
+          "missing_receipt"
+        ],
+        "expectedHoldInstances": 4,
+        "acceptedCentsAfterBusinessApproval": null,
+        "recognizedBillCountAfterBusinessApproval": 0,
+        "eventualTransferCountAfterIndependentPaymentAuthorizationAndSettlement": 0,
+        "recognitionAggregate": [],
+        "settlementAfterPostedBankTransaction": [],
+        "owner": "receiving_owner",
+        "resolution": "Supply accepted source-bound receipt; fresh revision and field/business review required."
+      },
+      {
+        "name": "quantity_discrepancy",
+        "sourceFiles": [
+          "invoice-quantity-discrepancy.pdf",
+          "purchase-order.pdf",
+          "receipt.pdf",
+          "contract.pdf"
+        ],
+        "invoiceNumber": "INV-1001-QTY",
+        "invoicedCents": 71710,
+        "line1Quantity": "6",
+        "line1AmountCents": 23100,
+        "poLine1Quantity": "5",
+        "receiptLine1Quantity": "5",
+        "businessHoldCodesAfterCompleteHumanFieldReview": [
+          "po_mismatch",
+          "receipt_mismatch"
+        ],
+        "expectedHoldInstances": 2,
+        "acceptedCentsAfterBusinessApproval": null,
+        "recognizedBillCountAfterBusinessApproval": 0,
+        "eventualTransferCountAfterIndependentPaymentAuthorizationAndSettlement": 0,
+        "recognitionAggregate": [],
+        "settlementAfterPostedBankTransaction": [],
+        "owners": [
+          "purchasing_owner",
+          "receiving_owner"
+        ],
+        "forbiddenAction": "Silently replace claim with 67860 or short-pay 3850; partial acceptance is not authorized in B1.",
+        "scenarioIsolation": "Independent case variant; must not spend the same receipt after recognizing clean invoice in the same run."
+      },
+      {
+        "name": "renamed_identical_duplicate",
+        "original": "invoice.pdf",
+        "businessHoldCodesAfterCompleteHumanFieldReview": [],
+        "incrementalBillCount": 0,
+        "incrementalTransferCount": 0,
+        "cumulativeBillCountAfterApprovedCleanCase": 1,
+        "cumulativeEventualTransferCountAfterSettledCleanCase": 1,
+        "effect": "Additional delivery provenance only; same original hash and obligation remain authoritative."
+      }
+    ],
+    "groundingExpectations": {
+      "content": "Every listed header/line value must match the correct original; support is independent of native geometry availability. Discrepancy quantity 6 is supported content even though business evidence contradicts fulfillment.",
+      "allowedGeometry": [
+        "native",
+        "derived",
+        "unresolved"
+      ],
+      "preciseGeometryNotAssumedFromPDFLegibility": true,
+      "unresolvedBeforeHumanFieldReview": "geometry_review_required",
+      "unresolvedAfterExplicitCorrectOriginalTextReview": "May proceed if content supported and all business requirements satisfied.",
+      "derivedRequirements": [
+        "exact unique token match",
+        "same source/revision/hash/page",
+        "hashed raw/config/token provenance",
+        "for local OCR, raster and traineddata provenance",
+        "word/line granularity, no fuzzy character repair"
+      ],
+      "preciseRegionNotEvidenceOfBusinessApproval": true,
+      "unresolvedResultsRemainInDenominator": true
+    },
+    "supportedScope": [
+      "one known supplier",
+      "USD full original amount",
+      "case units and approved catalog",
+      "PO plus accepted receipt",
+      "account 5000 expense with known store/invoice period",
+      "duplicate delivery without duplicate obligation"
+    ],
+    "unsupportedPaths": [
+      "partial acceptance/automatic short-pay",
+      "credit note application",
+      "non-PO approval",
+      "unknown supplier/SKU/unit",
+      "inventory/fixed asset/prepayment allocations",
+      "missing/conflicting source content",
+      "manual clear-flags without new evidence",
+      "post-recognition changes without correction workflow"
+    ],
+    "countSemantics": {
+      "originalPdfCount": 5,
+      "nominalPdfPacketCount": 4,
+      "businessScenarioCount": 4,
+      "actualProviderTransfersInThisReview": 0,
+      "actualBackendMutationsInThisReview": 0,
+      "settlementEntriesAreConditionalExpectations": true,
+      "countsDoNotClaimIntegratedSuccess": true
+    }
+  },
+  "baselinePureChecks": {
+    "codeSha": "be98772d45ac6715957e002570edb9184efce9ca",
+    "pureFunctionChecksPassed": true,
+    "fieldComparisons": 22,
+    "originalPDFs": 5,
+    "sourceHashMatches": 5,
+    "cleanHoldCodes": [],
+    "missingReceiptHoldCodes": [
+      "missing_receipt"
+    ],
+    "missingReceiptHoldInstances": 4,
+    "quantityDiscrepancyHoldCodes": [
+      "po_mismatch",
+      "receipt_mismatch"
+    ],
+    "quantityDiscrepancyHoldInstances": 2,
+    "expectedKeyQuantityHoldCodes": [
+      "quantity_variance"
+    ],
+    "expectedKeyQuantityHoldMatches": false,
+    "geometryReviewHoldCountBeforeHumanReview": 24,
+    "recognitionDetailedLines": [
+      {
+        "account": "5000",
+        "debit": 19250,
+        "credit": 0,
+        "dims": {
+          "store": "sf-hayes-valley",
+          "vendor": "golden-state-produce"
+        },
+        "memo": "expense; period 2026-10"
+      },
+      {
+        "account": "5000",
+        "debit": 17100,
+        "credit": 0,
+        "dims": {
+          "store": "sf-hayes-valley",
+          "vendor": "golden-state-produce"
+        },
+        "memo": "expense; period 2026-10"
+      },
+      {
+        "account": "5000",
+        "debit": 20670,
+        "credit": 0,
+        "dims": {
+          "store": "sf-hayes-valley",
+          "vendor": "golden-state-produce"
+        },
+        "memo": "expense; period 2026-10"
+      },
+      {
+        "account": "5000",
+        "debit": 10840,
+        "credit": 0,
+        "dims": {
+          "store": "sf-hayes-valley",
+          "vendor": "golden-state-produce"
+        },
+        "memo": "expense; period 2026-10"
+      },
+      {
+        "account": "2000",
+        "debit": 0,
+        "credit": 67860,
+        "dims": {
+          "vendor": "golden-state-produce"
+        }
+      }
+    ],
+    "recognitionAggregate": [
+      {
+        "account": "2000",
+        "debit": 0,
+        "credit": 67860
+      },
+      {
+        "account": "5000",
+        "debit": 67860,
+        "credit": 0
+      }
+    ],
+    "settlementMatchesIndependentDerivation": true,
+    "invoiceEventTextMatchesOriginalTextWithExportedTerminalNewline": true,
+    "receivingEventAndFactsMatchOriginalQuantities": true,
+    "sameFilenameDifferentBytesRemainDistinctByHashAndObligation": true,
+    "liveBackendCalls": 0,
+    "providerCalls": 0,
+    "paymentCalls": 0
+  },
+  "sourceEventProvenanceCheck": {
+    "codeSha": "be98772d45ac6715957e002570edb9184efce9ca",
+    "seed": 97,
+    "invoiceEventMatches": true,
+    "receivingEventMatches": true,
+    "truthAnswerKeyNotInspected": true,
+    "providerCalls": 0,
+    "backendCalls": 0
+  },
+  "originalPdfMetadata": [
+    {
+      "file": "fixtures/ap-system/golden-state-v1/input/invoice.pdf",
+      "sha256": "a6c745ac1f33d32ab142f8da420ba82af3590eb36a3897c39d7537d1c0a1eb83",
+      "bytes": 2869,
+      "pdfinfo": "Title:           Synthetic INVOICE INV-1001\nSubject:         unspecified\nKeywords:        \nAuthor:          Autonomous Finance synthetic fixture generator\nCreator:         anonymous\nProducer:        ReportLab PDF Library - (opensource)\nCreationDate:    Fri Dec 31 16:00:00 1999 PST\nModDate:         Fri Dec 31 16:00:00 1999 PST\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           1\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       2869 bytes\nOptimized:       no\nPDF version:     1.4\n"
+    },
+    {
+      "file": "fixtures/ap-system/golden-state-v1/input/purchase-order.pdf",
+      "sha256": "180bd875e03024fafe18732710e829f43e5ce06dcb7c4eb9e6115c627f1cc7e7",
+      "bytes": 3022,
+      "pdfinfo": "Title:           Synthetic PURCHASE ORDER PO-GS-20261019-001\nSubject:         unspecified\nKeywords:        \nAuthor:          Autonomous Finance synthetic fixture generator\nCreator:         anonymous\nProducer:        ReportLab PDF Library - (opensource)\nCreationDate:    Fri Dec 31 16:00:00 1999 PST\nModDate:         Fri Dec 31 16:00:00 1999 PST\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           1\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       3022 bytes\nOptimized:       no\nPDF version:     1.4\n"
+    },
+    {
+      "file": "fixtures/ap-system/golden-state-v1/input/receipt.pdf",
+      "sha256": "a585c8f5e45a2ff962e94b56280d35ce0af9d078ba44f5acd971e6cba29a2ff2",
+      "bytes": 2908,
+      "pdfinfo": "Title:           Synthetic GOODS RECEIPT DLV-sf-hayes-valley-20261019-GOL\nSubject:         unspecified\nKeywords:        \nAuthor:          Autonomous Finance synthetic fixture generator\nCreator:         anonymous\nProducer:        ReportLab PDF Library - (opensource)\nCreationDate:    Fri Dec 31 16:00:00 1999 PST\nModDate:         Fri Dec 31 16:00:00 1999 PST\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           1\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       2908 bytes\nOptimized:       no\nPDF version:     1.4\n"
+    },
+    {
+      "file": "fixtures/ap-system/golden-state-v1/input/contract.pdf",
+      "sha256": "63539752792e6afbdd2fcecc4444a3710d7fa17341c77c5a482e089a5604f883",
+      "bytes": 3022,
+      "pdfinfo": "Title:           Synthetic SUPPLY CONTRACT CONTRACT-GS-2026\nSubject:         unspecified\nKeywords:        \nAuthor:          Autonomous Finance synthetic fixture generator\nCreator:         anonymous\nProducer:        ReportLab PDF Library - (opensource)\nCreationDate:    Fri Dec 31 16:00:00 1999 PST\nModDate:         Fri Dec 31 16:00:00 1999 PST\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           1\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       3022 bytes\nOptimized:       no\nPDF version:     1.4\n"
+    },
+    {
+      "file": "fixtures/ap-system/golden-state-v1/input/invoice-quantity-discrepancy.pdf",
+      "sha256": "59b5344281b0a7202c924f4ace515667f34bcf45816826252cecc3b0c6df967a",
+      "bytes": 2873,
+      "pdfinfo": "Title:           Synthetic INVOICE INV-1001-QTY\nSubject:         unspecified\nKeywords:        \nAuthor:          Autonomous Finance synthetic fixture generator\nCreator:         anonymous\nProducer:        ReportLab PDF Library - (opensource)\nCreationDate:    Fri Dec 31 16:00:00 1999 PST\nModDate:         Fri Dec 31 16:00:00 1999 PST\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           1\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       2873 bytes\nOptimized:       no\nPDF version:     1.4\n"
+    }
+  ],
+  "correctionAssessment": {
+    "amendmentSourceSha": "b9fd6d1492f32b2c01b421c68450429a28cbb5ba",
+    "amendmentIntegrationSha": "f270826a45ee9fbe5f32e6e17db4c5d0ba8de1b3",
+    "correctedExpectedKeySha256": "b00045993cc010124e14b7d61e3014a3eda2ceb0fbe7638dd92845fdc4fe281e",
+    "baselineExpectedKeySha256": "cc054ff69a84515ff641046427e7c5b44d701506db3b42cb14c364d08881f310",
+    "frozenIndependentDerivationSha256": "68fe8d6dbd21a164b417034c8ca201016776f3bf9efea88af3f5835486486e97",
+    "changedFieldsOnly": [
+      "variants.quantityDiscrepancy.expectedHoldCodes",
+      "postFreezeAmendments"
+    ],
+    "correctedHoldCodes": [
+      "po_mismatch",
+      "receipt_mismatch"
+    ],
+    "matchesFrozenIndependentDerivation": true,
+    "allOtherExpectedValuesUnchanged": true,
+    "originalPDFsManifestPolicyAccountingUnchanged": true,
+    "findingV1F1": "resolved",
+    "reviewStatus": "independent_agent_engineering_review",
+    "practitionerReview": "pending_external_reviewer"
+  },
+  "existingPolicyTests": {
+    "command": "./node_modules/.bin/vitest run tests/ap-system/accounting-policy.test.ts --cache=false",
+    "passed": 6,
+    "failed": 0,
+    "scope": "pure policy/arithmetic only"
+  },
+  "findings": [
+    {
+      "id": "V1-F1",
+      "status": "resolved_at_identified_amendment",
+      "description": "Expected quantity_variance did not match source-derived po_mismatch + receipt_mismatch."
+    },
+    {
+      "id": "V1-F2",
+      "status": "nonblocking_coverage_followup",
+      "description": "Baseline key does not assert exact descriptions/units/terms/subtotal/tax/freight/discount; independently transcribed values are preserved here."
+    }
+  ],
+  "executionIsolation": {
+    "backendMutations": 0,
+    "providerCalls": 0,
+    "paymentCalls": 0,
+    "credentialsLoaded": false,
+    "productionFilesChanged": false
+  },
+  "reproduction": {
+    "temporaryDirectory": "/private/tmp/ap97-v1",
+    "policyCheckSource": "import assert from 'node:assert/strict';\nimport {readFileSync,writeFileSync} from 'node:fs';\nimport {createHash} from 'node:crypto';\nimport {evaluatePolicy,obligationKey} from '/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks/src/ap-system/policy.ts';\nimport {accountingProblems,recognitionLines} from '/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks/src/ap-system/accounting.ts';\nimport {intakeSchema} from '/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks/src/ap-system/contracts.ts';\nconst root='/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks/fixtures/ap-system/golden-state-v1';\nconst derived=JSON.parse(readFileSync('/private/tmp/ap97-v1/independent-derived.json','utf8'));\nconst manifest=JSON.parse(readFileSync(root+'/manifest.json','utf8'));\nconst key=JSON.parse(readFileSync(root+'/evaluation/expected-outcomes.json','utf8'));\nconst sha=(b:any)=>createHash('sha256').update(b).digest('hex');\nconst names=['invoice','purchase-order','receipt','contract','invoice-quantity-discrepancy'];\nconst kinds=['invoice','purchase_order','receipt','contract','invoice'];\nconst source=(i:number)=>{const bytes=readFileSync(`${root}/input/${names[i]}.pdf`);return {...manifest.sources[i],deliveryId:`v1-manual-delivery-${names[i]}`,name:`${names[i]}.pdf`,kind:kinds[i],mimeType:'application/pdf',originalRef:`${root}/input/${names[i]}.pdf`,originalBase64:bytes.toString('base64'),byteLength:bytes.length,extractedText:readFileSync(`/private/tmp/ap97-v1/${names[i]}.txt`,'utf8'),provenance:{kind:'synthetic',description:'Original fixture PDF, independently transcribed for pure policy verification; not runtime/parser output.',license:'Repository-generated synthetic engineering fixture; not external supplier material.',originalFilename:`${names[i]}.pdf`},replaces:null,pageCount:1,pageStatus:[{page:1,status:'complete',reason:null}],parser:null};};\nconst binding=(s:any)=>({sourceId:s.sourceId,revision:s.revision,sha256:s.sha256});\nfunction packet(discrepancy=false){\n const documents=[source(discrepancy?4:0),source(1),source(2),source(3)];\n const fields:any[]=[];\n const field=(path:string,value:any,quote:string)=>{assert(documents[0].extractedText.includes(quote),`Original quote absent: ${path}=${quote}`);fields.push({evidenceId:`v1-field-${path}`,source:binding(documents[0]),fieldPath:path,rawValue:quote,normalizedValue:value,contentStatus:'supported',quote,grounding:{status:'unresolved',method:'none',page:1,frame:null,regions:[],contextRegions:[],normalization:'html_decode+nfc+whitespace+casefold;no_character_substitution',processor:{provider:'independent-human-readable-transcription',model:null,version:'v1',configHash:sha('V1 independent manual transcription; no geometry claimed'),jobId:null,resolvedVersion:null,implementationVersion:'V1-originals-review',configArtifact:null,rawArtifact:null,tokenArtifact:null,rasterArtifact:null,traineddata:null},failureReason:'This evaluation-only transcription does not assert precise geometry.',elementPath:null}});};\n const lines=structuredClone(derived.lines).map((l:any)=>({...l,quantity:{decimal:l.quantity,unit:l.unit},poLineId:`po-${l.lineId}`,receiptLineIds:[`receipt-${l.lineId}`],allocations:[{account:'5000',amountCents:l.amountCents,store:'sf-hayes-valley',department:null,project:null,period:'2026-10',treatment:'expense'}]}));\n if(discrepancy){lines[0].quantity.decimal='6';lines[0].amountCents=23100;lines[0].allocations[0].amountCents=23100;}\n const total=discrepancy?71710:67860;const invoiceNumber=discrepancy?'INV-1001-QTY':'INV-1001';\n field('extractedSupplierName','Golden State Produce Co.','Golden State Produce Co.');field('invoiceNumber',invoiceNumber,invoiceNumber);field('invoiceDate','2026-10-19','2026-10-19');field('totalCents',total,discrepancy?'717.10':'678.60');\n for(const l of lines){field(`lines.${l.lineId}.sku`,l.sku,l.sku);field(`lines.${l.lineId}.description`,l.description,l.description);field(`lines.${l.lineId}.quantity`,l.quantity.decimal,l.quantity.decimal);field(`lines.${l.lineId}.unitPriceCents`,l.unitPriceCents,(l.unitPriceCents/100).toFixed(2));field(`lines.${l.lineId}.amountCents`,l.amountCents,(l.amountCents/100).toFixed(2));l.evidenceIds=fields.filter(f=>f.fieldPath.startsWith(`lines.${l.lineId}.`)).map(f=>f.evidenceId);delete l.unit;}\n const candidate={candidateId:`v1-${invoiceNumber}`,revision:1,sources:documents.map(binding),extractedSupplierName:'Golden State Produce Co.',supplierId:'golden-state-produce',invoiceNumber,invoiceDate:'2026-10-19',dueDate:'2026-11-02',terms:'Net 14',currency:'USD',kind:'invoice',appliesToBillId:null,lines,freightAllocations:[],discountAllocations:[],subtotalCents:total,taxCents:0,freightCents:0,discountCents:0,totalCents:total,evidence:fields,parseWarnings:[]};\n const purchasingEvidence=[['purchase_order',1,'PO-GS-20261019-001','po'],['receipt',2,'DLV-sf-hayes-valley-20261019-GOL','receipt'],['contract',3,'CONTRACT-GS-2026','contract']].map(([kind,index,reference,prefix]:any)=>({supplierId:'golden-state-produce',source:binding(documents[index]),kind,reference,lines:derived.lines.map((l:any)=>({lineId:`${prefix}-${l.lineId}`,sku:l.sku,quantity:{decimal:l.quantity,unit:'case'},unitPriceCents:kind==='receipt'?null:l.unitPriceCents,invoiceLineId:l.lineId})),acceptedBy:kind==='receipt'?'Fixture Receiving Operator (simulated)':null,acceptedAt:kind==='receipt'?'2026-10-19T10:00:00Z':null}));\n return intakeSchema.parse({contractVersion:'ap-evidence-v1',idempotencyKey:`v1-pure-policy-${invoiceNumber}`,documents,candidate,extraction:{status:'complete',evidence:fields,reasons:[]},purchasingEvidence,explicitRevisionOf:null});\n}\nconst clean=packet(),discrepancy=packet(true),missing=structuredClone(clean);\nmissing.documents=missing.documents.filter(d=>d.kind!=='receipt');missing.candidate!.sources=missing.documents.map(binding);missing.purchasingEvidence=missing.purchasingEvidence.filter(p=>p.kind!=='receipt');intakeSchema.parse(missing);\nconst holds=(p:any,reviewed=true)=>evaluatePolicy(p,'golden-state-produce',reviewed);\nconst codes=(p:any)=>[...new Set(holds(p).map(h=>h.code))].sort();\nassert.deepEqual(codes(clean),[]);assert.deepEqual(codes(missing),['missing_receipt']);assert.equal(holds(missing).length,4);assert.deepEqual(codes(discrepancy),['po_mismatch','receipt_mismatch']);assert.equal(holds(discrepancy).length,2);assert.equal(discrepancy.candidate!.totalCents,71710);assert.deepEqual(accountingProblems(clean.candidate!),[]);assert.deepEqual(accountingProblems(discrepancy.candidate!),[]);\nassert.equal(holds(clean,false).filter(h=>h.code==='geometry_review_required').length,24);assert.equal(holds(clean,false).every(h=>h.code==='geometry_review_required'),true);\nconst journal=recognitionLines(clean.candidate!);const aggregate=Object.values(journal.reduce((all:any,l:any)=>{const a=all[l.account]??={account:l.account,debit:0,credit:0};a.debit+=l.debit;a.credit+=l.credit;return all;},{})).sort((a:any,b:any)=>a.account.localeCompare(b.account));\nassert.deepEqual(aggregate,[...derived.scenarios[0].recognitionAggregate].sort((a:any,b:any)=>a.account.localeCompare(b.account)));assert.equal(journal.filter(l=>l.account==='5000').length,4);\nassert.deepEqual(key.clean.recognition,derived.scenarios[0].recognitionAggregate);assert.deepEqual(key.clean.settlement,derived.scenarios[0].settlementAfterPostedBankTransaction);\nlet fieldComparisons=0;for(const [path,value] of Object.entries(key.clean.fields)){const field=path==='supplier'?clean.candidate!.extractedSupplierName:path.startsWith('lines.')?(()=>{const [,id,prop]=path.split('.');const line=clean.candidate!.lines.find(l=>l.lineId===id)!;return prop==='quantity'?line.quantity.decimal:(line as any)[prop!];})():(clean.candidate as any)[path];assert.deepEqual(field,value,path);fieldComparisons++;}\nassert.equal(key.clean.expectedAcceptedCents,67860);assert.deepEqual(key.variants.missingReceipt.expectedHoldCodes,codes(missing));assert.equal(key.variants.quantityDiscrepancy.invoicedCents,71710);assert.equal(key.variants.quantityDiscrepancy.invoicedKaleQuantity,'6');assert.equal(key.variants.quantityDiscrepancy.receivedKaleQuantity,'5');assert.equal(key.variants.quantityDiscrepancy.expectedAcceptedCents,null);assert.equal(key.variants.quantityDiscrepancy.expectedTransferCount,0);\nassert.deepEqual(key.clean.groundingExpectations.map((g:any)=>g.allowedGeometry),Array(6).fill(['native','derived','unresolved']));\nassert.equal(sha(readFileSync(root+'/input/invoice-event.json')),derived.sourceHashes['invoice-event.json']);const event=JSON.parse(readFileSync(root+'/input/invoice-event.json','utf8'));assert.equal(event.payload.text+'\\n',readFileSync(root+'/input/original-simulator-invoice.txt','utf8'));\nconst facts=JSON.parse(readFileSync(root+'/input/facts.json','utf8'));assert.deepEqual(facts.lines,derived.lines);const receiving=JSON.parse(readFileSync(root+'/input/receiving-event.json','utf8'));assert.deepEqual(receiving.payload.items,derived.lines.map((l:any)=>({sku:l.sku,qtyReceived:Number(l.quantity)})));\nconst renamed=structuredClone(clean);renamed.documents[0].name='renamed.pdf';assert.equal(obligationKey(renamed.candidate!),obligationKey(clean.candidate!));discrepancy.documents[0].name=clean.documents[0].name;assert.notEqual(discrepancy.documents[0].sha256,clean.documents[0].sha256);assert.notEqual(obligationKey(discrepancy.candidate!),obligationKey(clean.candidate!));\nfor(const g of key.clean.groundingExpectations){const f=clean.candidate!.evidence.find(e=>e.fieldPath===g.fieldPath);assert(f);assert.equal(f.contentStatus,g.contentStatus);}\nconst expectedCodes=[...key.variants.quantityDiscrepancy.expectedHoldCodes].sort();\nconst result={codeSha:'be98772d45ac6715957e002570edb9184efce9ca',pureFunctionChecksPassed:true,fieldComparisons,originalPDFs:5,sourceHashMatches:5,cleanHoldCodes:codes(clean),missingReceiptHoldCodes:codes(missing),missingReceiptHoldInstances:holds(missing).length,quantityDiscrepancyHoldCodes:codes(discrepancy),quantityDiscrepancyHoldInstances:holds(discrepancy).length,expectedKeyQuantityHoldCodes:expectedCodes,expectedKeyQuantityHoldMatches:JSON.stringify(expectedCodes)===JSON.stringify(codes(discrepancy)),geometryReviewHoldCountBeforeHumanReview:24,recognitionDetailedLines:journal,recognitionAggregate:aggregate,settlementMatchesIndependentDerivation:true,invoiceEventTextMatchesOriginalTextWithExportedTerminalNewline:true,receivingEventAndFactsMatchOriginalQuantities:true,sameFilenameDifferentBytesRemainDistinctByHashAndObligation:true,liveBackendCalls:0,providerCalls:0,paymentCalls:0};\nwriteFileSync('/private/tmp/ap97-v1/policy-result.json',JSON.stringify(result,null,2)+'\\n');console.log(JSON.stringify(result,null,2));\n",
+    "sourceEventCheckSource": "import assert from 'node:assert/strict';\nimport {readFileSync,writeFileSync} from 'node:fs';\nimport {generateWorld} from '/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks/src/world/generate.ts';\nconst root='/Users/junjiexiong/.codex/worktrees/ap-system-verification/calhacks/fixtures/ap-system/golden-state-v1/input';\nconst result=generateWorld({seed:97,storeCount:1,start:'2026-10-19',days:1,plantErrors:false});\nconst receiving=result.events.find(e=>e.type==='receiving.logged'&&e.payload.vendor==='golden-state-produce');\nconst invoice=result.events.find(e=>e.type==='document.received'&&e.payload.from==='ar@gsproduce.example');\nassert.deepEqual(receiving,JSON.parse(readFileSync(root+'/receiving-event.json','utf8')));\nassert.deepEqual(invoice,JSON.parse(readFileSync(root+'/invoice-event.json','utf8')));\nconst output={codeSha:'be98772d45ac6715957e002570edb9184efce9ca',seed:97,invoiceEventMatches:true,receivingEventMatches:true,truthAnswerKeyNotInspected:true,providerCalls:0,backendCalls:0};\nwriteFileSync('/private/tmp/ap97-v1/source-event-result.json',JSON.stringify(output,null,2)+'\\n');console.log(JSON.stringify(output));\n",
+    "policyCheckNote": "Uses baseline key and intentionally records expectedKeyQuantityHoldMatches=false. The separate correctionAssessment verifies the corrected evaluation amendment without changing this baseline evidence."
+  }
+}

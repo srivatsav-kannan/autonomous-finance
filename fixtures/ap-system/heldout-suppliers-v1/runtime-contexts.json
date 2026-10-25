@@ -1,0 +1,28 @@
+{
+  "harbor-thread-textiles": {
+    "supplier": {
+      "supplierId": "harbor-thread-textiles",
+      "legalName": "Harbor Thread Textiles LLC"
+    },
+    "coding": {
+      "account": "5000",
+      "store": "heldout-test-store",
+      "department": null,
+      "project": null,
+      "treatment": "expense"
+    }
+  },
+  "copper-valve-maintenance": {
+    "supplier": {
+      "supplierId": "copper-valve-maintenance",
+      "legalName": "Copper Valve Maintenance Inc."
+    },
+    "coding": {
+      "account": "5000",
+      "store": "heldout-test-store",
+      "department": null,
+      "project": null,
+      "treatment": "expense"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "provenance": "Project-authored synthetic business documents. All parties, identifiers, goods and transactions are invented.",
+  "invoices": [
+    {
+      "id": "harbor-thread",
+      "layout": "landscape-ledger",
+      "supplierId": "harbor-thread-textiles",
+      "supplier": "Harbor Thread Textiles LLC",
+      "buyer": "Project Test Hospitality LLC",
+      "invoiceNumber": "HT-2408",
+      "invoiceDate": "2026-10-22",
+      "dueDate": "2026-11-21",
+      "terms": "Net 30",
+      "currency": "USD",
+      "lines": [
+        {"sku":"COT-ROLL","description":"Cotton table linen roll","quantity":"1.5","unit":"roll","unitPriceCents":12840,"amountCents":19260},
+        {"sku":"NAP-12","description":"Linen napkins, pack of twelve","quantity":"3","unit":"pack","unitPriceCents":2475,"amountCents":7425}
+      ],
+      "subtotalCents":26685,"taxCents":0,"freightCents":1250,"discountCents":535,"totalCents":27400,
+      "purchaseOrder":"PO-HT-418","deliveryReference":"HT-D-711"
+    },
+    {
+      "id": "copper-valve",
+      "layout": "portrait-service-statement",
+      "supplierId": "copper-valve-maintenance",
+      "supplier": "Copper Valve Maintenance Inc.",
+      "buyer": "Project Test Hospitality LLC",
+      "invoiceNumber": "CV-9017",
+      "invoiceDate": "2026-10-23",
+      "dueDate": "2026-11-06",
+      "terms": "Net 14",
+      "currency": "USD",
+      "lines": [
+        {"sku":"LAB-PL","description":"Preventive plumbing inspection and adjustment","quantity":"2.75","unit":"hour","unitPriceCents":6400,"amountCents":17600},
+        {"sku":"SEAL-K","description":"Food-grade pump seal replacement kit","quantity":"2","unit":"kit","unitPriceCents":1875,"amountCents":3750},
+        {"sku":"FLT-04","description":"Inline water filter cartridge, four micron","quantity":"4","unit":"each","unitPriceCents":1225,"amountCents":4900}
+      ],
+      "subtotalCents":26250,"taxCents":0,"freightCents":0,"discountCents":0,"totalCents":26250,
+      "purchaseOrder":"PO-CV-219","deliveryReference":"CV-SVC-72"
+    }
+  ]
+}

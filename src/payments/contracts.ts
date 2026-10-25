@@ -1,3 +1,4 @@
+import type { PaymentAccountingBinding } from "./domain/accounting-binding";
 /** Compatibility types: the bank command, its hash and saved request bytes stay authoritative. */
 export type {
   BankScope, BankDestination, BankCommand, TransferObservation, BankTransaction,
@@ -19,6 +20,7 @@ export type EvidenceRef = { readonly decisionPath: string; readonly knowledgeCom
 export type CreditAllocation = { creditId: string; amountCents: number };
 
 export type PaymentSnapshot = {
+  accountingBinding?: PaymentAccountingBinding;
   scope: BankScope;
   bills: { billId: string; version: number; amountCents: number }[];
   credits: CreditAllocation[];
@@ -26,6 +28,8 @@ export type PaymentSnapshot = {
   currency: "USD";
   destination: BankDestination;
   policyVersion: Version;
+  /** Intended first initiation date. UTC calendar date; does not promise settlement. */
+  schedule?: { executionDate: string; timeZone: "UTC" };
 };
 /** Read from immutable per-run config, never from an untrusted command or Git at dispatch. */
 export type PaymentExecutionConfig = {
@@ -48,7 +52,7 @@ export type PaymentApproval = {
   at: number;
 };
 
-export type RequestPayment = { type: "RequestPayment"; billIds: string[]; credits: CreditAllocation[] };
+export type RequestPayment = { type: "RequestPayment"; billIds: string[]; credits: CreditAllocation[]; billAmounts?: { billId: string; amountCents: number }[]; executionDate?: string };
 export type ApprovePayment = { type: "ApprovePayment"; versionId: PaymentId; snapshotHash: string };
 export type ApproveWithinPolicy = { type: "ApproveWithinPolicy"; versionId: PaymentId; snapshotHash: string };
 export type CancelPayment = { type: "CancelPayment"; versionId: PaymentId };

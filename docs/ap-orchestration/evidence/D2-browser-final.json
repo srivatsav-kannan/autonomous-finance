@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-10-25T10:21:25.777266+00:00",
+  "code": {
+    "periodQbo": "003ebcd",
+    "costAndCredit": "1cd4cc5",
+    "creditNegativeAndResponsive": "2154234"
+  },
+  "method": "CUA browser actions and read-only DOM; synthetic fixture backend interception explicitly labelled",
+  "checks": {
+    "periodApprovedJournalPreview": true,
+    "localFakeBankExternalSubmitDisabled": true,
+    "openingReviewInputsInitiallyBlank": true,
+    "costExactReviewedPlanDraftOnly": true,
+    "costQuantityChangeClearsPlan": true,
+    "creditComponent2775LoadsGrouped5275": true,
+    "creditNetCashZero": true,
+    "creditSplit3275Plus2000AllowsReviewedDraft": true,
+    "creditOneCentMismatchBlocks": true,
+    "creditAmountChangeClearsConfirmation": true,
+    "mobile390NoHorizontalPageOverflow": true,
+    "fixtureLightDarkPalettes": true
+  },
+  "limitations": [
+    "Synthetic browser fixtures do not establish backend/provider economics.",
+    "Cost review original discount/accrual fixture mismatch was corrected before final cost screenshot.",
+    "V6 independently found UI signed-capacity/date issues; root2154234 repaired, independent replay pending.",
+    "Actual I2 close readback is read-only and remains held with6 blockers; no close/signature fabricated."
+  ],
+  "screenshots": [
+    {
+      "file": "D2-final/period-qbo-light.jpg",
+      "sha256": "2f5db32e6b4e4ba87cd7af998e8a48221c8ecfefb9dfb2c1782af6a97b57bff8"
+    },
+    {
+      "file": "D2-final/period-qbo-dark.jpg",
+      "sha256": "0841cce2601cc19ffda2c21e4b0ba5bcf1c44b096b1fb0ba4a6329209ee89c5e"
+    },
+    {
+      "file": "D2-final/period-mobile-light.jpg",
+      "sha256": "9a27c2478cf22818693794ef9e85b60246e97aee0d4feccd32820eab5975d56d"
+    },
+    {
+      "file": "D2-final/period-mobile-dark.jpg",
+      "sha256": "b454bead7f460bbb222efca5c9ec09d8b8ec877fbdbe5716bdb3d9b9fbdab685"
+    },
+    {
+      "file": "D2-final/cost-plan-light.jpg",
+      "sha256": "34b4274e7978af901f0a255134e8b7a53549200c9281534705e5e876884b9d1b"
+    },
+    {
+      "file": "D2-final/restored-credit-light.jpg",
+      "sha256": "abe852363ba86450d6175717ca38b100da94fbe1ff024617f0365bd03a320963"
+    },
+    {
+      "file": "D2-final/restored-credit-group-light.jpg",
+      "sha256": "6095fd3746e92720aca5c6c6fdf65b9cd5f3a3c3e5888f8c8052bfac407c28e4"
+    },
+    {
+      "file": "D2-final/restored-credit-mobile-dark.jpg",
+      "sha256": "6f1f75717f204e8759b7a21fa7e3be0c804d285ab2dc5a1acb2d40a98c435a6f"
+    },
+    {
+      "file": "D2-final/restored-credit-mobile-light.jpg",
+      "sha256": "2b7db4014593acc0cd5ce34b3d96707860df2d870871a7737ced5874446d2d98"
+    },
+    {
+      "file": "D2-final/live-close-blockers.jpg",
+      "sha256": "bafcd3b765951871e92059c75bcfd4049c6bdbc0a1e6e402c07695ba1ec1b116"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/colima",
+    "ssh",
+    "--",
+    "findmnt",
+    "-rn",
+    "-o",
+    "TARGET,SOURCE,FSTYPE"
+  ],
+  "startedUtc": "2026-10-25T10:46:15.908874+00:00",
+  "durationSeconds": 0.339,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "logs/shared-mount-probe.stdout",
+  "stderr": "logs/shared-mount-probe.stderr"
+}
