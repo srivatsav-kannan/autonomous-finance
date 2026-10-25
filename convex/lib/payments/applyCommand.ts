@@ -40,6 +40,8 @@ export async function requestPaymentCommand(ctx: MutationCtx, args: { scope: Ban
     for (const id of [...args.billIds].sort()) {
       const bill = await ctx.db.get(id); assertRowScope(bill, args.scope);
       const b = bill as Doc<"demoBills">;
+      const linkedCase = await ctx.db.query("apCaseRecords").withIndex("by_bill", q => q.eq("scope.runId", args.scope.runId).eq("billId", id)).unique();
+      if (linkedCase && (linkedCase.businessStatus !== "approved" || linkedCase.documentStatus !== "reviewed" || !linkedCase.fieldReviewId)) throw new Error("AP evidence review and business approval required before payment");
       if (b.status !== "approved" || b.flags.length || b.reservedVersionId || b.vendor !== config.beneficiary.vendor) throw new Error("Bill is not available for payment");
       const amountCents = b.approvedCents! - b.paidCents; dollars(amountCents);
       bills.push({ billId: id, version: b.version, amountCents });

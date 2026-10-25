@@ -31,8 +31,8 @@
     "openai": "Existing evaluation-worktree key reused in ignored var/ap-environment/providers.env; authentication and one gpt-6.1-sol Responses request verified 2026-10-25. Config import verified in main-browser-recovery; application workflow not run.",
     "llamaparse": "Existing Default-project key reused. Five agentic_plus parse jobs verified 2026-10-25 across three rounds. Clean PDF passes selected content/native grounding. Genuine scan content passes; native description bbox still absent with raw word output, whose OCR has two transcription mismatches. Local Tesseract 5.5.2 eng PSM 6 uniquely matched both description lines and passed original-image overlay review; this is derived geometry on one sample, not a native box or completed adapter. See LLAMAPARSE-GROUNDING.md and prior reports. App adapter/fallback packaging, broader formats and integration acceptance remain pending.",
     "increase": "Standalone API sandbox provisioned 2026-10-25 with synthetic Entity (validation simulated valid), open source account and active external account; authentication/resource reads verified. Balance 0 USD; no funding/transfer, webhook or recovery test. Dashboard association not established.",
-    "erp_selection_and_access": "BLOCKED: provider/access requested asynchronously; other engineering continues",
-    "domain_review": "BLOCKED: actual AP practitioner and review evidence requested asynchronously; agent verification is distinct"
+    "erp_selection_and_access": "QuickBooks Online US sandbox selected by user; official Accounting API + OAuth 2.0. No account or authorization yet. Credential-free implementation and setup guide authorized; external workflow remains BLOCKED until access.",
+    "domain_review": "No practitioner currently available. User directs engineering, automated and independent agent verification to continue; prepare practitioner packet, retain external sign-off as pending."
   },
   "tasks": [
     {
@@ -83,14 +83,15 @@
         "C0"
       ],
       "acceptance": "Reproducible source files and relationships; synthetic provenance and missing evidence explicit.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "/root/p0_inventory",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-evidence/calhacks",
+      "branch": "codex/ap-system-evidence",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": null
+      "next_action": "Implement scoped deliverable against frozen ap-evidence-v1; report exact checks and evidence",
+      "source_sha": "ac62854"
     },
     {
       "id": "A2",
@@ -101,14 +102,15 @@
       ],
       "external_gate": "llamaparse",
       "acceptance": "Actual PDF yields supported candidate fields and source grounding; reimport/version tests pass. Native -> exact unique raw-word -> bounded local OCR -> unresolved fallback preserves provenance and separate line regions. Pin/package OCR binary/traineddata; verify positive, mismatched/ambiguous/missing text, unavailable/timeout fallback, supported rotation/page frames and stale revisions; no forced character repair or value substitution.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "/root/p0_inventory",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-evidence/calhacks",
+      "branch": "codex/ap-system-evidence",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": null
+      "next_action": "Implement scoped deliverable against frozen ap-evidence-v1; report exact checks and evidence",
+      "source_sha": "ac62854"
     },
     {
       "id": "B1",
@@ -118,14 +120,15 @@
         "C0"
       ],
       "acceptance": "Missing receipt/price/quantity cases follow authority rules; no implicit short-pay or fabricated notification. Explicit evidence-gap policy defines which steps hold and who resolves them; geometry is not business approval.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "/root/accounting",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-accounting/calhacks",
+      "branch": "codex/ap-system-accounting",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": null
+      "next_action": "Implement scoped deliverable against frozen ap-evidence-v1; report exact checks and evidence",
+      "source_sha": "ac62854"
     },
     {
       "id": "B2",
@@ -135,14 +138,15 @@
         "C0"
       ],
       "acceptance": "Same case/source/review binds to bill; replay, stale review, identity and posting tests pass. Source/review version changes invalidate stale evidence bindings; derived geometry does not bypass review or authority.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "/root/accounting",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-accounting/calhacks",
+      "branch": "codex/ap-system-accounting",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": null
+      "next_action": "Implement scoped deliverable against frozen ap-evidence-v1; report exact checks and evidence",
+      "source_sha": "ac62854"
     },
     {
       "id": "C1",
@@ -152,14 +156,14 @@
         "C0"
       ],
       "acceptance": "Separate payment authorization, configured beneficiary and preserved request/reservation semantics.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "01a1722e-2f26-7130-bfe6-9480c7d2883f",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-integration/calhacks",
+      "branch": "codex/ap-system-integration",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": null
+      "next_action": "Master implements scoped case-to-existing-payment handoff and HTTP integration"
     },
     {
       "id": "D1",
@@ -169,14 +173,15 @@
         "C0"
       ],
       "acceptance": "Source evidence, blockers, decisions, bill/payment/journal status remain visibly linked. Native/derived/unresolved states, correct frame/rotation mapping, separate multiline highlights and honestly labeled coarse context are visible; no amount-only box substituted for description.",
-      "status": "pending",
-      "session_id": null,
-      "worktree": null,
-      "branch": null,
+      "status": "in_progress",
+      "session_id": "/root/experience",
+      "worktree": "/Users/junjiexiong/.codex/worktrees/ap-system-experience/calhacks",
+      "branch": "codex/ap-system-experience",
       "commit": null,
       "evidence": [],
       "blocker": null,
-      "next_action": null
+      "next_action": "Implement scoped deliverable against frozen ap-evidence-v1; report exact checks and evidence",
+      "source_sha": "ac62854"
     },
     {
       "id": "V1",
@@ -424,5 +429,15 @@
         "result": "6 passed"
       }
     ]
+  },
+  "external_accounting": {
+    "provider": "QuickBooks Online",
+    "region": "US",
+    "environment": "sandbox",
+    "protocol": "Accounting API + OAuth 2.0",
+    "credential_storage": "server-only private configuration",
+    "status": "selected_access_pending",
+    "payment_execution_provider": "Increase sandbox",
+    "user_confirmed": true
   }
 }
