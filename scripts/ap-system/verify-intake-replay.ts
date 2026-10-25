@@ -19,5 +19,5 @@ const renamed=await upload("i1-renamed-delivery-20261025-v1",true);if(renamed.st
 const after=await read();
 for(const key of ["revision","snapshotHash","states","amounts","links","journals","payments"] as const)if(JSON.stringify(after[key])!==JSON.stringify(before[key]))throw Error(`Duplicate delivery changed economic state: ${key}`);
 const duplicateEvents=after.timeline.filter(e=>e.kind==="source_delivery"&&e.summary.startsWith("Received resent-"));if(duplicateEvents.length!==4)throw Error("Duplicate delivery audit missing");
-const proof={checkedAt:new Date().toISOString(),codeRevision:runtime.sourceRevision,caseId:original.caseId,replay,conflict:{status:conflict.status,code:conflict.body.error?.code},renamed,unchanged:["revision","snapshotHash","states","amounts","links","journals","payments"],duplicateEvents:duplicateEvents.length};
+const proof={checkedAt:new Date().toISOString(),codeRevision:runtime.sourceCommit,caseId:original.caseId,replay,conflict:{status:conflict.status,code:conflict.body.error?.code},renamed,unchanged:["revision","snapshotHash","states","amounts","links","journals","payments"],duplicateEvents:duplicateEvents.length};
 fs.writeFileSync(directory+"/I1-intake-replay.json",JSON.stringify(proof,null,2),{mode:0o600});console.log(JSON.stringify(proof));
