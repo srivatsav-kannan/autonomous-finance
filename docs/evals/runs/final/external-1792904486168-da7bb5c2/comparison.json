@@ -1,0 +1,27 @@
+{
+  "progress": {
+    "completedRuns": 1,
+    "expectedRuns": 1,
+    "complete": true
+  },
+  "groups": [
+    {
+      "mode": "generalist",
+      "benchmark": "apex",
+      "runs": 1,
+      "answered": 1,
+      "abstained": 0,
+      "errors": 0,
+      "graded": 1,
+      "meanScore": 1,
+      "fullyPassed": 1,
+      "agentTurns": 9,
+      "inputTokens": 222531,
+      "outputTokens": 4550,
+      "estimatedAgentCostUsd": 0.490562,
+      "estimatedJudgeCostUsd": 0.04603,
+      "wallSeconds": 66.755
+    }
+  ],
+  "paired": []
+}

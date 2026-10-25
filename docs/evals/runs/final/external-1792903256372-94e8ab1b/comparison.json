@@ -1,0 +1,78 @@
+{
+  "progress": {
+    "completedRuns": 11,
+    "expectedRuns": 16,
+    "complete": false
+  },
+  "groups": [
+    {
+      "mode": "full-team",
+      "benchmark": "apex",
+      "runs": 2,
+      "answered": 2,
+      "abstained": 0,
+      "errors": 0,
+      "graded": 2,
+      "meanScore": null,
+      "fullyPassed": 2,
+      "agentTurns": 21,
+      "inputTokens": 324080,
+      "outputTokens": 5982,
+      "estimatedAgentCostUsd": 0.70798,
+      "estimatedJudgeCostUsd": 0.08415,
+      "wallSeconds": 86.771
+    },
+    {
+      "mode": "generalist",
+      "benchmark": "apex",
+      "runs": 2,
+      "answered": 2,
+      "abstained": 0,
+      "errors": 0,
+      "graded": 2,
+      "meanScore": null,
+      "fullyPassed": 1,
+      "agentTurns": 11,
+      "inputTokens": 176754,
+      "outputTokens": 2950,
+      "estimatedAgentCostUsd": 0.383008,
+      "estimatedJudgeCostUsd": 0.08023,
+      "wallSeconds": 45.92
+    },
+    {
+      "mode": "full-team",
+      "benchmark": "dabstep",
+      "runs": 4,
+      "answered": 3,
+      "abstained": 0,
+      "errors": 1,
+      "graded": 4,
+      "meanScore": null,
+      "fullyPassed": 3,
+      "agentTurns": 45,
+      "inputTokens": 220935,
+      "outputTokens": 4078,
+      "estimatedAgentCostUsd": 0.48265,
+      "estimatedJudgeCostUsd": 0,
+      "wallSeconds": 97.711
+    },
+    {
+      "mode": "generalist",
+      "benchmark": "dabstep",
+      "runs": 3,
+      "answered": 3,
+      "abstained": 0,
+      "errors": 0,
+      "graded": 3,
+      "meanScore": null,
+      "fullyPassed": 2,
+      "agentTurns": 21,
+      "inputTokens": 114720,
+      "outputTokens": 1839,
+      "estimatedAgentCostUsd": 0.24783,
+      "estimatedJudgeCostUsd": 0,
+      "wallSeconds": 43.969
+    }
+  ],
+  "paired": []
+}

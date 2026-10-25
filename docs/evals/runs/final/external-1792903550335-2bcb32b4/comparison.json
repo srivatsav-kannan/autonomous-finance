@@ -1,0 +1,91 @@
+{
+  "progress": {
+    "completedRuns": 14,
+    "expectedRuns": 14,
+    "complete": true
+  },
+  "groups": [
+    {
+      "mode": "full-team",
+      "benchmark": "finbalance",
+      "runs": 6,
+      "answered": 6,
+      "abstained": 0,
+      "errors": 0,
+      "graded": 6,
+      "meanScore": 0.8333333333333334,
+      "fullyPassed": 5,
+      "agentTurns": 13,
+      "inputTokens": 52348,
+      "outputTokens": 4890,
+      "estimatedAgentCostUsd": 0.153596,
+      "estimatedJudgeCostUsd": 0,
+      "wallSeconds": 59.518
+    },
+    {
+      "mode": "generalist",
+      "benchmark": "finbalance",
+      "runs": 6,
+      "answered": 6,
+      "abstained": 0,
+      "errors": 0,
+      "graded": 6,
+      "meanScore": 0.8333333333333334,
+      "fullyPassed": 5,
+      "agentTurns": 6,
+      "inputTokens": 22611,
+      "outputTokens": 2490,
+      "estimatedAgentCostUsd": 0.070122,
+      "estimatedJudgeCostUsd": 0,
+      "wallSeconds": 26.887
+    },
+    {
+      "mode": "full-team",
+      "benchmark": "invoice-sandbox",
+      "runs": 1,
+      "answered": 1,
+      "abstained": 0,
+      "errors": 0,
+      "graded": 1,
+      "meanScore": 1,
+      "fullyPassed": 1,
+      "agentTurns": 20,
+      "inputTokens": 735487,
+      "outputTokens": 15994,
+      "estimatedAgentCostUsd": 1.630914,
+      "estimatedJudgeCostUsd": 0,
+      "wallSeconds": 131.218
+    },
+    {
+      "mode": "generalist",
+      "benchmark": "invoice-sandbox",
+      "runs": 1,
+      "answered": 1,
+      "abstained": 0,
+      "errors": 0,
+      "graded": 1,
+      "meanScore": 1,
+      "fullyPassed": 1,
+      "agentTurns": 11,
+      "inputTokens": 425792,
+      "outputTokens": 8217,
+      "estimatedAgentCostUsd": 0.933754,
+      "estimatedJudgeCostUsd": 0,
+      "wallSeconds": 70.909
+    }
+  ],
+  "paired": [
+    {
+      "benchmark": "invoice-sandbox",
+      "baseline": "generalist",
+      "pairs": 1,
+      "meanDelta": 0
+    },
+    {
+      "benchmark": "finbalance",
+      "baseline": "generalist",
+      "pairs": 6,
+      "meanDelta": 0
+    }
+  ]
+}
