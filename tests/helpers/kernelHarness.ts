@@ -6,6 +6,13 @@ import type { Role } from "../../src/core/roles";
 
 type Row = Record<string, unknown> & { _id: string; _creationTime: number };
 
+// Convex indexes may name nested fields ("source.kind"); resolve them the same way.
+function fieldValue(row: Row, field: string): unknown {
+  let value: unknown = row;
+  for (const part of field.split(".")) value = (value as Record<string, unknown> | undefined)?.[part];
+  return value;
+}
+
 // Convex retains _handler at runtime but strips it from its published declarations.
 export function mutationHandler<A extends Record<string, unknown>, R>(mutation: RegisteredMutation<"public", A, R>) {
   return (mutation as unknown as { _handler: (ctx: MutationCtx, args: A) => R })._handler;
@@ -80,7 +87,7 @@ export function kernelHarness() {
         },
         async collect() {
           const matches = [...rows(table).values()].filter((row) =>
-            filters.every(([field, value]) => row[field] === value) && predicates.every((test) => test(row)));
+            filters.every(([field, value]) => fieldValue(row, field) === value) && predicates.every((test) => test(row)));
           if (indexName === "by_run_role_status") matches.sort((a, b) => (a.priority as number) - (b.priority as number));
           if (descending) matches.reverse();
           return structuredClone(matches);

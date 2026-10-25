@@ -13,7 +13,8 @@ const FALLBACKS = (process.env.AGENT_FALLBACKS ?? "1") !== "0";
 const BETAS = FALLBACKS ? (["server-side-fallback-2026-07-01"] as const) : [];
 
 // Claude Opus 5.5 list prices, in micro-dollars per token: $4 in, $20 out, $0.20 cache read, $5 cache write.
-const PRICE = { input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 };
+export const ANTHROPIC_PRICES = { input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 };
+const PRICE = ANTHROPIC_PRICES;
 
 export type Effort = "low" | "medium" | "high" | "xhigh" | "max";
 
@@ -60,8 +61,8 @@ export function llmAvailable(): boolean {
 }
 
 // OpenAI list prices for the agent model, USD per million tokens (= micro-USD per token).
-const OPENAI_PRICES = { input: 2, output: 10, cacheRead: 0.1, cacheWrite: 2.5 };
-const SPEND_FILE = path.join("var", "agent-spend.json");
+export const OPENAI_PRICES = { input: 2, output: 10, cacheRead: 0.1, cacheWrite: 2.5 };
+export const SPEND_FILE = path.join("var", "agent-spend.json");
 const CAP_MICROS = Math.round(Number(process.env.AGENT_MAX_USD ?? "15") * 1e6);
 
 /**

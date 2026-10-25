@@ -1,0 +1,697 @@
+{
+  "generatedAt": "2026-10-25T04:07:07.356Z",
+  "command": "npm run eval:sheets-bench -- --seed 7 --stores 3 --days 14 --trials 10 --warmup 2",
+  "commit": "d8ba4676779f749cb40b2a8b3e201bf7582c91c8",
+  "dirtyWorkingTree": false,
+  "machine": {
+    "cpu": "Apple M5 Pro",
+    "logicalCores": 18,
+    "memoryGb": 24,
+    "os": "Darwin 25.6.0 arm64",
+    "node": "v26.5.0",
+    "exceljs": "4.4.0"
+  },
+  "world": {
+    "seed": 7,
+    "storeCount": 3,
+    "start": "2026-01-01",
+    "days": 14,
+    "plantErrors": true,
+    "events": 230,
+    "steps": 386,
+    "counts": {
+      "ingest:hr.roster": 1,
+      "ingest:document.received": 67,
+      "record_bill": 64,
+      "resolve_bill": 3,
+      "ingest:sales.daily": 42,
+      "post_entry": 45,
+      "ingest:day.end": 14,
+      "ingest:bank.transaction": 44,
+      "match_bank": 44,
+      "ingest:receiving.logged": 54,
+      "ingest:hr.roster_change": 1,
+      "ingest:payout.report": 4,
+      "ingest:payroll.register": 3
+    },
+    "ops": 156
+  },
+  "trials": 10,
+  "warmup": 2,
+  "wallSeconds": 23.5,
+  "timing": {
+    "kernel": {
+      "allOps": {
+        "n": 1560,
+        "medianMs": 0.116,
+        "p95Ms": 0.156,
+        "meanMs": 0.124,
+        "minMs": 0.06,
+        "maxMs": 3.242
+      },
+      "byKind": {
+        "record_bill": {
+          "n": 640,
+          "medianMs": 0.119,
+          "p95Ms": 0.16,
+          "meanMs": 0.123,
+          "minMs": 0.06,
+          "maxMs": 0.527
+        },
+        "resolve_bill": {
+          "n": 30,
+          "medianMs": 0.13,
+          "p95Ms": 0.192,
+          "meanMs": 0.14,
+          "minMs": 0.092,
+          "maxMs": 0.277
+        },
+        "post_entry": {
+          "n": 450,
+          "medianMs": 0.117,
+          "p95Ms": 0.149,
+          "meanMs": 0.128,
+          "minMs": 0.076,
+          "maxMs": 2.469
+        },
+        "match_bank": {
+          "n": 440,
+          "medianMs": 0.111,
+          "p95Ms": 0.144,
+          "meanMs": 0.123,
+          "minMs": 0.082,
+          "maxMs": 3.242
+        }
+      },
+      "firstTenthOps": {
+        "n": 160,
+        "medianMs": 0.12,
+        "p95Ms": 0.179,
+        "meanMs": 0.138,
+        "minMs": 0.06,
+        "maxMs": 2.469
+      },
+      "lastTenthOps": {
+        "n": 160,
+        "medianMs": 0.12,
+        "p95Ms": 0.174,
+        "meanMs": 0.126,
+        "minMs": 0.076,
+        "maxMs": 0.382
+      },
+      "opsTotalPerTrialMs": {
+        "n": 10,
+        "medianMs": 18.678,
+        "p95Ms": 25.034,
+        "meanMs": 19.417,
+        "minMs": 17.731,
+        "maxMs": 25.034
+      },
+      "ingestTotalPerTrialMs": {
+        "n": 10,
+        "medianMs": 3.439,
+        "p95Ms": 3.92,
+        "meanMs": 3.495,
+        "minMs": 3.35,
+        "maxMs": 3.92
+      }
+    },
+    "spreadsheet_saved": {
+      "allOps": {
+        "n": 1560,
+        "medianMs": 7.673,
+        "p95Ms": 13.468,
+        "meanMs": 7.898,
+        "minMs": 1.978,
+        "maxMs": 17.114
+      },
+      "byKind": {
+        "record_bill": {
+          "n": 640,
+          "medianMs": 7.389,
+          "p95Ms": 13.515,
+          "meanMs": 8.159,
+          "minMs": 1.978,
+          "maxMs": 17.114
+        },
+        "resolve_bill": {
+          "n": 30,
+          "medianMs": 2.132,
+          "p95Ms": 3.947,
+          "meanMs": 2.406,
+          "minMs": 1.99,
+          "maxMs": 4.724
+        },
+        "post_entry": {
+          "n": 450,
+          "medianMs": 8.175,
+          "p95Ms": 13.542,
+          "meanMs": 7.939,
+          "minMs": 2.214,
+          "maxMs": 16.958
+        },
+        "match_bank": {
+          "n": 440,
+          "medianMs": 8.083,
+          "p95Ms": 13.031,
+          "meanMs": 7.85,
+          "minMs": 2.429,
+          "maxMs": 15.911
+        }
+      },
+      "firstTenthOps": {
+        "n": 160,
+        "medianMs": 2.623,
+        "p95Ms": 4.042,
+        "meanMs": 2.708,
+        "minMs": 1.978,
+        "maxMs": 5.177
+      },
+      "lastTenthOps": {
+        "n": 160,
+        "medianMs": 13.323,
+        "p95Ms": 14.46,
+        "meanMs": 13.427,
+        "minMs": 12.294,
+        "maxMs": 16.958
+      },
+      "opsTotalPerTrialMs": {
+        "n": 10,
+        "medianMs": 1215.59,
+        "p95Ms": 1321.154,
+        "meanMs": 1232.102,
+        "minMs": 1186.409,
+        "maxMs": 1321.154
+      },
+      "ingestTotalPerTrialMs": {
+        "n": 10,
+        "medianMs": 336.382,
+        "p95Ms": 364.969,
+        "meanMs": 341.543,
+        "minMs": 331.588,
+        "maxMs": 364.969
+      }
+    },
+    "spreadsheet_in_memory": {
+      "allOps": {
+        "n": 1560,
+        "medianMs": 1.123,
+        "p95Ms": 2.234,
+        "meanMs": 1.164,
+        "minMs": 0.116,
+        "maxMs": 3.844
+      },
+      "byKind": {
+        "record_bill": {
+          "n": 640,
+          "medianMs": 1.063,
+          "p95Ms": 2.228,
+          "meanMs": 1.221,
+          "minMs": 0.116,
+          "maxMs": 3.844
+        },
+        "resolve_bill": {
+          "n": 30,
+          "medianMs": 0.131,
+          "p95Ms": 0.178,
+          "meanMs": 0.137,
+          "minMs": 0.12,
+          "maxMs": 0.278
+        },
+        "post_entry": {
+          "n": 450,
+          "medianMs": 1.2,
+          "p95Ms": 2.267,
+          "meanMs": 1.169,
+          "minMs": 0.16,
+          "maxMs": 2.594
+        },
+        "match_bank": {
+          "n": 440,
+          "medianMs": 1.184,
+          "p95Ms": 2.022,
+          "meanMs": 1.144,
+          "minMs": 0.202,
+          "maxMs": 2.348
+        }
+      },
+      "firstTenthOps": {
+        "n": 160,
+        "medianMs": 0.204,
+        "p95Ms": 0.301,
+        "meanMs": 0.206,
+        "minMs": 0.116,
+        "maxMs": 0.636
+      },
+      "lastTenthOps": {
+        "n": 160,
+        "medianMs": 2.226,
+        "p95Ms": 2.361,
+        "meanMs": 2.234,
+        "minMs": 1.991,
+        "maxMs": 3.844
+      },
+      "opsTotalPerTrialMs": {
+        "n": 10,
+        "medianMs": 180.445,
+        "p95Ms": 185.898,
+        "meanMs": 181.526,
+        "minMs": 179.101,
+        "maxMs": 185.898
+      },
+      "ingestTotalPerTrialMs": {
+        "n": 10,
+        "medianMs": 49.197,
+        "p95Ms": 50.534,
+        "meanMs": 49.274,
+        "minMs": 48.474,
+        "maxMs": 50.534
+      }
+    }
+  },
+  "actions": {
+    "kernel": {
+      "byKind": {
+        "record_bill": {
+          "ops": 64,
+          "actionsPerOp": 1,
+          "cellsReadPerOp": 0,
+          "cellsWrittenPerOp": 0
+        },
+        "resolve_bill": {
+          "ops": 3,
+          "actionsPerOp": 1,
+          "cellsReadPerOp": 0,
+          "cellsWrittenPerOp": 0
+        },
+        "post_entry": {
+          "ops": 45,
+          "actionsPerOp": 1,
+          "cellsReadPerOp": 0,
+          "cellsWrittenPerOp": 0
+        },
+        "match_bank": {
+          "ops": 44,
+          "actionsPerOp": 1,
+          "cellsReadPerOp": 0,
+          "cellsWrittenPerOp": 0
+        }
+      },
+      "totalActions": 156,
+      "actionsPerOp": 1,
+      "ingestActions": 0
+    },
+    "spreadsheet": {
+      "byKind": {
+        "record_bill": {
+          "ops": 64,
+          "actionsPerOp": 6.88,
+          "cellsReadPerOp": 15,
+          "cellsWrittenPerOp": 31.88
+        },
+        "resolve_bill": {
+          "ops": 3,
+          "actionsPerOp": 6,
+          "cellsReadPerOp": 30,
+          "cellsWrittenPerOp": 24
+        },
+        "post_entry": {
+          "ops": 45,
+          "actionsPerOp": 4,
+          "cellsReadPerOp": 15,
+          "cellsWrittenPerOp": 68.4
+        },
+        "match_bank": {
+          "ops": 44,
+          "actionsPerOp": 6,
+          "cellsReadPerOp": 21,
+          "cellsWrittenPerOp": 27.8
+        }
+      },
+      "totalActions": 902,
+      "actionsPerOp": 5.78,
+      "ingestActions": 132
+    }
+  },
+  "spreadsheetToolMs": {
+    "find_rows": {
+      "n": 1110,
+      "medianMs": 0.005,
+      "p95Ms": 0.017,
+      "meanMs": 0.007,
+      "minMs": 0,
+      "maxMs": 0.056
+    },
+    "read_range": {
+      "n": 4160,
+      "medianMs": 0,
+      "p95Ms": 0.009,
+      "meanMs": 0.003,
+      "minMs": 0,
+      "maxMs": 0.031
+    },
+    "write_range": {
+      "n": 3070,
+      "medianMs": 0.008,
+      "p95Ms": 0.03,
+      "meanMs": 0.011,
+      "minMs": 0,
+      "maxMs": 0.076
+    },
+    "recalc": {
+      "n": 2000,
+      "medianMs": 7.675,
+      "p95Ms": 13.262,
+      "meanMs": 7.811,
+      "minMs": 1.951,
+      "maxMs": 17.006
+    }
+  },
+  "parity": {
+    "trialBalanceAccounts": 31,
+    "trialBalanceMismatches": [],
+    "kernelTrialBalanceNetsToZero": true,
+    "billsByStatus": {
+      "kernel": {
+        "approved": {
+          "count": 63,
+          "cents": 9384439
+        },
+        "rejected": {
+          "count": 1,
+          "cents": 13970
+        }
+      },
+      "spreadsheet": {
+        "approved": {
+          "count": 63,
+          "cents": 9384439
+        },
+        "rejected": {
+          "count": 1,
+          "cents": 13970
+        }
+      },
+      "identical": true
+    },
+    "journalEntries": 152,
+    "ledgerRows": 599,
+    "kernelHashChain": true,
+    "spreadsheetChecksAtBaseline": [
+      {
+        "name": "Trial balance difference (debits - credits)",
+        "value": 0,
+        "ok": true
+      },
+      {
+        "name": "AP rows sharing vendor + invoice number",
+        "value": 0,
+        "ok": true
+      },
+      {
+        "name": "Bank rec, operating 1000 (books - bank)",
+        "value": 0,
+        "ok": true
+      },
+      {
+        "name": "Bank rec, deposits 1020 (books - bank)",
+        "value": 0,
+        "ok": true
+      },
+      {
+        "name": "AP subledger (approved) vs GL 2000",
+        "value": 0,
+        "ok": true
+      }
+    ],
+    "workbookBytes": 43402
+  },
+  "injected": [
+    {
+      "id": "unbalanced_entry",
+      "invariant": "double entry",
+      "description": "journal entry whose debits ($100.00) exceed credits ($90.00)",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "invalid_entry: entry does not balance: debits 10000 != credits 9000"
+      },
+      "spreadsheet": {
+        "outcome": "detected",
+        "detail": "write landed; check now non-zero: Trial balance difference (debits - credits) = 1000",
+        "actions": 4
+      }
+    },
+    {
+      "id": "unknown_account",
+      "invariant": "chart of accounts",
+      "description": "balanced entry to account 9999, which is not in the chart",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "invalid_entry: line 0: unknown account 9999"
+      },
+      "spreadsheet": {
+        "outcome": "detected",
+        "detail": "write landed; check now non-zero: Trial balance difference (debits - credits) = -5000",
+        "actions": 4
+      }
+    },
+    {
+      "id": "fractional_cents",
+      "invariant": "integer cents",
+      "description": "balanced entry for 1,000.5 cents",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "invalid_entry: line 0: amounts must be integer cents"
+      },
+      "spreadsheet": {
+        "outcome": "missed",
+        "detail": "write landed; every check still reads 0",
+        "actions": 4
+      }
+    },
+    {
+      "id": "closed_period",
+      "invariant": "closed periods are locked",
+      "description": "balanced entry dated 2025-12-31, a closed period",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "period_closed: period 2025-12 is closed; post a correction in an open period"
+      },
+      "spreadsheet": {
+        "outcome": "missed",
+        "detail": "write landed; every check still reads 0",
+        "actions": 4
+      }
+    },
+    {
+      "id": "duplicate_invoice_exact",
+      "invariant": "duplicate invoice",
+      "description": "re-record golden-state-produce INV-1001 from a second received copy",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "duplicate_invoice: golden-state-produce invoice INV-1001 duplicates a bill already recorded (approved)"
+      },
+      "spreadsheet": {
+        "outcome": "detected",
+        "detail": "write landed; check now non-zero: AP rows sharing vendor + invoice number = 2",
+        "actions": 7
+      }
+    },
+    {
+      "id": "duplicate_invoice_reformatted",
+      "invariant": "duplicate invoice",
+      "description": "re-record the same invoice typed as \"inv 1001\"",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "duplicate_invoice: golden-state-produce invoice inv 1001 duplicates a bill already recorded (approved)"
+      },
+      "spreadsheet": {
+        "outcome": "missed",
+        "detail": "write landed; every check still reads 0",
+        "actions": 7
+      }
+    },
+    {
+      "id": "bill_line_math",
+      "invariant": "bill arithmetic",
+      "description": "bill line 3 x $10.00 recorded as $35.00",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "invalid_bill: line 0: 3 x 1000 != 3500"
+      },
+      "spreadsheet": {
+        "outcome": "missed",
+        "detail": "write landed; every check still reads 0",
+        "actions": 7
+      }
+    },
+    {
+      "id": "bill_without_document",
+      "invariant": "evidence",
+      "description": "approved bill citing a document that was never received",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "no_document: document doc-never-received was never received"
+      },
+      "spreadsheet": {
+        "outcome": "missed",
+        "detail": "write landed; every check still reads 0",
+        "actions": 7
+      }
+    },
+    {
+      "id": "approve_over_limit",
+      "invariant": "approval limits",
+      "description": "AP clerk approves a $12,000 bill (limit $5,000)",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "over_limit: ap_clerk may auto-approve up to 500000 cents; hold for the controller"
+      },
+      "spreadsheet": {
+        "outcome": "missed",
+        "detail": "write landed; every check still reads 0",
+        "actions": 7
+      }
+    },
+    {
+      "id": "approve_with_open_exceptions",
+      "invariant": "approval policy",
+      "description": "approve a bill that carries an open price-over-contract exception",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "policy: a bill with open exceptions cannot be approved; hold it"
+      },
+      "spreadsheet": {
+        "outcome": "missed",
+        "detail": "write landed; every check still reads 0",
+        "actions": 7
+      }
+    },
+    {
+      "id": "self_approval",
+      "invariant": "segregation of duties",
+      "description": "the controller records a held $800 bill, then approves it itself",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "sod: the seat that recorded a bill cannot resolve it"
+      },
+      "spreadsheet": {
+        "outcome": "missed",
+        "detail": "write landed; every check still reads 0",
+        "actions": 11
+      }
+    },
+    {
+      "id": "ap_clerk_posts_cash",
+      "invariant": "capabilities / cash needs bank evidence",
+      "description": "AP clerk pays a vendor off-book: Dr 2000 / Cr 1000 cash, $500",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "no_bank_evidence: cash entries must be bank matches citing a bank transaction"
+      },
+      "spreadsheet": {
+        "outcome": "detected",
+        "detail": "write landed; check now non-zero: Bank rec, operating 1000 (books - bank) = -50000; AP subledger (approved) vs GL 2000 = 50000",
+        "actions": 4
+      }
+    },
+    {
+      "id": "cash_without_bank_evidence",
+      "invariant": "cash needs bank evidence",
+      "description": "deposit booked against a bank transaction that does not exist",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "no_bank_evidence: no bank transaction dep-never-happened"
+      },
+      "spreadsheet": {
+        "outcome": "detected",
+        "detail": "write landed; check now non-zero: Bank rec, deposits 1020 (books - bank) = 20000",
+        "actions": 5
+      }
+    },
+    {
+      "id": "cash_amount_mismatch",
+      "invariant": "cash equals the bank",
+      "description": "a $500.00 deposit booked as $510.00",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "evidence_mismatch: bank transaction dep-bench-mismatch is 50000 cents but the entry moves 51000"
+      },
+      "spreadsheet": {
+        "outcome": "detected",
+        "detail": "write landed; check now non-zero: Bank rec, deposits 1020 (books - bank) = 1000",
+        "actions": 9
+      }
+    },
+    {
+      "id": "bank_txn_matched_twice",
+      "invariant": "one bank line, one entry",
+      "description": "book dep-sf-hayes-valley-2026-01-01 a second time",
+      "kernel": {
+        "outcome": "prevented",
+        "detail": "already_matched: bank transaction dep-sf-hayes-valley-2026-01-01 is already booked"
+      },
+      "spreadsheet": {
+        "outcome": "detected",
+        "detail": "write landed; check now non-zero: Bank rec, deposits 1020 (books - bank) = 681393",
+        "actions": 6
+      }
+    },
+    {
+      "id": "retried_posting",
+      "invariant": "exactly once",
+      "description": "a retry re-sends an already-applied sales posting (same idempotency key)",
+      "kernel": {
+        "outcome": "absorbed",
+        "detail": "idempotent replay returned the original result; nothing posted twice"
+      },
+      "spreadsheet": {
+        "outcome": "missed",
+        "detail": "write landed; every check still reads 0",
+        "actions": 4
+      }
+    },
+    {
+      "id": "tamper_revenue_entry",
+      "invariant": "tamper evidence",
+      "description": "edit a posted daily-sales entry: +$1,000 on both the 1100 debit and the 4000 credit",
+      "kernel": {
+        "outcome": "detected",
+        "detail": "verifyChain: broken at entry #4"
+      },
+      "spreadsheet": {
+        "outcome": "missed",
+        "detail": "write landed; every check still reads 0",
+        "actions": 5
+      }
+    },
+    {
+      "id": "tamper_bill_accrual",
+      "invariant": "tamper evidence",
+      "description": "edit a posted bill accrual: +$1,000 on both the expense debit and the 2000 credit",
+      "kernel": {
+        "outcome": "detected",
+        "detail": "verifyChain: broken at entry #1"
+      },
+      "spreadsheet": {
+        "outcome": "detected",
+        "detail": "write landed; check now non-zero: AP subledger (approved) vs GL 2000 = -100000",
+        "actions": 5
+      }
+    }
+  ],
+  "injectedSummary": {
+    "cases": 18,
+    "kernel": {
+      "prevented": 15,
+      "absorbed": 1,
+      "detected": 2,
+      "missed": 0
+    },
+    "spreadsheet": {
+      "prevented": 0,
+      "detected": 8,
+      "missed": 10
+    }
+  }
+}
