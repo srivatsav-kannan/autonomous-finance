@@ -1,3 +1,4 @@
+import { activeBusinessPolicy } from "./lib/apSystem/businessAuthority";
 import { mutation, query, type QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { scopeValidator } from "./demoSchema";
@@ -262,6 +263,7 @@ export const signClose = mutation({
     const actor = args.seatId && args.token
       ? (await requirePaymentSeat(ctx, { scope: args.scope, seatId: args.seatId, token: args.token }, ["controller"])).seat
       : (await requirePaymentHuman(ctx, args.scope)).seat;
+    if (await activeBusinessPolicy(ctx, args.scope)) throw new Error("Configured business policy requires apClose reviewed statements, opening balances, accruals and exact period snapshot");
     const state = await readCloseState(ctx, args.scope);
     const blockers = blockersFor(state);
     if (blockers.length) throw new Error(`AP close blocked: ${blockers.map(b => `${b.kind} ${b.id}: ${b.reason}`).join("; ")}`);

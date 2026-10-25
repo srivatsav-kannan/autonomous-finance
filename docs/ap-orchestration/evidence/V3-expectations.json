@@ -1,0 +1,55 @@
+{
+  "review": "Independent agent engineering review, not AP practitioner sign-off",
+  "baseline": "6251f5770f1394a48a3c6d517429498f9a569bfd",
+  "frozenBeforeTestExecution": true,
+  "source": "Frozen AP contract plus literal fixture arithmetic, independent of implementation return values or prior PASS reports",
+  "scheduling": [
+    "UTC date eligibility must not advance because retry timestamp is overdue",
+    "A future command must not starve an eligible command",
+    "Cancellation before possible send releases every reservation; reschedule creates a different snapshot and needs fresh human authorization",
+    "Possible send retains original command, key, schedule, first attempt, and reservations"
+  ],
+  "partialAndReturn": {
+    "recognized": 7700,
+    "creditRecognized": 1200,
+    "firstGrossDischarge": 5000,
+    "firstCash": 3800,
+    "remainingAfterFirst": 2700,
+    "secondCash": 2700,
+    "returnedFirstCash": 3800,
+    "grossDischargeAfterReturn": 3900,
+    "creditConsumedAfterReturn": 1200,
+    "remainingAfterReturn": 3800,
+    "replacementCash": 3800,
+    "finalCashNet": 6500,
+    "finalAP": 0,
+    "finalJournalCount": 6,
+    "createTransferCount": 3
+  },
+  "runAtomicity": [
+    "A stale last member must roll back all new preparations and reservations",
+    "A cancelled last member must roll back authorization of earlier members",
+    "A possible send in the last member must roll back cancellation of earlier members"
+  ],
+  "qbo": [
+    "Only current authenticated approved recognition may become a Bill",
+    "Partial or credit-bearing local settlement is explicitly unsupported and rejected; no invented full settlement",
+    "Same identity after response loss or process restart must never create another POST or request ID",
+    "Unknown lookup with no match stays unknown; changed/duplicate economics needs review",
+    "External SyncToken or linked Bill mutation prevents a new BillPayment",
+    "Approval change during mapping lookup prevents first POST",
+    "Mapping change cannot rewrite an existing operation",
+    "Concurrent workers serialize on the private journal",
+    "State is session-bound, exact-realm and one-use; concurrent callbacks exchange once",
+    "Ambiguous refresh permanently blocks old-token reuse pending reauthorization",
+    "Private file symlinks and broad permissions cannot be read as credentials",
+    "An externally normalized economic mismatch cannot be recorded as success"
+  ],
+  "notAcceptance": [
+    "Actual Intuit or Increase calls",
+    "Auth0 human login",
+    "New parser or browser gate",
+    "Complete C4 partial/credit/return support",
+    "AP practitioner acceptance"
+  ]
+}
