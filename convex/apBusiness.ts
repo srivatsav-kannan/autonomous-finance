@@ -1,3 +1,7 @@
+import {
+  validateInvoiceAccruals,
+  postAccrualReversal,
+} from "./lib/apSystem/accruals";
 import { invalidateBusinessPayments } from "./lib/apSystem/businessInvalidation";
 import { mutation, query } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
@@ -92,6 +96,15 @@ async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
   if (!input.candidate?.supplierId)
     deny("unverified_supplier", "Candidate has no verified supplier identity");
   const policy = await requireBusinessPolicy(ctx, scope);
+  if (
+    request.accountingDate &&
+    (!row.intake.candidate ||
+      request.accountingDate < row.intake.candidate.invoiceDate)
+  )
+    deny(
+      "accounting_date",
+      "Explicit accounting date cannot precede the original invoice date",
+    );
   const supplier = await currentSupplier(
     ctx,
     scope,
@@ -112,6 +125,7 @@ async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
       policy.value,
       supplier.value,
       true,
+      request.accountingDate,
     );
     if (result.exceptions.length)
       deny(
@@ -122,6 +136,18 @@ async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
     if (row.billId) {
       const bill = await ctx.db.get(row.billId);
       assertRowScope(bill, scope);
+      const recognition = bill!.entryId
+        ? await ctx.db.get(bill!.entryId)
+        : null;
+      if (
+        recognition &&
+        recognition.date !==
+          (request.accountingDate ?? input.candidate!.invoiceDate)
+      )
+        deny(
+          "recognized_date_immutable",
+          "Recertification cannot change the original accounting date; use an approved correction",
+        );
       if (bill!.reservedVersionId)
         deny(
           "bill_reserved",
@@ -181,8 +207,23 @@ async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
       policy,
       supplier,
       amountCents: result.amountCents,
-      varianceRequired: result.varianceRequired,
+      varianceRequired:
+        result.varianceRequired ||
+        !!(
+          request.accountingDate &&
+          request.accountingDate !== input.candidate!.invoiceDate
+        ),
       consumptions: result.consumptions,
+      accrualPlans: row.billId
+        ? []
+        : await validateInvoiceAccruals(
+            ctx,
+            scope,
+            row,
+            request.acceptance,
+            request.accrualApplications ?? [],
+            request.accountingDate ?? input.candidate!.invoiceDate,
+          ),
       credit: null,
     };
   }
@@ -191,19 +232,42 @@ async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
       "credit_already_recognized",
       "Existing credit recognition is immutable; replay its original approval",
     );
-  const supplierNames = [supplier.value.legalName, ...supplier.value.aliases].map((s) => s.toLowerCase().replace(/[^a-z0-9]/g, ""));
-  if (!supplierNames.includes(input.candidate.extractedSupplierName.toLowerCase().replace(/[^a-z0-9]/g, ""))) deny("credit_supplier_mismatch", "Credit source name differs from verified supplier aliases");
-  const credit = await evaluateCredit(ctx, scope, input, request.credit!, row._id);
+  const supplierNames = [
+    supplier.value.legalName,
+    ...supplier.value.aliases,
+  ].map((s) => s.toLowerCase().replace(/[^a-z0-9]/g, ""));
+  if (
+    !supplierNames.includes(
+      input.candidate.extractedSupplierName
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, ""),
+    )
+  )
+    deny(
+      "credit_supplier_mismatch",
+      "Credit source name differs from verified supplier aliases",
+    );
+  const credit = await evaluateCredit(
+    ctx,
+    scope,
+    input,
+    request.credit!,
+    row._id,
+  );
   return {
     row,
     input,
     policy,
     supplier,
     amountCents: credit.amountCents,
-    varianceRequired: request.credit!.lines.some(
-      (l) => l.basis !== "quantity_return",
-    ),
+    varianceRequired:
+      request.credit!.lines.some((l) => l.basis !== "quantity_return") ||
+      !!(
+        request.accountingDate &&
+        request.accountingDate !== input.candidate!.invoiceDate
+      ),
     consumptions: [],
+    accrualPlans: [],
     credit,
   };
 }
@@ -333,16 +397,23 @@ export const vote = mutation({
         "self_approval",
         "Request/case creator cannot approve their own business proposal",
       );
-    const { principal, groupId, subjectSeatId, principalSeatId } = await resolveVotePrincipal(
-      ctx,
-      args.scope,
-      result.policy.value,
-      proposal,
-      subject,
-      request.delegationId,
-    );
-    if (principalSeatId === proposal.proposedBy || principalSeatId === result.row.createdBy)
-      deny("self_approval", "The request/case creator cannot approve through a delegated principal");
+    const { principal, groupId, subjectSeatId, principalSeatId } =
+      await resolveVotePrincipal(
+        ctx,
+        args.scope,
+        result.policy.value,
+        proposal,
+        subject,
+        request.delegationId,
+      );
+    if (
+      principalSeatId === proposal.proposedBy ||
+      principalSeatId === result.row.createdBy
+    )
+      deny(
+        "self_approval",
+        "The request/case creator cannot approve through a delegated principal",
+      );
     const votes = proposal.votes as BusinessVote[];
     if (
       votes.some(
@@ -421,7 +492,10 @@ export const vote = mutation({
       );
       return response;
     }
-    await assertApprovalVotes(ctx, args.scope, result.policy.value, { ...proposal, votes: nextVotes });
+    await assertApprovalVotes(ctx, args.scope, result.policy.value, {
+      ...proposal,
+      votes: nextVotes,
+    });
     const c = result.input.candidate!;
     let entryId: Id<"journalEntries">;
     let billId = result.row.billId;
@@ -468,10 +542,19 @@ export const vote = mutation({
           status: "recorded",
           createdAt: Date.now(),
         });
+        for (const plan of result.accrualPlans)
+          await postAccrualReversal(
+            ctx,
+            args.scope,
+            plan,
+            domain.accountingDate ?? c.invoiceDate,
+            `ap:invoice-accrual:${result.row._id}:${plan.row._id}`,
+            { caseId: result.row._id, billId },
+          );
         const posted = await appendDemoEntry(ctx, {
           runId: args.scope.runId,
           seat: accountingSeat(args.scope.runId),
-          date: c.invoiceDate,
+          date: domain.accountingDate ?? c.invoiceDate,
           memo: `Approved allocated invoice ${c.supplierId}/${c.invoiceNumber}`,
           source: { kind: "bill", ref: billId },
           lines: acceptanceJournal(
@@ -548,7 +631,7 @@ export const vote = mutation({
       const posted = await appendDemoEntry(ctx, {
         runId: args.scope.runId,
         seat: accountingSeat(args.scope.runId),
-        date: c.invoiceDate,
+        date: domain.accountingDate ?? c.invoiceDate,
         memo: `Linked approved credit ${c.invoiceNumber}`,
         source: { kind: "vendor_credit", ref: result.row._id },
         lines,
@@ -565,7 +648,7 @@ export const vote = mutation({
         reservedCents: 0,
         consumedCents: 0,
         evidence: proposal._id,
-        date: c.invoiceDate,
+        date: domain.accountingDate ?? c.invoiceDate,
         expenseAccount: credit.allocations[0]!.account,
         entryId,
         createdAt: Date.now(),
@@ -584,7 +667,15 @@ export const vote = mutation({
         entryId,
         createdAt: Date.now(),
       });
-      await saveConsumptions(ctx, args.scope, result.row._id, credit.bill._id, proposal._id, credit.returnConsumptions, result.input);
+      await saveConsumptions(
+        ctx,
+        args.scope,
+        result.row._id,
+        credit.bill._id,
+        proposal._id,
+        credit.returnConsumptions,
+        result.input,
+      );
       await ctx.db.patch(result.row._id, {
         creditId,
         acceptedCents: credit.amountCents,

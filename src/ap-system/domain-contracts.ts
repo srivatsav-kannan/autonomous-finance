@@ -204,6 +204,19 @@ export const domainRequestSchema = z
     idempotencyKey: id,
     policyVersion: id,
     supplierRevision: z.number().int().positive(),
+    accountingDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .refine(
+        (d) =>
+          Number.isFinite(Date.parse(`${d}T00:00:00Z`)) &&
+          new Date(`${d}T00:00:00Z`).toISOString().slice(0, 10) === d,
+        "Invalid accounting date",
+      )
+      .optional(),
+    accrualApplications: z
+      .array(z.object({ accrualId: id, quantity: qty }))
+      .optional(),
     acceptance: businessAcceptanceSchema.optional(),
     credit: creditPlanSchema.optional(),
   })
@@ -262,7 +275,18 @@ export const domainCaseProjectionSchema = z.object({
   ),
   acceptance: businessAcceptanceSchema.nullable(),
   credit: creditPlanSchema.nullable(),
-  creditApplications: z.array(z.object({applicationId:id,billId:id,creditId:id,amountCents:cents,actor:id,at:timestamp})).optional(),
+  creditApplications: z
+    .array(
+      z.object({
+        applicationId: id,
+        billId: id,
+        creditId: id,
+        amountCents: cents,
+        actor: id,
+        at: timestamp,
+      }),
+    )
+    .optional(),
   creditLinks: z.array(
     z.object({
       caseId: id,

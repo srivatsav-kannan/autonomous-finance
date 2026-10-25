@@ -27,7 +27,7 @@ import { canonical, sha256Hex } from "../kernel";
 /** Whole semantic line set, independent of parser labels and invoice linkage.
  * A changed SKU/unit/quantity interpretation of identical bytes needs repair,
  * not a fresh capacity pool. Duplicate physical SKU/unit lines remain held. */
-async function sourceSemanticHash(input: APIntake, sourceHash: string) {
+export async function sourceSemanticHash(input: Pick<APIntake, "purchasingEvidence">, sourceHash: string) {
   const sets = input.purchasingEvidence.filter((p) => p.source.sha256 === sourceHash).map((p) => canonical({
     kind: p.kind, supplierId: p.supplierId,
     lines: p.lines.map((l) => ({sku:l.sku, unit:l.quantity.unit,
@@ -229,6 +229,9 @@ export async function evaluateCredit(
     );
   const bill = await ctx.db.get(original.billId);
   assertRowScope(bill, scope);
+  const reclassifications = await ctx.db.query("apCloseActions").withIndex("by_run",q=>q.eq("scope.runId",scope.runId)).collect();
+  if (reclassifications.some(a=>a.kind==="adjustment"&&a.status==="approved"&&a.payload.originalEntryId===bill!.entryId))
+    deny("credit_classification_changed", "Original cost was reclassified after recognition; the linked credit needs a reviewed correction allocation before posting, rather than reversing the obsolete cost account");
   if (bill!.reservedVersionId)
     deny(
       "credit_reserved_bill",

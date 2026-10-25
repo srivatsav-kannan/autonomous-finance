@@ -21,7 +21,7 @@ export async function businessProjection(ctx: QueryCtx, row: Doc<"apCaseRecords"
     if (approval && request) {
       if (request.snapshotHash !== row.snapshotHash || request.expectedRevision !== row.currentRevision || approval.policyHash !== policy.hash || approval.supplierHash !== supplier.hash) throw Error("Case, policy or supplier changed after the proposed authority");
       if (approval.status === "approved") await assertApprovalCurrent(ctx, row.scope, row, approval);
-      else if (request.acceptance) exceptions.push(...evaluateBusinessAcceptance(input, request.acceptance, policy.value, supplier.value, row.documentStatus === "reviewed").exceptions);
+      else if (request.acceptance) exceptions.push(...evaluateBusinessAcceptance(input, request.acceptance, policy.value, supplier.value, row.documentStatus === "reviewed", request.accountingDate).exceptions);
       if (status !== "approved") exceptions.push(businessException("business_approval_pending", "The configured sequential approval route must complete before recognition or payment.", "controller"));
     } else {
       exceptions.push(...businessEvidenceProblems(input, row.documentStatus === "reviewed"));

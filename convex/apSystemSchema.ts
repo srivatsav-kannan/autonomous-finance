@@ -4,6 +4,78 @@ import { scopeValidator } from "./demoSchema";
 
 /** Shared payloads are validated with ap-evidence-v1 before storage. */
 export const apSystemTables = {
+  apSupplierStatements: defineTable({
+    scope: scopeValidator,
+    supplierId: v.string(),
+    period: v.string(),
+    payload: v.any(),
+    hash: v.string(),
+    status: v.string(),
+    proposedBy: v.string(),
+    createdAt: v.number(),
+    review: v.optional(v.any()),
+    reviewedBy: v.optional(v.string()),
+    reviewedSeatId: v.optional(v.string()),
+    reviewPolicyHash: v.optional(v.string()),
+    reviewedAt: v.optional(v.number()),
+    reviewSnapshotHash: v.optional(v.string()),
+  })
+    .index("by_run", ["scope.runId"])
+    .index("by_period", ["scope.runId", "period"]),
+  apCloseActions: defineTable({
+    scope: scopeValidator,
+    kind: v.string(),
+    payload: v.any(),
+    hash: v.string(),
+    policyHash: v.string(),
+    contextHash: v.string(),
+    amountCents: v.number(),
+    route: v.any(),
+    stage: v.number(),
+    stageStartedAt: v.number(),
+    votes: v.any(),
+    status: v.string(),
+    proposedBy: v.string(),
+    createdAt: v.number(),
+    completedAt: v.optional(v.number()),
+    approvedBy: v.optional(v.string()),
+    entryId: v.optional(v.id("journalEntries")),
+    result: v.optional(v.any()),
+  }).index("by_run", ["scope.runId"]),
+  apAccruals: defineTable({
+    scope: scopeValidator,
+    actionId: v.id("apCloseActions"),
+    payload: v.any(),
+    supplierId: v.string(),
+    sourceId: v.string(),
+    sourceLineId: v.string(),
+    sourceSemanticHash: v.string(),
+    quantity: v.string(),
+    amountCents: v.number(),
+    reversedQuantity: v.string(),
+    reversedCents: v.number(),
+    entryId: v.id("journalEntries"),
+    date: v.string(),
+    expectedInvoiceCaseId: v.optional(v.id("apCaseRecords")),
+    createdAt: v.number(),
+  })
+    .index("by_run", ["scope.runId"])
+    .index("by_source", ["scope.runId", "sourceId", "sourceLineId"]),
+  apAccrualApplications: defineTable({
+    scope: scopeValidator,
+    accrualId: v.id("apAccruals"),
+    caseId: v.optional(v.id("apCaseRecords")),
+    billId: v.optional(v.id("demoBills")),
+    actionId: v.optional(v.id("apCloseActions")),
+    quantity: v.string(),
+    amountCents: v.number(),
+    allocations: v.any(),
+    entryId: v.id("journalEntries"),
+    date: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_run", ["scope.runId"])
+    .index("by_accrual", ["scope.runId", "accrualId"]),
   apCreditApplications: defineTable({
     scope: scopeValidator,
     caseId: v.id("apCaseRecords"),

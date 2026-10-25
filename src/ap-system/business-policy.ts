@@ -211,6 +211,7 @@ export function evaluateBusinessAcceptance(
   policy: BusinessPolicy,
   supplier: SupplierProposal,
   reviewed: boolean,
+  accountingDate?: string,
 ): BusinessEvaluation {
   const exceptions = businessEvidenceProblems(input, reviewed),
     consumptions: Consumption[] = [];
@@ -294,10 +295,10 @@ export function evaluateBusinessAcceptance(
         "controller",
         a.store,
       );
-    if (a.period !== c.invoiceDate.slice(0, 7))
+    if (a.period !== (accountingDate ?? c.invoiceDate).slice(0, 7))
       hold(
         "unsupported_period",
-        "Recognition must use the invoice period; period-end corrections require the close workflow.",
+        "Recognition allocations must use the explicitly approved accounting period.",
       );
   };
   const findPurchasing = (
