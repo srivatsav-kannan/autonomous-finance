@@ -21,7 +21,7 @@ import {
   activeBusinessPolicy,
   requireGroup,
   assertHumanSubject,
-  currentSupplier,
+  readApprovedSupplierRevision,
 } from "./lib/apSystem/businessAuthority";
 const agent = { scope: scopeValidator, seatId: v.string(), token: v.string() };
 async function evidence(
@@ -235,7 +235,8 @@ export const proposeSupplier = mutation({
         "Supplier proposal must bind the current approved revision",
       );
     if (supplier?.activeRevision) {
-      const prior = await currentSupplier(ctx, args.scope, proposal.supplierId);
+      // Read immutable contact for repair even when old human authority is no longer current.
+      const prior = await readApprovedSupplierRevision(ctx, args.scope, proposal.supplierId);
       if (prior.value.contactId !== proposal.contactId)
         deny(
           "trusted_contact_change",
@@ -329,6 +330,7 @@ export const verifySupplier = mutation({
     await ctx.db.patch(row!._id, {
       verification,
       verifiedBy: subject,
+      verifiedSeatId: seat.seatId,
       status: verification.result === "confirmed" ? "verified" : "rejected",
     });
     await auditDemo(ctx, args.scope, subject, "supplier_callback_recorded", {
@@ -371,6 +373,13 @@ export const approveSupplier = mutation({
         "Independent contact verification must succeed before supplier approval",
       );
     const proposal = supplierProposalSchema.parse(row!.proposal);
+    const verification = supplierVerificationSchema.parse(row!.verification);
+    if (!row!.verifiedBy || verification.result !== "confirmed" || verification.contactId !== proposal.contactId)
+      deny("supplier_not_verified", "The retained independent contact verification must be confirmed");
+    requireGroup(policy.value, policy.value.supplierVerificationGroup, row!.verifiedBy);
+    const verifierSeat = await assertHumanSubject(ctx, args.scope, row!.verifiedBy);
+    if (row!.verifiedSeatId !== verifierSeat.seatId || verifierSeat.seatId === seat.seatId || verifierSeat.seatId === row!.proposedBy)
+      deny("supplier_segregation", "Supplier verification must retain its original independent active human seat");
     const supplier = await ctx.db
       .query("apSuppliers")
       .withIndex("by_supplier", (q) =>
@@ -388,6 +397,7 @@ export const approveSupplier = mutation({
     await ctx.db.patch(row!._id, {
       status: "approved",
       approvedBy: subject,
+      approvedSeatId: seat.seatId,
       approvedAt: Date.now(),
     });
     await ctx.db.patch(supplier._id, { activeRevision: row!.revision });
@@ -407,12 +417,13 @@ export const delegate = mutation({
     delegation: v.any(),
   },
   handler: async (ctx, args) => {
-    const { subject } = await requirePaymentHuman(ctx, args.scope);
+    const { seat, subject } = await requirePaymentHuman(ctx, args.scope);
     const policy = await requireBusinessPolicy(ctx, args.scope);
     const delegation = delegationSchema.parse(args.delegation);
     requireGroup(policy.value, delegation.groupId, subject);
-    await assertHumanSubject(ctx, args.scope, delegation.toSubject);
+    const delegateSeat = await assertHumanSubject(ctx, args.scope, delegation.toSubject);
     if (
+      delegateSeat.seatId === seat.seatId ||
       delegation.toSubject === subject ||
       delegation.validUntil - delegation.validFrom >
         policy.value.maxDelegationMs ||
@@ -432,6 +443,8 @@ export const delegate = mutation({
     const delegationId = await ctx.db.insert("apDelegations", {
       scope: args.scope,
       grantor: subject,
+      grantorSeatId: seat.seatId,
+      delegateSeatId: delegateSeat.seatId,
       delegation,
       createdAt: Date.now(),
     });

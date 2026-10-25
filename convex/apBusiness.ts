@@ -43,6 +43,7 @@ import {
   resolveVotePrincipal,
   assertApprovalCurrent,
   assertApprovalVotes,
+  assertIndependentVotes,
   type BusinessVote,
 } from "./lib/apSystem/businessAuthority";
 import {
@@ -117,7 +118,7 @@ async function evaluate(ctx: Ctx, scope: Scope, request: DomainRequest) {
         "business_policy_hold",
         result.exceptions.map((e) => `${e.code}: ${e.reason}`).join("; "),
       );
-    await assertConsumptions(ctx, scope, row._id, result.consumptions);
+    await assertConsumptions(ctx, scope, row._id, result.consumptions, input);
     if (row.billId) {
       const bill = await ctx.db.get(row.billId);
       assertRowScope(bill, scope);
@@ -332,7 +333,7 @@ export const vote = mutation({
         "self_approval",
         "Request/case creator cannot approve their own business proposal",
       );
-    const { principal, groupId } = await resolveVotePrincipal(
+    const { principal, groupId, subjectSeatId, principalSeatId } = await resolveVotePrincipal(
       ctx,
       args.scope,
       result.policy.value,
@@ -340,6 +341,8 @@ export const vote = mutation({
       subject,
       request.delegationId,
     );
+    if (principalSeatId === proposal.proposedBy || principalSeatId === result.row.createdBy)
+      deny("self_approval", "The request/case creator cannot approve through a delegated principal");
     const votes = proposal.votes as BusinessVote[];
     if (
       votes.some(
@@ -382,6 +385,8 @@ export const vote = mutation({
       {
         subject,
         principal,
+        subjectSeatId,
+        principalSeatId,
         groupId,
         stage: proposal.stage,
         stageStartedAt: proposal.stageStartedAt,
@@ -389,6 +394,7 @@ export const vote = mutation({
         delegationId: request.delegationId ?? null,
       },
     ];
+    await assertIndependentVotes(ctx, args.scope, nextVotes);
     const route = proposal.route as ApprovalStep[];
     const completeStage =
       nextVotes.filter((v) => v.stage === proposal.stage).length >=
@@ -500,6 +506,7 @@ export const vote = mutation({
         billId,
         proposal._id,
         result.consumptions,
+        result.input,
       );
       await ctx.db.patch(result.row._id, {
         billId,
@@ -577,7 +584,7 @@ export const vote = mutation({
         entryId,
         createdAt: Date.now(),
       });
-      await saveConsumptions(ctx, args.scope, result.row._id, credit.bill._id, proposal._id, credit.returnConsumptions);
+      await saveConsumptions(ctx, args.scope, result.row._id, credit.bill._id, proposal._id, credit.returnConsumptions, result.input);
       await ctx.db.patch(result.row._id, {
         creditId,
         acceptedCents: credit.amountCents,

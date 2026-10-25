@@ -14,6 +14,8 @@ import { deny } from "./shared";
 export type BusinessVote = {
   subject: string;
   principal: string;
+  subjectSeatId: string;
+  principalSeatId: string;
   groupId: string;
   stage: number;
   at: number;
@@ -47,7 +49,7 @@ export async function requireBusinessPolicy(ctx: QueryCtx, scope: BankScope) {
     );
   return p;
 }
-export async function currentSupplier(
+export async function readApprovedSupplierRevision(
   ctx: QueryCtx,
   scope: BankScope,
   supplierId: string,
@@ -89,6 +91,19 @@ export async function currentSupplier(
     value: supplierProposalSchema.parse(revision.proposal),
   };
 }
+/** Recheck retained callback and activation authority at every business/payment gate. */
+export async function currentSupplier(ctx: QueryCtx, scope: BankScope, supplierId: string) {
+  const revision = await readApprovedSupplierRevision(ctx, scope, supplierId);
+  const policy = await requireBusinessPolicy(ctx, scope);
+  requireGroup(policy.value, policy.value.supplierVerificationGroup, revision.verifiedBy!);
+  requireGroup(policy.value, policy.value.supplierApprovalGroup, revision.approvedBy!);
+  const verifier = await assertHumanSubject(ctx,scope,revision.verifiedBy!);
+  const approver = await assertHumanSubject(ctx,scope,revision.approvedBy!);
+  if (revision.verifiedSeatId !== verifier.seatId || revision.approvedSeatId !== approver.seatId || verifier.seatId === approver.seatId ||
+    verifier.seatId === revision.proposedBy || approver.seatId === revision.proposedBy)
+    deny("supplier_authority_changed", "Supplier verification/approval must retain distinct active human seats; propose and independently verify a new supplier revision");
+  return revision;
+}
 export async function assertHumanSubject(
   ctx: QueryCtx,
   scope: BankScope,
@@ -128,13 +143,14 @@ export async function resolveVotePrincipal(
   ctx: QueryCtx,
   scope: BankScope,
   policy: BusinessPolicy,
-  proposal: Doc<"apApprovalProposals">,
+  proposal: Pick<Doc<"apApprovalProposals">, "route" | "stage" | "stageStartedAt" | "amountCents">,
   subject: string,
   delegationId?: string,
 ) {
   const route = proposal.route as ApprovalStep[];
   const step = route[proposal.stage];
   if (!step) deny("approval_stage", "No pending approval stage");
+  const subjectSeat = await assertHumanSubject(ctx, scope, subject);
   let principal = subject,
     groupId = step.groupId;
   if (delegationId) {
@@ -154,6 +170,9 @@ export async function resolveVotePrincipal(
         "invalid_delegation",
         "Delegation is revoked, expired, not yet active or outside amount authority",
       );
+    const grantorSeat = await assertHumanSubject(ctx, scope, row.grantor);
+    if (row.grantorSeatId !== grantorSeat.seatId || row.delegateSeatId !== subjectSeat.seatId || grantorSeat.seatId === subjectSeat.seatId)
+      deny("invalid_delegation", "Delegation must retain two distinct current human seat bindings");
     principal = row.grantor;
     groupId = d.groupId;
   } else if (
@@ -173,8 +192,8 @@ export async function resolveVotePrincipal(
       "Escalated authority is not available before the configured deadline",
     );
   requireGroup(policy, groupId, principal);
-  await assertHumanSubject(ctx, scope, principal);
-  return { principal, groupId };
+  const principalSeat = await assertHumanSubject(ctx, scope, principal);
+  return { principal, groupId, subjectSeatId: subjectSeat.seatId, principalSeatId: principalSeat.seatId };
 }
 export async function assertApprovalCurrent(
   ctx: QueryCtx,
@@ -229,9 +248,25 @@ export async function assertApprovalCurrent(
   await assertApprovalVotes(ctx, scope, policy.value, approval);
   return { policy, supplier, request };
 }
-export async function assertApprovalVotes(ctx: QueryCtx, scope: BankScope, policy: BusinessPolicy, approval: Doc<"apApprovalProposals">) {
+/** Resolve every retained identity again: subject aliases cannot fill two seats,
+ * and reconfiguring a subject cannot transfer an earlier human decision. */
+export async function assertIndependentVotes(ctx: QueryCtx, scope: BankScope, votes: BusinessVote[]) {
+  const occupied = new Set<string>();
+  for (const vote of votes) {
+    const subjectSeat = await assertHumanSubject(ctx, scope, vote.subject);
+    const principalSeat = await assertHumanSubject(ctx, scope, vote.principal);
+    if (vote.subjectSeatId !== subjectSeat.seatId || vote.principalSeatId !== principalSeat.seatId)
+      deny("approval_identity_changed", "Approval lacks its original current human seat binding; explicit recertification is required");
+    const seats = new Set([subjectSeat.seatId, principalSeat.seatId]);
+    if ([...seats].some((seat) => occupied.has(seat)))
+      deny("approval_segregation", "Independent approval positions require distinct human seats, including delegated principals");
+    for (const seat of seats) occupied.add(seat);
+  }
+}
+export async function assertApprovalVotes(ctx: QueryCtx, scope: BankScope, policy: BusinessPolicy, approval: Pick<Doc<"apApprovalProposals">, "route" | "votes" | "amountCents">) {
   const votes = approval.votes as BusinessVote[];
   const route = approval.route as ApprovalStep[];
+  await assertIndependentVotes(ctx, scope, votes);
   if (
     new Set(votes.map((v) => v.subject)).size !== votes.length ||
     new Set(votes.map((v) => v.principal)).size !== votes.length ||
@@ -274,6 +309,8 @@ export async function assertApprovalVotes(ctx: QueryCtx, scope: BankScope, polic
           grant.validFrom > vote.at ||
           grant.toSubject !== vote.subject ||
           d.grantor !== vote.principal ||
+          d.grantorSeatId !== vote.principalSeatId ||
+          d.delegateSeatId !== vote.subjectSeatId ||
           grant.groupId !== vote.groupId ||
           grant.maxCents < approval.amountCents
         )

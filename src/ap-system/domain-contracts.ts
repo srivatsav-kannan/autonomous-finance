@@ -252,6 +252,8 @@ export const domainCaseProjectionSchema = z.object({
     z.object({
       subject: id,
       principal: id,
+      subjectSeatId: id.optional(),
+      principalSeatId: id.optional(),
       groupId: id,
       stage: z.number().int().nonnegative(),
       at: timestamp,

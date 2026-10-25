@@ -22,54 +22,76 @@ import {
 } from "../../../src/ap-system/business-policy";
 import { assertRowScope } from "../demoAuth";
 import { deny, caseRow } from "./shared";
+import { canonical, sha256Hex } from "../kernel";
 
+/** Whole semantic line set, independent of parser labels and invoice linkage.
+ * A changed SKU/unit/quantity interpretation of identical bytes needs repair,
+ * not a fresh capacity pool. Duplicate physical SKU/unit lines remain held. */
+async function sourceSemanticHash(input: APIntake, sourceHash: string) {
+  const sets = input.purchasingEvidence.filter((p) => p.source.sha256 === sourceHash).map((p) => canonical({
+    kind: p.kind, supplierId: p.supplierId,
+    lines: p.lines.map((l) => ({sku:l.sku, unit:l.quantity.unit,
+      quantity:quantityMicros(l.quantity.decimal).toString(), unitPriceCents:l.unitPriceCents}))
+      .sort((a,b) => canonical(a).localeCompare(canonical(b))),
+  }));
+  if (!sets.length) deny("source_line_identity", "Purchasing original has no retained semantic line set");
+  return sha256Hex(canonical([...new Set(sets)].sort()));
+}
+async function retainedSemanticHash(ctx: QueryCtx, scope: BankScope, prior: Doc<"apReceiptConsumptions">) {
+  if (prior.sourceSemanticHash) return prior.sourceSemanticHash;
+  const approval = await ctx.db.get(prior.approvalId);
+  if (!approval) deny("source_line_identity", "Prior consumption lacks its original approval binding");
+  const request = domainRequestSchema.parse(approval.request);
+  const revision = await ctx.db.query("apCaseRevisions").withIndex("by_case", q =>
+    q.eq("scope.runId",scope.runId).eq("caseId",prior.caseId).eq("revision",request.expectedRevision)).unique();
+  if (!revision) deny("source_line_identity", "Prior consumption lacks its original reviewed line set");
+  return sourceSemanticHash(intakeSchema.parse(revision.intake),prior.sourceHash);
+}
 export async function assertConsumptions(
   ctx: QueryCtx,
   scope: BankScope,
   caseId: Id<"apCaseRecords">,
   claims: Consumption[],
+  input: APIntake,
 ) {
+  // Parser line IDs are delivery-local labels, never economic identities. The
+  // same original bytes and SKU/unit retain one capacity across copied uploads.
   const grouped = new Map<string, Consumption[]>();
-  for (const c of claims) {
-    const key = `${c.source.sha256}:${c.lineId}`;
-    grouped.set(key, [...(grouped.get(key) ?? []), c]);
+  const allPrior = await ctx.db.query("apReceiptConsumptions")
+    .withIndex("by_bill", (q) => q.eq("scope.runId", scope.runId)).collect();
+  for (const sourceHash of new Set(claims.map(c => c.source.sha256))) {
+    const semanticHash = await sourceSemanticHash(input, sourceHash);
+    for (const prior of allPrior.filter(p => p.sourceHash === sourceHash))
+      if (await retainedSemanticHash(ctx, scope, prior) !== semanticHash)
+        deny("consumption_source_conflict", "Identical original bytes have a conflicting or unmappable semantic line set");
+  }
+  for (const claim of claims) {
+    const key = JSON.stringify([claim.source.sha256, claim.sku, claim.unit]);
+    grouped.set(key, [...(grouped.get(key) ?? []), claim]);
   }
   for (const items of grouped.values()) {
     const first = items[0]!;
-    if (
-      items.some(
-        (c) =>
-          c.source.revision !== first.source.revision ||
-          c.source.sha256 !== first.source.sha256 ||
-          c.capacity !== first.capacity ||
-          c.sku !== first.sku ||
-          c.unit !== first.unit,
-      )
-    )
-      deny(
-        "consumption_source_conflict",
-        "One original line cannot have inconsistent capacity or units",
-      );
-    const prior = (await ctx.db.query("apReceiptConsumptions").withIndex("by_bill", (q) => q.eq("scope.runId", scope.runId)).collect()).filter((p) => p.lineId === first.lineId && (p.sourceId === first.source.sourceId || p.sourceHash === first.source.sha256));
-    if (
-      prior.some(
-        (p) =>
-          p.sku !== first.sku || p.unit !== first.unit || p.kind !== first.kind,
-      )
-    )
-      deny(
-        "consumption_source_conflict",
-        "An original line cannot change economic SKU/unit identity across revisions",
-      );
-    const used = prior
-      .filter((p) => p.caseId !== caseId)
+    if (items.some((c) => c.lineId !== first.lineId || c.kind !== first.kind ||
+      quantityMicros(c.capacity) !== quantityMicros(first.capacity)))
+      deny("consumption_source_conflict", "Repeated SKU/unit lines in one original require an unambiguous physical line identity; parser labels cannot create capacity");
+    const sourceLines = input.purchasingEvidence.filter(p => p.source.sha256 === first.source.sha256)
+      .flatMap(p => p.lines).filter(l => l.sku === first.sku && l.quantity.unit === first.unit);
+    if (new Set(sourceLines.map(l => l.lineId)).size > 1)
+      deny("source_line_identity", "Repeated SKU/unit lines in one original need an immutable physical line mapping before recognition");
+    const prior = allPrior.filter((p) =>
+      (p.sourceId === first.source.sourceId || p.sourceHash === first.source.sha256) &&
+      p.sku === first.sku && p.unit === first.unit);
+    if (prior.some((p) => p.kind !== first.kind ||
+      (p.sourceHash === first.source.sha256 && quantityMicros(p.capacity) !== quantityMicros(first.capacity))))
+      deny("consumption_source_conflict", "Identical original bytes cannot change their economic capacity or evidence purpose");
+    if (allPrior.some((p) => p.sourceId === first.source.sourceId && p.lineId === first.lineId &&
+      (p.sku !== first.sku || p.unit !== first.unit)))
+      deny("consumption_source_conflict", "An original line cannot change economic SKU/unit identity across revisions");
+    const used = prior.filter((p) => p.caseId !== caseId)
       .reduce((n, p) => n + quantityMicros(p.quantity), 0n);
     const wanted = items.reduce((n, p) => n + quantityMicros(p.quantity), 0n);
     if (used + wanted > quantityMicros(first.capacity))
-      deny(
-        "received_units_already_used",
-        "Accepted quantities exceed remaining PO/contract/receipt/service units",
-      );
+      deny("received_units_already_used", "Accepted quantities exceed remaining PO/contract/receipt/service/return units");
   }
   // B1 reserved a whole received line. Preserve that constraint until explicit B3 recertification.
   const legacy = (
@@ -108,9 +130,14 @@ export async function assertConsumptions(
         "Legacy recognized bill lacks its original source revision",
       );
     const oldInput = intakeSchema.parse(revision.intake);
+    for (const hash of new Set(claims.map(c=>c.source.sha256))) {
+      if (oldInput.purchasingEvidence.some(p=>p.source.sha256===hash) &&
+        await sourceSemanticHash(oldInput,hash) !== await sourceSemanticHash(input,hash))
+        deny("consumption_source_conflict", "Legacy recognition binds a different semantic interpretation of the same original bytes");
+    }
     if (
       oldInput.purchasingEvidence.some((p) =>
-        p.lines.some((l) => claims.some((c) => c.lineId === l.lineId && (c.source.sourceId === p.source.sourceId || c.source.sha256 === p.source.sha256))),
+        p.lines.some((l) => claims.some((c) => c.sku === l.sku && c.unit === l.quantity.unit && (c.source.sourceId === p.source.sourceId || c.source.sha256 === p.source.sha256))),
       )
     )
       deny(
@@ -126,6 +153,7 @@ export async function saveConsumptions(
   billId: Id<"demoBills">,
   approvalId: Id<"apApprovalProposals">,
   claims: Consumption[],
+  input: APIntake,
 ) {
   const existing = await ctx.db
     .query("apReceiptConsumptions")
@@ -143,6 +171,7 @@ export async function saveConsumptions(
       sourceId: c.source.sourceId,
       sourceRevision: c.source.revision,
       sourceHash: c.source.sha256,
+      sourceSemanticHash: await sourceSemanticHash(input, c.source.sha256),
       lineId: c.lineId,
       quantity: c.quantity,
       capacity: c.capacity,
@@ -432,6 +461,6 @@ export async function evaluateCredit(
       "credit_total",
       "Credit source and original-supported allocations must reconcile exactly",
     );
-  await assertConsumptions(ctx, scope, creditCaseId, returnConsumptions);
+  await assertConsumptions(ctx, scope, creditCaseId, returnConsumptions, input);
   return { original, bill: bill!, approved, allocations, amountCents, returnConsumptions };
 }
