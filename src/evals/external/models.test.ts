@@ -26,7 +26,12 @@ describe("explicit benchmark approval and reservation ledger", () => {
   it("keeps the checked-in policy disabled even when credentials exist", async () => {
     const policy = loadModelPolicy();
     expect(policy.approval).toBeNull();
-    expect(policy.agent.model).toBeNull();
+    // A fully configured provider must still require independent budget approval.
+    for (const role of ["agent", "judge"] as const) {
+      expect(policy[role].model).toBeTruthy();
+      expect(policy[role].prices?.input).toBeGreaterThan(0);
+      expect(policy[role].prices?.output).toBeGreaterThan(0);
+    }
     for (const roles of [["agent"], ["judge"], ["agent", "judge"]] as ("agent" | "judge")[][]) expect(() => assertPaidPolicy(policy, roles)).toThrow("disabled pending");
     expect(() => new PaidBudget(policy, "unused", dir)).toThrow("disabled pending");
     expect(await runAdapter("generalist", task, "unused", 4)).toMatchObject({ status: "error", reason: expect.stringContaining("disabled pending") });
