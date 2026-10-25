@@ -35,6 +35,8 @@ jobs:
         run: npm run typecheck:backend
       - id: tests_typecheck
         run: npm run typecheck:tests
+      - name: Install Chromium for browser-mounted tests
+        run: npx playwright install --with-deps chromium
       # Includes multiprocess FakeBank and Prism; do not repeat focused suites.
       - id: tests
         run: npm test

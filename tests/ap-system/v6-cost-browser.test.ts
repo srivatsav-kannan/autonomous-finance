@@ -1,3 +1,4 @@
+import {existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {expect,it} from 'vitest';
 import {createServer} from 'vite';
@@ -10,7 +11,7 @@ it('invalidates mounted UI review after editing and parent context changes, igno
  const cache=await mkdtemp(`${tmpdir()}/ap97-v6-browser-`);const root=fileURLToPath(new URL('../..',import.meta.url));
  const server=await createServer({configFile:false,envFile:false,root,cacheDir:cache,logLevel:'error',server:{host:'127.0.0.1',port:0},plugins:[{name:'independent-v6-page',configureServer(s){s.middlewares.use('/v6-fixture',(_q,r)=>{r.setHeader('Content-Type','text/html');r.end('<div id="root"></div><script type="module" src="/tests/ap-system/v6-cost-browser.fixture.tsx"></script>');});}}]});
  let browser:Awaited<ReturnType<typeof chromium.launch>>|undefined;
- try{await server.listen();const url=server.resolvedUrls!.local[0]!;browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});const page=await browser.newPage();const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ try{await server.listen();const url=server.resolvedUrls!.local[0]!;browser=await chromium.launch({executablePath:process.env.CHROME_PATH??(existsSync('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')?'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome':undefined),headless:true});const page=await browser.newPage();const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url+'v6-fixture');await page.waitForFunction(()=>((window as any).v6Deferred?.length??0)===1);
   await page.getByRole('button',{name:'Switch original'}).click();await page.waitForFunction(()=>((window as any).v6Deferred?.length??0)===2);
   await page.evaluate(value=>(window as any).v6Deferred[1].resolve(value),state('B'));await page.getByRole('button',{name:'Add exact reversal share'}).waitFor();
