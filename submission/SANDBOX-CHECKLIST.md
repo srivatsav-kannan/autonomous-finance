@@ -1,5 +1,7 @@
 # PR #105 sandbox checks: what we need and how we'll run them
 
+**Status update, Oct 25:** [SANDBOX-ACCEPTANCE.md](SANDBOX-ACCEPTANCE.md) records a previously completed synthetic flow on JJ's dedicated runtime, fresh provider readbacks, the QuickBooks compatibility repair, and remaining checks. Do not repeat an already submitted payment to satisfy this checklist. A fresh merged-main run is still separate acceptance.
+
 Written for running the checks on Srivatsav's laptop. If JJ runs them on his own machine, where the credentials already are, skip section 1 and follow the run order with his existing config.
 
 ## 1. What JJ needs to send privately

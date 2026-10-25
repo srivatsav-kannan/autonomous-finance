@@ -1,5 +1,7 @@
 # QuickBooks Online US sandbox — runnable C4 operator setup
 
+> Subsequent transaction evidence and readback repair: [Oct 25 sandbox acceptance](../../submission/SANDBOX-ACCEPTANCE.md). The setup checkpoint below predates that run; it is not the latest acceptance status.
+
 Status on 2026-10-25: connector and independent protocol/backend tests are implemented. The operator has configured Development credentials and selected a US sandbox privately; configuration presence is not proof of valid credentials or consent. Master reached the real company consent page, with the owner’s Connect action still pending at this checkpoint. Live OAuth completion, company reads, Bill/VendorCredit/BillPayment writes and external reconciliation remain separately evidenced acceptance steps. Mock success is not sandbox acceptance. Increase sandbox remains the payment rail; this connector only records accounting after independent settlement evidence.
 
 ## 1. Register and select the sandbox

@@ -91,10 +91,12 @@ For an optional live crash demonstration outside this script, follow the [isolat
 | **Arav** | Do you guarantee exactly once? | “We verify the outcome under a specified failure: one intended transfer, one posted bank debit and one settlement effect. That is a tested invariant, not a universal network guarantee.” |
 | **Arav** | Why not automatically short-pay a discrepancy? | “A proposed adjustment isn't authority. The company must have an applicable policy or an authorized decision, and the disputed amount and original evidence remain visible.” |
 | **JJ** | How good is the parser? | “On two new synthetic supplier layouts in native and scan versions, the repaired adapter recovered all 104 checked fields across four files. Source locations passed for 102, with two explicitly unresolved. This used cached real provider results; it isn't a broad production benchmark.” |
-| **JJ** | Are Auth0, QuickBooks and Increase live? | “Real Auth0 login and scoped case access are verified. QuickBooks sandbox connection and reference mappings are verified separately. At the evidence snapshot used here, accounting transaction write/readback and Increase transfer execution were still pending.” |
+| **JJ** | Are Auth0, QuickBooks and Increase live? | “A separate synthetic $678.60 case completed through Auth0, QuickBooks and Increase sandbox APIs, with one transfer and linked accounting records. We rechecked the records and repaired a QuickBooks readback difference. This uses simulated money; signed webhooks and a fresh complete flow on the updated branch remain unverified.” |
 | **JJ** | What does it cost? | “We're prioritizing correct outcomes and useful automation. The old simulator's cost numbers don't estimate this document, review and payment workflow.” |
 
-The external-integration answer follows the evidence snapshot in [DEMO.md](../docs/DEMO.md). Before changing it, check the [capability matrix](../docs/ap-orchestration/CAPABILITIES.md) and the named provider's actual transaction evidence. Configuration or login alone does not prove accounting synchronization or payment execution.
+The external-integration answer follows the [sandbox acceptance report](SANDBOX-ACCEPTANCE.md). The [independent model review](review-105/REVIEW.md) still leaves F1–F3 high control/lifecycle findings open; do not imply separate buttons guarantee separate human approvers or that I2's disputed remainder can already be released. The sandbox case is separate from I2 and the crash/recovery test.
+
+The local walkthrough follows the evidence snapshot in [DEMO.md](../docs/DEMO.md). Before changing it, check the [capability matrix](../docs/ap-orchestration/CAPABILITIES.md) and the named provider's actual transaction evidence. Configuration or login alone does not prove accounting synchronization or payment execution.
 
 ## Organizer logistics — retained from the previous pitch
 
