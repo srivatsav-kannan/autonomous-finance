@@ -1,0 +1,25 @@
+{
+  "baseline": "7b0f6444bf79ec914c0c7d0a4af1444af092c49c",
+  "originalDerivationCommit": "769df9f",
+  "originalDerivationSha256": "5ebaeb9b6d64e272ba7284b80cb64c0c8adc6839f73617b700a41942e9632f12",
+  "evaluationKeySha256": "eee935c7805526ff45f7765a8800a34ddb56f25f07329459fe979a9e8ea7bdae",
+  "manifestSha256": "1ddd6649ebfe444f7dda837d221afd5679f5b318015323655fce690a8b61091d",
+  "status": "all104visibleFactsAgree",
+  "matchedFacts": 104,
+  "checks": [
+    {
+      "invoiceNumber": "CV-9017",
+      "fieldsPerPresentation": 29,
+      "presentations": 2,
+      "matchingFacts": 58
+    },
+    {
+      "invoiceNumber": "HT-2408",
+      "fieldsPerPresentation": 23,
+      "presentations": 2,
+      "matchingFacts": 46
+    }
+  ],
+  "fourFileHashAndByteChecks": "pass",
+  "note": "Agreement with key is not parser accuracy. Source-independent original transcription was committed before key access; no runtime parser invoked."
+}
